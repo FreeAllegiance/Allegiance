@@ -71,7 +71,7 @@ class CafterburnerIGC : public IafterburnerIGC
 
         virtual void             Activate(void)
         {
-            assert (m_ship);
+            ZAssert (m_ship);
 
             if (!m_fActive)
             {
@@ -82,7 +82,7 @@ class CafterburnerIGC : public IafterburnerIGC
         }
         virtual void             Deactivate(void)
         {
-            assert (m_ship);
+            ZAssert (m_ship);
 
             if (m_fActive)
             {
@@ -134,8 +134,8 @@ class CafterburnerIGC : public IafterburnerIGC
 
         virtual void     SetPower(float p)
         {
-            assert (p >= 0.0f);
-            assert (p <= 1.0f);
+            ZAssert (p >= 0.0f);
+            ZAssert (p <= 1.0f);
             if (p != 0.0f)
                 Activate();
 

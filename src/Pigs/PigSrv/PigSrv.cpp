@@ -81,7 +81,7 @@ extern "C" int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 
   // Enter this thread into a COM apartment
   TCCoInit coInit(COINIT_MULTITHREADED);
-  assert(coInit.Succeeded());
+  ZAssert(coInit.Succeeded());
 
   // Initialize AGC
   HRESULT hr = _AGCModule.Init();

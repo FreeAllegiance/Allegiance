@@ -23,7 +23,7 @@ HRESULT CAGCVector::GetRawVector(IAGCVector* pVector, Vector* pVectorRaw)
       return E_POINTER;
     IAGCVectorPrivate* pPrivate = NULL;
     RETURN_FAILED(pVector->QueryInterface(__uuidof(pPrivate), (void**)&pPrivate));
-    assert(pPrivate);
+    ZAssert(pPrivate);
     if (!pPrivate)
       return E_INVALIDARG;
     HRESULT hr = pPrivate->CopyVectorTo(pVectorRaw);
@@ -101,7 +101,7 @@ STDMETHODIMP CAGCVector::Load(LPSTREAM pStm)
   RETURN_FAILED(pStm->Read(&cDims, sizeof(cDims), NULL));
   if (DIMENSIONS != cDims)
   {
-    assert(DIMENSIONS == cDims);
+    ZAssert(DIMENSIONS == cDims);
     return ERROR_INVALID_DATA;
   }
 

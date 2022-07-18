@@ -5,6 +5,14 @@
 
 #include <d3d9.h>
 
+#define ALLEG_D9EX
+
+#ifdef ALLEG_D9EX
+#define ALLEG_D9EX_IF(a, b) a
+#else
+#define ALLEG_D9EX_IF(a, b) b
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class CD3DDevice9
 {
@@ -47,7 +55,11 @@ public:
 	////////////////////////////////////////////////////////////////////////////////////////////
 	struct SD3DDeviceMode
 	{
-		D3DDISPLAYMODE			mode;
+        ALLEG_D9EX_IF(
+            D3DDISPLAYMODEEX			mode;
+            ,
+            D3DDISPLAYMODE			mode;
+        )
 		D3DFORMAT				fmtDepthStencil;
 		D3DMULTISAMPLE_TYPE		d3dMultiSampleSetting;
 	};
@@ -272,8 +284,13 @@ private:
 		};
 
 		D3DPRESENT_PARAMETERS	d3dPresParams;
-		LPDIRECT3D9				pD3D9;
-		LPDIRECT3DDEVICE9		pD3DDevice;
+#ifdef ALLEG_D9EX
+		LPDIRECT3D9EX			pD3D9;
+        LPDIRECT3DDEVICE9EX		pD3DDevice;
+#else
+        LPDIRECT3D9				pD3D9;
+        LPDIRECT3DDEVICE9		pD3DDevice;
+#endif
 		D3DADAPTER_IDENTIFIER9	d3dAdapterID;
 		D3DCAPS9				sD3DDevCaps;
 		SD3DDeviceMode *		pCurrentMode;
@@ -299,6 +316,8 @@ private:
 	};
 
 	SD3DDevice9State m_sD3DDev9;
+
+    HRESULT CreateDevice(HWND hParentWindow, D3DDEVTYPE deviceType, DWORD flags);
 	
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 public:
@@ -346,7 +365,7 @@ public:
 	HRESULT SetRTDepthStencil( );
 	HRESULT SetBackBufferDepthStencil( );
 
-	inline const LPDIRECT3D9 GetD3D9() { return m_sD3DDev9.pD3D9; }
+	inline const ALLEG_D9EX_IF(LPDIRECT3D9EX, LPDIRECT3D9) GetD3D9() { return m_sD3DDev9.pD3D9; }
 	D3DCAPS9 * GetDevCaps( ) { return &m_sD3DDev9.sD3DDevCaps; }
 	inline const SD3DDevice9FormatFlags * GetDevFlags() { return &m_sD3DDev9.sFormatFlags; }
 
@@ -432,7 +451,7 @@ public:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 	// Access functions.
-	const LPDIRECT3DDEVICE9 Device(); // BT - 10/17 - If the D3D device becomes null, re-create it to get it up and rolling again.
+	const ALLEG_D9EX_IF(LPDIRECT3DDEVICE9EX, LPDIRECT3DDEVICE9) Device(); // BT - 10/17 - If the D3D device becomes null, re-create it to get it up and rolling again.
 
 	// State initialisation functions.
 	void		InitialiseDeviceStateCache( SD3D9DeviceStateCache * pCache );

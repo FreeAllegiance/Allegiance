@@ -84,8 +84,8 @@ public:
         m_fIsLeader(fIsLeader),
         m_fIsAssistantLeader(fIsAssistantLeader)
     {
-        assert(!(m_fIsLeader && m_fIsAssistantLeader));
-        assert(strlen(szSquadName) < c_cbName);
+        ZAssert(!(m_fIsLeader && m_fIsAssistantLeader));
+        ZAssert(strlen(szSquadName) < c_cbName);
         Strcpy(m_szSquadName, szSquadName);
     };
     

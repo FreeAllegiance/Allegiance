@@ -104,7 +104,7 @@ bool TCDynaLib::LoadLibrary(LPCTSTR pszLibName)
     Lock();
 
     // LoadLibrary can only be successfully called once
-    assert(!m_hinst);
+    ZAssert(!m_hinst);
 
     // Load the specified library and indicate whether it was loaded or not
     bResult = NULL != (m_hinst = ::LoadLibrary(pszLibName));
@@ -208,6 +208,6 @@ void TCDynaLib::FunctionNotFound(LPCSTR pszFn)
   LPSTR pszMsg = LPSTR(_alloca(strlen(pszFmt) + strlen(pszFn)));
   sprintf(pszMsg, pszFmt, pszFn);
   OutputDebugStringA(pszMsg);
-  assert(pszMsg);
+  ZAssert(pszMsg);
 }
 

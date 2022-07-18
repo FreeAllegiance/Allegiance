@@ -42,8 +42,8 @@ public:
    */
   STDMETHODIMP get_Name(BSTR* pbstr)
   {
-    assert(GetIGC());
-    assert(GetIGC()->GetMissionParams());
+    ZAssert(GetIGC());
+    ZAssert(GetIGC()->GetMissionParams());
     CComBSTR bstrTemp(GetIGC()->GetMissionParams()->strGameName);
     CLEAROUT(pbstr, (BSTR)bstrTemp);
     bstrTemp.Detach();
@@ -59,8 +59,8 @@ public:
    */
   STDMETHODIMP get_Sectors(IAGCSectors** ppAGCSectors)
   {
-    assert(GetIGC());
-    assert(GetIGC()->GetClusters());
+    ZAssert(GetIGC());
+    ZAssert(GetIGC()->GetClusters());
     return GetAGCGlobal()->GetAGCObject(GetIGC()->GetClusters(),
       IID_IAGCSectors, (void**)ppAGCSectors);
   }
@@ -74,8 +74,8 @@ public:
    */
   STDMETHODIMP get_Teams(IAGCTeams** ppAGCTeams)
   {
-    assert(GetIGC());
-    assert(GetIGC()->GetSides());
+    ZAssert(GetIGC());
+    ZAssert(GetIGC()->GetSides());
     return GetAGCGlobal()->GetAGCObject(GetIGC()->GetSides(), IID_IAGCTeams,
       (void**)ppAGCTeams);
   }
@@ -106,7 +106,7 @@ public:
     if ((idAGC>>16) != AGC_Ship)
       return S_OK;
 
-    assert(GetIGC());
+    ZAssert(GetIGC());
     IbaseIGC* pIbaseIGC = GetIGC()->GetBase(OT_ship, short(idAGC));
 
     if (!pIbaseIGC)
@@ -126,16 +126,16 @@ public:
    */
   STDMETHODIMP get_Ships(IAGCShips** ppAGCShips)
   {
-    assert(GetIGC());
-    assert(GetIGC()->GetShips());
+    ZAssert(GetIGC());
+    ZAssert(GetIGC()->GetShips());
     return GetAGCGlobal()->GetAGCObject(GetIGC()->GetShips(), IID_IAGCShips,
       (void**)ppAGCShips);
   }
 
   STDMETHODIMP get_Alephs(IAGCAlephs** ppAlephs)
   {
-    assert(GetIGC());
-    assert(GetIGC()->GetWarps());
+    ZAssert(GetIGC());
+    ZAssert(GetIGC()->GetWarps());
     return GetAGCGlobal()->GetAGCObject(GetIGC()->GetWarps(), IID_IAGCAlephs,
       (void**)ppAlephs);
   }
@@ -149,8 +149,8 @@ public:
    */
   STDMETHODIMP get_Asteroids(IAGCAsteroids** ppAsteroids)
   {
-    assert(GetIGC());
-    assert(GetIGC()->GetAsteroids());
+    ZAssert(GetIGC());
+    ZAssert(GetIGC()->GetAsteroids());
     return GetAGCGlobal()->GetAGCObject(GetIGC()->GetAsteroids(),
       IID_IAGCAsteroids, (void**)ppAsteroids);
   }
@@ -167,10 +167,10 @@ public:
     // Create an AGCGameParameters object
     IAGCPrivatePtr spPrivate;
     RETURN_FAILED(spPrivate.CreateInstance(CLSID_AGCGameParameters));
-    assert(NULL != spPrivate);
+    ZAssert(NULL != spPrivate);
 
     // Initialize the MissionParams structure of the new object
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CopyMemory(spPrivate->GetIGCVoid(), GetIGC()->GetMissionParams(),
       sizeof(*GetIGC()->GetMissionParams()));
 
@@ -185,7 +185,7 @@ public:
    */
   STDMETHODIMP get_GameID(AGCGameID *pMissionId)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     *pMissionId  = GetIGC()->GetMissionID();
     return S_OK;
   }
@@ -213,7 +213,7 @@ public:
     // Initialize the [out] parameter
     CLEAROUT(ppAGCObject, (IAGCTeam*)NULL);
 
-    assert(GetIGC());
+    ZAssert(GetIGC());
     IbaseIGC* pIbaseIGC = GetIGC()->GetBase(OT_side, idAGC);
     if (!pIbaseIGC)
       return T::Error("ID for Team not found");
@@ -226,8 +226,8 @@ public:
   ///////////////////////////////////////////////////////////////////////////  
   STDMETHODIMP SendChat(BSTR bstrText, AGCSoundID idSound)
   {
-    assert(GetIGC());
-    assert(GetIGC()->GetIgcSite());
+    ZAssert(GetIGC());
+    ZAssert(GetIGC()->GetIgcSite());
 
     // Do nothing if string is empty
     if (!BSTRLen(bstrText))
@@ -247,8 +247,8 @@ public:
   STDMETHODIMP SendCommand(BSTR bstrCommand, IAGCModel* pModelTarget,
     AGCSoundID idSound)
   {
-    assert(GetIGC());
-    assert(GetIGC()->GetIgcSite());
+    ZAssert(GetIGC());
+    ZAssert(GetIGC()->GetIgcSite());
 
     // Convert the command string to a command ID
     CommandID idCmd;
@@ -278,7 +278,7 @@ public:
    */
   STDMETHODIMP get_GameStage(AGCGameStage* pStage)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     *pStage  = AGCGameStage(GetIGC()->GetMissionStage());
     return S_OK;
   }
@@ -286,46 +286,46 @@ public:
 
   STDMETHODIMP get_Probes(IAGCProbes** ppProbes)
   {
-    assert(GetIGC());
-    assert(GetIGC()->GetProbes());
+    ZAssert(GetIGC());
+    ZAssert(GetIGC()->GetProbes());
     return GetAGCGlobal()->GetAGCObject(GetIGC()->GetProbes(),
       IID_IAGCProbes, (void**)ppProbes);
   }
 
   STDMETHODIMP get_Buoys(IAGCModels** ppBuoys)
   {
-    assert(GetIGC());
-    assert(GetIGC()->GetBuoys());
+    ZAssert(GetIGC());
+    ZAssert(GetIGC()->GetBuoys());
     return GetAGCGlobal()->GetAGCObject(GetIGC()->GetBuoys(),
       IID_IAGCModels, (void**)ppBuoys);
   }
 
   STDMETHODIMP get_Treasures(IAGCModels** ppTreasures)
   {
-    assert(GetIGC());
-    assert(GetIGC()->GetTreasures());
+    ZAssert(GetIGC());
+    ZAssert(GetIGC()->GetTreasures());
     return GetAGCGlobal()->GetAGCObject(GetIGC()->GetTreasures(),
       IID_IAGCModels, (void**)ppTreasures);
   }
 
   STDMETHODIMP get_Mines(IAGCModels** ppMines)
   {
-    assert(GetIGC());
-    assert(GetIGC()->GetMines());
+    ZAssert(GetIGC());
+    ZAssert(GetIGC()->GetMines());
     return GetAGCGlobal()->GetAGCObject(GetIGC()->GetMines(),
       IID_IAGCModels, (void**)ppMines);
   }
 
   STDMETHODIMP get_ReplayCount(short* pnReplays)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pnReplays, GetIGC()->GetReplayCount());
     return S_OK;
   }
 
   STDMETHODIMP get_ContextName(BSTR* pbstrContextName)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CComBSTR bstrTemp(GetIGC()->GetContextName());
     CLEAROUT(pbstrContextName, (BSTR)bstrTemp);
     bstrTemp.Detach();

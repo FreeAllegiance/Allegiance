@@ -330,7 +330,7 @@ inline DWORD FileTimeToMs(const FILETIME& ft)
   // Declaration:
   // #ifdef _DEBUG
   //   #define _VERIFY(f)               _ASSERT(f)
-  //   #define _VERIFYE(f)              assert(f)
+  //   #define _VERIFYE(f)              ZAssert(f)
   // #else
   //   #define _VERIFY(f)               ((void)(f))
   //   #define _VERIFYE(f)              ((void)(f))
@@ -341,8 +341,8 @@ inline DWORD FileTimeToMs(const FILETIME& ft)
   // nonzero or 0.
   //
   // See Also: _SVERIFY, _SVERIFYE
-  #define _VERIFY(f)             assert(f)
-  #define _VERIFYE(f)            assert(f)            // {partof:_VERIFY}
+  #define _VERIFY(f)             ZAssert(f)
+  #define _VERIFYE(f)            ZAssert(f)            // {partof:_VERIFY}
 
   ///////////////////////////////////////////////////////////////////////////
   // Macro Group: _SVERIFY, _SVERIFYE Macros

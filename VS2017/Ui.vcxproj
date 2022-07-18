@@ -27,12 +27,13 @@
     <ClInclude Include="..\src\ui\ns_point.hpp" />
     <ClInclude Include="..\src\ui\ns_screen.hpp" />
     <ClInclude Include="..\src\ui\ns_string.hpp" />
-    <ClInclude Include="..\src\ui\ui.h" />
     <ClInclude Include="..\src\ui\UiEngine.h" />
     <ClInclude Include="..\src\ui\UiState.h" />
+    <ClInclude Include="..\src\ui\ui_sol.h" />
     <ClInclude Include="..\src\ui\ui_types.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\ui\Exposer.cpp" />
     <ClCompile Include="..\src\ui\UiEngine.cpp" />
     <ClCompile Include="..\src\ui\UiState.cpp" />
   </ItemGroup>
@@ -73,6 +74,10 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='FZDebug|Win32'">
     <Import Project="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.props" Condition="exists('$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.props')" />
+    <Import Project="Shared.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='FZRetail|Win32'">
+    <Import Project="Shared.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -91,7 +96,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='FZDebug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\src\Lib\AllegianceSecurity;..\src\Lib\Steam;..\src\Inc;..\src\engine;..\src\soundengine;..\src\_Utility;..\src\Lib\sol\include;..\src\ZLib;..\src\Guids;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\Lib\AllegianceSecurity;..\src\Lib\Steam;..\src\Inc;..\src\engine;..\src\soundengine;..\src\_Utility;..\src\Lib\sol\include;..\src\ZLib;..\src\Guids;%(AdditionalIncludeDirectories);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NOMINMAX;NOMINMAX;D3D_DEBUG_INFO;_AFXDLL;WIN32;_WINDOWS;STRICT;DIRECTINPUT_VERSION=0x0800;_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Async</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -112,7 +117,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>..\src\Lib\AllegianceSecurity;..\src\Lib\Steam;..\src\Inc;..\src\engine;..\src\soundengine;..\src\_Utility;..\src\Lib\sol\include;..\src\ZLib;..\src\Lib\lua;..\src\Guids;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\Lib\AllegianceSecurity;..\src\Lib\Steam;..\src\Inc;..\src\engine;..\src\soundengine;..\src\_Utility;..\src\Lib\sol\include;..\src\ZLib;..\src\Lib\lua;..\src\Guids;%(AdditionalIncludeDirectories);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NOMINMAX;NOMINMAX;NOMINMAX;STEAMSECURE;_AFXDLL;WIN32;_WINDOWS;STRICT;DIRECTINPUT_VERSION=0x0800;DEBUG;SRVLOG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Async</ExceptionHandling>
       <BasicRuntimeChecks>

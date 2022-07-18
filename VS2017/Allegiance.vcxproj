@@ -51,6 +51,10 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='FZDebug|Win32'">
     <Import Project="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.props" Condition="exists('$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.props')" />
+    <Import Project="Shared.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='FZRetail|Win32'">
+    <Import Project="Shared.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -68,7 +72,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='FZDebug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\;..\src\lib\AllegianceSecurity\;..\src\lib\Steam;..\src\lib\sol\include;..\src\lib\lua\include;..\src\effect;..\src\engine;..\src\ui;..\src\zlib;..\src\_Utility;..\src\Igc;..\src\clintlib;..\src\soundengine;..\src\AGC;..\src\FedSrv;..\src\training;..\src\lobby;..\src\Inc;..\src\guids;..\src\Zone;.\$(OutDir)..\AGC;.\$(OutDir)..\FedSrv;.\$(OutDir)..\Guids;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\src\Lib;..\src\lib\AllegianceSecurity\;..\src\lib\Steam;..\src\lib\sol\include;..\src\lib\lua\include;..\src\effect;..\src\engine;..\src\ui;..\src\zlib;..\src\_Utility;..\src\Igc;..\src\clintlib;..\src\soundengine;..\src\AGC;..\src\FedSrv;..\src\training;..\src\lobby;..\src\Inc;..\src\guids;..\src\Zone;.\$(OutDir)..\AGC;.\$(OutDir)..\FedSrv;.\$(OutDir)..\Guids;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>STEAM_APP_ID=700480;NOMINMAX;D3D_DEBUG_INFO;WINTREK;igc_static;IGC_SHIP;_USRDLL;DLL;DIRECTINPUT_VERSION=0x0800;_DEBUG;DEBUG;_WINDOWS;WIN32;AFXDLL;_TRACE;EnablePerformanceCounters;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Async</ExceptionHandling>
       <BasicRuntimeChecks>StackFrameRuntimeCheck</BasicRuntimeChecks>
@@ -81,7 +85,6 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4995;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <Culture>0x0409</Culture>
@@ -110,7 +113,7 @@ xcopy $(ProjectDir)..\src\Inc\steam_appid.txt $(OutDir)..\..\ /s /d /y</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='FZRetail|Win32'">
     <ClCompile>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>.\;..\src\lib\AllegianceSecurity\;..\src\lib\Steam;..\src\lib\sol\include;..\src\lib\lua\include;..\src\effect;..\src\engine;..\src\ui;..\src\zlib;..\src\_Utility;..\src\Igc;..\src\clintlib;..\src\soundengine;..\src\AGC;..\src\FedSrv;..\src\training;..\src\lobby;..\src\Inc;..\src\guids;..\src\Zone;.\$(OutDir)..\AGC;.\$(OutDir)..\FedSrv;.\$(OutDir)..\guids;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\src\Lib;..\src\lib\AllegianceSecurity\;..\src\lib\Steam;..\src\lib\sol\include;..\src\lib\lua\include;..\src\effect;..\src\engine;..\src\ui;..\src\zlib;..\src\_Utility;..\src\Igc;..\src\clintlib;..\src\soundengine;..\src\AGC;..\src\FedSrv;..\src\training;..\src\lobby;..\src\Inc;..\src\guids;..\src\Zone;.\$(OutDir)..\AGC;.\$(OutDir)..\FedSrv;.\$(OutDir)..\guids;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>STEAM_APP_ID=700480;NOMINMAX;SRVLOG;DEBUG;WINTREK;igc_static;IGC_SHIP;_USRDLL;DLL;DIRECTINPUT_VERSION=0x0800;_WINDOWS;WIN32;AFXDLL;EnablePerformanceCounters;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
@@ -169,6 +172,7 @@ xcopy $(ProjectDir)..\src\Inc\steam_appid.txt $(OutDir) /s /d /y</Command>
     <ClCompile Include="..\src\WinTrek\CharInfoScreen.cpp" />
     <ClCompile Include="..\src\WinTrek\chatpane.cpp" />
     <ClCompile Include="..\src\WinTrek\cmdview.cpp" />
+    <ClCompile Include="..\src\WinTrek\configscreen.cpp" />
     <ClCompile Include="..\src\WinTrek\console.cpp" />
     <ClCompile Include="..\src\WinTrek\consoledata.cpp" />
     <ClCompile Include="..\src\WinTrek\CreateGameDialog.h" />
@@ -186,10 +190,12 @@ xcopy $(ProjectDir)..\src\Inc\steam_appid.txt $(OutDir) /s /d /y</Command>
     <ClCompile Include="..\src\WinTrek\inventoryimage.cpp" />
     <ClCompile Include="..\src\WinTrek\leaderboardscreen.cpp" />
     <ClCompile Include="..\src\WinTrek\load.cpp" />
+    <ClCompile Include="..\src\WinTrek\LoadingScreen.cpp" />
     <ClCompile Include="..\src\WinTrek\loadout.cpp" />
     <ClCompile Include="..\src\WinTrek\logon.cpp" />
     <ClCompile Include="..\src\WinTrek\mappreview.cpp" />
     <ClCompile Include="..\src\WinTrek\mappvmaker.cpp" />
+    <ClCompile Include="..\src\WinTrek\ModdingEngine.cpp" />
     <ClCompile Include="..\src\WinTrek\netinfo.cpp" />
     <ClCompile Include="..\src\WinTrek\newgamescreen.cpp" />
     <ClCompile Include="..\src\WinTrek\passworddialog.cpp" />
@@ -205,7 +211,6 @@ xcopy $(ProjectDir)..\src\Inc\steam_appid.txt $(OutDir) /s /d /y</Command>
     <ClCompile Include="..\src\WinTrek\soundinit.cpp" />
     <ClCompile Include="..\src\WinTrek\splashscreen.cpp" />
     <ClCompile Include="..\src\WinTrek\SquadsScreen.cpp" />
-    <ClCompile Include="..\src\WinTrek\SteamClans.cpp" />
     <ClCompile Include="..\src\WinTrek\teampane.cpp" />
     <ClCompile Include="..\src\WinTrek\teamscreen.cpp" />
     <ClCompile Include="..\src\WinTrek\teleportpane.cpp" />
@@ -237,17 +242,19 @@ xcopy $(ProjectDir)..\src\Inc\steam_appid.txt $(OutDir) /s /d /y</Command>
     <ClInclude Include="..\src\WinTrek\hudimage.h" />
     <ClInclude Include="..\src\WinTrek\indicator.h" />
     <ClInclude Include="..\src\WinTrek\load.h" />
+    <ClInclude Include="..\src\WinTrek\LoadingScreen.h" />
     <ClInclude Include="..\src\WinTrek\loadout.h" />
     <ClInclude Include="..\src\WinTrek\logon.h" />
     <ClInclude Include="..\src\WinTrek\mappreview.h" />
     <ClInclude Include="..\src\WinTrek\mappvmaker.h" />
+    <ClInclude Include="..\src\WinTrek\ModdingEngine.h" />
     <ClInclude Include="..\src\WinTrek\passworddialog.h" />
     <ClInclude Include="..\src\WinTrek\pch.h" />
     <ClInclude Include="..\src\WinTrek\radarimage.h" />
     <ClInclude Include="..\src\WinTrek\screen.h" />
     <ClInclude Include="..\src\WinTrek\sectorvw.h" />
     <ClInclude Include="..\src\WinTrek\Slideshow.h" />
-    <ClInclude Include="..\src\WinTrek\SteamClans.h" />
+    <ClInclude Include="..\src\WinTrek\steamhelpers.h" />
     <ClInclude Include="..\src\WinTrek\trekctrls.h" />
     <ClInclude Include="..\src\WinTrek\TrekDlgs.h" />
     <ClInclude Include="..\src\WinTrek\Treki.h" />

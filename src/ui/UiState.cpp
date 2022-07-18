@@ -9,6 +9,8 @@ ZString GetFunctionName(const std::shared_ptr<UiState>& value) {
     return "";
 }
 
+
+
 /*
 template <class PropertiesContainerType : UiObjectContainer>
 void Write(IMDLBinaryFile* pmdlFile, const UiState<PropertiesContainerType>& value) {

@@ -34,8 +34,8 @@ void CPigBehaviorHost::FinalRelease()
 
 HRESULT CPigBehaviorHost::Init(CPig* pPig)
 {
-  assert(!m_pPig);
-  assert(pPig);
+  ZAssert(!m_pPig);
+  ZAssert(pPig);
   m_pPig = pPig;
   return S_OK;
 }

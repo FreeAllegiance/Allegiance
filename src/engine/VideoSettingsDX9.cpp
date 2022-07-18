@@ -82,7 +82,7 @@ SVideoSettingsData g_VideoSettings;
 // PromptUserForVideoSettings()
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-bool PromptUserForVideoSettings(bool bStartFullscreen, int iAdapter, HINSTANCE hInstance, PathString & szArtPath, TRef<UpdatingConfiguration> config )
+bool PromptUserForVideoSettings(bool bStartFullscreen, int iAdapter, HINSTANCE hInstance, PathString & szArtPath, const TRef<EngineConfigurationWrapper>& config )
 {
 	CLogFile logFile( "VideoSettings.log" );
 
@@ -117,17 +117,15 @@ bool PromptUserForVideoSettings(bool bStartFullscreen, int iAdapter, HINSTANCE h
 		
 	HMONITOR hMon = MonitorFromPoint(Point(0,0), MONITOR_DEFAULTTOPRIMARY);
 
-    x = config->GetIntValue("Graphics.ResolutionX", config->GetIntValue("CombatFullscreenXSize", 1366));
-    y = config->GetIntValue("Graphics.ResolutionY", config->GetIntValue("CombatFullscreenYSize", 768));
+    x = (int)config->GetGraphicsResolutionX()->GetValue();
+    y = (int)config->GetGraphicsResolutionY()->GetValue();
 
-    g_DX9Settings.m_dwAA = config->GetBoolValue("Graphics.UseAntialiasing", config->GetBoolValue("UseAntialiasing", false)) ? 1 : 0;
-    g_VideoSettings.bWaitForVSync = config->GetBoolValue("Graphics.UseVSync", config->GetBoolValue("UseVSync", false));
+    g_DX9Settings.m_dwAA = config->GetGraphicsUseAntiAliasing()->GetValue() ? 1 : 0;
+    g_VideoSettings.bWaitForVSync = config->GetGraphicsUseVSync()->GetValue();
 
-    g_VideoSettings.iMaxTextureSize = config->GetIntValue("Graphics.MaxTextureSizeLevel", config->GetIntValue("MaxTextureSize", 0));
+    g_VideoSettings.iMaxTextureSize = (int)config->GetGraphicsMaxTextureSizeLevel()->GetValue();
 
     //g_VideoSettings.bAutoGenMipmaps = ... // BT - Disable MipMaps for now - Causes animated images (explosions) to not render correctly, and also a crash when restarting the training mission after ESC -> Q when running with -training switch
-
-	x = (x != 0) ? x : 800; y = (y != 0) ? y : 600; //in case Windows7 wrote 0's before this bug was caught
 
 	g_VideoSettings.pDevData			= new CD3DDeviceModeData( 800, 600 , &logFile);	// Mininum ENGINE width/height allowed.
 	g_VideoSettings.pDevData->GetResolutionDetails(iAdapter,0,&idummy,&idummy,&g_DX9Settings.m_refreshrate,&bbf,&df,&hMon); //imago use this function!
@@ -154,40 +152,81 @@ bool PromptUserForVideoSettings(bool bStartFullscreen, int iAdapter, HINSTANCE h
 	//NYI -monitor <n> for "Multi-Head" adapters
 
 	// Find the optimal mode index using the highest, sane refresh rate 7/27/09 (Imago, Sgt_Baker)
-	int iBestMode = 0;
+	int iBestMode = -1;
 	int maxrate = GetMaxRate(iAdapter);
 
-	int iModeCount = g_VideoSettings.pDevData->GetResolutionCount(iAdapter,g_VideoSettings.d3dDeviceFormat);
-	for( int i=0; i<iModeCount; i++ ) {
-		int myx, myy, myrate;
-		D3DFORMAT mybbf, mydf; 
-		HMONITOR mymon;
-		g_VideoSettings.pDevData->GetResolutionDetails(iAdapter,i,&myx,&myy,&myrate,&mybbf,&mydf,&mymon);
-		if (g_VideoSettings.d3dDeviceFormat == mydf && g_VideoSettings.d3dBackBufferFormat == mybbf) {
-			if (x == myx && y == myy) {
-				if (myrate >= g_DX9Settings.m_refreshrate && myrate <= maxrate)
-					iBestMode = i;
-			}
-		}
-	}
-	ZAssert(iModeCount != 0);
-	//imago build the adapter res array for in-game switching
-	g_VideoSettings.pDevData->GetRelatedResolutions(
-										iAdapter,
-										iBestMode,
-										&g_VideoSettings.iNumResolutions,
-										&g_VideoSettings.iCurrentMode,
-										&g_VideoSettings.pResolutionSet );
-	g_VideoSettings.iCurrentMode = iBestMode;
+    // go through the resolutions on the monitor, and select the mode if it matches the current configuration
+    {
+        logFile.OutputStringV("\n\nFOUND RESOLUTIONS (MODE %i) (MAXRATE: %i):\n", iBestMode, maxrate);
+        int iModeCount = g_VideoSettings.pDevData->GetResolutionCount(iAdapter, g_VideoSettings.d3dDeviceFormat);
+        ZAssert(iModeCount != 0);
 
-    logFile.OutputStringV("\n\nFOUND RESOLUTIONS (MODE %i) (MAXRATE: %i):\n",iBestMode,maxrate);
-	for (int i=0;i<g_VideoSettings.iNumResolutions;i++) {
-        logFile.OutputStringV("\t%i) %ix%i @ %i\n",i,g_VideoSettings.pResolutionSet[i].iWidth,g_VideoSettings.pResolutionSet[i].iHeight,
-			g_VideoSettings.pResolutionSet[i].iFreq);
-		if (g_VideoSettings.pResolutionSet[i].iWidth == x && g_VideoSettings.pResolutionSet[i].iHeight == y)
-			g_DX9Settings.m_refreshrate = g_VideoSettings.pResolutionSet[i].iFreq;
-	}
+        if (x <= 300 || y <= 400) {
+            //saved resolution is invalid (first time run)
+            //select the highest mode (change to select current resolution?)
+            iBestMode = iModeCount - 1;
+        }
+        else {
+            for (int i = 0; i<iModeCount; i++) {
+                int myx, myy, myrate;
+                D3DFORMAT mybbf, mydf;
+                HMONITOR mymon;
+                g_VideoSettings.pDevData->GetResolutionDetails(iAdapter, i, &myx, &myy, &myrate, &mybbf, &mydf, &mymon);
+
+                if (g_VideoSettings.d3dDeviceFormat != mydf || g_VideoSettings.d3dBackBufferFormat != mybbf) {
+                    continue;
+                }
+
+                logFile.OutputStringV("\t%i) %ix%i @ %i\n", i, myx, myy, myrate);
+
+                if (myx >= x && myy >= y) {
+                    if (myrate < g_DX9Settings.m_refreshrate || myrate > maxrate) {
+                        continue;
+                    }
+
+                    //this is an acceptable mode, though not the one we selected
+                    if (iBestMode == -1) {
+                        iBestMode = i;
+                    }
+                    if (x == myx && y == myy) {
+                        //matches exactly, we are done
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (iBestMode < 0) {
+            //mode still invalid
+            iBestMode = iModeCount - 1;
+        }
+
+        //query the x and y of the selected mode
+        g_VideoSettings.iCurrentMode = iBestMode;
+        g_VideoSettings.pDevData->GetResolutionDetails(
+            iAdapter,
+            g_VideoSettings.iCurrentMode,
+            &x,
+            &y,
+            &g_DX9Settings.m_refreshrate,
+            &g_VideoSettings.d3dBackBufferFormat,
+            &g_VideoSettings.d3dDeviceFormat,
+            &g_VideoSettings.hSelectedMonitor
+        );
+    }
+
+    //update configuration entries
+    config->GetGraphicsResolutionX()->SetValue((float)x);
+    config->GetGraphicsResolutionY()->SetValue((float)y);
     logFile.OutputStringV("CURRENT IN-GAME RESOLUTION: %ix%i @ %i\n",x,y,g_DX9Settings.m_refreshrate);
+
+    //imago build the adapter res array for in-game switching
+    g_VideoSettings.pDevData->GetRelatedResolutions(
+        iAdapter,
+        iBestMode,
+        &g_VideoSettings.iNumResolutions,
+        &g_VideoSettings.iCurrentMode,
+        &g_VideoSettings.pResolutionSet);
 
 	//lets make extra sure we don't crash when we autoload AA settings
 	LPDIRECT3D9 pD3D9 = Direct3DCreate9( D3D_SDK_VERSION );

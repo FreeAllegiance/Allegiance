@@ -37,7 +37,7 @@ public:
   inline TCTraceScope::TCTraceScope(LPCSTR pszClass, LPCSTR pszMethod,
     LPCSTR pszFmt, ...) : m_pszClass(pszClass), m_pszMethod(pszMethod)
   {
-    assert(pszMethod);
+    ZAssert(pszMethod);
 
     // Get the indent level and increment it
     int nIndent = (int)(::TlsGetValue(TlsIndex()));

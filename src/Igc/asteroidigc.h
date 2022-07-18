@@ -36,7 +36,7 @@ class   CasteroidIGC : public TmodelIGC<IasteroidIGC>
             {
                 //The building effect gets terminated along with the asteroid
                 m_pbuildingEffect->Terminate();
-                assert (m_pbuildingEffect == NULL);
+                ZAssert (m_pbuildingEffect == NULL);
             }
 
             GetMyMission()->DeleteAsteroid(this);
@@ -144,7 +144,7 @@ class   CasteroidIGC : public TmodelIGC<IasteroidIGC>
             {
                 float   oldFraction = m_fraction;
 
-                assert (m_asteroidDef.hitpoints != 0);
+                ZAssert (m_asteroidDef.hitpoints != 0);
                 m_fraction -= amount / float(m_asteroidDef.hitpoints);
 
                 GetMission()->GetIgcSite()->PlaySoundEffect(rockHitSound, this,
@@ -265,7 +265,7 @@ class   CasteroidIGC : public TmodelIGC<IasteroidIGC>
         {
             if (m_pbuildingEffect)
             {
-                assert (pbe == NULL);
+                ZAssert (pbe == NULL);
                 m_pbuildingEffect->MakeUnhitable();
             }
 

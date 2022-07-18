@@ -149,7 +149,7 @@ struct ChatSubject
         }
         else
         {
-            assert (m_shipsSubject.n() != 0);
+            ZAssert (m_shipsSubject.n() != 0);
 
             m_ctRecipient = CHAT_GROUP;
             m_pbaseRecipient = NULL;
@@ -255,7 +255,7 @@ struct ChatSubject
         if (bStart && (m_ctRecipient == CHAT_INDIVIDUAL))
         {
             IshipIGC*   pship = (IshipIGC*)((IbaseIGC*)m_pbaseRecipient);
-            assert (pship);
+            ZAssert (pship);
 
             if ((pship == trekClient.GetShip()) ||
                 (pship->GetPilotType() < c_ptPlayer))
@@ -339,7 +339,7 @@ struct ChatSubject
                     case CHAT_TEAM:
                     {
                         pbaseRecipient = psideFriendly;
-                        assert (pbaseRecipient);
+                        ZAssert (pbaseRecipient);
                         oidRecipient = pbaseRecipient->GetObjectID();
                     }
                     break;
@@ -348,9 +348,9 @@ struct ChatSubject
                     {
                         if (!pbaseRecipient)
                         {
-                            assert(oidRecipient == NA);
+                            ZAssert(oidRecipient == NA);
                             pbaseRecipient = trekClient.GetChatCluster();
-                            assert (pbaseRecipient);
+                            ZAssert (pbaseRecipient);
                             if (!pbaseRecipient)
                             {
                                 ct = CHAT_TEAM;
@@ -361,7 +361,7 @@ struct ChatSubject
                         }
                         else
                         {
-                            assert(oidRecipient == pbaseRecipient->GetObjectID());
+                            ZAssert(oidRecipient == pbaseRecipient->GetObjectID());
                         }
                     }
                     break;
@@ -383,7 +383,7 @@ struct ChatSubject
                     break;
 
                     default:
-                        assert (false);
+                        ZAssert (false);
                 }
 
                 for (ShipLinkIGC*   psl = pships->first(); (psl != NULL); psl = psl->next())
@@ -409,14 +409,14 @@ struct ChatSubject
 
                         case CHAT_TEAM:
                         {
-                            assert (pship->GetSide() == pbaseRecipient);
+                            ZAssert (pship->GetSide() == pbaseRecipient);
                             bSubject = true;
                         }
                         break;
 
                         case CHAT_FRIENDLY_SECTOR:
                         {
-                            assert (pship->GetSide() == psideFriendly);
+                            ZAssert (pship->GetSide() == psideFriendly);
 
                             PlayerInfo* ppi = (PlayerInfo*)(pship->GetPrivateData());
                             // XXX is this right?
@@ -427,7 +427,7 @@ struct ChatSubject
 
                         case CHAT_WING:
                         {
-                            assert (pship->GetSide() == psideFriendly);
+                            ZAssert (pship->GetSide() == psideFriendly);
 
                             bSubject = (pship->GetWingID() == wid);
                         }
@@ -435,7 +435,7 @@ struct ChatSubject
 
                         default:
                         {
-                            assert (false);
+                            ZAssert (false);
                         }
                     }
 
@@ -967,7 +967,7 @@ public:
                 WingID  wid = psl->data()->GetWingID();
                 if (wid >= 0)
                 {
-                    assert (wid < c_widMax);
+                    ZAssert (wid < c_widMax);
                     nShipsPerWing[wid]++;
                 }
             }
@@ -1380,7 +1380,7 @@ public:
 
                     case CHAT_INDIVIDUAL:
                     {
-                        assert (m_pchsCurrent->m_pbaseRecipient != NULL);
+                        ZAssert (m_pchsCurrent->m_pbaseRecipient != NULL);
 
                         IshipIGC*   pship = (IshipIGC*)((IbaseIGC*)m_pchsCurrent->m_pbaseRecipient);
                         pszRecipient = pship->GetName();
@@ -1425,7 +1425,7 @@ public:
                         if (m_pchsCurrent->m_pbaseRecipient == NULL)
                         {
                             pcluster = trekClient.GetChatCluster();
-                            assert (pcluster != NULL);
+                            ZAssert (pcluster != NULL);
                             if (pcluster)
                                 pszRecipient = pcluster->GetName();
                             else
@@ -1521,7 +1521,7 @@ public:
         }
         else
         {
-            assert (m_pchsCurrent);
+            ZAssert (m_pchsCurrent);
             if (ctRecipient != CHAT_NOSELECTION)
                 m_pchsCurrent->SetRecipient(ctRecipient, oidRecipient, pbaseRecipient);
 
@@ -1544,16 +1544,16 @@ public:
         ImodelIGC* pmodel;
         if (cid != c_cidNone)
         {
-            assert (ttMask);
+            ZAssert (ttMask);
 
             switch (ttMask)
             {
                 case c_ttMyAccepted:
                 case c_ttMyQueued:
                 case c_ttMyTarget:
-                    assert (char(c_ttMyAccepted) == c_cmdAccepted);
-                    assert (char(c_ttMyQueued) == c_cmdQueued);
-                    assert (char(c_ttMyTarget) == c_cmdCurrent);
+                    ZAssert (char(c_ttMyAccepted) == c_cmdAccepted);
+                    ZAssert (char(c_ttMyQueued) == c_cmdQueued);
+                    ZAssert (char(c_ttMyTarget) == c_cmdCurrent);
 
                     pmodel = trekClient.GetShip()->GetCommandTarget(char(ttMask));
                 break;
@@ -1561,7 +1561,7 @@ public:
                 case c_ttWorstEnemy:
                 {
                     DamageTrack*        pdt = trekClient.GetShip()->GetDamageTrack();
-                    assert (pdt);
+                    ZAssert (pdt);
                     DamageBucketLink* pdbl = pdt->GetDamageBuckets()->first();
                     pmodel = pdbl ? pdbl->data()->model() : NULL;
                 }
@@ -1602,7 +1602,7 @@ public:
     {
         if (m_csComposeState == c_csComposeChat)
         {
-            assert (m_strTypedText.GetLength() != 0);
+            ZAssert (m_strTypedText.GetLength() != 0);
 
             SendChatInternal(m_strTypedText,
                              NA,
@@ -1649,8 +1649,8 @@ public:
 
     void StartComposing(ComposeState  cs, ChatSubject*    pchsTarget)
     {
-        assert (cs != c_csNotComposing);
-        assert (m_csComposeState == c_csNotComposing);
+        ZAssert (cs != c_csNotComposing);
+        ZAssert (m_csComposeState == c_csNotComposing);
 
         // set the current chat target
         pchsTarget->Reset(cs == c_csComposeChat);
@@ -1787,7 +1787,7 @@ public:
             db.type = c_buoyCluster;
 
             IbuoyIGC*   b = (IbuoyIGC*)(trekClient.m_pCoreIGC->CreateObject(trekClient.m_now, OT_buoy, &db, sizeof(db)));
-            assert (b);
+            ZAssert (b);
 
             SetChatObject(b);
 
@@ -1798,7 +1798,7 @@ public:
 
     void PickShip(IshipIGC* pship)
     {
-        assert(pship);
+        ZAssert(pship);
 
         if (m_csComposeState == c_csNotComposing)
         {
@@ -1824,7 +1824,7 @@ public:
     /* NYI ... twizzle implementation once exact usage is defined
     void    PickModel(ImodelIGC* pmodel, int button)
     {
-        assert(pmodel);
+        ZAssert(pmodel);
 
         if ((m_csComposeState == c_csComposeCommand) ||
             ((m_csComposeState == c_csComposeChat) && button == 1))
@@ -1963,7 +1963,7 @@ public:
                 db.type = c_buoyWaypoint;
 
                 IbuoyIGC*   b = (IbuoyIGC*)(trekClient.m_pCoreIGC->CreateObject(trekClient.m_now, OT_buoy, &db, sizeof(db)));
-                assert (b);
+                ZAssert (b);
 
                 SetChatObject(b);
 
@@ -2287,7 +2287,7 @@ public:
                             if (m_csComposeState == c_csComposeCommand)
                             {
                                 //Composing a command ... always show the selected order if legal
-                                assert (m_pchsCurrent->LegalCommand(m_cidVerb, pmodelPick));
+                                ZAssert (m_pchsCurrent->LegalCommand(m_cidVerb, pmodelPick));
                                 cid = m_cidVerb;
                             }
                             else if (m_pchsCurrent->m_ctRecipient == CHAT_INDIVIDUAL)
@@ -2432,7 +2432,7 @@ public:
 
     int MatchName(const char*   pszText, const char* pszName)
     {
-        assert (*pszText != '\0');
+        ZAssert (*pszText != '\0');
 
         while (true)
         {
@@ -2589,7 +2589,7 @@ public:
                             db.type = c_buoyCluster;
 
                             pmodelBest = (IbuoyIGC*)(trekClient.m_pCoreIGC->CreateObject(trekClient.m_now, OT_buoy, &db, sizeof(db)));
-                            assert (pmodelBest);
+                            ZAssert (pmodelBest);
 
                             pmodelBest->Release();
                         }
@@ -2604,7 +2604,7 @@ public:
 
     void OnBackspace()
     {
-        assert (m_csComposeState > c_csComposeMouseCommand);
+        ZAssert (m_csComposeState > c_csComposeMouseCommand);
 
         if (m_strTypedText.GetLength() != 0)
         {
@@ -2746,7 +2746,7 @@ public:
 
     void OnTab()
     {
-        assert (m_csComposeState > c_csComposeMouseCommand);
+        ZAssert (m_csComposeState > c_csComposeMouseCommand);
         const char* pcc = m_strTypedText;
 
         if ((*pcc == '\0') || (*pcc == ' '))
@@ -3002,7 +3002,7 @@ public:
 
     void OnPrintable(char ch)
     {
-        assert (m_csComposeState > c_csComposeMouseCommand);
+        ZAssert (m_csComposeState > c_csComposeMouseCommand);
 		
 		// yp your_persona march 24 2005: constrain chat messages to always fit in the buffer size 255
 		if (m_strTypedText.GetLength() < 255)
@@ -3145,7 +3145,7 @@ ConsolePickImage::ConsolePickImage(Viewport*         pviewport,
     m_pconsoleData(pconsoleData),
     m_mouseresult(MouseResultHit())
 {
-    assert (m_pconsoleData);
+    ZAssert (m_pconsoleData);
 }
 
 void        ConsolePickImage::SetHitTest(MouseResult   mr)
@@ -3339,7 +3339,7 @@ public:
         if (strcmp(pszFileName, m_szFileName) == 0)
             return;
 
-        assert (strlen(pszFileName) < c_cbFileName);
+        ZAssert (strlen(pszFileName) < c_cbFileName);
         strcpy(m_szFileName, pszFileName);
 
         OverlayMask om = GetOverlayFlags();
@@ -3465,8 +3465,8 @@ private:
     ) {
         TRef<DisplayImage> pdisplayImage =
             new DisplayImage(
-                GetWindow()->GetTime(),
-                GetWindow()->GetScreenRectValue(),
+                GetEngineWindow()->GetTime(),
+                GetEngineWindow()->GetScreenRectValue(),
                 pimage,
                 side,
                 ptOffScreen,

@@ -238,7 +238,7 @@ void TCUtilityThread::Close()
     if (0 == InterlockedDecrement(&m_nRefs))
     {
       // Get the thread handle and ID
-      assert(m_pth);
+      ZAssert(m_pth);
       HANDLE hth     = m_pth->m_hThread;
       DWORD idThread = m_pth->m_nThreadID;
 
@@ -340,7 +340,7 @@ void TCUtilityThread::PostMessageV(UINT idMsg, int cParams, va_list argptr)
 // {partof:PostMessage}
 void TCUtilityThread::PostMessageEx(UINT idMsg, int cParams, LPARAM* rgParams)
 {
-  assert(m_pth);
+  ZAssert(m_pth);
   IUnknown* punk = OnGetUnknown();
   TC_UtilArgRelProc pfnRelease = OnGetArgRelProc();
   XWorkItem* pArgs =
@@ -489,7 +489,7 @@ unsigned TCUtilityThread::ThreadProc(void*)
 
   // Enter this thread into the MTA
   HRESULT hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
-  assert((SUCCEEDED(hr)));
+  ZAssert((SUCCEEDED(hr)));
 
   // Pump the message queue
   MSG msg;

@@ -2,6 +2,7 @@
 #define _engineapp_h_
 
 #include "popup.h"
+#include "enginewindow.h"
 
 #include <Win32app.h>
 
@@ -12,14 +13,15 @@
 //////////////////////////////////////////////////////////////////////////////
 class Engine;
 class Modeler;
-class MouseInputStream;
+class InputEngine;
 
 class EngineApp : public Win32App {
 private:
     TRef<Engine>           m_pengine;
     TRef<Modeler>          m_pmodeler;
     TRef<IPopupContainer>  m_ppopupContainer;
-    TRef<MouseInputStream> m_pmouse;
+    TRef<InputEngine> m_pinput;
+    TRef<EngineWindow> m_pengineWindow;
 
     void ParseCommandLine(
         const ZString& strCommandLine,
@@ -36,8 +38,12 @@ public:
     Engine*          GetEngine()         { return m_pengine;         }
     Modeler*         GetModeler()        { return m_pmodeler;        }
     IPopupContainer* GetPopupContainer() { return m_ppopupContainer; }
+    EngineWindow*    GetEngineWindow() { return m_pengineWindow; }
 
-    void SetMouse(MouseInputStream* pmouse);
+    void SetInput(InputEngine* pinput);
+    void SetEngineWindow(EngineWindow* pengineWindow) {
+        m_pengineWindow = pengineWindow;
+    }
 
     //
     // Win32App methods

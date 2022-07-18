@@ -318,7 +318,7 @@ inline TCComboBoxWindow::~TCComboBoxWindow()
 // See Also: CB_GETCOUNT
 inline int TCComboBoxWindow::GetCount() const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, CB_GETCOUNT, 0, 0);
 }
 
@@ -335,7 +335,7 @@ inline int TCComboBoxWindow::GetCount() const
 // See Also: TCComboBoxWindow::SetCurSel, CB_GETCURSEL
 inline int TCComboBoxWindow::GetCurSel() const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, CB_GETCURSEL, 0, 0);
 }
 
@@ -360,7 +360,7 @@ inline int TCComboBoxWindow::GetCurSel() const
 // See Also: TCComboBoxWindow::GetCurSel, CB_SETCURSEL
 inline int TCComboBoxWindow::SetCurSel(int nSelect)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, CB_SETCURSEL, nSelect, 0);
 }
 
@@ -416,7 +416,7 @@ inline int TCComboBoxWindow::SetCurSelRaw(DWORD dwItemData)
 // ::GetSystemDefaultLCID, ::GetUserDefaultLCID, CB_GETLOCALE
 inline LCID TCComboBoxWindow::GetLocale() const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (LCID)::SendMessage(m_hWnd, CB_GETLOCALE, 0, 0);
 }
 
@@ -438,7 +438,7 @@ inline LCID TCComboBoxWindow::GetLocale() const
 // See Also: TCComboBoxWindow::GetLocale, CB_SETLOCALE
 inline LCID TCComboBoxWindow::SetLocale(LCID nNewLocale)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (LCID)::SendMessage(m_hWnd, CB_SETLOCALE, (WPARAM)nNewLocale, 0);
 }
 
@@ -456,7 +456,7 @@ inline LCID TCComboBoxWindow::SetLocale(LCID nNewLocale)
 // See Also: TCComboBoxWindow::SetTopIndex, CB_GETTOPINDEX
 inline int TCComboBoxWindow::GetTopIndex() const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, CB_GETTOPINDEX, 0, 0);
 }
 
@@ -479,7 +479,7 @@ inline int TCComboBoxWindow::GetTopIndex() const
 // See Also: TCComboBoxWindow::GetTopIndex, CB_SETTOPINDEX
 inline int TCComboBoxWindow::SetTopIndex(int nIndex)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, CB_SETTOPINDEX, nIndex, 0);
 }
 
@@ -516,7 +516,7 @@ inline int TCComboBoxWindow::SetTopIndex(int nIndex)
 // See Also: TCComboBoxWindow::ResetContent, CB_INITSTORAGE
 inline int TCComboBoxWindow::InitStorage(int nItems, UINT nBytes)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, CB_INITSTORAGE, (WPARAM)nItems, nBytes);
 }
 
@@ -538,7 +538,7 @@ inline int TCComboBoxWindow::InitStorage(int nItems, UINT nBytes)
 // See Also: TCComboBoxWindow::GetHorizontalExtent, CB_SETHORIZONTALEXTENT
 inline void TCComboBoxWindow::SetHorizontalExtent(UINT nExtent)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, CB_SETHORIZONTALEXTENT, nExtent, 0);
 }
 
@@ -556,7 +556,7 @@ inline void TCComboBoxWindow::SetHorizontalExtent(UINT nExtent)
 // See Also: TCComboBoxWindow::SetHorizontalExtent, CB_GETHORIZONTALEXTENT
 inline UINT TCComboBoxWindow::GetHorizontalExtent() const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (UINT)::SendMessage(m_hWnd, CB_GETHORIZONTALEXTENT, 0, 0);
 }
 
@@ -582,7 +582,7 @@ inline UINT TCComboBoxWindow::GetHorizontalExtent() const
 // See Also: TCComboBoxWindow::GetDroppedWidth, CB_SETDROPPEDWIDTH
 inline int TCComboBoxWindow::SetDroppedWidth(UINT nWidth)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, CB_SETDROPPEDWIDTH, nWidth, 0);
 }
 
@@ -605,7 +605,7 @@ inline int TCComboBoxWindow::SetDroppedWidth(UINT nWidth)
 // See Also: TCComboBoxWindow::SetDroppedWidth, CB_GETDROPPEDWIDTH
 inline int TCComboBoxWindow::GetDroppedWidth() const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, CB_GETDROPPEDWIDTH, 0, 0);
 }
 
@@ -624,7 +624,7 @@ inline int TCComboBoxWindow::GetDroppedWidth() const
 // See Also: TCComboBoxWindow::SetEditSel, CB_GETEDITSEL 
 inline DWORD TCComboBoxWindow::GetEditSel() const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return ::SendMessage(m_hWnd, CB_GETEDITSEL, 0, 0);
 }
 
@@ -637,7 +637,7 @@ inline DWORD TCComboBoxWindow::GetEditSel() const
 inline void TCComboBoxWindow::GetEditSel(int& nStartChar, int& nEndChar)
   const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, CB_GETEDITSEL,(WPARAM)&nStartChar,(LPARAM)&nEndChar);
 }
 
@@ -662,7 +662,7 @@ inline void TCComboBoxWindow::GetEditSel(int& nStartChar, int& nEndChar)
 // Return Value: true if the member function is successful; otherwise false.
 inline bool TCComboBoxWindow::SetEditSel(int nStartChar, int nEndChar)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return 0 != ::SendMessage(m_hWnd, CB_SETEDITSEL, 0,
     MAKELONG(nStartChar, nEndChar));
 }
@@ -690,7 +690,7 @@ inline bool TCComboBoxWindow::SetEditSel(int nStartChar, int nEndChar)
 // Return Value: true if the member function is successful; otherwise false.
 inline bool TCComboBoxWindow::LimitText(int nMaxChars)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return 0 != ::SendMessage(m_hWnd, CB_LIMITTEXT, nMaxChars, 0);
 }
 
@@ -714,7 +714,7 @@ inline bool TCComboBoxWindow::LimitText(int nMaxChars)
 // TCTypedComboBox
 inline DWORD TCComboBoxWindow::GetItemDataRaw(int nIndex) const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return ::SendMessage(m_hWnd, CB_GETITEMDATA, nIndex, 0);
 }
 
@@ -737,7 +737,7 @@ inline DWORD TCComboBoxWindow::GetItemDataRaw(int nIndex) const
 // TCTypedComboBox
 inline int TCComboBoxWindow::SetItemDataRaw(int nIndex, DWORD dwItemData)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, CB_SETITEMDATA, nIndex,
     (LPARAM)dwItemData);
 }
@@ -762,7 +762,7 @@ inline int TCComboBoxWindow::SetItemDataRaw(int nIndex, DWORD dwItemData)
 // See Also: TCComboBoxWindow::GetLBTextLen, CB_GETLBTEXT
 inline int TCComboBoxWindow::GetLBText(int nIndex, LPTSTR pszText) const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, CB_GETLBTEXT, nIndex, (LPARAM)pszText);
 }
 
@@ -773,7 +773,7 @@ inline int TCComboBoxWindow::GetLBText(int nIndex, LPTSTR pszText) const
 // when it no longer needs it.
 inline int TCComboBoxWindow::GetLBText(int nIndex, BSTR* pbstr) const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   *pbstr = NULL;
 
   int cchLine = GetLBTextLen(nIndex);
@@ -805,7 +805,7 @@ inline int TCComboBoxWindow::GetLBText(int nIndex, BSTR* pbstr) const
 // See Also: TCComboBoxWindow::GetLBText, CB_GETLBTEXTLEN
 inline int TCComboBoxWindow::GetLBTextLen(int nIndex) const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, CB_GETLBTEXTLEN, nIndex, 0);
 }
 
@@ -839,7 +839,7 @@ inline int TCComboBoxWindow::GetLBTextLen(int nIndex) const
 // CB_SETITEMHEIGHT
 inline int TCComboBoxWindow::SetItemHeight(int nIndex, UINT cyItemHeight)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, CB_SETITEMHEIGHT, nIndex,
     MAKELONG(cyItemHeight, 0));
 }
@@ -865,7 +865,7 @@ inline int TCComboBoxWindow::SetItemHeight(int nIndex, UINT cyItemHeight)
 // CB_GETITEMHEIGHT 
 inline int TCComboBoxWindow::GetItemHeight(int nIndex) const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, CB_GETITEMHEIGHT, nIndex, 0L);
 }
 
@@ -899,7 +899,7 @@ inline int TCComboBoxWindow::GetItemHeight(int nIndex) const
 // See Also: TCComboBoxWindow::GetExtendedUI, CB_SETEXTENDEDUI
 inline int TCComboBoxWindow::SetExtendedUI(bool bExtended )
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, CB_SETEXTENDEDUI, bExtended, 0L);
 }
 
@@ -923,7 +923,7 @@ inline int TCComboBoxWindow::SetExtendedUI(bool bExtended )
 // See Also: TCComboBoxWindow::SetExtendedUI, CB_GETEXTENDEDUI
 inline bool TCComboBoxWindow::GetExtendedUI() const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return 0 != ::SendMessage(m_hWnd, CB_GETEXTENDEDUI, 0, 0L);
 }
 
@@ -941,7 +941,7 @@ inline bool TCComboBoxWindow::GetExtendedUI() const
 // See Also: CB_GETDROPPEDCONTROLRECT
 inline void TCComboBoxWindow::GetDroppedControlRect(LPRECT prect) const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, CB_GETDROPPEDCONTROLRECT, 0, (DWORD)prect);
 }
 
@@ -958,7 +958,7 @@ inline void TCComboBoxWindow::GetDroppedControlRect(LPRECT prect) const
 // CB_GETDROPPEDSTATE
 inline bool TCComboBoxWindow::GetDroppedState() const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return 0 != ::SendMessage(m_hWnd, CB_GETDROPPEDSTATE, 0, 0L);
 }
 
@@ -985,7 +985,7 @@ inline bool TCComboBoxWindow::GetDroppedState() const
 // See Also: TCComboBoxWindow::GetDroppedState, CB_SHOWDROPDOWN 
 inline void TCComboBoxWindow::ShowDropDown(bool bShowIt)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, CB_SHOWDROPDOWN, bShowIt, 0);
 }
 
@@ -1015,7 +1015,7 @@ inline void TCComboBoxWindow::ShowDropDown(bool bShowIt)
 // TCComboBoxWindow::DeleteString, CB_ADDSTRING 
 inline int TCComboBoxWindow::AddString(LPCTSTR pszString)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, CB_ADDSTRING, 0, (LPARAM)pszString);
 }
 
@@ -1049,7 +1049,7 @@ inline int TCComboBoxWindow::AddString(LPCTSTR pszString)
 inline int TCComboBoxWindow::AddStringItemRaw(LPCTSTR pszString,
   DWORD dwItemData)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   int i = AddString(pszString);
   return (i >= 0 && SetItemDataRaw(i, dwItemData) >= 0) ? i : CB_ERR;
 }
@@ -1072,7 +1072,7 @@ inline int TCComboBoxWindow::AddStringItemRaw(LPCTSTR pszString,
 // TCComboBoxWindow::AddStringItemRaw, CB_DELETESTRING 
 inline int TCComboBoxWindow::DeleteString(UINT nIndex)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, CB_DELETESTRING, nIndex, 0);
 }
 
@@ -1099,7 +1099,7 @@ inline int TCComboBoxWindow::DeleteString(UINT nIndex)
 // TCComboBoxWindow::ResetContent, CB_INSERTSTRING 
 inline int TCComboBoxWindow::InsertString(int nIndex, LPCTSTR pszString)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, CB_INSERTSTRING, nIndex,
     (LPARAM)pszString);
 }
@@ -1131,7 +1131,7 @@ inline int TCComboBoxWindow::InsertString(int nIndex, LPCTSTR pszString)
 inline int TCComboBoxWindow::InsertStringItemRaw(int nIndex,
   LPCTSTR pszString, DWORD dwItemData)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   int i = InsertString(nIndex, pszString);
   return (i >= 0 && SetItemDataRaw(i, dwItemData) >= 0) ? i : CB_ERR;
 }
@@ -1145,7 +1145,7 @@ inline int TCComboBoxWindow::InsertStringItemRaw(int nIndex,
 // See Also: CB_RESETCONTENT
 inline void TCComboBoxWindow::ResetContent()
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, CB_RESETCONTENT, 0, 0);
 }
 
@@ -1182,7 +1182,7 @@ inline void TCComboBoxWindow::ResetContent()
 // See Also: CB_DIR
 inline int TCComboBoxWindow::Dir(UINT attr, LPCTSTR pszWildCard)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, CB_DIR, attr, (LPARAM)pszWildCard);
 }
 
@@ -1215,7 +1215,7 @@ inline int TCComboBoxWindow::Dir(UINT attr, LPCTSTR pszWildCard)
 inline int TCComboBoxWindow::FindString(int nStartAfter, LPCTSTR pszString)
   const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, CB_FINDSTRING, nStartAfter,
     (LPARAM)pszString);
 }
@@ -1256,7 +1256,7 @@ inline int TCComboBoxWindow::FindString(int nStartAfter, LPCTSTR pszString)
 // CB_SELECTSTRING 
 inline int TCComboBoxWindow::SelectString(int nStartAfter, LPCTSTR pszString)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, CB_SELECTSTRING, nStartAfter,
     (LPARAM)pszString);
 }
@@ -1293,7 +1293,7 @@ inline int TCComboBoxWindow::SelectString(int nStartAfter, LPCTSTR pszString)
 inline int TCComboBoxWindow::FindStringExact(int nIndexStart,
   LPCTSTR pszFind) const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, CB_FINDSTRINGEXACT, nIndexStart,
     (LPARAM)pszFind);
 }
@@ -1321,7 +1321,7 @@ inline int TCComboBoxWindow::FindStringExact(int nIndexStart,
 inline int TCComboBoxWindow::FindItemDataRaw(int nIndexStart, DWORD dwFind)
   const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   int nCount = GetCount();
   for (int i = nIndexStart; i < nCount; ++i)
     if (GetItemDataRaw(i) == dwFind)
@@ -1352,7 +1352,7 @@ inline int TCComboBoxWindow::FindItemDataRaw(int nIndexStart, DWORD dwFind)
 // See Also: TCComboBoxWindow::FindItemDataRaw, TCTypedComboBox
 inline int TCComboBoxWindow::SelectItemDataRaw(int nIndexStart, DWORD dwFind)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return SetCurSel(FindItemDataRaw(nIndexStart, dwFind));
 }
 
@@ -1370,7 +1370,7 @@ inline int TCComboBoxWindow::SelectItemDataRaw(int nIndexStart, DWORD dwFind)
 // TCComboBoxWindow::Paste, WM_CLEAR
 inline void TCComboBoxWindow::Clear()
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, WM_CLEAR, 0, 0);
 }
 
@@ -1385,7 +1385,7 @@ inline void TCComboBoxWindow::Clear()
 // TCComboBoxWindow::Paste, WM_COPY
 inline void TCComboBoxWindow::Copy()
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, WM_COPY, 0, 0);
 }
 
@@ -1405,7 +1405,7 @@ inline void TCComboBoxWindow::Copy()
 // TCComboBoxWindow::Paste, WM_CUT
 inline void TCComboBoxWindow::Cut()
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, WM_CUT, 0, 0);
 }
 
@@ -1422,7 +1422,7 @@ inline void TCComboBoxWindow::Cut()
 // TCComboBoxWindow::Cut, WM_PASTE
 inline void TCComboBoxWindow::Paste()
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, WM_PASTE, 0, 0);
 }
 
@@ -1436,7 +1436,7 @@ inline void TCComboBoxWindow::Paste()
 // owner-draw functionality, use TCSelfDrawComboBox.
 inline bool TCComboBoxWindow::DrawItem(DRAWITEMSTRUCT* pdis)
 {
-  assert(false);
+  ZAssert(false);
   return false;
 }
 
@@ -1446,7 +1446,7 @@ inline bool TCComboBoxWindow::DrawItem(DRAWITEMSTRUCT* pdis)
 // owner-draw functionality, use TCSelfDrawComboBox.
 inline bool TCComboBoxWindow::MeasureItem(MEASUREITEMSTRUCT* pmis)
 {
-  assert(false);
+  ZAssert(false);
   return false;
 }
 
@@ -1457,7 +1457,7 @@ inline bool TCComboBoxWindow::MeasureItem(MEASUREITEMSTRUCT* pmis)
 inline bool TCComboBoxWindow::CompareItem(COMPAREITEMSTRUCT* pcis,
   int* pnResult)
 {
-  assert(false);
+  ZAssert(false);
   *pnResult = 0;
   return false;
 }
@@ -1483,11 +1483,11 @@ inline bool TCComboBoxWindow::DeleteItem(DELETEITEMSTRUCT* pdis)
   ///////////////////////////////////////////////////////////////////////////
   // Remarks: Under _DEBUG builds, the template parameter, /I/, is tested to
   // ensure that its size is less than or equal to sizeof(DWORD). If not,
-  // the assert macro will indicate this.
+  // the ZAssert macro will indicate this.
   template <class I>
   inline TCTypedComboBox<I>::TCTypedComboBox()
   {
-    assert(sizeof(I) <= sizeof(DWORD));
+    ZAssert(sizeof(I) <= sizeof(DWORD));
   }
 #endif // _DEBUG
 
@@ -1790,8 +1790,8 @@ inline BOOL TCSelfDrawComboBox<T, I>::SubclassWindow(HWND hWnd)
 // graphics device interface (GDI) objects selected for the display context
 // supplied in /pdis/.
 //
-// The default implementation assert's under _DEBUG builds and returns
-// false. The assert indicates that the method has not been overridden.
+// The default implementation ZAssert's under _DEBUG builds and returns
+// false. The ZAssert indicates that the method has not been overridden.
 //
 // Parameters:
 //   pdis - A pointer to a *DRAWITEMSTRUCT* structure that contains
@@ -1809,7 +1809,7 @@ inline bool TCSelfDrawComboBox<T, I>::DrawItem(DRAWITEMSTRUCT* pdis,
 {
   #ifdef _DEBUG
     bool DrawItemHasNotBeenOverriddenInDerivedClass = false;
-    assert(DrawItemHasNotBeenOverriddenInDerivedClass);
+    ZAssert(DrawItemHasNotBeenOverriddenInDerivedClass);
   #endif
   return false;
 }
@@ -1828,8 +1828,8 @@ inline bool TCSelfDrawComboBox<T, I>::DrawItem(DRAWITEMSTRUCT* pdis,
 // member function for each item in the list box. Otherwise, this member is
 // called only once.
 //
-// The default implementation assert's under _DEBUG builds and returns
-// false. The assert indicates that the method has not been overridden.
+// The default implementation ZAssert's under _DEBUG builds and returns
+// false. The ZAssert indicates that the method has not been overridden.
 //
 // Parameters:
 //   pmis - A pointer to a *MEASUREITEMSTRUCT* structure.
@@ -1845,7 +1845,7 @@ inline bool TCSelfDrawComboBox<T, I>::MeasureItem(MEASUREITEMSTRUCT* pmis,
 {
   #ifdef _DEBUG
     bool MeasureItemHasNotBeenOverriddenInDerivedClass = false;
-    assert(MeasureItemHasNotBeenOverriddenInDerivedClass);
+    ZAssert(MeasureItemHasNotBeenOverriddenInDerivedClass);
   #endif
   return false;
 }
@@ -1860,8 +1860,8 @@ inline bool TCSelfDrawComboBox<T, I>::MeasureItem(MEASUREITEMSTRUCT* pmis,
 // the *CBS_SORT* style, you must override this member function to assist the
 // framework in sorting new items added to the list box.
 //
-// The default implementation assert's under _DEBUG builds and returns
-// false. The assert indicates that the method has not been overridden.
+// The default implementation ZAssert's under _DEBUG builds and returns
+// false. The ZAssert indicates that the method has not been overridden.
 //
 // The /pnResult/ parameter should be set to indicate the relative position
 // of the two items described in the *COMPAREITEMSTRUCT* structure and the
@@ -1894,7 +1894,7 @@ inline bool TCSelfDrawComboBox<T, I>::CompareItem(COMPAREITEMSTRUCT* pcis,
 {
   #ifdef _DEBUG
     bool CompareItemHasNotBeenOverriddenInDerivedClass = false;
-    assert(CompareItemHasNotBeenOverriddenInDerivedClass);
+    ZAssert(CompareItemHasNotBeenOverriddenInDerivedClass);
   #endif
   *pnResult = 0;
   return false;
@@ -1908,8 +1908,8 @@ inline bool TCSelfDrawComboBox<T, I>::CompareItem(COMPAREITEMSTRUCT* pcis,
 // TCSelfDrawComboBox object or destroys the combo box. Override this
 // function to release any data associated with the deleted item.
 //
-// The default implementation assert's under _DEBUG builds and returns
-// false. The assert indicates that the method has not been overridden.
+// The default implementation ZAssert's under _DEBUG builds and returns
+// false. The ZAssert indicates that the method has not been overridden.
 //
 // Parameters:
 //   pdis - A pointer to a Windows *DELETEITEMSTRUCT* structure that
@@ -1926,7 +1926,7 @@ inline bool TCSelfDrawComboBox<T, I>::DeleteItem(DELETEITEMSTRUCT* pdis,
 {
   #ifdef _DEBUG
     bool DeleteItemHasNotBeenOverriddenInDerivedClass = false;
-    assert(DeleteItemHasNotBeenOverriddenInDerivedClass);
+    ZAssert(DeleteItemHasNotBeenOverriddenInDerivedClass);
   #endif
   return false;
 }

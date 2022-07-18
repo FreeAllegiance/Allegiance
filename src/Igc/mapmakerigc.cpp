@@ -169,8 +169,8 @@ void    ImapMakerIGC::Create(Time                   now,
                              const MissionParams*   pmp,
                              ImissionIGC*           pmission)
 {
-    assert (pmp->nTeams >= 2);
-    assert (pmp->nTeams <= c_cSidesMax);
+    ZAssert (pmp->nTeams >= 2);
+    ZAssert (pmp->nTeams <= c_cSidesMax);
 
 #define MakeMap(x)  case c_mm##x:                                   \
                     {                                               \
@@ -197,7 +197,7 @@ void    ImapMakerIGC::Create(Time                   now,
         MakeMap(EastWest)
         MakeMap(LargeSplit)
         default:
-            assert (false);
+            ZAssert (false);
     }
 #undef MakeMap
 }
@@ -227,7 +227,7 @@ static bool    FindPath(IclusterIGC*    p2,
         return false;
 
     IclusterIGC*    p1 = pclustersAdjacent[*pStart];
-    assert (p1);
+    ZAssert (p1);
 
     if (p1 == p2)
         return true;
@@ -305,7 +305,7 @@ static bool    EnoughPaths(IclusterIGC**            pclusterBackTrack,
         SectorID    id = pcluster->GetObjectID();
         do
         {
-            assert (pclusterBackTrack[id] != NULL);
+            ZAssert (pclusterBackTrack[id] != NULL);
 
             pcluster = pclusterBackTrack[id];
             id = pcluster->GetObjectID();
@@ -343,7 +343,7 @@ VOID CmapMakerIGC::GenerateMission(Time now,
 {
     CMapData MapData;
 
-    assert(NULL == ImapMakerIGC::IsValid(pmp));
+    ZAssert(NULL == ImapMakerIGC::IsValid(pmp));
 
     MapData.SetTime(now);
     MapData.SetMissionParams(pmp);
@@ -372,7 +372,7 @@ VOID CmapMakerIGC::GenerateMission(Time now,
                 float   nWarps = (float)(pwarps->n());
 
                 const int c_maxWarps = 10;
-                assert (pwarps->n() <= c_maxWarps);
+                ZAssert (pwarps->n() <= c_maxWarps);
 
                 float   offset[c_maxWarps] = {0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f};
                 float   displacement;
@@ -439,7 +439,7 @@ VOID CmapMakerIGC::GenerateMission(Time now,
                 if ((pwarp->GetObjectID() < pwarp->GetDestination()->GetObjectID()) &&
                     (randomInt(0, pmp->iRandomEncounters) > 1))
                 {
-                    assert (nWarps < pwarpList->n());
+                    ZAssert (nWarps < pwarpList->n());
                     pwarps[nWarps++] = pwarp;
                 }
             }
@@ -525,11 +525,11 @@ VOID CmapMakerIGC::GenerateSides(CMapData * pMapData)
                                                 OT_side,
                                                 &ds,
                                                 sizeof(ds));
-        assert (o);
+        ZAssert (o);
         o->Release();
     }
 
-    assert (pMapData->GetMission()->GetSides()->n() == pMapData->GetTeams());
+    ZAssert (pMapData->GetMission()->GetSides()->n() == pMapData->GetTeams());
 }
 */
 
@@ -587,7 +587,7 @@ IclusterIGC * CmapMakerIGC::GenerateTeamCluster(CMapData * pMapData,
                                                     OT_cluster,
                                                     &dc,
                                                     sizeof(dc));
-    assert(o);
+    ZAssert(o);
     return(o);
 }
 
@@ -639,7 +639,7 @@ IclusterIGC * CmapMakerIGC::GenerateNeutralCluster(CMapData * pMapData,
                                                     OT_cluster,
                                                     &dc,
                                                     sizeof(dc));
-    assert(o);
+    ZAssert(o);
     return(o);
 }
 
@@ -697,7 +697,7 @@ VOID CmapMakerIGC::GenerateWarp(CMapData * pMapData,
                                                        OT_warp,
                                                        pdw,
                                                        sizeof(*pdw));
-    assert(o);
+    ZAssert(o);
     o->Release();
 }
 
@@ -803,7 +803,7 @@ VOID CmapMakerIGC::LinkClusters(CMapData* pMapData,
         break;
 
         default:
-            assert (false);
+            ZAssert (false);
     }
 
     //
@@ -905,7 +905,7 @@ VOID CmapMakerIGC::GenerateStarbase(CMapData*       pMapData,
 
     SideID      sideID = pMapData->GetClusterSide(pcluster->GetObjectID());
     IsideIGC*   pSide = pMapData->GetMission()->GetSide(sideID);
-    assert(pSide);
+    ZAssert(pSide);
 
     ds.clusterID = pcluster->GetObjectID();
     ds.position = Vector::GetZero();
@@ -924,7 +924,7 @@ VOID CmapMakerIGC::GenerateStarbase(CMapData*       pMapData,
     ds.stationID = pMapData->GetMission()->GenerateNewStationID();
 
     IstationTypeIGC*    pst = pSide->GetCivilization()->GetInitialStationType();
-    assert (pst);
+    ZAssert (pst);
     //Allow for an upgrade to the station being available
     pst = pst->GetSuccessorStationType(pSide);
 
@@ -936,7 +936,7 @@ VOID CmapMakerIGC::GenerateStarbase(CMapData*       pMapData,
                                         OT_station,
                                         &ds,
                                         sizeof(ds));
-    assert(o);
+    ZAssert(o);
     o->Release();
 }
 
@@ -1510,7 +1510,7 @@ VOID CmapMakerHiHigherIGC::LinkClusters(CMapData * pMapData)
 
             if (mMMID == c_mmInsideOut)
             {
-                assert (pMapData->GetTeamClustersPerTeam() == 1);
+                ZAssert (pMapData->GetTeamClustersPerTeam() == 1);
                 sID1 = sIDp;
                 sIDp = sID0 + 1;
                 sIDn = ((i+1)%pMapData->GetTeams()) * pMapData->GetClustersPerTeam() + 1 + 1;
@@ -1746,7 +1746,7 @@ VOID CmapMakerBrawlIGC::PopulateCluster(CMapData*    pMapData,
         DataStationIGC ds;
 
         IsideIGC*  pSide = pMapData->GetMission()->GetSide(sideID);
-        assert(pSide);
+        ZAssert(pSide);
 
         ds.clusterID = sID;
         {
@@ -1772,7 +1772,7 @@ VOID CmapMakerBrawlIGC::PopulateCluster(CMapData*    pMapData,
         ds.stationID = pMapData->GetMission()->GenerateNewStationID();
 
         IstationTypeIGC*    pst = pSide->GetCivilization()->GetInitialStationType();
-        assert (pst);
+        ZAssert (pst);
 
         ds.stationTypeID = pst->GetObjectID();
         strcpy(ds.name, pst->GetName());
@@ -1781,7 +1781,7 @@ VOID CmapMakerBrawlIGC::PopulateCluster(CMapData*    pMapData,
                                                                                        OT_station,
                                                                                        &ds,
                                                                                        sizeof(ds));
-        assert(pstation);
+        ZAssert(pstation);
 
         pstation->Release();
 
@@ -2302,7 +2302,7 @@ VOID CmapMakerGridIGC::GenerateTeamClusterScreenPosition(
         flTheta = (float) (2.0 * pi * sTeam / pMapData->GetTeams());
 
         static const float  radii[c_cSidesMax + 1] = {0.0f, 0.0f, 0.55f, 0.6f, 0.65f, 0.70f, 0.75f};
-        assert (pMapData->GetTeams() <= c_cSidesMax);
+        ZAssert (pMapData->GetTeams() <= c_cSidesMax);
         flRadius = radii[pMapData->GetTeams()];
     }
     else
@@ -2312,7 +2312,7 @@ VOID CmapMakerGridIGC::GenerateTeamClusterScreenPosition(
         static const float  radii0[c_cSidesMax + 1] = {0.0f, 0.0f, 0.475f, 0.525f, 0.575f, 0.625f, 0.675f};
         static const float  radii1[c_cSidesMax + 1] = {0.0f, 0.0f, 0.625f, 0.675f, 0.725f, 0.775f, 0.825f};
 
-        assert (pMapData->GetTeams() <= c_cSidesMax);
+        ZAssert (pMapData->GetTeams() <= c_cSidesMax);
         flRadius = (sID == 0)
                    ? radii0[pMapData->GetTeams()]
                    : radii1[pMapData->GetTeams()];
@@ -2488,9 +2488,9 @@ VOID CmapMakerEastWestIGC::GenerateNeutralClusterScreenPosition(
 
 VOID CmapMakerEastWestIGC::LinkClusters(CMapData * pMapData)
 {
-    assert (pMapData->GetTeams() == 2);
-    assert (pMapData->GetClustersPerTeam() == 13);
-    assert (pMapData->GetTeamClustersPerTeam() == 2);
+    ZAssert (pMapData->GetTeams() == 2);
+    ZAssert (pMapData->GetClustersPerTeam() == 13);
+    ZAssert (pMapData->GetTeamClustersPerTeam() == 2);
 
     for (SideID i = 0; (i < 2); i++)
     {

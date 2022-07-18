@@ -116,7 +116,15 @@ void CD3DDevice9::ResetReferencedResources( )
 HRESULT CD3DDevice9::CreateD3D9( CLogFile * pLogFile )
 {
 	// Create the D3D9 interface.
-	m_sD3DDev9.pD3D9 = Direct3DCreate9( D3D_SDK_VERSION ); //Fix memory leak -Imago 8/2/09
+#ifdef ALLEG_D9EX
+    HRESULT hr = Direct3DCreate9Ex( D3D_SDK_VERSION, &m_sD3DDev9.pD3D9 );
+#else
+    m_sD3DDev9.pD3D9 = Direct3DCreate9(D3D_SDK_VERSION);
+    HRESULT hr = D3DERR_NOTAVAILABLE;
+    if (m_sD3DDev9.pD3D9 != NULL) {
+        hr = S_OK;
+    }
+#endif
 	HMODULE hRast = LoadLibrary("rgb9rast.dll");
 	if (hRast == 0) {
 		hRast = LoadLibrary("rgb9rast_1.dll");
@@ -141,7 +149,7 @@ HRESULT CD3DDevice9::CreateD3D9( CLogFile * pLogFile )
 	}
 	
     ZAssert( m_sD3DDev9.pD3D9 != NULL );
-	if( m_sD3DDev9.pD3D9 == NULL )
+	if(hr != S_OK)
 	{
 		pLogFile->OutputString( "Direct3DCreate9 failed.\n" );
 		return E_FAIL;
@@ -265,12 +273,7 @@ HRESULT CD3DDevice9::LastChanceCreateDevice(HWND hParentWindow, class CLogFile *
 	m_sD3DDev9.d3dPresParams.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
 	m_sD3DDev9.d3dPresParams.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
 
-	hr = m_sD3DDev9.pD3D9->CreateDevice(m_sDevSetupParams.iAdapterID,
-		D3DDEVTYPE_HAL, 
-		hParentWindow,
-		D3DCREATE_HARDWARE_VERTEXPROCESSING,
-		&m_sD3DDev9.d3dPresParams,
-		&m_sD3DDev9.pD3DDevice);
+    hr = this->CreateDevice(hParentWindow, D3DDEVTYPE_HAL, D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED);
 
 	if (SUCCEEDED(hr))
 	{
@@ -280,28 +283,43 @@ HRESULT CD3DDevice9::LastChanceCreateDevice(HWND hParentWindow, class CLogFile *
 	}
 	else
 	{
-		hr = m_sD3DDev9.pD3D9->CreateDevice(m_sDevSetupParams.iAdapterID,
-			D3DDEVTYPE_HAL,
-			hParentWindow,
-			D3DCREATE_SOFTWARE_VERTEXPROCESSING,
-			&m_sD3DDev9.d3dPresParams,
-			&m_sD3DDev9.pD3DDevice);
-	}
+        hr = this->CreateDevice(hParentWindow, D3DDEVTYPE_HAL, D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED);
 
-	if (SUCCEEDED(hr))
-	{
-		m_sD3DDev9.bHardwareVP = false;
-		m_sD3DDev9.bPureDevice = false;
-		pLogFile->OutputString("LastChanceCreateDevice: SWVP device created.\n");
-	}
-	else
-	{
-		pLogFile->OutputString("LastChanceCreateDevice: Failed!\n");
+        if (SUCCEEDED(hr))
+        {
+            m_sD3DDev9.bHardwareVP = false;
+            m_sD3DDev9.bPureDevice = false;
+            pLogFile->OutputString("LastChanceCreateDevice: SWVP device created.\n");
+        }
+        else
+        {
+            pLogFile->OutputString("LastChanceCreateDevice: Failed!\n");
+        }
 	}
 
 	return hr;
 }
 
+HRESULT CD3DDevice9::CreateDevice(HWND hParentWindow, D3DDEVTYPE deviceType, DWORD flags)
+{
+ALLEG_D9EX_IF(
+    HRESULT hr = m_sD3DDev9.pD3D9->CreateDeviceEx(m_sDevSetupParams.iAdapterID,
+        deviceType,
+        hParentWindow,
+        flags,
+        &m_sD3DDev9.d3dPresParams,
+        NULL, //m_sD3DDev9.bIsWindowed ? NULL : &m_sD3DDev9.pCurrentMode->mode,
+        &m_sD3DDev9.pD3DDevice);
+,
+    HRESULT hr = m_sD3DDev9.pD3D9->CreateDevice(m_sDevSetupParams.iAdapterID,
+        deviceType,
+        hParentWindow,
+        D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED,
+        &m_sD3DDev9.d3dPresParams,
+        &m_sD3DDev9.pD3DDevice);
+)
+    return hr;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // InitialiseDevice()
@@ -334,7 +352,7 @@ HRESULT CD3DDevice9::CreateDevice( HWND hParentWindow, CLogFile * pLogFile )
 	m_sD3DDev9.d3dPresParams.BackBufferWidth			= m_sD3DDev9.pCurrentMode->mode.Width;
 	m_sD3DDev9.d3dPresParams.BackBufferHeight			= m_sD3DDev9.pCurrentMode->mode.Height;
 	if (m_sD3DDev9.pCurrentMode->d3dMultiSampleSetting == D3DMULTISAMPLE_NONE) {
-		m_sD3DDev9.d3dPresParams.SwapEffect = D3DSWAPEFFECT_FLIP;
+		m_sD3DDev9.d3dPresParams.SwapEffect = D3DSWAPEFFECT_DISCARD;
 		m_sD3DDev9.d3dPresParams.Flags	= D3DPRESENTFLAG_DISCARD_DEPTHSTENCIL | D3DPRESENTFLAG_LOCKABLE_BACKBUFFER; //Imago 7/12/09 enabled
 	} else {
 		m_sD3DDev9.d3dPresParams.SwapEffect	= D3DSWAPEFFECT_DISCARD;
@@ -378,18 +396,20 @@ HRESULT CD3DDevice9::CreateDevice( HWND hParentWindow, CLogFile * pLogFile )
 	}
 // - end of NVidia PerfHUD specific
 
-	dwCreationFlags = D3DCREATE_PUREDEVICE | D3DCREATE_HARDWARE_VERTEXPROCESSING;
+	dwCreationFlags = D3DCREATE_PUREDEVICE | D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED;
 
 	// ATI Radeon 9600 (RV350) specific, find out why the TMeshGeo DrawTriangles are failing completley, 
 	// I gather this is (related to) the Intel 8xx issue.  --Imago 7/28/09
 	if (Identifier.VendorId == 0x1002 && Identifier.DeviceId == 0x4151 ) {
-		dwCreationFlags = D3DCREATE_SOFTWARE_VERTEXPROCESSING;
+        debugf("Problematic device detected: Setting D3DCREATE_SOFTWARE_VERTEXPROCESSING");
+		dwCreationFlags = D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED;
 		bForceSWVP = true;
 	}
 
     // SiS 661FX/M661FX/760/741/M760/M741 specific --Imago 11/30/09
 	if (Identifier.VendorId == 0x1039 && Identifier.DeviceId == 0x6330 ) {
-		dwCreationFlags = D3DCREATE_SOFTWARE_VERTEXPROCESSING;
+        debugf("Problematic device detected: Setting D3DCREATE_SOFTWARE_VERTEXPROCESSING");
+		dwCreationFlags = D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED;
 		bForceSWVP = true;
 	}
 
@@ -404,16 +424,7 @@ HRESULT CD3DDevice9::CreateDevice( HWND hParentWindow, CLogFile * pLogFile )
 	// BT - Do not ship this one, this is just for Xynth to test!
 	//hr = LastChanceCreateDevice(hParentWindow, pLogFile);
 
-
-	hr = m_sD3DDev9.pD3D9->CreateDevice(	m_sDevSetupParams.iAdapterID,
-											DeviceType, //D3DDEVTYPE_HAL, changed for NVidia PerfHUD
-											hParentWindow,
-											dwCreationFlags,
-											&m_sD3DDev9.d3dPresParams,
-											&m_sD3DDev9.pD3DDevice );  //Fix memory leak -Imago 8/2/09
-
-
-
+    hr = this->CreateDevice(hParentWindow, DeviceType, dwCreationFlags);
 
 	// Did we create a valid device?
 	// 29.07.08 - Courtesy of Imago, it appears that some device drivers (such as Intel Integrated chipset)
@@ -427,13 +438,10 @@ HRESULT CD3DDevice9::CreateDevice( HWND hParentWindow, CLogFile * pLogFile )
 		//if( hr == D3DERR_NOTAVAILABLE )
 		{
 			// No, try a non-pure device.
-			dwCreationFlags = D3DCREATE_HARDWARE_VERTEXPROCESSING;
-			hr = m_sD3DDev9.pD3D9->CreateDevice(	m_sDevSetupParams.iAdapterID,
-												DeviceType, //D3DDEVTYPE_HAL, changed for NVidia PerfHUD,
-												hParentWindow,
-												dwCreationFlags,
-												&m_sD3DDev9.d3dPresParams,
-												&m_sD3DDev9.pD3DDevice );
+			dwCreationFlags = D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED;
+
+            hr = this->CreateDevice(hParentWindow, DeviceType, dwCreationFlags);
+
 			if( hr != D3D_OK )
 			{
 				pLogFile->OutputStringV( "HWVP device creation failed: 0x%08x.\n", hr );
@@ -441,13 +449,10 @@ HRESULT CD3DDevice9::CreateDevice( HWND hParentWindow, CLogFile * pLogFile )
 				// Still no joy, try a software vp device.
 				//if( hr == D3DERR_NOTAVAILABLE )
 				{
-					dwCreationFlags = D3DCREATE_SOFTWARE_VERTEXPROCESSING;
-					hr = m_sD3DDev9.pD3D9->CreateDevice(	m_sDevSetupParams.iAdapterID,
-														DeviceType, //D3DDEVTYPE_HAL, changed for NVidia PerfHUD,
-														hParentWindow,
-														dwCreationFlags,
-														&m_sD3DDev9.d3dPresParams,
-														&m_sD3DDev9.pD3DDevice );
+					dwCreationFlags = D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED;
+
+                    hr = this->CreateDevice(hParentWindow, DeviceType, dwCreationFlags);
+
 					if( hr == D3D_OK )
 					{
 						m_sD3DDev9.bHardwareVP = false;
@@ -457,12 +462,9 @@ HRESULT CD3DDevice9::CreateDevice( HWND hParentWindow, CLogFile * pLogFile )
 					else
 					{
 						pLogFile->OutputStringV( "SWVP device creation failed: 0x%08x.\n", hr );
-						hr = m_sD3DDev9.pD3D9->CreateDevice(	m_sDevSetupParams.iAdapterID,
-														D3DDEVTYPE_SW, //D3DDEVTYPE_HAL, changed for NVidia PerfHUD,
-														hParentWindow,
-														dwCreationFlags,
-														&m_sD3DDev9.d3dPresParams,
-														&m_sD3DDev9.pD3DDevice );
+
+                        hr = this->CreateDevice(hParentWindow, D3DDEVTYPE_SW, dwCreationFlags);
+
 						if( hr == D3D_OK )
 						{
 							m_sD3DDev9.bHardwareVP = false;
@@ -665,6 +667,8 @@ HRESULT	CD3DDevice9::ResetDevice(	bool	bWindowed,
 	HRESULT hr				= D3D_OK;
 	bool bResetRequired		= false;
 
+    debugf("Device: Resetting device");
+
 	if( bWindowed == true )
 	{
 		m_sD3DDev9.pCurrentMode = &m_sDevSetupParams.sWindowedMode;
@@ -748,6 +752,8 @@ HRESULT	CD3DDevice9::ResetDevice(	bool	bWindowed,
 		m_sD3DDev9.d3dPresParams.MultiSampleType = (D3DMULTISAMPLE_TYPE)g_DX9Settings.m_dwAA;
 		m_sD3DDev9.d3dPresParams.AutoDepthStencilFormat = m_sD3DDev9.pCurrentMode->fmtDepthStencil;
 
+        debugf("Device: Clearing resources");
+
 		ResetReferencedResources( );
 
 		// Currently, render targets and dynamic buffers reside in the the default pool.
@@ -784,7 +790,7 @@ HRESULT	CD3DDevice9::ResetDevice(	bool	bWindowed,
 		}
 
 		if (m_sDevSetupParams.bAntiAliased == false) {
-			m_sD3DDev9.d3dPresParams.SwapEffect = D3DSWAPEFFECT_FLIP;
+			m_sD3DDev9.d3dPresParams.SwapEffect = D3DSWAPEFFECT_DISCARD;
 			m_sD3DDev9.d3dPresParams.Flags	= D3DPRESENTFLAG_DISCARD_DEPTHSTENCIL | D3DPRESENTFLAG_LOCKABLE_BACKBUFFER; //Imago 7/12/09 enabled  8/10 removed Clip #227
 		} else {
 			m_sD3DDev9.d3dPresParams.SwapEffect	= D3DSWAPEFFECT_DISCARD;
@@ -815,7 +821,13 @@ HRESULT	CD3DDevice9::ResetDevice(	bool	bWindowed,
 
 		m_sDevSetupParams.dwMaxTextureSize = 256 << g_DX9Settings.m_iMaxTextureSize;
 		m_sDevSetupParams.maxTextureSize = (CD3DDevice9::EMaxTextureSize) g_DX9Settings.m_iMaxTextureSize;
-		//
+
+#ifdef ALLEG_D9EX
+        // this only has an effect in fullscreen mode
+        hr = m_sD3DDev9.pD3DDevice->SetMaximumFrameLatency(1);
+#endif
+
+        debugf("Device: Performing reset");
 
 		// Perform the reset.
 		hr = m_sD3DDev9.pD3DDevice->Reset( &m_sD3DDev9.d3dPresParams ); //imago changed 6/29/09 to fall thru  //Fix memory leak -Imago 8/2/09
@@ -836,7 +848,12 @@ HRESULT	CD3DDevice9::ResetDevice(	bool	bWindowed,
 				"%s [%s, %s]", m_sD3DDev9.d3dAdapterID.Description,
 				m_sDevSetupParams.szDevType,
 				m_sDevSetupParams.szAAType );
-		}
+
+            debugf("Device: Reset complete");
+        }
+        else {
+            debugf("Device: Reset failed");
+        }
 	}
 
 	return hr;
@@ -958,7 +975,7 @@ HRESULT CD3DDevice9::SetRTDepthStencil( )
 }
 
 // BT - 10/17 - If the D3D device becomes null, re-create it to get it up and rolling again.
-const LPDIRECT3DDEVICE9 CD3DDevice9::Device()
+const ALLEG_D9EX_IF(LPDIRECT3DDEVICE9EX, LPDIRECT3DDEVICE9) CD3DDevice9::Device()
 { 
 	if (m_sD3DDev9.pD3DDevice == nullptr)
 	{

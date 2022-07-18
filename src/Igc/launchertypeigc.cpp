@@ -21,7 +21,7 @@ HRESULT         ClauncherTypeIGC::Initialize(ImissionIGC*   pMission,
                                              const void*    data,
                                              int            dataSize)
 {
-    assert (pMission);
+    ZAssert (pMission);
     m_pMission = pMission;
 
     ZRetailAssert (data && (dataSize >= sizeof(DataLauncherTypeIGC)));
@@ -42,7 +42,7 @@ HRESULT         ClauncherTypeIGC::Initialize(ImissionIGC*   pMission,
                 m_pptSuccessor = pMission->GetPartType(m_data.successorPartID);
 				if (m_data.successorPartID != 238) // mmf splat added this so debug build will run with dn 04.50 until Noir fixes it
 					                               // 238 is assault expansion, it looks like all the assault ships are missing a Def = (in ICE)
-                assert (m_pptSuccessor);
+                ZAssert (m_pptSuccessor);
             }
 
             pMission->AddPartType(this);
@@ -55,7 +55,7 @@ HRESULT         ClauncherTypeIGC::Initialize(ImissionIGC*   pMission,
 
 void        ClauncherTypeIGC::Terminate(void)
 {
-    assert (m_pMission);
+    ZAssert (m_pMission);
 
     if (m_pexpendabletype != NULL)
     {

@@ -108,7 +108,7 @@ void CBitArray::ClearColumn(int y)
 
 void CBitArray::Dump(int min, int max)
 {
-  assert (max >= min);
+  ZAssert (max >= min);
   int x, y;
   int iChar;
   int cRowsCols = max - min + 1;

@@ -379,7 +379,7 @@ STDMETHODIMP CAdminServer::put_LobbyServer(BSTR bstrLobbyServer)
   {
     // Disconnect from current lobby, if any
     DisconnectFromLobby();
-    assert(!g.fmLobby.IsConnected());
+    ZAssert(!g.fmLobby.IsConnected());
     g.strLobbyServer.SetEmpty();
   }
 

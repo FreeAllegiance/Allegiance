@@ -59,7 +59,7 @@ WorkerThread::~WorkerThread()
 // between each iteration.  
 void WorkerThread::StartThread(int nPriority, int nSleepTime) 
 {
-    assert(!m_hEventExit);
+    ZAssert(!m_hEventExit);
 
     if (!m_hEventExit)
     {

@@ -17,7 +17,7 @@ inline HRESULT FindCommandName(const char* pszCommand, CommandID* pID,
   REFCLSID clsid, REFIID iid)
 {
   // Search for the specified command string
-  assert(pszCommand);
+  ZAssert(pszCommand);
   for (CommandID i = 0; i < c_cidMax; ++i)
   {
     if (!_stricmp(pszCommand, c_cdAllCommands[i].szVerb))

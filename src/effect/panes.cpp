@@ -22,8 +22,8 @@ GaugePane::GaugePane(Surface*         psurface,
     m_valueFlash(0),
     m_timeLastChange(Time::Now())
 {
-    assert(m_psurface);
-    assert(m_minValue < m_maxValue);
+    ZAssert(m_psurface);
+    ZAssert(m_minValue < m_maxValue);
 
     InternalSetSize(m_psurface->GetRect().Size());
 }

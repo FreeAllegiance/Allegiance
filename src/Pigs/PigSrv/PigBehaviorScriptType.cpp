@@ -93,11 +93,11 @@ void CPigBehaviorScriptType::AddBehavior(DWORD dwGITCookie)
   XLock lock(this);
 
   // Ensure that the specified behavior is not already in the collection
-  assert(m_Behaviors.end() == m_Behaviors.find(dwGITCookie));
+  ZAssert(m_Behaviors.end() == m_Behaviors.find(dwGITCookie));
 
   // Ensure that the specified cookie is in the GIT
   IPigBehaviorPtr spBehavior;
-  assert(SUCCEEDED(GetEngine().GetInterfaceFromGlobal(dwGITCookie,
+  ZAssert(SUCCEEDED(GetEngine().GetInterfaceFromGlobal(dwGITCookie,
     IID_IPigBehavior, (void**)&spBehavior)));
 
   // AddRef ourself
@@ -112,7 +112,7 @@ void CPigBehaviorScriptType::RemoveBehavior(DWORD dwGITCookie)
   // Find the specified behavior cookie in the collection
   XLock lock(this);
   XBehaviorIt it = m_Behaviors.find(dwGITCookie);
-  assert(m_Behaviors.end() != it);
+  ZAssert(m_Behaviors.end() != it);
 
   // Remove the instance from our collection
   m_Behaviors.erase(it);
@@ -408,7 +408,7 @@ HRESULT CPigBehaviorScriptType::ProcessScriptElement(IXMLElement* pScr,
       const LARGE_INTEGER nPosZero = {0, 0};
       ULARGE_INTEGER cbFileLarge;
       _SVERIFYE(spstm->Seek(nPosZero, STREAM_SEEK_END, &cbFileLarge));
-      assert(0 == cbFileLarge.HighPart);
+      ZAssert(0 == cbFileLarge.HighPart);
       DWORD cbFile = cbFileLarge.LowPart;
 
       // Create a buffer to contain the stream and its conversion to UNICODE
@@ -486,11 +486,11 @@ HRESULT CPigBehaviorScriptType::CreateScriptingEngine(BSTR bstrProgID)
     return Error(IDS_E_FILEFMT_SCRIPTLANG, IID_IPigBehaviorScriptType);
 
   // Create the specified object
-  assert(NULL == m_spAs && NULL == m_spAsp);
+  ZAssert(NULL == m_spAs && NULL == m_spAsp);
   //if (FAILED(m_spAsp->CreateInstance(m_clsidEngine)) || NULL == m_spAsp)
   //  return Error(IDS_E_FILEFMT_SCRIPTLANG, IID_IPigBehaviorScriptType);
   //m_spAs = m_spAsp;
-  //assert(NULL != m_spAs);
+  //ZAssert(NULL != m_spAs);
   if (FAILED(CoCreateInstance(m_clsidEngine, 0, CLSCTX_ALL, 
                  IID_IActiveScript, 
                  (void **)&m_spAs)) || NULL == m_spAs)
@@ -498,7 +498,7 @@ HRESULT CPigBehaviorScriptType::CreateScriptingEngine(BSTR bstrProgID)
 		return Error(IDS_E_FILEFMT_SCRIPTLANG, IID_IPigBehaviorScriptType);
   //m_spAs = m_spAsp;
   m_spAs->QueryInterface(IID_IActiveScriptParse, (void **)&m_spAsp);
-  assert(NULL != m_spAsp);
+  ZAssert(NULL != m_spAsp);
 
   // Set the script site
   RETURN_FAILED(m_spAs->SetScriptSite(this));
@@ -599,7 +599,7 @@ STDMETHODIMP CPigBehaviorScriptType::get_BaseBehaviorType(
   // Get a pointer to the base behavior type
   CPigBehaviorScriptType* pType =
     GetEngine().GetBehaviorType(CComBSTR(m_strBaseBehavior.c_str()));
-  assert(pType);
+  ZAssert(pType);
   return pType->QueryInterface(IID_IPigBehaviorType, (void**)ppBaseType);
 }
 

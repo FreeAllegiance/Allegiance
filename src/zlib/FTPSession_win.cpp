@@ -139,7 +139,7 @@ public:
         if(m_buffer == nullptr)
             m_buffer = (char*)::VirtualAlloc(nullptr, m_nBufferSize, MEM_COMMIT, PAGE_READWRITE);
 
-        assert(m_buffer);
+        ZAssert(m_buffer);
 
         m_cTotalBytesRead = 0;
 

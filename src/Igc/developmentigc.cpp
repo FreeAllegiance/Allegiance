@@ -21,7 +21,7 @@ HRESULT         CdevelopmentIGC::Initialize(ImissionIGC* pMission,
                                             const void*  data,
                                             int          dataSize)
 {
-    assert (pMission);
+    ZAssert (pMission);
     m_pMission = pMission;
 
 	ZRetailAssert (data && (dataSize == sizeof(DataDevelopmentIGC)));

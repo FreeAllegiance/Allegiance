@@ -108,7 +108,7 @@ public:
 
 						if ((pside != m_clientSide) && (!pside->AlliedSides(pside, m_clientSide))) //ALLY - imago 7/3/09
 						{
-							assert(pside);
+							ZAssert(pside);
 							ClusterSite*    pcs = pcluster->GetClusterSite();
 							pcs->SetClusterAssetMask(pcs->GetClusterAssetMask() | c_amEnemyTeleport);
 
@@ -184,7 +184,7 @@ public:
 					l = l->next())
 				{
 					IscannerIGC*   s = l->data();
-					assert(s->GetCluster() == pcluster);
+					ZAssert(s->GetCluster() == pcluster);
 
 					if (s->InScannerRange(pmodel))
 					{
@@ -294,7 +294,7 @@ public:
 
 	bool GetSideVisibility(IsideIGC* side)
 	{
-		assert(side);
+		ZAssert(side);
 
 		//if (Training::IsTraining())
 		//{
@@ -308,7 +308,7 @@ public:
 
 	bool GetCurrentEye(IsideIGC* side)
 	{
-		assert(side);
+		ZAssert(side);
 		/*if (!trekClient.m_fm.IsConnected() && side != m_clientSide)
 			return m_enemySideVisibility.CurrentEyed();*/
 		return m_sideVisibility.CurrentEyed();

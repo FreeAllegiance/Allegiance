@@ -15,8 +15,8 @@ void    HitTest::SetBB(Time     start,
                        Time     stop,
                        float    dt)
 {
-    assert (stop >= start);
-    assert (m_timeStop >= m_timeStart);
+    ZAssert (stop >= start);
+    ZAssert (m_timeStop >= m_timeStart);
 
     if (m_staticF)
     {
@@ -55,7 +55,7 @@ void    HitTest::SetBB(Time     start,
             else
             {
                 m_tStart = 0.0f;
-                assert (!m_deadF);
+                ZAssert (!m_deadF);
             }
 
             m_tStop = ((m_timeStop < stop) ? m_timeStop : stop) - start;
@@ -69,8 +69,8 @@ void    HitTest::SetBB(Time     start,
             m_stopPosition = GetPosition();
         }
 
-        assert (m_stopPosition.LengthSquared() >= 0.0f);
-        assert (m_stopPosition.LengthSquared() < 1.0e12f);
+        ZAssert (m_stopPosition.LengthSquared() >= 0.0f);
+        ZAssert (m_stopPosition.LengthSquared() < 1.0e12f);
         UpdateBB();
     }
 }
@@ -84,7 +84,7 @@ void    HitTest::UpdateBB(void)
                                 : GetPosition() + m_velocity * m_tStart;   //offset for delayed start
 
         //let's assume were using the xy & z axes.
-        assert (c_nAxes == 3);
+        ZAssert (c_nAxes == 3);
         for (int i = 0; (i < c_nAxes); i++)
         {
             float   v1 = startPosition[i];
@@ -114,7 +114,7 @@ const double epsilon = 1.0f / 128.0f;
 void    HitTest::Collide(HitTest*           pHitTest,
                          CollisionQueue*    pQueue)
 {
-    assert (pQueue);
+    ZAssert (pQueue);
     const BoundingBox& hitTestBB = pHitTest->m_boundingBox;
 
     if ((m_boundingBox.axes[0].values[1] > hitTestBB.axes[0].values[0]) &&
@@ -413,8 +413,8 @@ class   MultiHull : public MultiHullBase
 
         SingleHull*     GetSingleHull(int hullID) const
         {
-            assert (hullID >= 0);
-            assert (hullID < m_nHulls);
+            ZAssert (hullID >= 0);
+            ZAssert (hullID < m_nHulls);
             return hull0()[hullID];
         }
 
@@ -460,7 +460,7 @@ class   BoundingHull : public HitTest
 
         Vector    GetCenter(HitTestShape  hts) const
         {
-            assert (hts >= c_htsConvexHullMin);
+            ZAssert (hts >= c_htsConvexHullMin);
             return m_pMultiHull->GetSingleHull(hts)->GetCenter() * m_scale;
         }
 
@@ -494,18 +494,18 @@ class   BoundingHull : public HitTest
         #pragma optimize ("p", on)
         Vector  GetHullExtreme(int  hullID, const Vector&  direction)
         {
-            assert (hullID >= 0);
-            assert (hullID < m_pMultiHull->GetNhulls());
+            ZAssert (hullID >= 0);
+            ZAssert (hullID < m_pMultiHull->GetNhulls());
 
-            assert (direction.LengthSquared() >= 0.98f);
-            assert (direction.LengthSquared() <= 1.02f);
+            ZAssert (direction.LengthSquared() >= 0.98f);
+            ZAssert (direction.LengthSquared() <= 1.02f);
 
-            assert (m_pMultiHull);
+            ZAssert (m_pMultiHull);
 
             const ConvexVertex**    ppcvRecent = &(recentVertex0()[hullID]);
-            assert (ppcvRecent);
+            ZAssert (ppcvRecent);
             const ConvexVertex*     pcv = *ppcvRecent;
-            assert (pcv);
+            ZAssert (pcv);
 
             float dotMax = direction * pcv->m_position;
             if (dotMax < 0.0)
@@ -663,7 +663,7 @@ MultiHullBase*  HitTest::Load(const char*    pszFileName)
 
     if (!bFound)
     {
-        assert (pMultiHull == NULL);
+        ZAssert (pMultiHull == NULL);
 
         //First time we've seen this file ... read it in.
         char    artwork[MAX_PATH];
@@ -692,8 +692,8 @@ MultiHullBase*  HitTest::Load(const char*    pszFileName)
                         (sscanf(line, "%d",
                                 &nHulls) == 1))
                     {
-                        assert (nHulls > 0);
-                        assert (nHulls < c_htsConvexHullMax);
+                        ZAssert (nHulls > 0);
+                        ZAssert (nHulls < c_htsConvexHullMax);
 
                         pMultiHull = new(nHulls) MultiHull(nHulls, radius, ee, erm);
                         SingleHull**    ppsh = pMultiHull->hull0();
@@ -708,8 +708,8 @@ MultiHullBase*  HitTest::Load(const char*    pszFileName)
                                         &nVertices, &nAdjacencies,
                                         &(center.x), &(center.y), &(center.z)) == 5))
                             {
-                                assert (nVertices > 0);
-                                assert (nAdjacencies > 0);
+                                ZAssert (nVertices > 0);
+                                ZAssert (nAdjacencies > 0);
 
                                 //Same LHS nonsense as for vertices.
                                 center.x = -center.x;
@@ -730,7 +730,7 @@ MultiHullBase*  HitTest::Load(const char*    pszFileName)
                                     if (fgets(line, c_maxLine, fileIn) &&
                                         (sscanf(line, "%f %f %f %d", &xyz.x, &xyz.y, &xyz.z, &n) == 4))
                                     {
-                                        assert (n > 0);
+                                        ZAssert (n > 0);
 
                                         //NYI hack, hack, hack ... objects are yaw'd 180 degrees so apply the same
                                         //transformation the vertices in the convex hull
@@ -747,23 +747,23 @@ MultiHullBase*  HitTest::Load(const char*    pszFileName)
                                             if (fscanf(fileIn, "%d ", &id) == 1)
                                             {
                                                 nAdjacencies--;
-                                                assert (nAdjacencies >= 0);
+                                                ZAssert (nAdjacencies >= 0);
                                                 *(ppcvAdjacent++) = psh->vertex0() + id;
                                             }
                                             else
-                                                assert (false);
+                                                ZAssert (false);
                                         }
                                         while (--n);
 
                                         *(ppcvAdjacent++) = NULL;
                                     }
                                     else
-                                        assert (false);
+                                        ZAssert (false);
 
                                     pcv++;
                                 }
                                 while (--nVertices);
-                                assert (nAdjacencies == 0);
+                                ZAssert (nAdjacencies == 0);
 
                                 psh->CalculateExtremeVertices();
                             }
@@ -776,8 +776,8 @@ MultiHullBase*  HitTest::Load(const char*    pszFileName)
                     FrameLink*  pfl = new FrameLink;
                     FrameDataUTL*  pfd = &(pfl->data());
 
-                    assert (strlen(line) > 0);
-                    assert (strlen(line) < c_cbFrameName);
+                    ZAssert (strlen(line) > 0);
+                    ZAssert (strlen(line) < c_cbFrameName);
                     line[strlen(line) - 1] = '\0';      //Trim off the \n
                     strcpy(pfd->szName, line);
 
@@ -812,7 +812,7 @@ MultiHullBase*  HitTest::Load(const char*    pszFileName)
         {
             CachedLink*         pcl = new CachedLink;
             CachedMultiHull&    cmh = pcl->data();
-            assert (strlen(pszFileName) < c_cbName);
+            ZAssert (strlen(pszFileName) < c_cbName);
             strcpy(cmh.m_name, pszFileName);
             cmh.m_pMultiHull = pMultiHull;
 
@@ -855,7 +855,7 @@ HitTest*    HitTest::Create(const char*   pszFileName,
                 pHitTest = (HitTest*)(new BoundingCone(data, staticF));
             break;
             default:
-                assert (false);
+                ZAssert (false);
         }
     }
 
@@ -927,9 +927,9 @@ bool HitTest::HullCollide(float*          tStart,
                           const Vector&   dP,
                           const Vector&   dV)
 {
-    assert (tStart);
-    assert (phtHullA);
-    assert (phtHullB);
+    ZAssert (tStart);
+    ZAssert (phtHullA);
+    ZAssert (phtHullB);
 
     //In general, phtHullB is more complex than phtHullA ... so optimize things to minimize the manipulations of phtHullB
     //In particular, re-orient everything so that we are in B's local coordinate space (dP & dV are aready wrt B).
@@ -1102,8 +1102,8 @@ bool    HitTest::IntervalCollide(float               tStart,
         //Get the vector from direction to its projection onto -delta
         direction -= delta * (2.0f * (direction * delta) / delta.LengthSquared());
 
-        assert (direction.Length() >= 0.98f);
-        assert (direction.Length() <= 1.02f);
+        ZAssert (direction.Length() >= 0.98f);
+        ZAssert (direction.Length() <= 1.02f);
     }
 
     //We made 4 attempts to find a separating plane and failed.
@@ -1918,7 +1918,7 @@ static bool    DoGilbert(HitTest*              phtHullA,
                 }
             }
 
-            assert (vertexID < c_maxHistory - 1);
+            ZAssert (vertexID < c_maxHistory - 1);
             vertexHistory[++vertexID] = v0;
         }
 
@@ -1931,7 +1931,7 @@ static bool    DoGilbert(HitTest*              phtHullA,
             {
                 if (indices[i] != i)
                 {
-                    assert (indices[i] > i);
+                    ZAssert (indices[i] > i);
                     simplex[i] = simplex[indices[i]];
                 }
             }

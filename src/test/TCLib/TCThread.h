@@ -131,7 +131,7 @@ public:
 // See Also: TCThread::SetThreadPriority
 inline int TCThread::GetThreadPriority()                 
 {
-  assert(NULL != m_hThread);
+  ZAssert(NULL != m_hThread);
   return ::GetThreadPriority(m_hThread);
 }
 
@@ -166,7 +166,7 @@ inline int TCThread::GetThreadPriority()
 // See Also: TCThread::GetThreadPriority
 inline bool TCThread::SetThreadPriority(int nPriority)
 {
-  assert(NULL != m_hThread);
+  ZAssert(NULL != m_hThread);
   return !!::SetThreadPriority(m_hThread, nPriority);
 }
 
@@ -187,7 +187,7 @@ inline bool TCThread::SetThreadPriority(int nPriority)
 // See Also: TCThread::ResumeThread
 inline DWORD TCThread::SuspendThread()
 {
-  assert(NULL != m_hThread);
+  ZAssert(NULL != m_hThread);
   return ::SuspendThread(m_hThread);
 }
 
@@ -207,7 +207,7 @@ inline DWORD TCThread::SuspendThread()
 // remains suspended.
 inline DWORD TCThread::ResumeThread()
 {
-  assert(NULL != m_hThread);
+  ZAssert(NULL != m_hThread);
   return ::ResumeThread(m_hThread);
 }
 
@@ -225,8 +225,8 @@ inline DWORD TCThread::ResumeThread()
 inline bool TCThread::PostThreadMessage(UINT message, WPARAM wParam,
   LPARAM lParam)
 {
-  assert(NULL != m_hThread);
-  assert(0 != m_nThreadID);
+  ZAssert(NULL != m_hThread);
+  ZAssert(0 != m_nThreadID);
   return !!::PostThreadMessage(m_nThreadID, message, wParam, lParam);
 }
 

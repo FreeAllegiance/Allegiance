@@ -40,8 +40,8 @@ void CPigs::AddPig(DWORD dwGITCookie, _bstr_t bstrName)
   XLock lock(this);
 
   // Ensure that the specified pig is not already in either collection
-  assert(m_mapByCookie.end() == m_mapByCookie.find(dwGITCookie));
-  assert(m_mapByName.end() == m_mapByName.find(bstrName));
+  ZAssert(m_mapByCookie.end() == m_mapByCookie.find(dwGITCookie));
+  ZAssert(m_mapByName.end() == m_mapByName.find(bstrName));
 
   // Add the association to the collections
   m_mapByCookie.insert(std::make_pair(dwGITCookie, bstrName));
@@ -54,12 +54,12 @@ void CPigs::RemovePig(DWORD dwGITCookie)
 
   // Find the specified pig in the collection
   XMapByCookieIt itCookie = m_mapByCookie.find(dwGITCookie);
-  assert(m_mapByCookie.end() != itCookie);
+  ZAssert(m_mapByCookie.end() != itCookie);
 
   // Find the associated name in the other collection
   XMapByNameIt itName = m_mapByName.find(itCookie->second);
-  assert(m_mapByName.end() != itName);
-  assert(itCookie->first == itName->second);
+  ZAssert(m_mapByName.end() != itName);
+  ZAssert(itCookie->first == itName->second);
 
   // Remove the pig from both collections
   m_mapByCookie.erase(itCookie);
@@ -72,12 +72,12 @@ void CPigs::RenamePig(DWORD dwGITCookie, _bstr_t bstrName)
 
   // Find the specified pig in the collection
   XMapByCookieIt itCookie = m_mapByCookie.find(dwGITCookie);
-  assert(m_mapByCookie.end() != itCookie);
+  ZAssert(m_mapByCookie.end() != itCookie);
 
   // Find the pig's old name in the other collection
   XMapByNameIt itName = m_mapByName.find(itCookie->second);
-  assert(m_mapByName.end() != itName);
-  assert(itCookie->first == itName->second);
+  ZAssert(m_mapByName.end() != itName);
+  ZAssert(itCookie->first == itName->second);
 
   // Remove the pig from the 'by name' collection
   m_mapByName.erase(itName);
@@ -119,7 +119,7 @@ STDMETHODIMP CPigs::get_Count(long* pnCount)
 {
   XLock lock(this);
 
-  assert(m_mapByCookie.size() == m_mapByName.size());
+  ZAssert(m_mapByCookie.size() == m_mapByName.size());
   CLEAROUT(pnCount, (long)m_mapByCookie.size());
   return S_OK;
 }
@@ -133,7 +133,7 @@ STDMETHODIMP CPigs::get__NewEnum(IUnknown** ppunkEnum)
   XLock lock(this);
 
   // Copy the elements of 'by name' map to a temporary CComVariant vector
-  assert(m_mapByCookie.size() == m_mapByName.size());
+  ZAssert(m_mapByCookie.size() == m_mapByName.size());
   CComVariant var;
   // KG- switch to array instead of STL vector
   // we could keep STL vector and use CComEnumOnSTL later but something asserts at debug doing so.
@@ -157,7 +157,7 @@ STDMETHODIMP CPigs::get__NewEnum(IUnknown** ppunkEnum)
     //*itVec++ = var;
 	vecTemp[itVec++] = var;
   }
-  // KG-  assert(itVec == m_mapByName.size());
+  // KG-  ZAssert(itVec == m_mapByName.size());
 
   // Unlock the object after the copy
   lock.Unlock();
@@ -166,7 +166,7 @@ STDMETHODIMP CPigs::get__NewEnum(IUnknown** ppunkEnum)
   typedef CComObject<CComEnum<IEnumVARIANT, &IID_IEnumVARIANT, VARIANT,
     _Copy<VARIANT> > > CEnum;
   CEnum* pEnum = new CEnum;
-  assert(NULL != pEnum);
+  ZAssert(NULL != pEnum);
 
   // Initialize enumerator object with the temporary CComVariant vector
   // VS.Net 2003 port - accomodate change in iterators under VC.Net 200x (see 'breaking changes' in vsnet doc)
@@ -193,7 +193,7 @@ STDMETHODIMP CPigs::get__NewEnum(IUnknown** ppunkEnum)
 
 HRESULT CPigs::get_Item(VARIANT* pvIndex, IPig** ppPig)
 {
-  assert(m_mapByCookie.size() == m_mapByName.size());
+  ZAssert(m_mapByCookie.size() == m_mapByName.size());
 
   // Initialize the [out] parameter
   CLEAROUT(ppPig, (IPig*)NULL);

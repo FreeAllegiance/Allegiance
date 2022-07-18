@@ -70,7 +70,7 @@ bool TCInsidePropPage::Create(HWND hwndParent, IPropertyPageSite* pPageSite,
   // Fail if the parent window does not have the specified control
   if (!hwndPos)
   {
-    assert(false);
+    ZAssert(false);
     return false;
   }
 
@@ -78,7 +78,7 @@ bool TCInsidePropPage::Create(HWND hwndParent, IPropertyPageSite* pPageSite,
   HRESULT hr = Page_Create(clsid);
   if (FAILED(hr))
   {
-    assert(false);
+    ZAssert(false);
     return false;
   }
 

@@ -36,7 +36,7 @@ public:
 public:
   STDMETHODIMP get_InScannerRange(IAGCModel* pModel, VARIANT_BOOL* pbInRange)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
 
     IAGCPrivatePtr spPrivate(pModel);
     if (NULL == spPrivate)
@@ -48,7 +48,7 @@ public:
   }
   STDMETHODIMP get_CanSee(IAGCModel* pModel, VARIANT_BOOL* pbCanSee)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
 
     IAGCPrivatePtr spPrivate(pModel);
     if (NULL == spPrivate)

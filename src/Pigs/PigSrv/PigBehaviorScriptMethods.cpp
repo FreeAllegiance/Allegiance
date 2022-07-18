@@ -53,7 +53,7 @@ HRESULT CPigBehaviorScriptMethods::ResolveMethod(REFCLSID clsid,
   CPigBehaviorScriptType* pType)
 {
   // Initialize the [out] parameter
-  assert(pid);
+  ZAssert(pid);
   *pid = DISPID_UNKNOWN;
 
   // Lookup the specified method name
@@ -94,13 +94,13 @@ HRESULT CPigBehaviorScriptMethods::ResolveMethod(REFCLSID clsid,
       *pid = bp.lpfuncdesc->memid;
 
       // Release the returned FUNCDESC
-      assert(NULL != spti);
+      ZAssert(NULL != spti);
       spti->ReleaseFuncDesc(bp.lpfuncdesc);
       return S_OK;
 
     case DESCKIND_VARDESC:
       // Release the returned VARDESC
-      assert(NULL != spti);
+      ZAssert(NULL != spti);
       spti->ReleaseVarDesc(bp.lpvardesc);
       break;
 
@@ -119,7 +119,7 @@ HRESULT CPigBehaviorScriptMethods::ResolveMethod(REFCLSID clsid,
   IDispatch* pd, LPCOLESTR pszMethodName, short cParams, DISPID* pid,
   CPigBehaviorScriptType* pType)
 {
-  assert(pd);  
+  ZAssert(pd);  
 
   // Get the ITypeInfo of the specified IDispatch
   LCID lcid = GetThreadLocale();

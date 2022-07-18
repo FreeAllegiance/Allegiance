@@ -11,7 +11,6 @@
 //
 // Headers for fed code.
 //
-#define __MODULE__  "clintlib"
 
 #include "guids.h"
 #include "zlib.h"

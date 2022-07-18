@@ -253,9 +253,9 @@ HRESULT CPigFaceEvent::Init(CPigShip* pPigShip, VARIANT* pvarTarget,
 bool CPigFaceEvent::IsExpired()
 {
   // Get the ship object
-  assert(m_pPigShip->GetPig());
+  ZAssert(m_pPigShip->GetPig());
   IshipIGC* pShip = m_pPigShip->GetPig()->BaseClient::GetShip();
-  assert(pShip);
+  ZAssert(pShip);
 
   // We are definitely expired if we are not flying
   if (PigState_Flying != m_pPigShip->GetPig()->GetCurrentState())

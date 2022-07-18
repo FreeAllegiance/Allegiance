@@ -302,14 +302,14 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler0(DynaLib, Name) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(wParam == 0 && lParam == 0);                                    \
+    ZAssert(wParam == 0 && lParam == 0);                                    \
     return (LRESULT)DynaLib.Name();                                         \
   }
 
 #define TCWotLib_DecHandler1(DynaLib, Name, T1) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 1);                                                  \
+    ZAssert(lParam == 1);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     return (LRESULT)DynaLib.Name(p1);   \
@@ -318,7 +318,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler2(DynaLib, Name, T1,T2) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 2);                                                  \
+    ZAssert(lParam == 2);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -328,7 +328,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler3(DynaLib, Name, T1,T2,T3) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 3);                                                  \
+    ZAssert(lParam == 3);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -339,7 +339,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler4(DynaLib, Name, T1,T2,T3,T4) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 4);                                                  \
+    ZAssert(lParam == 4);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -351,7 +351,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler5(DynaLib, Name, T1,T2,T3,T4,T5) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 5);                                                  \
+    ZAssert(lParam == 5);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -364,7 +364,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler6(DynaLib, Name, T1,T2,T3,T4,T5,T6) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 6);                                                  \
+    ZAssert(lParam == 6);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -378,7 +378,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler7(DynaLib, Name, T1,T2,T3,T4,T5,T6,T7) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 7);                                                  \
+    ZAssert(lParam == 7);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -393,7 +393,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler8(DynaLib, Name, T1,T2,T3,T4,T5,T6,T7,T8) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 8);                                                  \
+    ZAssert(lParam == 8);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -409,7 +409,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler9(DynaLib, Name, T1,T2,T3,T4,T5,T6,T7,T8,T9) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 9);                                                  \
+    ZAssert(lParam == 9);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -426,7 +426,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler10(DynaLib, Name, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 10);                                                  \
+    ZAssert(lParam == 10);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -444,7 +444,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler11(DynaLib, Name, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 11);                                                  \
+    ZAssert(lParam == 11);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -463,7 +463,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler12(DynaLib, Name, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 12);                                                  \
+    ZAssert(lParam == 12);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -486,7 +486,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler0_void(DynaLib, Name) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(wParam == 0 && lParam == 0);                                    \
+    ZAssert(wParam == 0 && lParam == 0);                                    \
     DynaLib.Name();                                                         \
     return 0;                                                               \
   }
@@ -494,7 +494,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler1_void(DynaLib, Name, T1) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 1);                                                   \
+    ZAssert(lParam == 1);                                                   \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     DynaLib.Name(p1);                                                       \
@@ -504,7 +504,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler2_void(DynaLib, Name, T1,T2) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 2);                                                   \
+    ZAssert(lParam == 2);                                                   \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -515,7 +515,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler3_void(DynaLib, Name, T1,T2,T3) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 3);                                                   \
+    ZAssert(lParam == 3);                                                   \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -527,7 +527,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler4_void(DynaLib, Name, T1,T2,T3,T4) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 4);                                                   \
+    ZAssert(lParam == 4);                                                   \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -540,7 +540,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler5_void(DynaLib, Name, T1,T2,T3,T4,T5) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 5);                                                  \
+    ZAssert(lParam == 5);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -554,7 +554,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler6_void(DynaLib, Name, T1,T2,T3,T4,T5,T6) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 6);                                                   \
+    ZAssert(lParam == 6);                                                   \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -569,7 +569,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler7_void(DynaLib, Name, T1,T2,T3,T4,T5,T6,T7) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 7);                                                   \
+    ZAssert(lParam == 7);                                                   \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -585,7 +585,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler8_void(DynaLib, Name, T1,T2,T3,T4,T5,T6,T7,T8) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 8);                                                   \
+    ZAssert(lParam == 8);                                                   \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -602,7 +602,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler9_void(DynaLib, Name, T1,T2,T3,T4,T5,T6,T7,T8,T9) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 9);                                                   \
+    ZAssert(lParam == 9);                                                   \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -620,7 +620,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler10_void(DynaLib, Name, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 10);                                                  \
+    ZAssert(lParam == 10);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -639,7 +639,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler11_void(DynaLib, Name, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 11);                                                  \
+    ZAssert(lParam == 11);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -659,7 +659,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecHandler12_void(DynaLib, Name, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12) \
   LRESULT On##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)      \
   {                                                                         \
-    assert(lParam == 12);                                                  \
+    ZAssert(lParam == 12);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -683,14 +683,14 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler0(retType, pre, Name) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(wParam == 0 && lParam == 0);                                    \
+    ZAssert(wParam == 0 && lParam == 0);                                    \
     return (LRESULT)m_##pre.Name();                                         \
   }
 
 #define TCWotLib_DecPreHandler1(retType, pre, Name, T1) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 1);                                                  \
+    ZAssert(lParam == 1);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     return (LRESULT)m_##pre.Name(p1);   \
@@ -699,7 +699,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler2(retType, pre, Name, T1,T2) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 2);                                                  \
+    ZAssert(lParam == 2);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -709,7 +709,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler3(retType, pre, Name, T1,T2,T3) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 3);                                                  \
+    ZAssert(lParam == 3);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -720,7 +720,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler4(retType, pre, Name, T1,T2,T3,T4) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 4);                                                  \
+    ZAssert(lParam == 4);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -732,7 +732,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler5(retType, pre, Name, T1,T2,T3,T4,T5) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 5);                                                  \
+    ZAssert(lParam == 5);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -745,7 +745,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler6(retType, pre, Name, T1,T2,T3,T4,T5,T6) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 6);                                                  \
+    ZAssert(lParam == 6);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -759,7 +759,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler7(retType, pre, Name, T1,T2,T3,T4,T5,T6,T7) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 7);                                                  \
+    ZAssert(lParam == 7);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -774,7 +774,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler8(retType, pre, Name, T1,T2,T3,T4,T5,T6,T7,T8) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 8);                                                  \
+    ZAssert(lParam == 8);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -790,7 +790,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler9(retType, pre, Name, T1,T2,T3,T4,T5,T6,T7,T8,T9) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 9);                                                  \
+    ZAssert(lParam == 9);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -807,7 +807,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler10(retType, pre, Name, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 10);                                                  \
+    ZAssert(lParam == 10);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -825,7 +825,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler11(retType, pre, Name, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 11);                                                  \
+    ZAssert(lParam == 11);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -844,7 +844,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler12(retType, pre, Name, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 12);                                                  \
+    ZAssert(lParam == 12);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -867,7 +867,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler0_void(pre, Name) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(wParam == 0 && lParam == 0);                                    \
+    ZAssert(wParam == 0 && lParam == 0);                                    \
     m_##pre.Name();                                                         \
     return 0;                                                               \
   }
@@ -875,7 +875,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler1_void(pre, Name, T1) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 1);                                                   \
+    ZAssert(lParam == 1);                                                   \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     m_##pre.Name(p1);                                                       \
@@ -885,7 +885,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler2_void(pre, Name, T1,T2) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 2);                                                   \
+    ZAssert(lParam == 2);                                                   \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -896,7 +896,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler3_void(pre, Name, T1,T2,T3) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 3);                                                   \
+    ZAssert(lParam == 3);                                                   \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -908,7 +908,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler4_void(pre, Name, T1,T2,T3,T4) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 4);                                                   \
+    ZAssert(lParam == 4);                                                   \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -921,7 +921,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler5_void(pre, Name, T1,T2,T3,T4,T5) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 5);                                                  \
+    ZAssert(lParam == 5);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -935,7 +935,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler6_void(pre, Name, T1,T2,T3,T4,T5,T6) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 6);                                                   \
+    ZAssert(lParam == 6);                                                   \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -950,7 +950,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler7_void(pre, Name, T1,T2,T3,T4,T5,T6,T7) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 7);                                                   \
+    ZAssert(lParam == 7);                                                   \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -966,7 +966,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler8_void(pre, Name, T1,T2,T3,T4,T5,T6,T7,T8) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 8);                                                   \
+    ZAssert(lParam == 8);                                                   \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -983,7 +983,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler9_void(pre, Name, T1,T2,T3,T4,T5,T6,T7,T8,T9) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 9);                                                   \
+    ZAssert(lParam == 9);                                                   \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -1001,7 +1001,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler10_void(pre, Name, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 10);                                                  \
+    ZAssert(lParam == 10);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -1020,7 +1020,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler11_void(pre, Name, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 11);                                                  \
+    ZAssert(lParam == 11);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \
@@ -1040,7 +1040,7 @@ inline void TCWotLib::SetWnd(HWND hWnd)
 #define TCWotLib_DecPreHandler12_void(pre, Name, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12) \
   LRESULT On##pre##Name(UINT, WPARAM wParam, LPARAM lParam, BOOL &)     \
   {                                                                         \
-    assert(lParam == 12);                                                  \
+    ZAssert(lParam == 12);                                                  \
     va_list ArgList = (va_list)wParam;                                      \
     T1  p1  = va_arg(ArgList, T1);                                          \
     T2  p2  = va_arg(ArgList, T2);                                          \

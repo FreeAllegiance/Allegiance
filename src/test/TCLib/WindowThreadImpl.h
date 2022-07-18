@@ -120,7 +120,7 @@ unsigned CALLBACK TCWindowThreadImpl<T>::ThreadProc(void* pvParam)
 {
   // Reinterpret the parameter as an XThreadArgs*
   XThreadArgs* pArgs = reinterpret_cast<XThreadArgs*>(pvParam);
-  assert(pArgs);
+  ZAssert(pArgs);
 
   // Get the instance pointer of the derived class
   T* pThis = reinterpret_cast<T*>(pArgs->pvThis);

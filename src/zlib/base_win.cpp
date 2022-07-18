@@ -358,3 +358,16 @@ FILETIME ZFile::GetMostRecentFileModificationTime(ZString &searchPath)
 
 	return lastModified;
 }
+
+void ZFile::CreateDirectoryRecursivelyForFilepath(ZString filepath)
+{
+    std::string strPath = std::string(filepath);
+    int pos = 0;
+    do
+    {
+        pos = strPath.find_first_of("\\", pos + 1);
+        if (pos != std::string::npos) {
+            CreateDirectory(strPath.substr(0, pos).c_str(), NULL);
+        }
+    } while (pos != std::string::npos);
+}

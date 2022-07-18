@@ -33,7 +33,6 @@
 #include <atlbase.h>        // For CRegKey
 
 // ZLib Includes
-#define __MODULE__ "ALLSRVUI"
 #include <mmsystem.h>
 #define ZLIB_SKIP_NEW_REDEF
 #include <zlib.h>

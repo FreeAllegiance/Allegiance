@@ -30,8 +30,8 @@ CFSShip::CFSShip(TRef<IshipIGC> pShip, bool fIsPlayer)
     m_plrscore(fIsPlayer)
 {
   // FYI: overloaded new allocator in inherited classes is required to zero-init everything, even in retail.
-  assert(pShip);
-  assert(m_cShips < c_cShipsMax);
+  ZAssert(pShip);
+  ZAssert(m_cShips < c_cShipsMax);
   ImissionIGC*  pmission = pShip->GetMission();
   m_pfsMission = (CFSMission *)(pmission->GetPrivateData());
   while (m_rgpfsShip[m_shipidNext]) // find a shipid for them
@@ -82,7 +82,7 @@ void CFSShip::HitWarp(IwarpIGC * pwarp)
 			}
 
 			IwarpIGC *    pwarpDest    = pwarp->GetDestination();
-			assert (pwarpDest);
+			ZAssert (pwarpDest);
 			IclusterIGC * pclusterDest = pwarpDest->GetCluster();
 
 			ShipStatusWarped(pwarp);
@@ -140,15 +140,15 @@ void CFSShip::HitWarp(IwarpIGC * pwarp)
 /*
 void CFSShip::Dock(IstationIGC * pstation)
 {
-  assert(pstation); // can't use this to undock
+  ZAssert(pstation); // can't use this to undock
 }
 */
 
 void CFSShip::SetSide(CFSMission * pfsMission, IsideIGC * pside)
 {
   // they can't hop between mission without first going to lobby
-  assert (IMPLIES(pfsMission, !m_pfsMission) || pfsMission == m_pfsMission); 
-  assert (IMPLIES(pside, pfsMission));
+  ZAssert (IMPLIES(pfsMission, !m_pfsMission) || pfsMission == m_pfsMission); 
+  ZAssert (IMPLIES(pside, pfsMission));
   m_pfsMission = pfsMission;
   GetIGCShip()->SetMission(m_pfsMission ? m_pfsMission->GetIGCMission() : g.trekCore);
   GetIGCShip()->SetSide(pside);
@@ -174,8 +174,8 @@ void CFSShip::Reset(bool bFull)
  */
 void CFSShip::Launch(IstationIGC* pstation)
 {
-  assert (pstation);
-  assert (m_pShip->GetBaseHullType());
+  ZAssert (pstation);
+  ZAssert (m_pShip->GetBaseHullType());
 
   pstation->Launch(m_pShip);
 
@@ -205,7 +205,7 @@ void CFSShip::AnnounceExit(IclusterIGC* pclusterOld, ShipDeleteReason sdr)
   CFMRecipient * prcp = NULL;
   if (SDR_DOCKED == sdr || SDR_LEFTSECTOR == sdr)
   {
-    assert (pclusterOld);
+    ZAssert (pclusterOld);
     prcp = GetGroupSectorFlying(pclusterOld);
   }
   else
@@ -227,7 +227,7 @@ void CFSShip::AnnounceExit(IclusterIGC* pclusterOld, ShipDeleteReason sdr)
 
 void CFSPlayer::ForceLoadoutChange(void)
 {
-    assert(0 == g.fm.CbUsedSpaceInOutbox());
+    ZAssert(0 == g.fm.CbUsedSpaceInOutbox());
 
     QueueLoadoutChange(true);
     g.fm.SendMessages(GetPlayer()->GetConnection(), FM_GUARANTEED, FM_FLUSH);
@@ -244,7 +244,7 @@ void CFSShip::ShipStatusSpotted(IsideIGC* pside)
         if (pcluster == NULL)
         {
             IstationIGC*    pstation = GetIGCShip()->GetStation();
-            assert (pstation);
+            ZAssert (pstation);
             pcluster = pstation->GetCluster();
         }
 
@@ -387,11 +387,11 @@ void          CFSShip::ShipStatusDocked(IstationIGC*   pstation)
                     IshipIGC*   pship = psl->data();
                     ShipStatus* pss = ((CFSShip*)(pship->GetPrivateData()))->GetShipStatus(sideID);
 
-                    assert ((pship->GetTurretID() == NA)
+                    ZAssert ((pship->GetTurretID() == NA)
                             ? (pss->GetState() == c_ssObserver)
                             : (pss->GetState() == c_ssTurret));
-                    assert (pss->GetParentID() == GetIGCShip()->GetObjectID());
-                    assert (pss->GetHullID() == NA);
+                    ZAssert (pss->GetParentID() == GetIGCShip()->GetObjectID());
+                    ZAssert (pss->GetHullID() == NA);
 
                     pss->SetStationID(stationID);
                     pss->SetSectorID(sectorID);
@@ -431,7 +431,7 @@ void          CFSShip::ShipStatusLaunched(void)
     m_rgShipStatus[sideID].SetState(c_ssFlying);
     m_rgShipStatus[sideID].SetParentID(NA);
     
-    assert (m_rgShipStatus[sideID].GetSectorID() == GetIGCShip()->GetCluster()->GetObjectID());
+    ZAssert (m_rgShipStatus[sideID].GetSectorID() == GetIGCShip()->GetCluster()->GetObjectID());
 }
 
 void          CFSShip::ShipStatusStart(IstationIGC*   pstation)
@@ -740,7 +740,7 @@ void CFSPlayer::SetCluster(IclusterIGC* pcluster, bool bViewOnly)
     if ((pshipParent == NULL) || bViewOnly)
     {
         ShipID      shipID = GetIGCShip()->GetObjectID();
-        assert(0 == g.fm.CbUsedSpaceInOutbox());
+        ZAssert(0 == g.fm.CbUsedSpaceInOutbox());
         if (!bViewOnly)
         {
             //Move the player to his destination
@@ -910,7 +910,7 @@ void CFSPlayer::SetCluster(IclusterIGC* pcluster, bool bViewOnly)
             for (ShipLinkIGC*   psl = GetIGCShip()->GetChildShips()->first(); (psl != NULL); psl = psl->next())
             {
                 CFSShip*    pfsShip = (CFSShip*)(psl->data()->GetPrivateData());
-                assert (pfsShip->IsPlayer());
+                ZAssert (pfsShip->IsPlayer());
                 pfsShip->GetPlayer()->ResetLastUpdate();
                 g.fm.SendMessages(pfsShip->GetPlayer()->GetConnection(), FM_GUARANTEED, FM_DONT_FLUSH);
             }
@@ -921,7 +921,7 @@ void CFSPlayer::SetCluster(IclusterIGC* pcluster, bool bViewOnly)
   else if (bViewOnly)
   {
     IstationIGC*    pstation = GetIGCShip()->GetStation();
-    assert (pstation);
+    ZAssert (pstation);
 
     CFSCluster*     pfsCluster = (CFSCluster*)(pstation->GetCluster()->GetPrivateData());
     SetDPGroup(pfsCluster, false);
@@ -1006,7 +1006,7 @@ CFSPlayer::~CFSPlayer()
 
 void CFSPlayer::Launch(IstationIGC* pstation)
 {
-  assert (GetIGCShip()->GetBaseHullType() != NULL);
+  ZAssert (GetIGCShip()->GetBaseHullType() != NULL);
 
   SetWarpState();
   CFSShip::Launch(pstation);
@@ -1068,7 +1068,7 @@ void CFSPlayer::SetSide(CFSMission * pfsMission, IsideIGC * pside)
     }
   }
   else
-    assert (pfsmOld == pfsMission);
+    ZAssert (pfsmOld == pfsMission);
 
   if (!pside && m_pgrp)
   {
@@ -1281,7 +1281,7 @@ void CFSPlayer::SetReady(bool fReady)
 
 void CFSPlayer::SetAutoDonate(CFSPlayer* pplayer, Money amount, bool bSend)
 {
-  assert (pplayer != this);
+  ZAssert (pplayer != this);
 
   ShipID    sidDonateBy = GetShipID();
   ShipID    sidDonateTo;
@@ -1294,7 +1294,7 @@ void CFSPlayer::SetAutoDonate(CFSPlayer* pplayer, Money amount, bool bSend)
           pship = pplayer->GetIGCShip();
       else
       {
-          assert (pship->GetAutoDonate() == NULL);
+          ZAssert (pship->GetAutoDonate() == NULL);
 
           CFSPlayer*    pplayerNew = ((CFSShip*)(pship->GetPrivateData()))->GetPlayer();
 
@@ -1315,8 +1315,8 @@ void CFSPlayer::SetAutoDonate(CFSPlayer* pplayer, Money amount, bool bSend)
           }
       }
 
-      assert (pship->GetAutoDonate() == NULL);
-      assert (pplayer->GetIGCShip() == pship);
+      ZAssert (pship->GetAutoDonate() == NULL);
+      ZAssert (pplayer->GetIGCShip() == pship);
 
       sidDonateTo = pship->GetObjectID();
 
@@ -1411,9 +1411,9 @@ CFSDrone::CFSDrone(IshipIGC* pship) :
     {
       //Hook the drone's side/score information up (since drones live only on a single side for their entire lifespan).
       IsideIGC* pside = pship->GetSide();
-      assert (pside);
+      ZAssert (pside);
       CFSSide*  pfsside = CFSSide::FromIGC(pside);
-      assert (pfsside);
+      ZAssert (pfsside);
 
       GetPlayerScoreObject()->Connect(g.timeNow);
     }

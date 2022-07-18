@@ -210,14 +210,14 @@ inline int CPigShip::InterpretThrustBit(PigThrust eThrust)
 
 inline float CPigShip::GetAxis(Axis eAxis) const
 {
-  assert(c_axisYaw <= eAxis && eAxis < c_axisMax);
+  ZAssert(c_axisYaw <= eAxis && eAxis < c_axisMax);
   return m_pPig->BaseClient::GetShip()->GetControls().jsValues[eAxis];
 }
 
 inline void CPigShip::SetAxis(Axis eAxis, float fNewValue)
 {
-  assert(c_axisYaw <= eAxis && eAxis < c_axisMax);
-  assert(-1.f <= fNewValue && fNewValue <= 1.f);
+  ZAssert(c_axisYaw <= eAxis && eAxis < c_axisMax);
+  ZAssert(-1.f <= fNewValue && fNewValue <= 1.f);
 
   ControlData cd = m_pPig->BaseClient::GetShip()->GetControls();
   cd.jsValues[eAxis] = fNewValue;

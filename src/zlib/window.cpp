@@ -25,6 +25,8 @@ void FillSolidRect(HDC hdc, const WinRect& rect, COLORREF color)
 //
 //////////////////////////////////////////////////////////////////////////////
 
+Window* g_pWindow;
+
 void Window::Construct()
 {
     m_pfnWndProc    = DefWindowProc;
@@ -36,7 +38,6 @@ void Window::Construct()
 }
 
 Window::Window():
-    m_pwindowParent(nullptr),
     m_hmenu(nullptr),
     m_hwnd(nullptr),
     m_bSizeable(false),
@@ -50,7 +51,6 @@ Window::Window():
 }
 
 Window::Window(
-          Window*  pwindowParent,
     const WinRect& rect,
     const ZString& strTitle,
     const ZString& strClass,
@@ -58,7 +58,6 @@ Window::Window(
           HMENU    hmenu,
           StyleEX  styleEX
 ) :
-    m_pwindowParent(pwindowParent),
     m_style(style),
     m_styleEX(styleEX),
     m_hmenu(hmenu),
@@ -71,21 +70,19 @@ Window::Window(
 {
     Construct();
 
-    if (m_pwindowParent) {
-        m_style.Set(StyleChild());
-    } else {
-        m_style.Set(
-            StylePopup() |
-            StyleCaption() |
-            StyleMaximizeBox() |
-            StyleMinimizeBox() |
-            StyleSysMenu() |
-            StyleThickFrame()
-        );
-        
-        // set a default arrow cursor for topmost windows
-        m_hcursor = LoadCursor(nullptr, IDC_ARROW);
-    }
+    g_pWindow = this;
+
+    m_style.Set(
+        StylePopup() |
+        StyleCaption() |
+        StyleMaximizeBox() |
+        StyleMinimizeBox() |
+        StyleSysMenu() |
+        StyleThickFrame()
+    );
+
+    // set a default arrow cursor for topmost windows
+    m_hcursor = LoadCursor(nullptr, IDC_ARROW);
 
     m_style.Set(StyleVisible() | StyleClipChildren() | StyleClipSiblings());
 
@@ -107,7 +104,7 @@ Window::Window(
 
             //m_rect.XMin(), m_rect.YMin(), 
             m_rect.XSize(), m_rect.YSize(),
-            pwindowParent ? pwindowParent->GetHWND() : nullptr,
+            nullptr,
             m_hmenu,
             GetModuleHandle(nullptr),
             this
@@ -128,7 +125,7 @@ Window::Window(
 
             //m_rect.XMin(), m_rect.YMin(), 
             m_rect.XSize(), m_rect.YSize(),
-            pwindowParent ? pwindowParent->GetHWND() : nullptr,
+            nullptr,
             m_hmenu,
             GetModuleHandle(nullptr),
             this
@@ -142,14 +139,9 @@ Window::Window(
 
     m_styleEX.SetWord(::GetWindowLong(m_hwnd, GWL_EXSTYLE));
 
-    if (m_pwindowParent) {
-        m_pwindowParent->AddChild(this);
-    }
-
 }
 
 BOOL Window::Create(
-          Window*  pwindowParent,
     const WinRect& rect,
           LPCSTR   szTitle,
           LPCSTR   szClass,
@@ -164,14 +156,10 @@ BOOL Window::Create(
     m_styleEX.Set(styleEX);
     m_style.Set(StyleVisible() | StyleClipChildren() | StyleClipSiblings());
     m_rect = rect;
-    m_pwindowParent = pwindowParent;
     m_hmenu = hmenu;
     m_nID = nID;
 
-    if (!m_pwindowParent) {
-        // set a default arrow cursor for topmost windows
-        m_hcursor = LoadCursor(nullptr, IDC_ARROW);
-    }
+    m_hcursor = LoadCursor(nullptr, IDC_ARROW);
     
     m_hwnd = ::CreateWindowEx(
             styleEX.GetWord(),
@@ -180,7 +168,7 @@ BOOL Window::Create(
             m_style.GetWord(),
             m_rect.left, m_rect.top,
             m_rect.XSize(), m_rect.YSize(),
-            pwindowParent ? pwindowParent->GetHWND() : nullptr,
+            nullptr,
             hmenu ? hmenu : (HMENU) nID,
             GetModuleHandle(nullptr),
             this);
@@ -204,7 +192,7 @@ Window::~Window()
 {
     DestroyWindow(m_hwnd);
     s_mapWindow.Remove(m_hwnd);
-    EnableIdleFunction(false);
+    g_pWindow = nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -259,8 +247,6 @@ void Window::CalcStyle()
 
 void Window::SetTopMost(bool bTopMost)
 {
-    ZAssert(m_pwindowParent == nullptr);
-
     //if (m_bTopMost != bTopMost) {
         m_bTopMost = bTopMost;
         CalcStyle();
@@ -269,8 +255,6 @@ void Window::SetTopMost(bool bTopMost)
 
 void Window::SetSizeable(bool bSizeable)
 {
-    ZAssert(m_pwindowParent == nullptr);
-
     if (m_bSizeable != bSizeable) {
         m_bSizeable = bSizeable;
         CalcStyle();
@@ -303,23 +287,21 @@ void Window::SetHasSysMenu(bool bSysMenu)
 
 void Window::UpdateRect()
 {
+    if (IsIconic(m_hwnd) == TRUE) {
+        //minimized, ignore
+        return;
+    }
 	BOOL bRetVal;
     bRetVal = ::GetWindowRect(m_hwnd, &m_rect);
     ZAssert( bRetVal != FALSE );
 	bRetVal = ::GetClientRect(m_hwnd, &m_rectClient);
     ZAssert( bRetVal != FALSE );
 
+    debugf("Window::UpdateRect rect=%s rectClient=%s", (const char*)m_rect.GetString(), (const char*)m_rectClient.GetString());
+
     WinPoint pointOffset = ClientToScreen(WinPoint(0, 0));
 
-    if (m_pwindowParent) {
-        pointOffset = m_pwindowParent->ScreenToClient(pointOffset);
-    }
-
     m_rectClient.Offset(pointOffset);
-
-    if (m_pwindowParent) {
-        m_pwindowParent->ChildRectChanged(this);
-    }
 }
 
 void Window::ChildRectChanged(Window* pchild)
@@ -332,11 +314,13 @@ void Window::RectChanged()
 
 void Window::SetRect(const WinRect& rect)
 {
+    debugf("Window::SetRect rect=%s", (const char*)rect.GetString());
     MoveWindow(m_hwnd, rect.XMin(), rect.YMin(), rect.XSize(), rect.YSize(), true);
 }
 
 void Window::SetClientRect(const WinRect& rectClient)
 {
+    debugf("Window::SetClientRect rect=%s", (const char*) rectClient.GetString());
     WinRect rect = rectClient;
     AdjustWindowRect(&rect, m_style.GetWord(), m_hmenu != nullptr);
     SetRect(rect);
@@ -344,22 +328,19 @@ void Window::SetClientRect(const WinRect& rectClient)
 
 void Window::SetPosition(const WinPoint& point)
 {
-// BUILD_DX9    
-//		SetWindowPos(m_hwnd, HWND_TOP, point.X(), point.Y(), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-//		SetWindowPos(m_hwnd, HWND_NOTOPMOST, point.X(), point.Y(), 0, 0, SWP_NOSIZE | SWP_FRAMECHANGED);
-//		SetWindowPos(m_hwnd, HWND_TOP, point.X(), point.Y(), 0, 0, SWP_NOSIZE | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
-//#else  //Imago put this back 7/6/09
-		SetWindowPos(m_hwnd, nullptr, point.X(), point.Y(), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-// BUILD_DX9
+    debugf("Window::SetPosition point=%s", (const char*)point.GetString());
+    SetWindowPos(m_hwnd, nullptr, point.X(), point.Y(), 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 }
 
 void Window::SetSize(const WinPoint& point)
 {
+    debugf("Window::SetSize point=%s", (const char*)point.GetString());
     SetWindowPos(m_hwnd, nullptr, 0, 0, point.X(), point.Y(), SWP_NOMOVE | SWP_NOZORDER);
 }
 
 void Window::SetClientSize(const WinPoint& point)
 {
+    debugf("Window::SetClientSize point=%s", (const char*)point.GetString());
     WinRect rect = GetClientRect();
     rect.SetSize(point);
     SetClientRect(rect);
@@ -632,17 +613,7 @@ ZString Window::GetText() const
 
 HCURSOR Window::GetCursor() const
 {
-    if (m_hcursor != nullptr) {
-        return m_hcursor;
-    } else {
-        // inherit our cursor from our parent window
-
-        if (GetParent() != nullptr) {
-            return GetParent()->GetCursor();
-        } else {
-            return nullptr;
-        }
-    }
+    return m_hcursor;
 }
 
 void Window::ShowMouse(bool bShow)
@@ -965,31 +936,14 @@ uint32_t Window::WndProc(
 //
 //////////////////////////////////////////////////////////////////////////////
 
-TRef<TList<Window*> > g_plistIdle;
-
 void Window::DoIdle()
 {
 }
 
-void Window::EnableIdleFunction(bool bEnable)
-{
-    if (g_plistIdle) {
-        if (bEnable) {
-            ZAssert(!g_plistIdle->Find(this));
-            g_plistIdle->PushFront(this);
-        } else {
-            g_plistIdle->Remove(this);
-        }
-    }
-}
-
 void CallIdleFunctions()
 {
-    TList<Window*>::Iterator iter(*g_plistIdle);
-
-    while (!iter.End()) {
-        iter.Value()->DoIdle();
-        iter.Next();
+    if (g_pWindow) {
+        g_pWindow->DoIdle();
     }
 }
 
@@ -1028,7 +982,7 @@ uint32_t CALLBACK Window::Win32WndProc(
 
 HRESULT Window::StaticInitialize()
 {
-    g_plistIdle = new TList<Window*>;
+    g_pWindow = nullptr;
 
     WNDCLASS wc;
 
@@ -1065,7 +1019,7 @@ HRESULT Window::StaticTerminate()
 	// BT - 10/17 - Fixing crash when allegiance is exited from the new game screen.
 	RemoveAllKeyboardInputFilters();
 
-    g_plistIdle = nullptr;
+    g_pWindow = nullptr;
     return S_OK;
 }
 
@@ -1106,6 +1060,11 @@ void Window::SetContinuousIdle(bool b)
         return s_bProfileStarted;
     }
 #endif
+
+bool RunPeekMessage(MSG& msg) {
+    //the message WM_INPUT is handled in dinput.cpp
+    return ::PeekMessage(&msg, nullptr, 0, WM_INPUT - 1, PM_REMOVE) != 0 || ::PeekMessage(&msg, nullptr, WM_INPUT + 1, UINT_MAX, PM_REMOVE) != 0;
+}
 
 HRESULT Window::MessageLoop()
 {
@@ -1149,7 +1108,7 @@ HRESULT Window::MessageLoop()
 
         bool bAnyMessage = true;
         if (g_bContinuousIdle) {
-            bAnyMessage = ::PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE) != 0;
+            bAnyMessage = RunPeekMessage(msg);
         } else {
             ::GetMessage(&msg, nullptr, 0, 0);
         }
@@ -1224,7 +1183,7 @@ HRESULT Window::MessageLoop()
                         ::DispatchMessage(&msg);
                         break;
                 } 
-            } while (::PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE));
+            } while (RunPeekMessage(msg));
         }
     }
 }

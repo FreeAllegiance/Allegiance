@@ -9,6 +9,10 @@
 #include "inputengine.h"
 #include "value.h"
 
+#include "window.h"
+
+#define DINPUT_BUFFERSIZE 32
+
 #ifndef DIFEF_MODIFYIFNEEDED
 # define DIFEF_MODIFYIFNEEDED		0x00000010
 #endif
@@ -133,7 +137,411 @@ public:
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class MouseInputStreamImpl : public MouseInputStream {
+std::string GetLastErrorAsString()
+{
+    //Get the error message, if any.
+    DWORD errorMessageID = ::GetLastError();
+    if (errorMessageID == 0)
+        return std::string(); //No error message has been recorded
+
+    LPSTR messageBuffer = nullptr;
+    size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
+
+    std::string message(messageBuffer, size);
+
+    //Free the buffer.
+    LocalFree(messageBuffer);
+
+    return message;
+}
+
+class InputStreamState {
+
+public:
+    TRef<ButtonEvent::SourceImpl>       m_pbuttonEventSource;
+    TVector<TRef<ValueDDInputObject > > m_vvalueObject;
+    TVector<TRef<ButtonDDInputObject> > m_vbuttonObject;
+
+    InputStreamState() :
+        m_pbuttonEventSource(ButtonEvent::Source::Create()),
+        m_vvalueObject(3),
+        m_vbuttonObject(0)
+    {
+    }
+
+    int GetValueCount()
+    {
+        return m_vvalueObject.GetCount();
+    }
+
+    int GetButtonCount()
+    {
+        return m_vbuttonObject.GetCount();
+    }
+
+    Boolean* IsDown(int id)
+    {
+        if (id < m_vbuttonObject.GetCount()) {
+            return m_vbuttonObject[id]->GetValue();
+        }
+        else {
+            return NULL;
+        }
+    }
+
+    Number* GetValue(int id)
+    {
+        if (id < m_vvalueObject.GetCount()) {
+            return m_vvalueObject[id]->GetValue();
+        }
+        else {
+            return NULL;
+        }
+    }
+
+    ButtonEvent::Source* GetEventSource()
+    {
+        return m_pbuttonEventSource;
+    }
+};
+
+class MouseInputStreamState : public InputStreamState {
+public:
+    Rect                                m_rectClip;
+    TRef<SimpleModifiableValue<Point>> m_point;
+
+    float                               m_z;
+    bool                                m_bEnabled;
+    int                                 m_threshold1;
+    int                                 m_threshold2;
+    int                                 m_acceleration;
+    float                               m_sensitivity;
+
+    MouseInputStreamState() :
+        m_point(new SimpleModifiableValue<Point>(Point(0, 0)))
+    {
+    }
+
+    void SetXY(float x, float y) {
+        Point point(x, y);
+        m_rectClip.Clip(point);
+        m_point->SetValue(point);
+
+        m_vvalueObject[0]->GetValue()->SetValue(point.X());
+        m_vvalueObject[1]->GetValue()->SetValue(point.Y());
+    }
+
+    void SetRelativeXY(float x, float y) {
+        const Point& point = m_point->GetValue();
+        SetXY(
+            point.X() + x,
+            point.Y() + y
+        );
+    }
+
+    void ButtonChanged(int index, bool bDown)
+    {
+        m_vbuttonObject[index]->GetValue()->SetValue(bDown);
+        m_pbuttonEventSource->Trigger(ButtonEventData(index, bDown));
+    }
+
+    void ResetWheel() {
+        if (m_vbuttonObject[8] != NULL && m_vbuttonObject[8]->GetValue()->GetValue()) //#217
+            ButtonChanged(8, false);
+        if (m_vbuttonObject[8] != NULL && m_vbuttonObject[9]->GetValue()->GetValue()) //#217
+            ButtonChanged(9, false);
+    }
+
+    void SetRelativeWheel(int delta) {
+        m_z += (float)delta;
+        if (m_vvalueObject.GetCount() >= 3 && m_vvalueObject[2] != NULL) {
+            m_vvalueObject[2]->GetValue()->SetValue(m_z);
+
+            //also treat a scroll event as a button press
+            if (delta < 0) {
+                ButtonChanged(8, true);
+            }
+            else if (delta > 0) {
+                ButtonChanged(9, true);
+            }
+            else { //imago 8/13/09 use dz == 0 for button up
+                ResetWheel();
+            }
+        }
+    }
+
+    float CalculateDelta(int delta)
+    {
+        if (abs(delta) > m_threshold1 && m_acceleration >= 1) {
+            if (abs(delta) > m_threshold2 && m_acceleration >= 2) {
+                return float(delta) * 4.0f * m_sensitivity;
+            }
+            else {
+                return float(delta) * 2.0f * m_sensitivity;
+            }
+        }
+
+        return float(delta) * m_sensitivity;
+    }
+};
+
+template <typename T>
+class InputStreamStateWrapper : virtual public InputStream {
+protected:
+    std::shared_ptr<T> m_pstate;
+
+public:
+    InputStreamStateWrapper(const std::shared_ptr<T> pstate) :
+        m_pstate(pstate)
+    {
+    }
+
+    int GetValueCount()
+    {
+        return m_pstate->GetValueCount();
+    }
+
+    int GetButtonCount()
+    {
+        return m_pstate->GetButtonCount();
+    }
+
+    Boolean* IsDown(int id)
+    {
+        return m_pstate->IsDown(id);
+    }
+
+    Number* GetValue(int id)
+    {
+        return m_pstate->GetValue(id);
+    }
+
+    ButtonEvent::Source* GetEventSource()
+    {
+        return m_pstate->GetEventSource();
+    }
+};
+
+class MouseInputStreamStateWrapper : public InputStreamStateWrapper<MouseInputStreamState>, virtual public MouseInputStream {
+public:
+
+    MouseInputStreamStateWrapper(const std::shared_ptr<MouseInputStreamState> pstate) :
+        InputStreamStateWrapper(pstate)
+    {}
+
+    bool IsEnabled() override {
+        return m_pstate->m_bEnabled;
+    }
+
+    void SetEnabled(bool bEnable) override {
+        m_pstate->m_bEnabled = bEnable;
+    }
+    
+    void SetClipRect(const Rect& rect) override {
+        m_pstate->m_rectClip = rect;
+
+        Point point = m_pstate->m_point->GetValue();
+        m_pstate->SetXY(point.X(), point.Y());
+    }
+
+    void SetPosition(const Point& point) override {
+        m_pstate->SetXY(point.X(), point.Y());
+    }
+
+    TRef<TStaticValue<Point>> GetPosition() override {
+        return m_pstate->m_point;
+    }
+
+    float GetWheelPosition() override {
+        return m_pstate->m_z;
+    }
+
+    void SetWheelPosition(float z) override {
+        m_pstate->m_z = z;
+    }
+
+    void SetSensitivity(const float sens) override {
+        m_pstate->m_sensitivity = sens;
+    }
+
+    void SetAccel(const int accel) override {
+        m_pstate->m_acceleration = accel;
+    }
+
+};
+
+class RawInputPump : public TEvent<PRAWINPUT>::SourceImpl {
+private:
+    
+public:
+    void Pump() {
+        MSG msg;
+        while (::PeekMessage(&msg, NULL, WM_INPUT, WM_INPUT, PM_REMOVE)) {
+            UINT dwSize;
+
+            if (0 != GetRawInputData((HRAWINPUT)msg.lParam, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER))) {
+                //an error
+                continue;
+            }
+            if (dwSize == 0) {
+                //empty
+                continue;
+            }
+            LPBYTE lpb = new BYTE[dwSize];
+
+            if (GetRawInputData((HRAWINPUT)msg.lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) != dwSize) {
+                //incorrect length
+                continue;
+            }
+
+            PRAWINPUT pri = (PRAWINPUT)lpb;
+
+            this->Trigger(pri);
+
+            delete[] lpb;
+        }
+    }
+};
+
+class RawMouseInputStreamImpl : virtual public MouseInputStream, MouseInputStreamStateWrapper, TEvent<PRAWINPUT>::Sink {
+    HWND								m_hwnd;
+    TRef<RawInputPump> m_ppump;
+    TRef<TEvent<PRAWINPUT>::Sink> m_sinkDelegate;
+
+public:
+    RawMouseInputStreamImpl(HWND hwnd, const std::shared_ptr<MouseInputStreamState> pstate, TRef<RawInputPump> ppump) :
+        m_hwnd(hwnd),
+        MouseInputStreamStateWrapper(pstate),
+        m_ppump(ppump),
+        m_sinkDelegate(nullptr)
+    {
+    }
+
+    ~RawMouseInputStreamImpl() {
+        SetEnabled(false);
+    }
+
+    void SetEnabled(bool bEnable) override {
+        if (IsEnabled() == bEnable) {
+            return;
+        }
+
+        MouseInputStreamStateWrapper::SetEnabled(bEnable);
+
+        RAWINPUTDEVICE Rid[1];
+        Rid[0].usUsagePage = 0x01;
+        Rid[0].usUsage = 0x02;
+        if (IsEnabled()) {
+            Rid[0].dwFlags = RIDEV_EXINPUTSINK | RIDEV_CAPTUREMOUSE | RIDEV_NOLEGACY;
+            Rid[0].hwndTarget = m_hwnd;
+
+            m_sinkDelegate = TEvent<PRAWINPUT>::Sink::CreateDelegate(this);
+            m_ppump->AddSink(m_sinkDelegate);
+        }
+        else {
+            Rid[0].dwFlags = RIDEV_REMOVE;
+            Rid[0].hwndTarget = NULL;
+
+            m_ppump->RemoveSink(m_sinkDelegate);
+            m_sinkDelegate = nullptr;
+        }
+        if (RegisterRawInputDevices(Rid, 1, sizeof(Rid[0])) != TRUE) {
+            debugf("Mouse input: Failed SetEnable (%s)", IsEnabled() ? "true" : "false");
+        }
+    }
+
+    void Update() override {
+        m_pstate->ResetWheel();
+    }
+
+    bool OnEvent(TEvent<PRAWINPUT>::Source* pevent, PRAWINPUT pri) override {
+        if (this->IsEnabled() == false) {
+            return true;
+        }
+
+        if (pri->header.dwType != RIM_TYPEMOUSE) {
+            // not the mouse
+            return true;
+        }
+
+        RAWMOUSE data = pri->data.mouse;
+
+        bool bMouseAbsolute;
+        bMouseAbsolute = data.usFlags & MOUSE_MOVE_ABSOLUTE;
+
+        if (bMouseAbsolute == false) {
+            if (data.lLastX != 0 || data.lLastY != 0) {
+                m_pstate->SetRelativeXY(
+                    m_pstate->CalculateDelta(data.lLastX),
+                    m_pstate->CalculateDelta(-data.lLastY)
+                );
+            }
+        }
+        else {
+            m_pstate->SetXY(data.lLastX, data.lLastY);
+        }
+
+        if (data.usButtonFlags & RI_MOUSE_WHEEL) {
+            m_pstate->SetRelativeWheel((short)(unsigned short)data.usButtonData);
+        }
+
+        if (data.usButtonFlags != 0) {
+            int iButton = GetButtonIndexFromButtonFlags(data.usButtonFlags);
+
+            if (iButton >= 0 && iButton < GetButtonCount()) {
+                bool bDown = GetIsButtonDownFromButtonFlags(data.usButtonFlags);
+                m_pstate->ButtonChanged(iButton, bDown);
+            }
+        }
+
+        return true;
+    }
+
+    int GetButtonIndexFromButtonFlags(USHORT flag) {
+        // the index is different from directinput to raw input, we use the directinput mapping which starts at 0
+        switch (flag) {
+        case RI_MOUSE_LEFT_BUTTON_DOWN:
+        case RI_MOUSE_LEFT_BUTTON_UP:
+            return 0;
+        case RI_MOUSE_RIGHT_BUTTON_DOWN:
+        case RI_MOUSE_RIGHT_BUTTON_UP:
+            return 1;
+        case RI_MOUSE_BUTTON_3_DOWN:
+        case RI_MOUSE_BUTTON_3_UP:
+            return 2;
+        case RI_MOUSE_BUTTON_4_DOWN:
+        case RI_MOUSE_BUTTON_4_UP:
+            return 3;
+        case RI_MOUSE_BUTTON_5_DOWN:
+        case RI_MOUSE_BUTTON_5_UP:
+            return 4;
+        }
+        return -1;
+    }
+
+    bool GetIsButtonDownFromButtonFlags(USHORT flag) {
+        switch (flag) {
+        case RI_MOUSE_LEFT_BUTTON_DOWN:
+        case RI_MOUSE_RIGHT_BUTTON_DOWN:
+        case RI_MOUSE_BUTTON_3_DOWN:
+        case RI_MOUSE_BUTTON_4_DOWN:
+        case RI_MOUSE_BUTTON_5_DOWN:
+            return true;
+        case RI_MOUSE_LEFT_BUTTON_UP:
+        case RI_MOUSE_RIGHT_BUTTON_UP:
+        case RI_MOUSE_BUTTON_3_UP:
+        case RI_MOUSE_BUTTON_4_UP:
+        case RI_MOUSE_BUTTON_5_UP:
+            return false;
+        }
+        return false;
+    }
+
+
+};
+
+class MouseInputStreamImpl : virtual public MouseInputStream, public MouseInputStreamStateWrapper {
 private:
     //////////////////////////////////////////////////////////////////////////////
     //
@@ -177,9 +585,9 @@ private:
                 );
 
             if (index == -1) {
-                m_vvalueObject.PushEnd(pobject);
+                m_pstate->m_vvalueObject.PushEnd(pobject);
             } else {
-                m_vvalueObject.Set(index, pobject);
+                m_pstate->m_vvalueObject.Set(index, pobject);
             }
         } else if (pddoi->dwType & DIDFT_PSHBUTTON) {
             ButtonDDInputObject* pobject =
@@ -189,7 +597,7 @@ private:
                     pddoi->guidType
                 );
 
-            m_vbuttonObject.PushEnd(pobject);
+            m_pstate->m_vbuttonObject.PushEnd(pobject);
         } 
 
         return DIENUM_CONTINUE;
@@ -218,20 +626,9 @@ private:
     
 //    TRef<IDirectInputDevice2>           m_pdid;
 	TRef<IDirectInputDevice8>			m_pdid;					// kg: DInput8
-    TRef<ButtonEvent::SourceImpl>       m_pbuttonEventSource;
     DIDeviceCaps                        m_didc;
     DIDeviceInstance                    m_didi;
-    TVector<TRef<ValueDDInputObject > > m_vvalueObject;
-    TVector<TRef<ButtonDDInputObject> > m_vbuttonObject;
-    Rect                                m_rect;
-    Point                               m_point;
-    float                               m_z;
     bool                                m_bBuffered;
-    bool                                m_bEnabled;
-    int                                 m_threshold1;
-    int                                 m_threshold2;
-    int                                 m_acceleration;
-    float                               m_sensitivity;
 	HWND								m_hwnd;
 	CLogFile *							m_pLogFile; //Imago 8/12/09
 
@@ -243,17 +640,12 @@ public:
     //////////////////////////////////////////////////////////////////////////////
     
 //    MouseInputStreamImpl(IDirectInputDevice2* pdid, HWND hwnd) :
-	MouseInputStreamImpl(IDirectInputDevice8* pdid, HWND hwnd, CLogFile * pLogFile) :		// kg: DInput8
+	MouseInputStreamImpl(IDirectInputDevice8* pdid, HWND hwnd, CLogFile * pLogFile, std::shared_ptr<MouseInputStreamState> pstate) :		// kg: DInput8
         m_pdid(pdid),
 		m_hwnd(hwnd),
-        m_rect(0, 0, 0, 0),                                                                         
-        m_point(0, 0),
-        m_vvalueObject(3),
-        m_bEnabled(false),
+        MouseInputStreamStateWrapper(pstate),
         m_bBuffered(true),
-        m_pbuttonEventSource(ButtonEvent::Source::Create()),
-		m_pLogFile(pLogFile),
-		m_z(0) //Imago 8/12/09
+		m_pLogFile(pLogFile)
     {
         //
         // Are we running on NT
@@ -284,12 +676,12 @@ public:
         //
 
         //Imago 8/14/09
-        if (m_vvalueObject[2] != NULL) {
-            m_vbuttonObject.SetCount(10);
+        if (m_pstate->m_vvalueObject[2] != NULL) {
+            m_pstate->m_vbuttonObject.SetCount(10);
             ButtonDDInputObject* pobject = new ButtonDDInputObject("Wheel Up",0x00000301UL,GUID_ZAxis);
-            m_vbuttonObject.Set(8,pobject);
+            m_pstate->m_vbuttonObject.Set(8,pobject);
             pobject = new ButtonDDInputObject("Wheel Down",0x00000401UL,GUID_ZAxis);
-            m_vbuttonObject.Set(9,pobject);
+            m_pstate->m_vbuttonObject.Set(9,pobject);
            
         }
 
@@ -309,9 +701,9 @@ public:
 
         ZVerify(SystemParametersInfo(SPI_GETMOUSE, 0, pvalue, 0));
 
-        m_threshold1   = pvalue[0];
-        m_threshold2   = pvalue[1];
-        m_acceleration = pvalue[2];
+        m_pstate->m_threshold1   = pvalue[0];
+        m_pstate->m_threshold2   = pvalue[1];
+        m_pstate->m_acceleration = pvalue[2];
     }
 
     void SetupDevice() 
@@ -333,7 +725,7 @@ public:
             dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER); 
             dipdw.diph.dwObj        = 0; 
             dipdw.diph.dwHow        = DIPH_DEVICE; 
-            dipdw.dwData            = 32; 
+            dipdw.dwData            = DINPUT_BUFFERSIZE;
 
             DDCall(m_pdid->SetProperty(DIPROP_BUFFERSIZE, &dipdw.diph));
         }
@@ -344,93 +736,23 @@ public:
     // Methods
     //
     //////////////////////////////////////////////////////////////////////////////
-    
-    void DoClip()
-    {
-        if (
-               m_rect.XMax() > m_rect.XMin()
-            && m_rect.YMax() > m_rect.YMin()
-        ) {
-            if (m_point.X() < m_rect.XMin()) {
-                m_point.SetX(m_rect.XMin());
-            }
-
-            if (m_point.X() >= m_rect.XMax()) {
-                m_point.SetX(m_rect.XMax() - 1);
-            }
-
-            if (m_point.Y() < m_rect.YMin()) {
-                m_point.SetY(m_rect.YMin());
-            }
-
-            if (m_point.Y() >= m_rect.YMax()) {
-                m_point.SetY(m_rect.YMax() - 1);
-            }
-        }
-    }
-
-    float CalculateDelta(int delta)
-    {
-        if (abs(delta) > m_threshold1 && m_acceleration >= 1) {
-            if (abs(delta) > m_threshold2 && m_acceleration >= 2) {
-                return float(delta) * 4.0f * m_sensitivity;
-            } else {
-                return float(delta) * 2.0f * m_sensitivity;
-            }
-        }
-
-        return float(delta) * m_sensitivity;
-    }
 
     void DeltaPosition(int& dx, int& dy)
     {
         if (dx != 0 || dy != 0) {
-            //ZDebugOutput("MouseMove: (" + ZString(dx) + ", " + ZString(dy) + ")\n");
-
-            m_point.SetX(m_point.X() + CalculateDelta(dx));
-            m_point.SetY(m_point.Y() - CalculateDelta(dy));
+            m_pstate->SetRelativeXY(
+                m_pstate->CalculateDelta(dx),
+                m_pstate->CalculateDelta(-dy)
+            );
 
             dx = 0;
             dy = 0;
-
-            //
-            // Clip to the screen rect if required
-            //
-
-            DoClip();
-
-            //
-            // Update outputs
-            //
-
-            m_vvalueObject[0]->GetValue()->SetValue(m_point.X());
-            m_vvalueObject[1]->GetValue()->SetValue(m_point.Y());
         }
     }
 
     void DeltaWheel(int dz)
     {
-        m_z += float(dz);
-
-        if (m_vvalueObject.GetCount() >= 3 && m_vvalueObject[2] != NULL) { //#217
-            m_vvalueObject[2]->GetValue()->SetValue(m_z); //imago 8/12/09 use z axis
-            if (dz < 0) {
-                ButtonChanged(8,true);
-            } else if (dz > 0) {
-                ButtonChanged(9,true);
-            } else { //imago 8/13/09 use dz == 0 for button up
-                if (m_vbuttonObject[8] != NULL && m_vbuttonObject[8]->GetValue()->GetValue()) //#217
-                    ButtonChanged(8,false);
-                if (m_vbuttonObject[8] != NULL && m_vbuttonObject[9]->GetValue()->GetValue()) //#217
-                    ButtonChanged(9,false);
-            }
-        }
-    }
-
-    void ButtonChanged(int index, bool bDown)
-    {
-        m_vbuttonObject[index]->GetValue()->SetValue(bDown);
-        m_pbuttonEventSource->Trigger(ButtonEventData(index, bDown));
+        m_pstate->SetRelativeWheel(dz);
     }
 
     void UpdateBuffered()
@@ -439,77 +761,72 @@ public:
         // Get the data
         //
 
-        DIDEVICEOBJECTDATA didod;
-        DWORD count = 1;
+        DIDEVICEOBJECTDATA didod[DINPUT_BUFFERSIZE];
+        DWORD count = DINPUT_BUFFERSIZE;
         int dx = 0;
         int dy = 0;
         int dz = 0;
 
-        while (count == 1) {
-            HRESULT hr = m_pdid->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), &didod, &count, 0);
+        HRESULT hr = m_pdid->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), didod, &count, 0);
 
-            if (FAILED(hr)) {
-                return;
+        if (FAILED(hr)) {
+            return;
+        }
+
+        if (hr == DI_BUFFEROVERFLOW) {
+            debugf("Mouse buffer overflow, samples returned: %d", count);
+        }
+
+        for (int i = 0; i < count; ++i) {
+            DIDEVICEOBJECTDATA& entry = didod[i];
+            switch (entry.dwOfs) {
+            case DIMOFS_BUTTON0:
+                DeltaPosition(dx, dy);
+                m_pstate->ButtonChanged(0, ((entry.dwData & 0x80) != 0));
+                break;
+
+            case DIMOFS_BUTTON1:
+                m_pstate->ButtonChanged(1, ((entry.dwData & 0x80) != 0));
+                break;
+
+            case DIMOFS_BUTTON2:
+                m_pstate->ButtonChanged(2, ((entry.dwData & 0x80) != 0));
+                break;
+
+            case DIMOFS_BUTTON3:
+                m_pstate->ButtonChanged(3, ((entry.dwData & 0x80) != 0));
+                break;
+
+                // mdvalley: More buttons
+
+            case DIMOFS_BUTTON4:
+                m_pstate->ButtonChanged(4, ((entry.dwData & 0x80) != 0));
+                break;
+
+            case DIMOFS_BUTTON5:
+                m_pstate->ButtonChanged(5, ((entry.dwData & 0x80) != 0));
+                break;
+
+            case DIMOFS_BUTTON6:
+                m_pstate->ButtonChanged(6, ((entry.dwData & 0x80) != 0));
+                break;
+
+            case DIMOFS_BUTTON7:
+                m_pstate->ButtonChanged(7, ((entry.dwData & 0x80) != 0));
+                break;
+
+            case DIMOFS_X:
+                dx += int(entry.dwData);
+                break;
+
+            case DIMOFS_Y:
+                dy += int(entry.dwData);
+                break;
+
+            case DIMOFS_Z:
+                dz += int(entry.dwData);
+                break;
             }
-
-            if (count == 1) {
-                //
-                // Unpack the data
-                //
-
-                switch  (didod.dwOfs) {
-                    case DIMOFS_BUTTON0: 
-                        DeltaPosition(dx, dy);
-                        ButtonChanged(0, ((didod.dwData & 0x80) != 0)); 
-                        break;
-
-                    case DIMOFS_BUTTON1: 
-                        ButtonChanged(1, ((didod.dwData & 0x80) != 0)); 
-                        break;
-
-                    case DIMOFS_BUTTON2: 
-                        ButtonChanged(2, ((didod.dwData & 0x80) != 0)); 
-                        break;
-
-                    case DIMOFS_BUTTON3: 
-                        ButtonChanged(3, ((didod.dwData & 0x80) != 0)); 
-                        break;
-
-					// mdvalley: More buttons
-
-					case DIMOFS_BUTTON4:
-						ButtonChanged(4, ((didod.dwData & 0x80) != 0));
-						break;
-
-					case DIMOFS_BUTTON5:
-						ButtonChanged(5, ((didod.dwData & 0x80) != 0));
-						break;
-
-					case DIMOFS_BUTTON6:
-						ButtonChanged(6, ((didod.dwData & 0x80) != 0));
-						break;
-
-					case DIMOFS_BUTTON7:
-						ButtonChanged(7, ((didod.dwData & 0x80) != 0));
-						break;
-
-                    case DIMOFS_X:
-                        dx += int(didod.dwData);
-                        break;
-
-                    case DIMOFS_Y:
-                        dy += int(didod.dwData);
-                        break;
-
-                    case DIMOFS_Z:
-                        dz += int(didod.dwData);
-                        break;
-                }
-            }
-
-            //
-            // do the mouse change
-            //
 
             DeltaPosition(dx, dy);
         }
@@ -544,22 +861,22 @@ public:
         DeltaPosition(dx, dy);
         DeltaWheel(dz);
 
-        int count = m_vbuttonObject.GetCount();
+        int count = m_pstate->m_vbuttonObject.GetCount();
 
         for (int index = 0; index < count; index++) {
             bool               bDown = ((dims.rgbButtons[index] & 0x80) != 0);
-            ModifiableBoolean* pbool = m_vbuttonObject[index]->GetValue();
+            ModifiableBoolean* pbool = m_pstate->m_vbuttonObject[index]->GetValue();
 
             if (bDown != pbool->GetValue()) {
                 pbool->SetValue(bDown);
-                ButtonChanged(index, bDown);
+                m_pstate->ButtonChanged(index, bDown);
             }
         }
     }
 
     void Update()
     {
-        if (m_bEnabled) {
+        if (m_pstate->m_bEnabled) {
             //ZDebugOutput("Mouse Enabled\n");
             HRESULT hr = m_pdid->Acquire();
 
@@ -586,49 +903,12 @@ public:
     //
     //////////////////////////////////////////////////////////////////////////////
 
-	//Imago #215 8/10
-	void SetSensitivity(const float sens) { m_sensitivity = sens; } 
-	void SetAccel(const int accel) { m_acceleration = accel; } 
-	//
-
-    void SetClipRect(const Rect& rect)
-    {
-        m_rect = rect;
-        DoClip();
-    }
-
-    void SetPosition(const Point& point)
-    {
-        m_point = point;
-        DoClip();
-    }
-
-    void SetWheelPosition(float pos)
-    {
-        m_z = pos;
-    }
-
-    float GetWheelPosition()
-    {
-        return m_z;
-    }
-
-    const Point& GetPosition()
-    {
-        return m_point;
-    }
-
-    bool IsEnabled()
-    {
-        return m_bEnabled;
-    }
-
     void SetEnabled(bool bEnabled)
     {
-        if (m_bEnabled != bEnabled) {
-            m_bEnabled = bEnabled;
+        if (m_pstate->m_bEnabled != bEnabled) {
+            MouseInputStreamStateWrapper::SetEnabled(bEnabled);
 
-            if (m_bEnabled) {
+            if (IsEnabled()) {
                 DDCall(m_pdid->SetCooperativeLevel(m_hwnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND));
             } else {
 //                DDCall(m_pdid->SetCooperativeLevel(m_hwnd, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND));
@@ -637,44 +917,6 @@ public:
         }
     }
 
-    //////////////////////////////////////////////////////////////////////////////
-    //
-    // InputStream
-    //
-    //////////////////////////////////////////////////////////////////////////////
-    
-    int GetValueCount()
-    {
-        return m_vvalueObject.GetCount();
-    }
-
-    int GetButtonCount()
-    {
-        return m_vbuttonObject.GetCount();
-    }
-
-    Boolean* IsDown(int id)
-    {
-        if (id < m_vbuttonObject.GetCount()) {
-            return m_vbuttonObject[id]->GetValue();
-        } else {
-            return NULL;
-        }
-    }
-
-    Number* GetValue(int id)
-    {
-        if (id < m_vvalueObject.GetCount()) {
-            return m_vvalueObject[id]->GetValue();
-        } else {
-            return NULL;
-        }
-    }
-
-    ButtonEvent::Source* GetEventSource()
-    {
-        return m_pbuttonEventSource;
-    }
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1003,7 +1245,7 @@ public:
 
             //
             // The MS Gamepad will return error from this funtion if the mode button is pressed
-            // Don't assert in that case.  Just don't unpack the data.
+            // Don't ZAssert in that case.  Just don't unpack the data.
             //
 
             hr = m_pdid->GetDeviceState(m_sizeData, m_pbyteData);
@@ -1540,8 +1782,8 @@ private:
         switch (pdidi->dwDevType & 0xff) {
 			case DI8DEVTYPE_MOUSE: // kg Di8 DIDEVTYPE_MOUSE:
                 {
-                    if (m_pmouseInputStream == NULL) {
-                        m_pmouseInputStream = new MouseInputStreamImpl(pdid2, m_hwnd, &m_joylog);
+                    if (m_pmouseInputStreamDirectInput == NULL) {
+                        m_pmouseInputStreamDirectInput = new MouseInputStreamImpl(pdid2, m_hwnd, &m_joylog, m_pMouseState);
                     }
                 }
                 break;
@@ -1586,9 +1828,15 @@ private:
     bool                                    m_bFocus;
     TRef<IDirectInput>                      m_pdi;
     TVector<TRef<JoystickInputStreamImpl> > m_vjoystickInputStream;
-    TRef<MouseInputStreamImpl>              m_pmouseInputStream;
+    TRef<MouseInputStream>              m_pmouseInputStream;
+    TRef<MouseInputStreamImpl>              m_pmouseInputStreamDirectInput;
     HINSTANCE                               m_hdinput;
     CLogFile                                m_joylog; //Imago 8/12/09
+
+    std::shared_ptr<MouseInputStreamState> m_pMouseState;
+    TRef<RawInputPump> m_pRawInputPump;
+    TRef<Boolean> m_pUseMethodRaw;
+    TRef<Value> m_pConfigurationUpdater;
 
 public:
     //////////////////////////////////////////////////////////////////////////////
@@ -1599,10 +1847,13 @@ public:
 
     typedef HRESULT (WINAPI *PFNDirectInputCreate)(HINSTANCE hinst, DWORD dwVersion, LPDIRECTINPUTA *ppDI, LPUNKNOWN punkOuter);
 
-    InputEngineImpl(HWND hwnd) :
+    InputEngineImpl(HWND hwnd, TRef<Boolean> pUseMethodRaw) :
         m_hwnd(hwnd),
         m_bFocus(false),
-        m_joylog("DirectInput.log")
+        m_joylog("DirectInput.log"),
+        m_pUseMethodRaw(pUseMethodRaw),
+        m_pMouseState(std::make_shared<MouseInputStreamState>()),
+        m_pRawInputPump(new RawInputPump())
     {
         //
         // Create the direct input object
@@ -1658,6 +1909,23 @@ public:
         m_joylog.OutputString("Initialized DirectInput\n");
         EnumerateJoysticks();
         m_joylog.CloseLogFile();
+
+        m_pConfigurationUpdater = new CallbackWhenChanged<bool>([this](bool bUseRaw) {
+            bool bCurrentlyEnabled = false;
+            if (m_pmouseInputStream != nullptr) {
+                bCurrentlyEnabled = m_pmouseInputStream->IsEnabled();
+                m_pmouseInputStream->SetEnabled(false);
+            }
+
+            if (bUseRaw) {
+                m_pmouseInputStream = new RawMouseInputStreamImpl(m_hwnd, m_pMouseState, m_pRawInputPump);
+            }
+            else {
+                m_pmouseInputStream = m_pmouseInputStreamDirectInput;
+            }
+            m_pmouseInputStream->SetEnabled(bCurrentlyEnabled);
+        }, m_pUseMethodRaw);
+        m_pConfigurationUpdater->Update();
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -1710,8 +1978,12 @@ public:
 
     void Update()
     {
+
         if (m_bFocus) {
+            m_pConfigurationUpdater->Update();
             m_pmouseInputStream->Update();
+
+            m_pRawInputPump->Pump();
 
             int count = m_vjoystickInputStream.GetCount();
 
@@ -1735,7 +2007,7 @@ public:
     }
 };
 
-TRef<InputEngine> CreateInputEngine(HWND hwnd)
+TRef<InputEngine> CreateInputEngine(HWND hwnd, TRef<Boolean> pUseMethodRaw)
 {
-    return new InputEngineImpl(hwnd);
+    return new InputEngineImpl(hwnd, pUseMethodRaw);
 }

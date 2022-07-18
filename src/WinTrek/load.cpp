@@ -547,7 +547,7 @@ public:
 		
 		//AaronMoore 1/10
         m_keyboardDelegate = IKeyboardInput::CreateDelegate(this);
-        GetWindow()->AddKeyboardInputFilter(m_keyboardDelegate);
+        GetEngineWindow()->AddKeyboardInputFilter(m_keyboardDelegate);
     }
 
     ~LoadoutImpl()
@@ -565,7 +565,7 @@ public:
         m_pmodeler->UnloadNameSpace("loadoutinclude");
 		
 		//AaronMoore 1/10
-        GetWindow()->RemoveKeyboardInputFilter(m_keyboardDelegate);
+        GetEngineWindow()->RemoveKeyboardInputFilter(m_keyboardDelegate);
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -1379,7 +1379,7 @@ public:
 
     void SlotClicked(Slot* pslot, bool bNext, const WinPoint& point)
     {
-        assert (trekClient.GetShip()->GetStation() != NULL);
+        ZAssert (trekClient.GetShip()->GetStation() != NULL);
         BuyPartMenu(pslot, point);
     }
 
@@ -1444,7 +1444,7 @@ public:
             amount = 0x7fff;
 
         IpartIGC*   ppart = m_pship->CreateAndAddPart(ppartType, pslot->GetMount(), amount);
-        assert (ppart);
+        ZAssert (ppart);
         pslot->SetPart(ppart);
 
         UpdateHullType();
@@ -1467,7 +1467,7 @@ public:
 
                 iter.Next();
             }
-            assert (m_pship->GetParts()->n() == 0);
+            ZAssert (m_pship->GetParts()->n() == 0);
         }
 	//AaronMoore 1/10
         trekClient.ReplaceLoadout(m_pship, trekClient.GetShip()->GetStation(), phullType, moneyLots, loadoutList);
@@ -1539,7 +1539,7 @@ public:
 
     bool OnButtonHullList()
     {
-        assert(trekClient.GetShip()->GetStation() != NULL);
+        ZAssert(trekClient.GetShip()->GetStation() != NULL);
         HullMenu();
 
         return true;
@@ -1578,12 +1578,12 @@ public:
             //
 
             HullTypeLinkIGC*    phtlStart = phullList->find(phtCurrent);
-            assert (phtlStart);
+            ZAssert (phtlStart);
             HullTypeLinkIGC*    phtlNow = phtlStart;
 
             while (true)
             {
-                assert (phtlNow);
+                ZAssert (phtlNow);
                 if (bForward)
                 {
                     phtlNow = phtlNow->next();
@@ -1704,7 +1704,7 @@ public:
         m_pmenu->AddMenuItem(-1, "-Make Slot Empty-");
 
         IstationIGC* pstation  = trekClient.GetShip()->GetStation();
-        assert(pstation);
+        ZAssert(pstation);
 
         const PartTypeListIGC* plist = trekClient.m_pCoreIGC->GetPartTypes();
         for (PartTypeLinkIGC* ppartTypeNode = plist->first();
@@ -1745,14 +1745,14 @@ public:
         }
 
         if (bAnyItems) {
-            Point popupPosition = GetWindow()->GetMousePosition();
+            Point popupPosition = GetEngineWindow()->GetMousePosition();
             GetWindow()->GetPopupContainer()->OpenPopup(m_pmenu, Rect(popupPosition, popupPosition), true, false);
         }
     }
 
     TRef<IPopup> GetSubMenu(IMenuItem* pitem)
     {
-        assert(pitem->GetID() == c_midOtherParts);
+        ZAssert(pitem->GetID() == c_midOtherParts);
 
         TRef<IMenu> pmenu =
             CreateMenu(
@@ -1842,7 +1842,7 @@ public:
 #endif
         }
 
-        Point popupPosition = GetWindow()->GetMousePosition();
+        Point popupPosition = GetEngineWindow()->GetMousePosition();
         GetWindow()->GetPopupContainer()->OpenPopup(m_phullMenu, Rect(popupPosition, popupPosition), true, false);
     }
             

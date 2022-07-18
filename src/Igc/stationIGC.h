@@ -234,7 +234,7 @@ class       CstationIGC : public TmodelIGC<IstationIGC>
                 IclusterIGC*    c = GetCluster();
                 if (c)
                 {
-                    assert (cluster == NULL);
+                    ZAssert (cluster == NULL);
                     c->DeleteStation(this);
                     c->GetClusterSite()->MoveStation();
                 }
@@ -307,7 +307,7 @@ class       CstationIGC : public TmodelIGC<IstationIGC>
     // IscannerIGC
         bool            InScannerRange(ImodelIGC*   pModel) const
         {
-            assert (pModel);
+            ZAssert (pModel);
 
             bool    rc;
             IclusterIGC*    pcluster = GetCluster();
@@ -337,7 +337,7 @@ class       CstationIGC : public TmodelIGC<IstationIGC>
 
         bool             CanSee(ImodelIGC*   pModel) const
         {
-            assert (pModel);
+            ZAssert (pModel);
 
             IsideIGC*   side = GetSide();
 
@@ -376,9 +376,9 @@ class       CstationIGC : public TmodelIGC<IstationIGC>
         virtual bool                    CanBuy(const IbuyableIGC* b) const
         {
             IsideIGC*   s = GetSide();
-            assert (s);
+            ZAssert (s);
 
-            assert (b->GetObjectType() != OT_bucket);
+            ZAssert (b->GetObjectType() != OT_bucket);
 
             return b->GetRequiredTechs() <= (m_myStationType.GetLocalTechs() | s->GetTechs());
         }
@@ -391,7 +391,7 @@ class       CstationIGC : public TmodelIGC<IstationIGC>
 
         virtual IbuyableIGC*    GetSuccessor(IbuyableIGC* b) const
         {
-            assert (b);
+            ZAssert (b);
 
             IbuyableIGC*    pSuccessor = b;
 
@@ -426,7 +426,7 @@ class       CstationIGC : public TmodelIGC<IstationIGC>
                         pSuccessor = pNext;
                 }
 
-                assert (pSuccessor);
+                ZAssert (pSuccessor);
             }
 
             return pSuccessor;                   

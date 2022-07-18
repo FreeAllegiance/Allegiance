@@ -22,7 +22,7 @@ void CAdminEventLoggerHook::EventLogged(CQLogEvent* pquery)
 {
   // Signal the event
   CQLogEventData* pqd = pquery->GetData();
-  assert(pqd->hevt);
+  ZAssert(pqd->hevt);
   ::SetEvent(pqd->hevt);
 }
 
@@ -75,8 +75,8 @@ STDMETHODIMP CAdminEventLoggerHook::LogEvent(IAGCEvent* pEvent, VARIANT_BOOL bSy
     pqd->szContext[0] = TEXT('\0');
 
   // Get the event object as a string
-  assert(IPersistStreamInitPtr(pEvent) != NULL || IPersistStreamPtr(pEvent) != NULL);
-  assert(IMarshalPtr(pEvent) != NULL);
+  ZAssert(IPersistStreamInitPtr(pEvent) != NULL || IPersistStreamPtr(pEvent) != NULL);
+  ZAssert(IMarshalPtr(pEvent) != NULL);
   CComBSTR bstrTemp;
   ZSucceeded(pEvent->SaveToString(&bstrTemp));
   WideCharToMultiByte(CP_ACP, 0, bstrTemp, -1,

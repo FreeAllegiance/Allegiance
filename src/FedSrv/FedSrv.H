@@ -431,7 +431,7 @@ IshipIGC*   PickNewLeader(const ShipListIGC*    pships,
 void SetSessionDetails();
 HRESULT ConnectToLobby(const char * pszLobby_OverrideCFG /* NULL == do not override */);
   
-#define TrapHack(x) assert(x)
+#define TrapHack(x) ZAssert(x)
 
 #define wm_fs_pause WM_APP // wparam/lparam not used
 

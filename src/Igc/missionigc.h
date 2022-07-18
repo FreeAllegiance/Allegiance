@@ -109,14 +109,14 @@ class   CstaticIGC
                 }
             }
 
-            assert (m_stationTypes.n() == 0);
-            assert (m_hullTypes.n() == 0);
-            assert (m_partTypes.n() == 0);
-            assert (m_projectileTypes.n() == 0);
-            assert (m_developments.n() == 0);
-            assert (m_droneTypes.n() == 0);
-            assert (m_civilizations.n() == 0);
-            assert (m_treasureSets.n() == 0);
+            ZAssert (m_stationTypes.n() == 0);
+            ZAssert (m_hullTypes.n() == 0);
+            ZAssert (m_partTypes.n() == 0);
+            ZAssert (m_projectileTypes.n() == 0);
+            ZAssert (m_developments.n() == 0);
+            ZAssert (m_droneTypes.n() == 0);
+            ZAssert (m_civilizations.n() == 0);
+            ZAssert (m_treasureSets.n() == 0);
 
             if (m_pptAmmoPack)
             {
@@ -132,34 +132,34 @@ class   CstaticIGC
         }
         virtual float                   GetFloatConstant(FloatConstantID fcid) const
         {
-            assert (fcid >= 0);
-            assert (fcid < c_fcidMax);
+            ZAssert (fcid >= 0);
+            ZAssert (fcid < c_fcidMax);
 
             return m_constants.floatConstants[fcid];
         }
         virtual void                    SetFloatConstant(FloatConstantID fcid, float f)
         {
-            assert (fcid >= 0);
-            assert (fcid < c_fcidMax);
+            ZAssert (fcid >= 0);
+            ZAssert (fcid < c_fcidMax);
 
             m_constants.floatConstants[fcid] = f;
         }
 
         virtual float                           GetDamageConstant(DamageTypeID dmgid, DefenseTypeID defid) const
         {
-            assert ((dmgid & c_dmgidMask) >= 0);
-            assert ((dmgid & c_dmgidMask) < c_dmgidMax);
-            assert (defid >= 0);
-            assert (defid < c_defidMax);
+            ZAssert ((dmgid & c_dmgidMask) >= 0);
+            ZAssert ((dmgid & c_dmgidMask) < c_dmgidMax);
+            ZAssert (defid >= 0);
+            ZAssert (defid < c_defidMax);
 
             return m_constants.damageConstants[dmgid & c_dmgidMask][defid];
         }
         virtual void                            SetDamageConstant(DamageTypeID dmgid, DefenseTypeID defid, float f)
         {
-            assert ((dmgid & c_dmgidMask) >= 0);
-            assert ((dmgid & c_dmgidMask) < c_dmgidMax);
-            assert (defid >= 0);
-            assert (defid < c_defidMax);
+            ZAssert ((dmgid & c_dmgidMask) >= 0);
+            ZAssert ((dmgid & c_dmgidMask) < c_dmgidMax);
+            ZAssert (defid >= 0);
+            ZAssert (defid < c_defidMax);
 
             m_constants.damageConstants[dmgid & c_dmgidMask][defid] = f;
         }
@@ -415,7 +415,7 @@ class   CmissionIGC : public ImissionIGC
         virtual void                            Initialize(void)
         {
             //Never called ... should use the initialize of ImissionIGC
-            assert (false);
+            ZAssert (false);
         }
         virtual void                            Terminate(void);
 
@@ -744,14 +744,14 @@ class   CmissionIGC : public ImissionIGC
                                          OT_pack,
                                          OT_afterburner
                                         };
-            assert (objectTypes[ET_ChaffLauncher] == OT_dispenser);
-            assert (objectTypes[ET_Weapon] == OT_weapon);
-            assert (objectTypes[ET_Magazine] == OT_magazine);
-            assert (objectTypes[ET_Dispenser] == OT_dispenser);
-            assert (objectTypes[ET_Shield] == OT_shield);
-            assert (objectTypes[ET_Cloak] == OT_cloak);
-            assert (objectTypes[ET_Pack] == OT_pack);
-            assert (objectTypes[ET_Afterburner] == OT_afterburner);
+            ZAssert (objectTypes[ET_ChaffLauncher] == OT_dispenser);
+            ZAssert (objectTypes[ET_Weapon] == OT_weapon);
+            ZAssert (objectTypes[ET_Magazine] == OT_magazine);
+            ZAssert (objectTypes[ET_Dispenser] == OT_dispenser);
+            ZAssert (objectTypes[ET_Shield] == OT_shield);
+            ZAssert (objectTypes[ET_Cloak] == OT_cloak);
+            ZAssert (objectTypes[ET_Pack] == OT_pack);
+            ZAssert (objectTypes[ET_Afterburner] == OT_afterburner);
 
             //The "data" used to create a part is a pointer to the part type.
             return (IpartIGC*)CreateObject(now, objectTypes[ppt->GetEquipmentType()], &ppt, sizeof(ppt));
@@ -772,9 +772,9 @@ class   CmissionIGC : public ImissionIGC
             if (m_missionParams.IsProsperityGame())
             {
                 IdevelopmentIGC*    pdTeamMoney = GetDevelopment(c_didTeamMoney);
-                assert (pdTeamMoney);
+                ZAssert (pdTeamMoney);
 
-                assert (m_missionParams.fGoalTeamMoney > 0);
+                ZAssert (m_missionParams.fGoalTeamMoney > 0);
 
                 for (SideLinkIGC*   psl = m_sides.first(); (psl != NULL); psl = psl->next())
                 {
@@ -785,7 +785,7 @@ class   CmissionIGC : public ImissionIGC
                                                                    OT_bucket,
                                                                    &db,
                                                                    sizeof(db)));
-                    assert (b);
+                    ZAssert (b);
 
                     b->SetPrice((Money)(m_missionParams.fGoalTeamMoney * GetFloatConstant(c_fcidWinTheGameMoney)));
 
@@ -911,7 +911,7 @@ class   CmissionIGC : public ImissionIGC
 
         void                    SetStaticCore(CstaticIGC*   pStatic)
         {
-            assert (m_pStatic == NULL);
+            ZAssert (m_pStatic == NULL);
 
             if (pStatic)
                 m_pStatic = pStatic;

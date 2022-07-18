@@ -36,7 +36,7 @@ HRESULT TCComPropertyClassRoot::TCPersistStreamInit_Load(LPSTREAM pStm,
 	T* pT = static_cast<T*>(this);
   IUnknown* pUnk = pT->GetUnknown();
 
-  assert(pMap != NULL);
+  ZAssert(pMap != NULL);
   HRESULT hr = S_OK;
   DWORD dwVer;
   hr = pStm->Read(&dwVer, sizeof(DWORD), NULL);
@@ -138,7 +138,7 @@ HRESULT TCComPropertyClassRoot::TCPersistStreamInit_Save(LPSTREAM pStm,
 	T* pT = static_cast<T*>(this);
   IUnknown* pUnk = pT->GetUnknown();
 
-  assert(pMap != NULL);
+  ZAssert(pMap != NULL);
   DWORD dw = _ATL_VER;
   HRESULT hr = pStm->Write(&dw, sizeof(DWORD), NULL);
   if (FAILED(hr))

@@ -5,11 +5,11 @@
 
 #include "pane.h"
 #include "value.h"
+#include "event.h"
 
 class IFunction;
 class Image;
 class Surface;
-class IEventSource;
 
 //////////////////////////////////////////////////////////////////////////////
 //

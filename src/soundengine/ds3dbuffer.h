@@ -282,7 +282,7 @@ protected:
     // writing the sound's release.  When UpdateBufferContents calls 
     // GetCurrentPosition a moment later, however, it may return a slightly
     // larger offset for the minimum write position.  We want to use the result
-    // of the first call to GetCurrentPosition in this case, and not assert
+    // of the first call to GetCurrentPosition in this case, and not ZAssert
     // that the write pointer is after the result returned by the second call
     // to GetCurrentPosition.  
     virtual HRESULT UpdateBufferContents(bool bTrustWritePtr = false);

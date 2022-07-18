@@ -436,7 +436,7 @@ public:
             case c_tcDevelopment:
             {
                 IdevelopmentIGC*    pd = trekClient.m_pCoreIGC->GetDevelopment(pt->GetTreasureID());
-                assert (pd);
+                ZAssert (pd);
                 return pd->IsObsolete(trekClient.GetSide()->GetDevelopmentTechs())
                        ? c_iNotUseful
                        : c_iUsefulPart;     //It really is a tech, but use its icon instead of the special icon
@@ -445,10 +445,10 @@ public:
 
             default:
             {
-                assert (tc == c_tcPart);
+                ZAssert (tc == c_tcPart);
 
                 IpartTypeIGC*       ppt = trekClient.m_pCoreIGC->GetPartType(pt->GetTreasureID());
-                assert (ppt);
+                ZAssert (ppt);
                 EquipmentType       et  = ppt->GetEquipmentType();
                 if (et == ET_Pack)
                 {
@@ -464,7 +464,7 @@ public:
                         }
                         else
                         {
-                            assert (pdata->packType == c_packAmmo);
+                            ZAssert (pdata->packType == c_packAmmo);
                             Mount   m = pship->GetHullType()->GetMaxWeapons();
 
                             for (Mount i = 0; (i < m); i++)
@@ -504,7 +504,7 @@ public:
         ZAssert(models != NULL);
 
         bool    bRangeLabels = !TrekWindow::CommandCamera(GetWindow()->GetCameraMode());
-        assert (trekClient.GetShip()->GetCluster() || !bRangeLabels);
+        ZAssert (trekClient.GetShip()->GetCluster() || !bRangeLabels);
 
         //
         // Draw a blip for every model in the cluster
@@ -644,7 +644,7 @@ public:
                         const DamageBucketList* b = pmodel->GetDamageBuckets();
                         if (b->n() != 0)
                         {
-                            assert (b->n() == 1);
+                            ZAssert (b->n() == 1);
                             DamageBucket*  db = b->first()->data();
 
                             maskBrackets |= (db->flash(now))
@@ -1183,8 +1183,8 @@ public:
 
                 if (data.m_cid != c_cidNone)
                 {
-                    assert (data.m_cid >= 0);
-                    assert (data.m_cid < c_cidMax);
+                    ZAssert (data.m_cid >= 0);
+                    ZAssert (data.m_cid < c_cidMax);
                     psurfaceIcon = (data.m_cmd != c_cmdQueued) ? m_psurfaceAccepted[data.m_cid] :  m_psurfaceQueued[data.m_cid];
                     if (psurfaceIcon)
                     {

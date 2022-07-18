@@ -10,6 +10,7 @@
 #include <tref.h>
 #include <tvector.h>
 #include <zstring.h>
+#include <list>
 
 #include "mdl.h"
 
@@ -122,7 +123,7 @@ private:
     // vtable                             // 1 DWORD
     // m_count                            // 1 DWORD
     TVector<TRef<Value> > m_pchildren;    // 2 DWORDS
-    TList<Value*>         m_listParents;  // 3 DWORDS
+    std::vector<Value*>   m_listParents;  // 3 DWORDS
     TRef<INameSpaceInfo>  m_pnsInfo;      // 1 DWORD
     bool                  m_bChanged;     // 1 DWORD
 
@@ -221,8 +222,8 @@ public:
 
 private:
     Site*                         m_psite;
-    TList<TRef<Value> >           m_list;
-    TList<TRef<Value> >::Iterator m_iter;
+    std::list<TRef<Value>>      m_list;
+    std::list<TRef<Value>>::iterator      m_iter;
 
     virtual void InternalUpdate();
     virtual void ChildChanged(Value* pvalue, Value* pvalueNew);

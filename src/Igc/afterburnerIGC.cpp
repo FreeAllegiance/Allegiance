@@ -33,7 +33,7 @@ HRESULT     CafterburnerIGC::Initialize(ImissionIGC* pMission, Time now, const v
     ZRetailAssert (data && (dataSize == sizeof(DataPartIGC)));
     {
         m_partType = ((DataPartIGC*)data)->partType;
-        assert (m_partType);
+        ZAssert (m_partType);
         m_partType->AddRef();
 
         m_typeData = (const DataAfterburnerTypeIGC*)m_partType->GetData();
@@ -73,7 +73,7 @@ void        CafterburnerIGC::SetShip(IshipIGC*       newVal, Mount mount)
         m_ship->DeletePart(this);
         m_ship->Release();
     }
-    assert (m_mountID == c_mountNA);
+    ZAssert (m_mountID == c_mountNA);
 
     m_ship = newVal;
 
@@ -90,7 +90,7 @@ void        CafterburnerIGC::SetShip(IshipIGC*       newVal, Mount mount)
 
 void    CafterburnerIGC::SetMountID(Mount newVal)
 {
-    assert (m_ship);
+    ZAssert (m_ship);
 
     if (newVal != m_mountID)
     {
@@ -102,8 +102,8 @@ void    CafterburnerIGC::SetMountID(Mount newVal)
 
 void    CafterburnerIGC::IncrementalUpdate(Time lastUpdate, Time now, bool bUseFuel)
 {
-    assert (m_ship);
-    assert (now >= lastUpdate);
+    ZAssert (m_ship);
+    ZAssert (now >= lastUpdate);
 
     {
         float   dt = now - lastUpdate;

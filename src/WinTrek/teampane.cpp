@@ -535,7 +535,7 @@ public:
 
         default:
             // WLP 2005 - allow viewing NOAT lobby team - re-use case 5
-           // assert(false);
+           // ZAssert(false);
            // return Color(0.5, 0.5, 0.5);
 
            return Color(131/256.0f, 131/256.0f, 140/256.0f); // yp your_persona march 14 2006 : NOATcolor patch change color from teal to NOAT grey.
@@ -1254,11 +1254,11 @@ public:
             ShipID      shipID = IntItemIDWrapper<ShipID>(m_plistPanePlayers->GetSelection());
             PlayerInfo* pplayer = trekClient.FindPlayer(shipID);
             
-            assert(pplayer);
+            ZAssert(pplayer);
             //
             // WLP 2005 - removed next line to allow lobby
             //
-            // assert (pplayer->SideID() != SIDE_TEAMLOBBY);
+            // ZAssert (pplayer->SideID() != SIDE_TEAMLOBBY);
             {
                 if (Training::IsTraining())
                 {
@@ -1273,7 +1273,7 @@ public:
                             IstationIGC*    pStation = pShip->GetStation();
                             if (pStation) {
                                 pCluster = pStation->GetCluster();
-                                assert(pCluster);
+                                ZAssert(pCluster);
                                 debugf("Ship is in station %s in %s.\n", pStation->GetName(), pCluster->GetName());
                                 ppos = pStation && pStation->SeenBySide(trekClient.GetSide()) ? &(pStation->GetPosition()) : NULL;
                             }
@@ -1296,7 +1296,7 @@ public:
                             }
                             else
                             {
-                                assert(pClusterShip == pCluster);
+                                ZAssert(pClusterShip == pCluster);
                                 GetWindow()->PositionCommandView(ppos, 2.0f);
                             }
                         }
@@ -1317,7 +1317,7 @@ public:
                             trekClient.RequestViewCluster(pCluster, pplayer->GetShip());
                         else
                         {
-                            assert (pClusterShip == pCluster);
+                            ZAssert (pClusterShip == pCluster);
                             GetWindow()->PositionCommandView(pplayer->GetShip()->SeenBySide(trekClient.GetSide())
                                                              ? &(pplayer->GetShip()->GetPosition())
                                                              : NULL,
@@ -1339,7 +1339,7 @@ public:
             ShipID      shipID = IntItemIDWrapper<ShipID>(m_plistPanePlayers->GetSelection());
             PlayerInfo* pplayer = trekClient.FindPlayer(shipID);
             
-            assert(pplayer);
+            ZAssert(pplayer);
             
             if (pplayer->SideID() == SIDE_TEAMLOBBY)
             {
@@ -1922,7 +1922,7 @@ class ExpandedTeamPane : public TeamPane
             else if (!pHullType)
             {
                 // we should only see this when the hull type is NA
-                assert(pplayer->LastSeenShipType() == NA);
+                ZAssert(pplayer->LastSeenShipType() == NA);
                 
                 pimageicon = GetModeler()->LoadImage("unknownshipbmp", true);
             }

@@ -45,7 +45,7 @@ public:
 
   STDMETHODIMP get_Ammo(short* pVal)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pVal, GetIGC()->GetAmmo());
     return S_OK;
   }
@@ -60,7 +60,7 @@ public:
   
   STDMETHODIMP get_Fuel(float* pVal)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pVal, GetIGC()->GetFuel());
     return S_OK;
   }
@@ -75,7 +75,7 @@ public:
   
   STDMETHODIMP get_Energy(float* pVal)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pVal, GetIGC()->GetEnergy());
     return S_OK;
   }
@@ -90,7 +90,7 @@ public:
 
   STDMETHODIMP get_WingID(short* pVal)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pVal, GetIGC()->GetWingID());
     return S_OK;
   }
@@ -99,8 +99,8 @@ public:
   ///////////////////////////////////////////////////////////////////////////  
   STDMETHODIMP SendChat(BSTR bstrText, AGCSoundID idSound)
   {
-    assert(GetIGC());
-    assert(GetIGC()->GetMission()->GetIgcSite());
+    ZAssert(GetIGC());
+    ZAssert(GetIGC()->GetMission()->GetIgcSite());
 
     // Do nothing if string is empty
     if (!BSTRLen(bstrText))
@@ -120,8 +120,8 @@ public:
   STDMETHODIMP SendCommand(BSTR bstrCommand, IAGCModel* pModelTarget,
     AGCSoundID idSound)
   {
-    assert(GetIGC());
-    assert(GetIGC()->GetMission()->GetIgcSite());
+    ZAssert(GetIGC());
+    ZAssert(GetIGC()->GetMission()->GetIgcSite());
 
     // Convert the command string to a command ID
     CommandID idCmd;
@@ -157,7 +157,7 @@ public:
   ///////////////////////////////////////////////////////////////////////////  
   STDMETHODIMP get_AutoDonate(IAGCShip** ppShip)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     if (GetIGC()->GetAutoDonate())
       GetAGCGlobal()->GetAGCObject(GetIGC()->GetAutoDonate(), IID_IAGCShip,
         (void**)ppShip);
@@ -169,7 +169,7 @@ public:
   ///////////////////////////////////////////////////////////////////////////  
   STDMETHODIMP put_ShieldFraction(float Val)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
 
     IshieldIGC* pshield = (IshieldIGC*)(GetIGC()->GetMountedPart(ET_Shield, 0));
     if (pshield)
@@ -181,7 +181,7 @@ public:
   ///////////////////////////////////////////////////////////////////////////  
   STDMETHODIMP get_ShieldFraction(float* pVal)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
 
     IshieldIGC* pshield = (IshieldIGC*)(GetIGC()->GetMountedPart(ET_Shield, 0));
     if (pshield)
@@ -197,8 +197,8 @@ public:
   ///////////////////////////////////////////////////////////////////////////  
   STDMETHODIMP get_HullType(IAGCHullType** ppHullType)
   {
-    assert(GetIGC());
-    assert(GetIGC()->GetHullType());
+    ZAssert(GetIGC());
+    ZAssert(GetIGC()->GetHullType());
     return GetAGCGlobal()->GetAGCObject(GetIGC()->GetHullType(),
       IID_IAGCHullType, (void**)ppHullType);
   }
@@ -206,7 +206,7 @@ public:
   ///////////////////////////////////////////////////////////////////////////  
   STDMETHODIMP get_BaseHullType(IAGCHullType** ppHullType)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     if (GetIGC()->GetBaseHullType())
       return GetAGCGlobal()->GetAGCObject(GetIGC()->GetBaseHullType(),
         IID_IAGCHullType, (void**)ppHullType);

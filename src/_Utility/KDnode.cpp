@@ -20,7 +20,7 @@ void    KDnode::allocHitTestsEndpoints(int n)
         //Not enough space ... realloc
         delete [] m_ppHitTests;
         void**  v = new void* [n * (1 + 2 * c_nAxes)];
-        assert (v);
+        ZAssert (v);
 
         m_maxHitTests = n;
         m_ppHitTests = (HitTest**)v;
@@ -53,15 +53,15 @@ KDnode::~KDnode(void)
 
 void    KDnode::reset(bool             highF)
 {
-    assert (m_parent);
+    ZAssert (m_parent);
 
     //Set asside enough space for the same number of hitTests as the parent
     //(pessimistic, but fast)
     allocHitTestsEndpoints(m_parent->m_nHitTests);
 
     int     pivotAxis = m_parent->m_pivotAxis;
-    assert (pivotAxis >= 0);
-    assert (pivotAxis < c_nAxes);
+    ZAssert (pivotAxis >= 0);
+    ZAssert (pivotAxis < c_nAxes);
     float   pivotValue = m_parent->m_pivotValue;
 
     //Extract and mark the subset of the parent's hitTests that belong to this node
@@ -72,7 +72,7 @@ void    KDnode::reset(bool             highF)
              ppHitTest--)
         {
             HitTest* pHitTest = *ppHitTest;
-            assert (pHitTest);
+            ZAssert (pHitTest);
 
             if (highF)
             {
@@ -98,8 +98,8 @@ void    KDnode::reset(bool             highF)
             }
         }
 
-        assert (m_nHitTests != 0);
-        assert (m_nHitTests != m_parent->m_nHitTests);
+        ZAssert (m_nHitTests != 0);
+        ZAssert (m_nHitTests != m_parent->m_nHitTests);
     }
 
     if (m_nHitTests >= c_minNodeSize)
@@ -120,7 +120,7 @@ void    KDnode::reset(bool             highF)
                  (thisID >= 0);
                  parentID--)
             {
-                assert (parentID >= 0);
+                ZAssert (parentID >= 0);
 
                 HitTest* pHitTest = m_parent->m_ppEndpoints[axis][parentID]->pHitTest;
                 if (pHitTest->m_activeF)
@@ -140,10 +140,10 @@ static bool findPivot(int               nHitTests,
                       float*            pValue,
                       int*              pCost)
 {
-    assert (nHitTests >= c_minNodeSize);
-    assert (ppEndpoints);
-    assert (pValue);
-    assert (pCost);
+    ZAssert (nHitTests >= c_minNodeSize);
+    ZAssert (ppEndpoints);
+    ZAssert (pValue);
+    ZAssert (pCost);
 
     bool    optimalF = false;
 
@@ -162,8 +162,8 @@ static bool findPivot(int               nHitTests,
 
     //The endpoints start with a low and end with a high, meaning we can skip the first endpoint
     //in the loop (hence the pre-increment) and only test for exit on the high endpoints.
-    assert (!ppEndpoints[0]->highF);
-    assert (ppEndpoints[(nHitTests << 1) - 1]->highF);
+    ZAssert (!ppEndpoints[0]->highF);
+    ZAssert (ppEndpoints[(nHitTests << 1) - 1]->highF);
 
     int nLow = 0;               //Number of intervals completely below of the current endpoint
     int nHigh = nHitTests - 1;   //Number of intervales completely above the current endpoint
@@ -175,7 +175,7 @@ static bool findPivot(int               nHitTests,
 
     while (true)
     {
-        assert (nLow < nHitTests);
+        ZAssert (nLow < nHitTests);
         const Endpoint* pEndpoint = *(++ppEndpoints);
 
         if (pEndpoint->highF)
@@ -240,7 +240,7 @@ void    KDnode::pivot(void)
     //Select the best pivot axis and value for this node
     //based on the endpoint data
 
-    assert (m_nHitTests >= c_minNodeSize);
+    ZAssert (m_nHitTests >= c_minNodeSize);
     //Rotate the axes to encourage (in the event of a tie for best cost)
     //that children pivot on different axes than their parents.
     int     startAxis = m_parent ? ((m_parent->m_pivotAxis + 1) % c_nAxes) : 0;
@@ -280,14 +280,14 @@ void    KDnode::pivot(void)
 
         if (!m_children[0])
         {
-            assert (!m_children[1]);
+            ZAssert (!m_children[1]);
 
             //This node has no children ... create some
             m_children[0] = new KDnode(this);
             m_children[1] = new KDnode(this);
         }
 
-        assert (m_children[0] && m_children[1]);
+        ZAssert (m_children[0] && m_children[1]);
 
         //Reset both children based on the new pivot axis/value.
         m_children[0]->reset(false);

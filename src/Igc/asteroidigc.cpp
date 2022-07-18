@@ -34,7 +34,7 @@ HRESULT     CasteroidIGC::Initialize(ImissionIGC* pMission, Time now, const void
                               m_asteroidDef.textureName,
                               m_asteroidDef.iconName,
                               c_mtStatic | c_mtHitable | c_mtDamagable | c_mtSeenBySide | c_mtPredictable);
-            assert (SUCCEEDED(rc));
+            ZAssert (SUCCEEDED(rc));
 
             SetRadius((float)m_asteroidDef.radius);
             SetPosition(dataAsteroid->position);
@@ -70,7 +70,7 @@ HRESULT     CasteroidIGC::Initialize(ImissionIGC* pMission, Time now, const void
                 //Verify that there is no pre-existing asteroid with the same ID
                 for (AsteroidLinkIGC*   pal = pMission->GetAsteroids()->first(); (pal != NULL); pal = pal->next())
                 {
-                    assert (pal->data()->GetObjectID() != m_asteroidDef.asteroidID);
+                    ZAssert (pal->data()->GetObjectID() != m_asteroidDef.asteroidID);
                 }
             }
 #endif
@@ -96,7 +96,7 @@ int         CasteroidIGC::Export(void* data) const
         }
         dataAsteroid->rotation = GetRotation();
 
-        assert (GetCluster());
+        ZAssert (GetCluster());
         dataAsteroid->clusterID = GetCluster()->GetObjectID();
         dataAsteroid->signature = GetSignature();
 
@@ -248,7 +248,7 @@ int IasteroidIGC::GetRandomType(AsteroidAbilityBitMask aabm)
         break;
 
         default:
-            assert (false);
+            ZAssert (false);
     }
 
     return index;

@@ -35,7 +35,7 @@ public:
     BOOL InstallService(char * szAccount, char * szPassword);
     BOOL Install();
     BOOL Uninstall();
-    LONG Unlock();
+    LONG Unlock() throw();
     void SetServiceStatus(DWORD dwState);
     void SetupAsLocalServer();
     bool ReadFromRegistry(HKEY & hk, bool bIsString, const char * szItem, void * pValue, DWORD dwDefault, bool bWarnIfMissing = false);

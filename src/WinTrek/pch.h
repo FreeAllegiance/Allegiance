@@ -3,8 +3,6 @@
 //      but are changed infrequently
 #pragma once
 
-#define __MODULE__ "WinTrek"
-
 //
 // C Headers
 //
@@ -71,7 +69,7 @@
 #include "trekinput.h"
 #include "resource.h"
 #include "Zone.h"
-#include "ui.h"
+#include "UiEngine.h"
 #ifdef USEAUTH
 #include "zauth.h"
 #endif

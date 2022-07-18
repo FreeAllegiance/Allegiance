@@ -99,7 +99,7 @@ class CtreasureSetIGC : public ItreasureSetIGC
 
         virtual const TreasureData&         GetRandomTreasureData(void) const
         {
-            assert (m_totalTreasureChance >= 1);
+            ZAssert (m_totalTreasureChance >= 1);
 
             int r = randomInt(1, m_totalTreasureChance);
 
@@ -113,7 +113,7 @@ class CtreasureSetIGC : public ItreasureSetIGC
 
                 ptd++;
 
-                assert (ptd < (m_data->treasureData0() + m_data->nTreasureData));
+                ZAssert (ptd < (m_data->treasureData0() + m_data->nTreasureData));
             }
         }
 

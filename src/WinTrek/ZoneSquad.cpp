@@ -142,7 +142,7 @@ public:
     }
 
 //  void              SetHours(float fHours)    { asset(0);/*m_fHours = fHours; */}
-//  float             GetHours()                { assert(0); return 0;/*return m_fHours; */} 
+//  float             GetHours()                { ZAssert(0); return 0;/*return m_fHours; */} 
 
   IZonePlayer::Position GetPosition()        
   { 
@@ -413,7 +413,7 @@ void CZonePlayerImpl::SetPosition(IZoneSquad & squad, Position pos)
 { 
   TRef<CMembership> pMembership = ((CZoneSquadImpl*)(&squad))->FindMembership(*this);
 
-  assert(pMembership); // Cannot set position if player in not a member of the squad
+  ZAssert(pMembership); // Cannot set position if player in not a member of the squad
 
   if (pMembership)
   {
@@ -428,7 +428,7 @@ void CZonePlayerImpl::SetPosition(IZoneSquad & squad, Position pos)
  */
 void CZonePlayerImpl::SetHours(IZoneSquad & squad, float fHours)
 {
-    assert(0); // not impl
+    ZAssert(0); // not impl
 }
 
 
@@ -472,7 +472,7 @@ void   CZonePlayerImpl::SetLastPlayedDate(IZoneSquad & squad, PCC szLastPlayedDa
 {
   TRef<CMembership> pMembership = ((CZoneSquadImpl*)(&squad))->FindMembership(*this);
 
-  assert(pMembership); // Cannot set position if player in not a member of the squad
+  ZAssert(pMembership); // Cannot set position if player in not a member of the squad
 
   if (pMembership)
   {
@@ -487,7 +487,7 @@ void   CZonePlayerImpl::SetLastPlayedDate(IZoneSquad & squad, PCC szLastPlayedDa
  */
 float CZonePlayerImpl::GetHours(IZoneSquad & squad)   
 {
-    assert(0); // not impl
+    ZAssert(0); // not impl
 
     return 0;
 }

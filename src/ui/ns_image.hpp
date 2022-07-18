@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "ui.h"
 #include "items.hpp"
+#include <variant>
 #include "D3DDevice9.h"
 
 TRef<ConstantImage> LoadImageFile(LuaScriptContext& context, std::string path) {
@@ -53,15 +53,12 @@ public:
     static void AddNamespace(LuaScriptContext& context) {
         sol::table table = context.GetLua().create_table();
 
-
         context.GetLua().new_usertype<ConstantImage>("ConstantImage",
             sol::base_classes, sol::bases<Image>()
         );
-        context.GetLua().new_usertype<Image>("Image"
-            );
+        context.GetLua().new_usertype<Image>("Image");
         context.GetLua().new_usertype<TRef<Image>>("TRef<Image>");
         context.GetLua().new_usertype<TRef<ConstantImage>>("TRef<ConstantImage>");
-
 
         table["Empty"] = []() {
             return (TRef<Image>)Image::GetEmpty();
@@ -72,10 +69,10 @@ public:
         };
 
         table["Extent"] = sol::overload(
-            [](const TRef<RectValue>& rect, const TRef<ColorValue>& color) {
-                return CreateExtentImage(rect, color);
+            [](const TRef<RectValue>& rect, const UiType& color) {
+                return CreateExtentImage(rect, color.get<TRef<ColorValue>>());
             },
-            [](const TRef<PointValue>& pPoint, const TRef<ColorValue>& color) {
+            [](const TRef<PointValue>& pPoint, const UiType& color) {
                 Number* zero = new Number(0.0f);
 
                 return CreateExtentImage(
@@ -85,15 +82,16 @@ public:
                         PointTransform::X(pPoint),
                         PointTransform::Y(pPoint)
                     ),
-                    color
+                    color.get<TRef<ColorValue>>()
                 );
             }
         );
         table["MouseEvent"] = [](const TRef<Image>& image) {
             return (TRef<Image>)new MouseEventImage(image);
         };
-        table["File"] = [&context](std::string path) {
-            return (TRef<ConstantImage>)LoadImageFile(context, path);
+        table["File"] = [&context](const UiType& path) {
+            auto strPath = path.get<std::string>();
+            return (TRef<ConstantImage>)LoadImageFile(context, strPath);
         };
         table["Group"] = [](sol::object list) {
             if (list.is<TRef<ImageList>>()) {
@@ -125,36 +123,18 @@ public:
 
                 return (TRef<Image>)pgroup;
             }
-            throw std::runtime_error("Expected value argument of Image.Group to be either a table of images or a result from List.MapToImages");
+            throw std::runtime_error("Expected value argument of Image.Group to be either a table of images or a list of images");
         };
 
-        table["StackVertical"] = [](sol::table list, sol::optional<sol::object> separation) {
-            TRef<GroupImage> pgroup = new GroupImage();
+        table["StackVertical"] = [](sol::object obj, sol::optional<TRef<Number>> separation) {
+            TRef<ImageList> list;
 
-            sol::table table_list = list;
-            int count = table_list.size();
-
-            TRef<Image> child;
-
-            TRef<Number> pZero = new Number(0.0f);
-            TRef<Number> offset_y = pZero;
-
-            for (int i = 1; i <= count; ++i) {
-                child = table_list.get<const TRef<Image>&>(i);
-                if (!child) {
-                    throw std::runtime_error("Element in group should not be null");
-                }
-                pgroup->AddImageToTop(ImageTransform::Translate(child, PointTransform::Create(pZero, offset_y)));
-
-                offset_y = NumberTransform::Add(offset_y, PointTransform::Y(ImageTransform::Size(child)));
-                if (separation) {
-                    offset_y = NumberTransform::Add(offset_y, wrapValue<float>(separation.value()));
-                }
+            if (obj.is<sol::table>() && obj.get_type() == sol::type::table) {
+                list = new TableUiList<TRef<Image>>(obj.as<sol::table>());
             }
-
-            return (TRef<Image>)pgroup;
-        };
-        table["StackVertical"] = [](TRef<ImageList> list, sol::optional<sol::object> separation) {
+            else {
+                list = obj.as<TRef<ImageList>>();
+            }
             return (TRef<Image>)new NonStaticCallbackImage<ImageList*>([separation](ImageList* varlist) {
                 TRef<GroupImage> pgroup = new GroupImage();
 
@@ -166,7 +146,7 @@ public:
 
                     offset_y = NumberTransform::Add(offset_y, PointTransform::Y(ImageTransform::Size(entry)));
                     if (separation) {
-                        offset_y = NumberTransform::Add(offset_y, wrapValue<float>(separation.value()));
+                        offset_y = NumberTransform::Add(offset_y, separation.value());
                     }
                 }
 
@@ -174,7 +154,35 @@ public:
             }, list);
         };
 
-        table["Switch"] = [&context](sol::object value, sol::table table) {
+        table["StackHorizontal"] = [](sol::object obj, sol::optional<TRef<Number>> separation) {
+            TRef<ImageList> list;
+
+            if (obj.is<sol::table>() && obj.get_type() == sol::type::table) {
+                list = new TableUiList<TRef<Image>>(obj.as<sol::table>());
+            }
+            else {
+                list = obj.as<TRef<ImageList>>();
+            }
+            return (TRef<Image>)new NonStaticCallbackImage<ImageList*>([separation](ImageList* varlist) {
+                TRef<GroupImage> pgroup = new GroupImage();
+
+                TRef<Number> pZero = new Number(0.0f);
+                TRef<Number> offset = pZero;
+
+                for (TRef<Image> entry : varlist->GetList()) {
+                    pgroup->AddImageToTop(ImageTransform::Translate(entry, PointTransform::Create(offset, pZero)));
+
+                    offset = NumberTransform::Add(offset, PointTransform::X(ImageTransform::Size(entry)));
+                    if (separation) {
+                        offset = NumberTransform::Add(offset, separation.value());
+                    }
+                }
+
+                return (TRef<Image>)pgroup;
+            }, list);
+        };
+
+        table["Switch"] = [&context](sol::object value, sol::table table, sol::optional<TRef<Image>> defaultOption) {
             int count = table.size();
 
             if (value.is<TRef<Number>>() || value.is<float>()) {
@@ -185,7 +193,7 @@ public:
                     mapOptions[fKey] = value.as<const TRef<Image>&>();
                 });
 
-                return ImageTransform::Switch(wrapValue<float>(value), mapOptions);
+                return ImageTransform::Switch(wrapValue<float>(value), mapOptions, defaultOption.value_or(nullptr));
             }
             else if (value.is<TRef<TStaticValue<ZString>>>() || value.is<std::string>()) {
                 //the wrapped value is a ZString, the unwrapped value a std::string
@@ -196,7 +204,7 @@ public:
                     mapOptions[strKey] = value.as<const TRef<Image>&>();
                 });
 
-                return ImageTransform::Switch(wrapString(value), mapOptions);
+                return ImageTransform::Switch(wrapString(value), mapOptions, defaultOption.value_or(nullptr));
             }
             else if (value.is<TRef<Boolean>>() || value.is<bool>()) {
                 std::map<bool, TRef<Image>> mapOptions;
@@ -206,7 +214,7 @@ public:
                     mapOptions[bKey] = value.as<const TRef<Image>&>();
                 });
 
-                return ImageTransform::Switch(wrapValue<bool>(value), mapOptions);
+                return ImageTransform::Switch(wrapValue<bool>(value), mapOptions, defaultOption.value_or(nullptr));
             }
             else if (value.is<TRef<UiStateValue>>()) {
                 std::map<std::string, sol::function> mapOptions;
@@ -216,10 +224,10 @@ public:
                     mapOptions[strKey] = value.as<sol::function>();
                 });
 
-                return (TRef<Image>)new CallbackImage<std::shared_ptr<UiState>>([&context, mapOptions](const std::shared_ptr<UiState>& state) {
+                return (TRef<Image>)new CallbackImage<std::shared_ptr<UiState>>([&context, mapOptions, defaultOption](const std::shared_ptr<UiState>& state) {
                     auto find = mapOptions.find(state->GetName());
                     if (find == mapOptions.end()) {
-                        return (TRef<Image>)Image::GetEmpty();
+                        return defaultOption.value_or(Image::GetEmpty());
                     }
                     return (TRef<Image>)context.WrapCallback<TRef<Image>, const std::shared_ptr<UiState>&>(find->second, Image::GetEmpty())(state);
                 }, value.as<TRef<UiStateValue>>());
@@ -227,18 +235,18 @@ public:
             throw std::runtime_error("Expected value argument of Image.Switch to be either a wrapped or unwrapped bool, int, or string");
         };
         table["String"] = sol::overload(
-            [](const TRef<FontValue>& font, const TRef<ColorValue>& color, sol::object width, sol::object string, sol::optional<Justification> justification_arg) {
-                return ImageTransform::String(font, color, wrapValue<float>(width), wrapString(string), justification_arg.value_or(JustifyLeft()), new Number(0.0f));
+            [](const TRef<FontValue>& font, const UiType& color, sol::object width, sol::object string, sol::optional<Justification> justification_arg) {
+                return ImageTransform::String(font, color.get<TRef<ColorValue>>(), wrapValue<float>(width), wrapString(string), justification_arg.value_or(JustifyLeft()), new Number(0.0f));
             },
-            [](const TRef<FontValue>& font, const TRef<ColorValue>& color, sol::object string) {
+            [](const TRef<FontValue>& font, const UiType& color, sol::object string) {
 
                 TRef<Number> width = new Number(10000); //something large as default
                 Justification justification = JustifyLeft();
                 TRef<Number> separation = new Number(0.0f);
 
-                return ImageTransform::String(font, color, width, wrapString(string), justification, separation);
+                return ImageTransform::String(font, color.get<TRef<ColorValue>>(), width, wrapString(string), justification, separation);
             },
-            [](const TRef<FontValue>& font, const TRef<ColorValue>& color, sol::object string, sol::table object) {
+            [](const TRef<FontValue>& font, const UiType& color, sol::object string, sol::table object) {
 
                 TRef<Number> width = new Number(10000); //something large as default
                 Justification justification = JustifyLeft();
@@ -262,7 +270,7 @@ public:
                     });
                 }
 
-                return ImageTransform::String(font, color, width, wrapString(string), justification, separation);
+                return ImageTransform::String(font, color.get<TRef<ColorValue>>(), width, wrapString(string), justification, separation);
             }
         );
         table["Translate"] = [](const TRef<Image>& pimage, const TRef<PointValue>& pPoint) {
@@ -295,8 +303,8 @@ public:
             return ImageTransform::Cut(pimage, rect);
         };
 
-        table["Multiply"] = [](const TRef<ConstantImage>& pimage, const TRef<ColorValue>& color) {
-            return ImageTransform::Multiply(pimage, color);
+        table["Multiply"] = [](const TRef<ConstantImage>& pimage, const UiType& color) {
+            return ImageTransform::Multiply(pimage, color.get<TRef<ColorValue>>());
         };
         context.GetLua().set("Image", table);
 

@@ -6,6 +6,173 @@
 
 #include "console.h"
 
+#include <enginewindow.h>
+
+class GameConfigurationWrapper : public EngineConfigurationWrapper {
+
+    const int VERSION_CURRENT_GAME_CONFIGURATION = 2;
+
+public:
+    GameConfigurationWrapper(TRef<UpdatingConfiguration> pconfiguration) :
+        EngineConfigurationWrapper(pconfiguration)
+    {
+        int version = pconfiguration->GetIntValue("Config.GameConfigurationVersion", 1);
+
+        //reset startup movies so that older players get to see them too.
+        if (version < 2) {
+            pconfiguration->SetBoolValue("Ui.ShowStartupCreditsMovie", true);
+            pconfiguration->SetBoolValue("Ui.ShowStartupIntroMovie", true);
+        }
+
+        pconfiguration->SetIntValue("Config.GameConfigurationVersion", GameConfigurationWrapper::VERSION_CURRENT_GAME_CONFIGURATION);
+    }
+
+    TRef<SimpleModifiableValue<ZString>> GetDataArtworkPath() {
+        return m_pconfiguration->GetString("Data.ArtworkPath", m_pconfiguration->GetStringValue("ArtPath", ""));
+    }
+
+    TRef<SimpleModifiableValue<ZString>> GetOnlineCharacterName() {
+        return m_pconfiguration->GetString("Online.CharacterName", m_pconfiguration->GetStringValue("CharacterName", ""));
+    }
+
+    TRef<SimpleModifiableValue<ZString>> GetOnlineSquadTag() {
+        //we are going to store the string tag, we used to store the steam id of the squad
+        return m_pconfiguration->GetString("Online.SquadTag", m_pconfiguration->GetStringValue("SteamClanId", ""));
+    }
+
+    TRef<SimpleModifiableValue<ZString>> GetOnlineOfficerToken() {
+        return m_pconfiguration->GetString("Online.OfficerToken", m_pconfiguration->GetStringValue("SteamOfficerToken", ""));
+    }
+
+    TRef<SimpleModifiableValue<bool>> GetUiShowStartupCreditsMovie() {
+        return m_pconfiguration->GetBool("Ui.ShowStartupCreditsMovie", true);
+    }
+
+    TRef<SimpleModifiableValue<bool>> GetUiShowStartupIntroMovie() {
+        return m_pconfiguration->GetBool("Ui.ShowStartupIntroMovie", true);
+    }
+
+    TRef<SimpleModifiableValue<bool>> GetUiShowStartupTrainingSuggestion() {
+        return m_pconfiguration->GetBool("Ui.ShowStartupTrainingSuggestion", true);
+    }
+
+    TRef<SimpleModifiableValue<bool>> GetUiUseOldUi() {
+        return m_pconfiguration->GetBool("Ui.UseOldUi", true);
+    }
+
+    TRef<SimpleModifiableValue<bool>> GetChatFilterChatsToAll() {
+        return m_pconfiguration->GetBool("Chat.FilterChatsToAll", false);
+    }
+
+    TRef<SimpleModifiableValue<bool>> GetChatFilterVoiceChats() {
+        return m_pconfiguration->GetBool("Chat.FilterVoiceChats", false);
+    }
+
+    TRef<SimpleModifiableValue<bool>> GetChatFilterChatsFromLobby() {
+        return m_pconfiguration->GetBool("Chat.FilterChatsFromLobby", false);
+    }
+
+    TRef<SimpleModifiableValue<bool>> GetChatFilterUnknownChats() {
+        return m_pconfiguration->GetBool("Chat.FilterUnknownChats", false);
+    }
+
+    TRef<SimpleModifiableValue<bool>> GetChatCensorChat() {
+        return m_pconfiguration->GetBool("Chat.CensorChat", m_pconfiguration->GetBoolValue("CensorChats", true));
+    }
+
+    TRef<SimpleModifiableValue<float>> GetChatNumberOfLines() {
+        return m_pconfiguration->GetInt("Chat.NumberOfLines", m_pconfiguration->GetIntValue("ChatLines", 10));
+    }
+
+    TRef<SimpleModifiableValue<float>> GetSoundEffectVolume() {
+        return m_pconfiguration->GetInt("Sound.EffectVolume", -8);
+    }
+
+    TRef<SimpleModifiableValue<float>> GetSoundVoiceVolume() {
+        return m_pconfiguration->GetInt("Sound.VoiceVolume", -13);
+    }
+
+    TRef<SimpleModifiableValue<bool>> GetJoystickControlsLinear() {
+        return m_pconfiguration->GetBool("Joystick.ControlsLinear", m_pconfiguration->GetBoolValue("LinearControlResponse", false));
+    }
+
+    TRef<SimpleModifiableValue<float>> GetJoystickDeadzoneSize() {
+        return m_pconfiguration->GetInt("Joystick.DeadzoneSize", m_pconfiguration->GetIntValue("DeadZone", 10));
+    }
+
+    TRef<SimpleModifiableValue<bool>> GetJoystickFlipYAxis() {
+        return m_pconfiguration->GetBool("Joystick.FlipYAxis", m_pconfiguration->GetBoolValue("FlipY", false));
+    }
+
+    TRef<SimpleModifiableValue<bool>> GetJoystickUseMouseAsJoystick() {
+        return m_pconfiguration->GetBool("Joystick.UseMouseAsJoystick", m_pconfiguration->GetBoolValue("EnableVirtualJoystick", false));
+    }
+
+    TRef<SimpleModifiableValue<bool>> GetJoystickShowDirectionIndicator() {
+        return m_pconfiguration->GetBool("Joystick.ShowDirectionIndicator", m_pconfiguration->GetBoolValue("ShowJoystickIndicator", true));
+    }
+
+    TRef<SimpleModifiableValue<bool>> GetJoystickEnableForceFeedback() {
+        return m_pconfiguration->GetBool("Joystick.EnableForceFeedback", m_pconfiguration->GetBoolValue("EnableFeedback", false));
+    }
+
+    TRef<SimpleModifiableValue<float>> GetMouseSensitivity() {
+        return m_pconfiguration->GetFloat("Mouse.Sensitivity", m_pconfiguration->GetFloatValue("MouseSensitivity", 0.6f));
+    }
+
+    TRef<SimpleModifiableValue<float>> GetMouseAcceleration() {
+        return m_pconfiguration->GetInt("Mouse.Acceleration", m_pconfiguration->GetIntValue("MouseAcceleration", 0));
+    }
+
+    TRef<SimpleModifiableValue<bool>> GetGraphicsEnvironment() {
+        return m_pconfiguration->GetBool("Graphics.Environment", m_pconfiguration->GetBoolValue("Environment", true));
+    }
+
+    TRef<SimpleModifiableValue<bool>> GetGraphicsPosters() {
+        return m_pconfiguration->GetBool("Graphics.Posters", m_pconfiguration->GetBoolValue("Posters", true));
+    }
+
+    TRef<SimpleModifiableValue<float>> GetGraphicsDebris() {
+        return m_pconfiguration->GetFloat("Graphics.Debris", m_pconfiguration->GetFloatValue("Debris", 1.0f));
+    }
+
+    TRef<SimpleModifiableValue<bool>> GetGraphicsStars() {
+        return m_pconfiguration->GetBool("Graphics.Stars", m_pconfiguration->GetBoolValue("Stars", true));
+    }
+
+    TRef<SimpleModifiableValue<bool>> GetGraphicsBoundingBoxes() {
+        return m_pconfiguration->GetBool("Graphics.BoundingBoxes", m_pconfiguration->GetBoolValue("Bounds", false));
+    }
+
+    TRef<SimpleModifiableValue<bool>> GetGraphicsTransparentObjects() {
+        return m_pconfiguration->GetBool("Graphics.TransparentObjects", m_pconfiguration->GetBoolValue("TransparentObjects", false));
+    }
+
+    TRef<SimpleModifiableValue<bool>> GetGraphicsParticles() {
+        return m_pconfiguration->GetBool("Graphics.Particles", m_pconfiguration->GetIntValue("SmokeEffects", 3) == 3);
+    }
+
+    TRef<SimpleModifiableValue<bool>> GetGraphicsLensFlare() {
+        return m_pconfiguration->GetBool("Graphics.LensFlare", m_pconfiguration->GetBoolValue("LensFlare", true));
+    }
+
+    TRef<SimpleModifiableValue<float>> GetUiHudStyle() {
+        return m_pconfiguration->GetInt("Ui.HudStyle", 0);
+    }
+};
+
+#include "ModdingEngine.h"
+#include "CallsignTagInfo.h"
+
+class TrekApp : public EffectApp {
+public:
+    virtual std::shared_ptr<CallsignHandler> GetCallsignHandler() = 0;
+    virtual TRef<GameConfigurationWrapper> GetGameConfiguration() = 0;
+    virtual std::shared_ptr<ModdingEngine> GetModdingEngine() = 0;
+    virtual TRef<UiEngine> GetUiEngine() = 0;
+    virtual TRef<ISoundEngine> GetSoundEngine() = 0;
+};
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // Main Trek Window
@@ -49,36 +216,80 @@ UpdatingConfiguration* GetConfiguration();
 
 class ChatListPane;
 
-class TrekWindow : public EffectWindow {
+class TrekWindow : public Value, public IKeyboardInput {
 protected:
+    TRef<EngineWindow> m_pEngineWindow;
+    TRef<Modeler> m_pmodeler;
+    TRef<Engine> m_pengine;
+
+    TRef<IPopupContainer>      m_ppopupContainer;
+
+    TEvent<Time>::Cleanable m_cleanableOnFrame;
+    TEvent<>::Cleanable m_cleanableOnClose;
+    TEvent<bool>::Cleanable m_cleanableOnActivate;
+
     TrekWindow(
-        EffectApp* papp,
-        const ZString&     strCommandLine,
-              bool         bStartFullscreen,
-        const WinRect&     rect,
-        const WinPoint&    sizeMin
+        EngineWindow* pengineWindow
     ) :
-        EffectWindow(
-            papp,
-            GetConfiguration(),
-            strCommandLine,
-            GetWindowTitle(),
-            bStartFullscreen,
-            rect,
-            sizeMin
-        ) 
+        m_pEngineWindow(pengineWindow)
     {
+
     }
 
+    virtual void Terminate() {
+        m_cleanableOnFrame.Cleanup();
+        m_cleanableOnClose.Cleanup();
+        m_cleanableOnActivate.Cleanup();
+    }
+
+    virtual void EvaluateFrame(Time time) = 0;
+
 public:
+
     static TRef<TrekWindow> Create(
-        EffectApp*     papp, 
+        TrekApp*     papp,
+        EngineWindow* pengineWindow,
         const ZString& strCommandLine, 
 // BUILD_DX9
 		const ZString& strArtPath,					// Added for DX9 build, due to reordered startup.
 // BUILD_DX9
         bool           bMovies
     );
+
+    virtual void Start() {
+        m_cleanableOnClose = std::move(m_pEngineWindow->GetOnCloseEventSource()->AddSinkManaged(new CallbackSink([this]() {
+            this->Terminate();
+            return true;
+        })));
+
+        m_cleanableOnFrame = std::move(m_pEngineWindow->GetEvaluateFrameEventSource()->AddSinkManaged(new CallbackValueSink<Time>([this](Time time) {
+            this->EvaluateFrame(time);
+            return true;
+        })));
+
+        m_cleanableOnActivate = std::move(m_pEngineWindow->GetActivateEventSource()->AddSinkManaged(new CallbackValueSink<bool>([this](bool bActive) {
+            this->OnActivate(bActive);
+            return true;
+        })));
+    }
+
+    virtual void OnActivate(bool bActive) {
+
+    }
+
+    EngineWindow* GetEngineWindow() { 
+        return m_pEngineWindow;
+    }
+
+    Modeler* GetModeler() {
+        return m_pmodeler;
+    }
+
+    Number* GetTime() {
+        return m_pEngineWindow->GetTime();
+    }
+
+    IPopupContainer* GetPopupContainer() { return m_ppopupContainer; }
 
     static LPCTSTR          GetWindowTitle() { return TEXT("Allegiance"); };
 
@@ -194,10 +405,6 @@ public:
     virtual void SetTarget(ImodelIGC*   pmodel, CommandID cid) = 0;
     virtual void SetAccepted(ImodelIGC* pmodel, CommandID cid) = 0;
 
-    // call this to terminate this gaming session
-
-    virtual void Terminate() = 0;
-
     virtual void ChangeChatMessage(void) = 0;
     virtual void AddMuzzleFlare(const Vector& vecDirection, float duration) = 0;
 
@@ -207,7 +414,6 @@ public:
     virtual HRESULT HandleMsg(FEDMESSAGE* pfm,
                               Time        lastUpdate,
                               Time        now) = 0;
-    virtual VOID VTSetText(LPSTR szFormat, ...) = 0;
 
     virtual void SetCursor(const char* pszCursorImage) = 0;
     virtual void SetWaitCursor() = 0;
@@ -265,6 +471,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////
 
 TrekWindow* GetWindow();
+EngineWindow* GetEngineWindow();
 Engine*     GetEngine();
 Modeler*    GetModeler();
 

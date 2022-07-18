@@ -65,7 +65,7 @@ public:
             }
             else
             {
-                assert(pDestination->GetObjectType() == OT_station);
+                ZAssert(pDestination->GetObjectType() == OT_station);
                 CastTo(pstation, pDestination);
             }
 
@@ -382,9 +382,9 @@ public:
             && pship->GetPilotType() >= c_ptPlayer)
         {
             HullID          hid = pPlayer->LastSeenShipType();
-            assert (hid != NA);
+            ZAssert (hid != NA);
             IhullTypeIGC*   pht = trekClient.m_pCoreIGC->GetHullType(hid);
-            assert (pht);
+            ZAssert (pht);
 
             if ((trekClient.GetShip()->GetPilotType() == c_ptCheatPlayer) ||
                 (pht->GetMaxFixedWeapons() != pht->GetMaxWeapons()))

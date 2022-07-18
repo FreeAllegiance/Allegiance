@@ -50,7 +50,7 @@ void CPigEventOwner::RemoveEvent(CPigEvent* pEvent)
   // Find the specified event in our collection
   LockT();
   XEventIt it = std::find(m_Events.begin(), m_Events.end(), pEvent);
-  assert(m_Events.end() != it);
+  ZAssert(m_Events.end() != it);
 
   // Remove the event from the collection
   m_Events.erase(it);

@@ -227,11 +227,11 @@ namespace AllegianceInterop
 				BaseClient::SetAutoPilot(false);
 
 				// Get the source ship and base hull type
-				assert(pstationOld);
+				ZAssert(pstationOld);
 				IshipIGC* pshipSource = BaseClient::GetShip()->GetSourceShip();
-				assert(pshipSource);
+				ZAssert(pshipSource);
 				const IhullTypeIGC* pht = pshipSource->GetBaseHullType();
-				assert(pht);
+				ZAssert(pht);
 
 				//If no weapon is selected, try to select a weapon
 				if (pshipSource && pshipSource->GetObjectID() == BaseClient::GetShip()->GetObjectID()) //imago 10/14

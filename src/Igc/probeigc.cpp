@@ -29,12 +29,12 @@ CprobeIGC::CprobeIGC(void)
 
 CprobeIGC::~CprobeIGC(void)
 {
-    assert (m_projectileType == NULL);
+    ZAssert (m_projectileType == NULL);
 }
 
 HRESULT CprobeIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
 {
-    assert (pMission);
+    ZAssert (pMission);
     m_pMission = pMission;
 
     ZRetailAssert (data && (dataSize > sizeof(DataProbeBase)));
@@ -57,7 +57,7 @@ HRESULT CprobeIGC::Initialize(ImissionIGC* pMission, Time now, const void* data,
         IclusterIGC*    pcluster;
         if (dataProbeBase->exportF)
         {
-            assert (dataSize == sizeof(DataProbeExport));
+            ZAssert (dataSize == sizeof(DataProbeExport));
 
             DataProbeExport* dataProbeExport = (DataProbeExport*)dataProbeBase;
 
@@ -72,7 +72,7 @@ HRESULT CprobeIGC::Initialize(ImissionIGC* pMission, Time now, const void* data,
         }
         else
         {
-            assert (dataSize == sizeof(DataProbeIGC));
+            ZAssert (dataSize == sizeof(DataProbeIGC));
 
             DataProbeIGC*    dataProbe = (DataProbeIGC*)dataProbeBase;
 
@@ -86,8 +86,8 @@ HRESULT CprobeIGC::Initialize(ImissionIGC* pMission, Time now, const void* data,
                 m_target = dataProbe->pmodelTarget;
         }
 
-        assert (m_probeType);
-        assert (m_probeType->GetObjectType() == OT_probeType);
+        ZAssert (m_probeType);
+        ZAssert (m_probeType->GetObjectType() == OT_probeType);
         m_probeType->AddRef();
 
         m_ammo = m_probeType->GetAmmo();
@@ -105,15 +105,15 @@ HRESULT CprobeIGC::Initialize(ImissionIGC* pMission, Time now, const void* data,
 		else
 			m_launcher = pshipLauncher; //Xynth would still like to know who deployed the probe
 
-        assert (pcluster);
+        ZAssert (pcluster);
 
         //Load the model for the probe
-        assert (iswalpha(dataProbeType->modelName[0]));
+        ZAssert (iswalpha(dataProbeType->modelName[0]));
         HRESULT hr = Load(0, dataProbeType->modelName,
                           dataProbeType->textureName,
                           dataProbeType->iconName, 
                           c_mtDamagable | c_mtHitable | c_mtStatic | c_mtSeenBySide | c_mtPredictable | c_mtScanner);
-        assert (SUCCEEDED(hr));
+        ZAssert (SUCCEEDED(hr));
 
         SetRadius(dataProbeType->radius);
         SetSignature(dataProbeType->signature);
@@ -129,16 +129,16 @@ HRESULT CprobeIGC::Initialize(ImissionIGC* pMission, Time now, const void* data,
         }
 
         //lifespan == 0 => immortal probe that can hit until it gets terminated on the next update; this is bad
-        assert (dataProbeType->lifespan > 0.0f);
+        ZAssert (dataProbeType->lifespan > 0.0f);
         m_timeExpire = m_time0 + dataProbeType->lifespan;
-        assert (m_timeExpire != m_time0);
+        ZAssert (m_timeExpire != m_time0);
 
 
         m_nextFire = m_time0 + (m_probeType->HasCapability(c_eabmQuickReady)
                                 ? 5.0f        //5 second delay
                                 : 30.0f);     //30 second delay before we start to shoot
 
-        assert (GetSide());
+        ZAssert (GetSide());
         SetMass(0.0f);
 
         m_probeID = dataProbeBase->probeID;
@@ -314,7 +314,7 @@ inline void  CprobeIGC::GetTarget(const ModelListIGC*  models,
     {
         ImodelIGC*   pmodel = l->data();
 
-        assert (pmodel->GetObjectType() == type);
+        ZAssert (pmodel->GetObjectType() == type);
 
         ValidTarget(pmodel, 
                     pside,
@@ -354,7 +354,7 @@ void    CprobeIGC::Update(Time now)
             if (m_nextFire < now)
             {
                 IclusterIGC*    pcluster = GetCluster();
-                assert (pcluster);
+                ZAssert (pcluster);
 
                 //We'll be able to take a shot
                 float   lifespan = GetProjectileLifespan();
@@ -372,7 +372,7 @@ void    CprobeIGC::Update(Time now)
                 Time    lastUpdate = GetMyLastUpdate();
                 if (m_nextFire < lastUpdate)
                     m_nextFire = lastUpdate;
-                assert (m_nextFire <= now);
+                ZAssert (m_nextFire <= now);
 
                 TmodelIGC<IprobeIGC>::Update(now);
 
@@ -495,7 +495,7 @@ void    CprobeIGC::Update(Time now)
 
                         IprojectileIGC*  p = (IprojectileIGC*)(m_pMission->CreateObject(m_nextFire, OT_projectile, 
                                                                                         &dataProjectile, sizeof(dataProjectile)));
-                        assert (p);
+                        ZAssert (p);
                         {
                             p->SetLauncher(m_launcher ? ((ImodelIGC*)m_launcher) : ((ImodelIGC*)this));
                             p->SetPosition(position);

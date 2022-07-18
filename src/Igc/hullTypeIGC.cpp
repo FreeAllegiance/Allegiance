@@ -21,14 +21,14 @@ HRESULT         ChullTypeIGC::Initialize(ImissionIGC* pMission,
                                          const void*  data,
                                          int          dataSize)
 {
-    assert (pMission);
+    ZAssert (pMission);
     m_pMission = pMission;
 
 	ZRetailAssert (data && (dataSize >= sizeof(DataHullTypeIGC)));
 
     //Note ... we need to allocate & copy the DataHullTypeIGC + the variable length fields
     m_data = (DataHullTypeIGC*)(new char [dataSize]);
-    assert (m_data);
+    ZAssert (m_data);
     memcpy(m_data, data, dataSize);
 
     {
@@ -37,7 +37,7 @@ HRESULT         ChullTypeIGC::Initialize(ImissionIGC* pMission,
              i++)
         {
             IpartTypeIGC*  ppt = pMission->GetPartType(m_data->preferredPartsTypes[i]);
-            assert (ppt);
+            ZAssert (ppt);
             ppt->AddRef();
             m_preferredPartTypes.last(ppt);
         }
@@ -54,7 +54,7 @@ HRESULT         ChullTypeIGC::Initialize(ImissionIGC* pMission,
         static const Vector z(0.0f, 0.0f, 1.0f);
 
         MultiHullBase*  pmhb = HitTest::Load(m_data->modelName);
-        assert (pmhb);
+        ZAssert (pmhb);
         {
 
             {
@@ -91,29 +91,29 @@ HRESULT         ChullTypeIGC::Initialize(ImissionIGC* pMission,
                 const HardpointData&    hd = GetHardpointData(i);
 
                 const FrameDataUTL*   pfd = pmhb->GetFrame(hd.frameName);
-                // KGJV: temp fix assert (pfd);   //Note: still need to handle pfd == NULL semi-gracefully in retail
-				// mmf added debugf to log what would have been the above assert that KGJV commented out
+                // KGJV: temp fix ZAssert (pfd);   //Note: still need to handle pfd == NULL semi-gracefully in retail
+				// mmf added debugf to log what would have been the above ZAssert that KGJV commented out
 				// this seems to happen a lot at core load, no sense logging it
-				// if (pfd==NULL) debugf("mmf hullTypeIGC.cpp ln 96 pfd == NULL would have called assert\n");
+				// if (pfd==NULL) debugf("mmf hullTypeIGC.cpp ln 96 pfd == NULL would have called ZAssert\n");
 
                 if (hd.bFixed)
                 {
-                    assert (i < m_data->maxFixedWeapons);
+                    ZAssert (i < m_data->maxFixedWeapons);
                     m_positionWeapons[i] = pfd ? (pfd->position * m_scale) : Vector::GetZero();
                 }
                 else
                 {
-					// mmf debug build failing on this assert with newer cores like plus14b or rps55
+					// mmf debug build failing on this ZAssert with newer cores like plus14b or rps55
 					// dn 4.05 and zone core work
 					// this has been logged sufficiently to provide core authors enough info
 					// if they wanted to try and resolve the 'errors' they seem not to be problematic
 					// if (i < m_data->maxFixedWeapons) {
-					//	debugf("mmf hullTypeIGC.cpp would have called assert\n");
+					//	debugf("mmf hullTypeIGC.cpp would have called ZAssert\n");
 					//	debugf("mmf i=%d, maxFixedWeapons=%d, hullID = %d\n",i,m_data->maxFixedWeapons,m_data->hullID);
 					// }
 					// end mmf
-					// mmf comment out this assert so debug build will work
-					// assert (i >= m_data->maxFixedWeapons);
+					// mmf comment out this ZAssert so debug build will work
+					// ZAssert (i >= m_data->maxFixedWeapons);
 
                     if (pfd)
                     {
@@ -164,7 +164,7 @@ HRESULT         ChullTypeIGC::Initialize(ImissionIGC* pMission,
                     const FrameDataUTL* pfd = pmhb->GetFrame(bfrLaunch);
                     if (pfd)
                     {
-                        assert (m_nLaunchSlots < c_maxShipLaunchSlots);
+                        ZAssert (m_nLaunchSlots < c_maxShipLaunchSlots);
                         m_positionLaunches[m_nLaunchSlots] = pfd->position * m_scale;
                         m_directionLaunches[m_nLaunchSlots++] = pfd->forward;
                     }
@@ -187,14 +187,14 @@ HRESULT         ChullTypeIGC::Initialize(ImissionIGC* pMission,
 					// BT - Fixing occosional crash on WinTrek startup.
 					if (pfd && m_nLandSlots < c_maxLandSlots)
                     {
-                        assert (m_nLandSlots < c_maxShipLandSlots);
+                        ZAssert (m_nLandSlots < c_maxShipLandSlots);
 
                         int i = 0;
 
 						// BT - Fixing occosional crash on WinTrek startup.
 						while (pfd && i < c_maxLandPlanes)
                         {
-                            assert (i < c_maxLandPlanes);
+                            ZAssert (i < c_maxLandPlanes);
                             m_positionLandPlanes[m_nLandSlots][i] = pfd->position * m_scale;
                             m_directionLandPlanes[m_nLandSlots][i] = pfd->forward;
 
@@ -217,13 +217,13 @@ HRESULT         ChullTypeIGC::Initialize(ImissionIGC* pMission,
     if (m_data->successorHullID != NA)
     {
         m_phtSuccessor = pMission->GetHullType(m_data->successorHullID);
-        // mmf this assert causing plus15b2 core to exit
+        // mmf this ZAssert causing plus15b2 core to exit
 		// comment out for now so this core can be tested with debug build
-		// assert (m_phtSuccessor);
+		// ZAssert (m_phtSuccessor);
 		// add debugf 
 		// this has been logged enough if core devs want to resolve it
 		// does not seem to be problem
-		// debugf("mmf hullTypeIGC.cpp m_phtSuccessor == NULL would have called assert\n");
+		// debugf("mmf hullTypeIGC.cpp m_phtSuccessor == NULL would have called ZAssert\n");
 		// debugf("mmf m_data->successorHullID = %d, hullID = %d\n",m_data->successorHullID,m_data->hullID);
     }
 

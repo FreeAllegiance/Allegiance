@@ -262,10 +262,10 @@ typedef struct dbiTag
 	// Number of asserts since startup
 	ULONG	cAssert;
 
-	// Trigger assert on allocation failure
+	// Trigger ZAssert on allocation failure
 	BOOL	fAssertOnAllocFail;
 
-	// This setting determines whether an assert calls DbgStop,
+	// This setting determines whether an ZAssert calls DbgStop,
 	// which triggers an INT 3. If no debugger is running, the INT 3
 	// is handled internally, and execution continues.
 	BOOL	fStopOnAssert;

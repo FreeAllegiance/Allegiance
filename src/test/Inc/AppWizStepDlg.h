@@ -310,7 +310,7 @@ inline BOOL CALLBACK TCAppWizStepDlg::FrameFindProc(HWND hwnd, LPARAM lp)
   HWND hwndNew = ::CreateWindow(TEXT("static"), TEXT(""), dwStyle,
     rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, hwndParent,
     HMENU(-1), HINSTANCE(::GetWindowLong(HWND(lp), GWL_HINSTANCE)), NULL);
-  assert(hwndNew);
+  ZAssert(hwndNew);
 
   // Position the new frame after the old one
   UINT uFlags = SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE;

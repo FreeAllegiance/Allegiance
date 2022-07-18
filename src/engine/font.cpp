@@ -116,12 +116,23 @@ private:
 		BYTE bByte, bMask;
 		float fTexWidth, fTexHeight;
 
+        debugf("Font: Creating surface");
+
 		// Create the texture - D3DFMT_A8L8.
 		m_pFontTex = CreatePrivateSurface(D3DFMT_A8L8, dwTexWidth, dwTexHeight, "Font texture" );
 		hTex = m_pFontTex->GetTexHandle();
 
+        if (hTex == INVALID_TEX_HANDLE) {
+            debugf("Font: Create surface failed");
+        }
+        debugf("Font: LockTexture");
+
 		// Lock texture to copy font data into.
-		CVRAMManager::Get()->LockTexture( hTex, &lockRect );
+		HRESULT hr = CVRAMManager::Get()->LockTexture( hTex, &lockRect);
+
+        if (hr != D3D_OK) {
+            debugf("Font: Unable to lock texture " + hr);
+        }
 
 		// Copy in all the data.
 		WORD * pData = (WORD*) lockRect.pBits;
@@ -200,9 +211,16 @@ private:
 				dwYVal += m_height;
 			}
 		}
+        debugf("Font: Unlocking texture");
 		
 		// Finished, unlock texture.
-		CVRAMManager::Get()->UnlockTexture( hTex );
+		hr = CVRAMManager::Get()->UnlockTexture( hTex );
+
+        debugf("Font: Done");
+
+        if (hr != D3D_OK) {
+            debugf("Font: Failed to unlock texture");
+        }
 	}
 
 
@@ -242,10 +260,10 @@ private:
 		BYTE*	pbits;
         DWORD*	pcolorbytes;
 		//HBITMAP	hbitmap	= ::CreateDIBSection( NULL,	(BITMAPINFO*)&bmih,	DIB_RGB_COLORS,	(void**)&pbits,	NULL, 0	);
-        HBITMAP	hbitmap = ::CreateDIBSection(NULL, &bmih, DIB_RGB_COLORS, (void**)&pcolorbytes, NULL, 0);
+        HDC	hdcBitmap = ::CreateCompatibleDC(NULL);
+        HBITMAP	hbitmap = ::CreateDIBSection(hdcBitmap, &bmih, DIB_RGB_COLORS, (void**)&pcolorbytes, NULL, 0);
 		ZAssert(hbitmap	!= NULL);
 
-		HDC	hdcBitmap =	::CreateCompatibleDC(NULL);
 		ZAssert(hdcBitmap != NULL);
 		HBITMAP	hbitmapOld = (HBITMAP)::SelectObject(hdcBitmap,	hbitmap);
 		ZAssert(hbitmapOld != NULL);
@@ -834,7 +852,7 @@ public:
 	  {
 		  int	highNibble = HexDigitToInt (str[ichar++]);
 		  int	lowNibble =	HexDigitToInt (str[ichar++]);
-		  assert ((highNibble	>= 0) && (lowNibble	>= 0));
+		  ZAssert ((highNibble	>= 0) && (lowNibble	>= 0));
 		  return ((highNibble	<< 4) |	lowNibble);
 	  }
 

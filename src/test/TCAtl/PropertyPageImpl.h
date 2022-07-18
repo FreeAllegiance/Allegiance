@@ -409,14 +409,14 @@ HWND TCPropertyPageImpl<T>::Create(HWND hWndParent)
   // Get the derived class pointer
   T* pThis = static_cast<T*>(this);
 
-  assert(pThis->m_hWnd == NULL);
+  ZAssert(pThis->m_hWnd == NULL);
   _Module.AddCreateWndData(&pThis->m_thunk.cd, (CDialogImplBase*)pThis);
   HWND hWnd = ::CreateDialogParam(_Module.GetResourceInstance(),
       MAKEINTRESOURCE(pThis->m_IDD),
       hWndParent,
       (DLGPROC)StartDialogProc,
       NULL);
-  assert(pThis->m_hWnd == hWnd);
+  ZAssert(pThis->m_hWnd == hWnd);
   return hWnd;
 }
 
@@ -485,12 +485,12 @@ inline bool TCPropertyPageImpl<T>::IsObjectKnown(IUnknown* punk)
       IUnknown* pqi;
       if (SUCCEEDED(punk->QueryInterface(*entry.piid, (void**)&pqi)))
       {
-        assert(pqi);
+        ZAssert(pqi);
         bKnown = true;
 
         // Add the interface pointer to the vector associated with the IID
         CUnkVectorMap::iterator it = m_mapInterfaces.find(*entry.piid);
-        assert(m_mapInterfaces.end() != it);
+        ZAssert(m_mapInterfaces.end() != it);
         CUnkVector& vec = it->second;
         vec.push_back(pqi);
       }
@@ -576,7 +576,7 @@ bool TCPropertyPageImpl<T>::OnUpdateFields(DISPID dispid)
         // Get the CUnkVector for the entry's IID
         CUnkVectorMap::iterator it = m_mapInterfaces.find(*entry.piid);
         CUnkVector& vec = it->second;
-        assert(m_mapInterfaces.end() != it);
+        ZAssert(m_mapInterfaces.end() != it);
 
         // Call the specified field Update method
         __try
@@ -635,7 +635,7 @@ inline void TCPropertyPageImpl<T>::OnApplyFields()
       // Get the CUnkVector for the entry's IID
       CUnkVectorMap::iterator it = m_mapInterfaces.find(*entry.piid);
       CUnkVector& vec = it->second;
-      assert(m_mapInterfaces.end() != it);
+      ZAssert(m_mapInterfaces.end() != it);
 
       // Call the specified field Apply method
       __try
@@ -962,7 +962,7 @@ STDMETHODIMP TCPropertyPageImpl<T>::OnStatusChange(DWORD dwFlags)
   }
 
   // Delegate to this page's site
-  assert(NULL != m_pPageSite);
+  ZAssert(NULL != m_pPageSite);
   return m_pPageSite->OnStatusChange(dwFlags);
 }
 
@@ -990,7 +990,7 @@ template <class T>
 STDMETHODIMP TCPropertyPageImpl<T>::GetLocaleID(LCID* pLocaleID)
 {
   // Delegate to this page's site
-  assert(NULL != m_pPageSite);
+  ZAssert(NULL != m_pPageSite);
   return m_pPageSite->GetLocaleID(pLocaleID);
 }
 
@@ -1016,7 +1016,7 @@ template <class T>
 STDMETHODIMP TCPropertyPageImpl<T>::GetPageContainer(IUnknown** ppUnk)
 {
   // Delegate to this page's site
-  assert(NULL != m_pPageSite);
+  ZAssert(NULL != m_pPageSite);
   return m_pPageSite->GetPageContainer(ppUnk);
 }
 
@@ -1042,7 +1042,7 @@ template <class T>
 STDMETHODIMP TCPropertyPageImpl<T>::TranslateAccelerator(MSG* pMsg)
 {
   // Delegate to this page's site
-  assert(NULL != m_pPageSite);
+  ZAssert(NULL != m_pPageSite);
   return m_pPageSite->TranslateAccelerator(pMsg);
 }
 
@@ -1074,7 +1074,7 @@ STDMETHODIMP TCPropertyPageImpl<T>::OnChanged(DISPID dispid)
   T* pThis = static_cast<T*>(this);
 
   // IPropertyNotifySink should only be connected when window is active
-  assert((HWND)*pThis);
+  ZAssert((HWND)*pThis);
 
   // Post a message to handle the property change notification
   pThis->PostMessage(wm_OnChanged, dispid);

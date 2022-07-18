@@ -22,7 +22,7 @@ CPigHullTypes::CPigHullTypes()
 
 HRESULT CPigHullTypes::Init(const HullTypeListIGC* pslistIGC, IstationIGC* pStation)
 {
-  assert(NULL != pslistIGC);
+  ZAssert(NULL != pslistIGC);
 
   // Copy each hull type that the station can buy
   for (HullTypeLinkIGC* it = pslistIGC->first(); it; it = it->next())
@@ -88,7 +88,7 @@ STDMETHODIMP CPigHullTypes::get__NewEnum(IUnknown** ppunkEnum)
   typedef CComObject<CComEnum<IEnumVARIANT, &IID_IEnumVARIANT, VARIANT,
     _Copy<VARIANT> > > CEnum;
   CEnum* pEnum = new CEnum;
-  assert(NULL != pEnum);
+  ZAssert(NULL != pEnum);
 
   CComVariant* pargTemp = new CComVariant [m_HullTypesIGC.size()];
 

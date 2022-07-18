@@ -49,7 +49,7 @@ public:
       #ifdef _DEBUG_TRAINING
         // compute the amount of time elapsed since the last frame
         uint32_t   dwRealTime = timeGetTime ();
-        assert (dwRealTime >= s_dwLastTime);
+        ZAssert (dwRealTime >= s_dwLastTime);
         uint32_t   dwDeltaTime = dwRealTime - s_dwLastTime;
         s_dwLastTime = dwRealTime;
 
@@ -70,7 +70,7 @@ public:
 
         // check that time is strictly increasing
         if (s_dwLastClockTime != 0)
-            assert (dwCurrentClockTime >= s_dwLastClockTime);
+            ZAssert (dwCurrentClockTime >= s_dwLastClockTime);
         s_dwLastClockTime = dwCurrentClockTime;
       #else
         uint32_t   dwCurrentClockTime = ((s_dwPauseStart != 0) ? s_dwPauseStart : timeGetTime()) - s_dwNegativeOffset;

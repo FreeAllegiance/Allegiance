@@ -89,7 +89,7 @@ namespace Training
                 // create no mission
                 return false;
         }
-        assert (g_pMission);
+        ZAssert (g_pMission);
         g_pMission->Start ();
 
         // start training missions with the throttle off
@@ -167,21 +167,21 @@ namespace Training
     //------------------------------------------------------------------------------
     SectorID        GetStartSectorID (void)
     {
-        assert (g_pMission);
+        ZAssert (g_pMission);
         return g_pMission->GetStartSectorID ();
     }
 
     //------------------------------------------------------------------------------
     int             GetKillCount(void)
     {
-        assert(g_pMission);
+        ZAssert(g_pMission);
         return g_pMission->GetKillCount();
     }
 
     //------------------------------------------------------------------------------
     void            SetupShipAndCamera (void)
     {
-        assert (g_pMission);
+        ZAssert (g_pMission);
         g_pMission->SetupShipAndCamera ();
     }
 

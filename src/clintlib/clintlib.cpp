@@ -800,7 +800,7 @@ void MissionInfo::Update(FMD_LS_LOBBYMISSIONINFO* pfmLobbyMissionInfo)
 		SquadID* vSquadIDs = (SquadID*)FM_VAR_REF(pfmLobbyMissionInfo, rgSquadIDs);
 		int numSquads = pfmLobbyMissionInfo->cbrgSquadIDs / sizeof(SquadID);
 
-		assert(numSquads < c_cSidesMax);
+		ZAssert(numSquads < c_cSidesMax);
 		for (sideID = 0; sideID < numSquads; sideID++)
 			squadIDs[sideID] = vSquadIDs[sideID];
 		for (; sideID < c_cSidesMax; sideID++)
@@ -971,7 +971,7 @@ SideInfo* MissionInfo::GetSideInfo(SideID sideID)
     
     if (sideID >= m_pfmMissionDef->misparms.nTeams)
     {
-        assert(false);
+        ZAssert(false);
         return NULL;
     }
     else if (!m_mapSideInfo.Find(sideID, pSideInfo) && sideID != SIDE_TEAMLOBBY)
@@ -1197,7 +1197,7 @@ BaseClient::~BaseClient(void)
 
 void    BaseClient::Initialize(Time timeNow)
 {
-    assert (m_pCoreIGC);
+    ZAssert (m_pCoreIGC);
     
     //Now that we have a mission, create a (no-hull) ship for the player
     CreateDummyShip();
@@ -1244,7 +1244,7 @@ void    BaseClient::Reinitialize(Time timeNow)
 
 void    BaseClient::Terminate(void)
 {
-    assert (m_pCoreIGC);
+    ZAssert (m_pCoreIGC);
     Disconnect();
 
     FlushGameState();
@@ -1299,16 +1299,16 @@ HRESULT BaseClient::ConnectToServer(ConnectInfo & ci, DWORD dwCookie, Time now, 
     // we need to treat this as a reconnect and dump first connection...
     // we should see about reusing the connection
 
-    assert(IFF(ci.cbZoneTicket > 0, ci.pZoneTicket));
+    ZAssert(IFF(ci.cbZoneTicket > 0, ci.pZoneTicket));
 
     Reinitialize(now);
     
-    assert (!m_fm.IsConnected() && !m_fLoggedOn);
+    ZAssert (!m_fm.IsConnected() && !m_fLoggedOn);
 
     // this does everything up to, and including, creating a new player
     if (ci.guidSession != GUID_NULL)
     {
-        assert(ci.strServer.IsEmpty());
+        ZAssert(ci.strServer.IsEmpty());
         hr = m_fm.JoinSessionInstance(ci.guidSession, ci.szName);
     }
     else
@@ -1384,7 +1384,7 @@ HRESULT BaseClient::ConnectToLobby(ConnectInfo * pci) // pci is NULL if reloggin
     m_ci.strServer = GetIsZoneClub() ? GetCfgInfo().strClubLobby : GetCfgInfo().strPublicLobby;
     debugf("ConnectToLobby: Server address is " + m_ci.strServer);
 
-    assert(IFF(m_ci.cbZoneTicket > 0, m_ci.pZoneTicket));
+    ZAssert(IFF(m_ci.cbZoneTicket > 0, m_ci.pZoneTicket));
     
     // TODO: Remove this when we are ready to enforce CD Keys
     if (m_strCDKey.IsEmpty())
@@ -1397,7 +1397,7 @@ HRESULT BaseClient::ConnectToLobby(ConnectInfo * pci) // pci is NULL if reloggin
         return S_OK;
     }
 
-    assert(m_fLoggedOnToLobby == false);
+    ZAssert(m_fLoggedOnToLobby == false);
 
     debugf("ConnectToLobby: Clearing list of already loaded missions");
     TMapListWrapper<DWORD, MissionInfo*>::Iterator iterMissions(m_mapMissions);
@@ -1409,7 +1409,7 @@ HRESULT BaseClient::ConnectToLobby(ConnectInfo * pci) // pci is NULL if reloggin
     m_mapMissions.SetEmpty();
 
 	hr = m_fmLobby.JoinSession(GetIsZoneClub() ? FEDLOBBYCLIENTS_GUID : FEDFREELOBBYCLIENTS_GUID, m_ci.strServer, m_ci.szName, GetCfgInfo().dwLobbyPort);
-    assert(IFF(m_fmLobby.IsConnected(), SUCCEEDED(hr)));
+    ZAssert(IFF(m_fmLobby.IsConnected(), SUCCEEDED(hr)));
     if (m_fmLobby.IsConnected())
     {
         debugf("ConnectToLobby: Session started with the lobby");
@@ -1530,15 +1530,15 @@ HRESULT BaseClient::ConnectToClub(ConnectInfo * pci) // pci is NULL if relogging
 
         m_ci = *pci;
     }
-    assert(IFF(m_ci.cbZoneTicket > 0, m_ci.pZoneTicket));
+    ZAssert(IFF(m_ci.cbZoneTicket > 0, m_ci.pZoneTicket));
     
     if (m_fmClub.IsConnected())
         return S_OK;
 
-    assert(m_fLoggedOnToClub == false);
+    ZAssert(m_fLoggedOnToClub == false);
     
     hr = m_fmClub.JoinSession(FEDCLUB_GUID, m_ci.strServer, m_ci.szName);
-    assert(IFF(m_fmClub.IsConnected(), SUCCEEDED(hr)));
+    ZAssert(IFF(m_fmClub.IsConnected(), SUCCEEDED(hr)));
     if (m_fmClub.IsConnected())
     {
         // Let's formally announce ourselves to the server
@@ -1643,15 +1643,15 @@ void BaseClient::Disconnect(void)
 
 void    BaseClient::SetPlayerInfo(PlayerInfo* p)
 {
-    assert (p);
+    ZAssert (p);
     m_pPlayerInfo = p;
 
     //Set the fields that are derived from the player's info
     m_ship->SetObjectID(p->ShipID());
     m_ship->SetName(p->CharacterName());
 
-    assert (p->SideID() == NA);
-    assert (m_ship->GetSide() == NULL);
+    ZAssert (p->SideID() == NA);
+    ZAssert (m_ship->GetSide() == NULL);
 }
 
 void BaseClient::SetViewCluster(IclusterIGC* pcluster, const Vector*  pposition)
@@ -1661,7 +1661,7 @@ void BaseClient::SetViewCluster(IclusterIGC* pcluster, const Vector*  pposition)
 
 void    BaseClient::ResetShip(void)
 {
-    assert (GetSide());
+    ZAssert (GetSide());
 
     //Lose all of the parts
     {
@@ -1676,7 +1676,7 @@ void    BaseClient::ResetShip(void)
     m_ship->SetBaseHullType(GetSide()->GetCivilization()->GetLifepod());
 
     //Do not set these before setting the hull (since we might not have has a hull and that would
-    //trigger the 0 mass assert).
+    //trigger the 0 mass ZAssert).
     m_ship->SetAmmo(0);
     m_ship->SetFuel(0.0f);
 
@@ -1706,7 +1706,7 @@ void    BaseClient::ResetShip(void)
 
 void    BaseClient::BuyLoadout(IshipIGC*    pshipLoadout, bool bLaunch)
 {
-    assert(pshipLoadout);
+    ZAssert(pshipLoadout);
 
     if (m_fm.IsConnected ())
     {
@@ -1715,7 +1715,7 @@ void    BaseClient::BuyLoadout(IshipIGC*    pshipLoadout, bool bLaunch)
             FM_VAR_PARM(NULL, pshipLoadout->ExportShipLoadout(NULL))
         END_PFM_CREATE
 
-        assert (pshipLoadout->GetBaseHullType());
+        ZAssert (pshipLoadout->GetBaseHullType());
 
         pshipLoadout->ExportShipLoadout((ShipLoadout*)(FM_VAR_REF(pfmBuyLoadout, loadout)));
 
@@ -1738,7 +1738,7 @@ void    BaseClient::BuyLoadout(IshipIGC*    pshipLoadout, bool bLaunch)
         free(ptr);
 
         if (bLaunch) {
-            assert(m_ship->GetStation());
+            ZAssert(m_ship->GetStation());
             IstationIGC* s = m_ship->GetStation();
             m_ship->SetStation(NULL);
             s->Launch(m_ship);
@@ -1748,7 +1748,7 @@ void    BaseClient::BuyLoadout(IshipIGC*    pshipLoadout, bool bLaunch)
 
 IshipIGC*   BaseClient::CopyCurrentShip(void)
 {
-    assert (m_ship);
+    ZAssert (m_ship);
 
     TRef<IshipIGC>  pshipLoadout = CreateEmptyShip();
 
@@ -1790,7 +1790,7 @@ IshipIGC*   BaseClient::CreateEmptyShip(ShipID sid)
 
 void    BaseClient::SetMoney(Money m)
 { 
-    assert(m >= 0);
+    ZAssert(m >= 0);
 
     // XXX still a hack until I work out exactly how to get the player info set up
     if (m_pPlayerInfo)
@@ -1911,7 +1911,7 @@ void    BaseClient::SetMessageType(MessageType  messageType)
 {
     // If the message type was None, there shldn't be anything in the message outbox
     // CURTC: I didn't write this, and I don't like it :-)
-    assert(IMPLIES(m_messageType == c_mtNone, m_fm.CbUsedSpaceInOutbox() == 0));
+    ZAssert(IMPLIES(m_messageType == c_mtNone, m_fm.CbUsedSpaceInOutbox() == 0));
     if (messageType != m_messageType)
     {
         SendMessages();
@@ -1922,7 +1922,7 @@ void    BaseClient::SetMessageType(MessageType  messageType)
 void    BaseClient::SendMessages(void)
 {
     // Message type should be none iff there is nothing in the outbox
-    assert (IMPLIES((m_messageType == c_mtNone), (m_fm.CbUsedSpaceInOutbox() == 0))); 
+    ZAssert (IMPLIES((m_messageType == c_mtNone), (m_fm.CbUsedSpaceInOutbox() == 0))); 
     if (m_messageType != c_mtNone)
     {
         ZSucceeded(m_fm.SendMessages(m_fm.GetServerConnection(), 
@@ -1934,7 +1934,7 @@ void    BaseClient::SendMessages(void)
 
 void BaseClient::NextWeapon(void)
 {
-    assert (m_ship);
+    ZAssert (m_ship);
     if (m_ship->GetParentShip() == NULL)
     {
         Mount nHardpoints = m_ship->GetHullType()->GetMaxFixedWeapons();
@@ -1954,7 +1954,7 @@ void BaseClient::NextWeapon(void)
 
 void BaseClient::PreviousWeapon(void)
 {
-    assert (m_ship);
+    ZAssert (m_ship);
     if (m_ship->GetParentShip() == NULL)
     {
         Mount nHardpoints = m_ship->GetHullType()->GetMaxFixedWeapons();
@@ -1977,7 +1977,7 @@ void BaseClient::PreviousWeapon(void)
 
 void BaseClient::SetSelectedWeapon(Mount id)
 {
-    assert (m_ship);
+    ZAssert (m_ship);
 
     if (m_ship->GetParentShip() == NULL)
     {
@@ -1993,7 +1993,7 @@ void BaseClient::SetSelectedWeapon(Mount id)
 
 void BaseClient::JoinMission(MissionInfo * pMission, const char* szMissionPassword)
 {
-    assert (pMission);
+    ZAssert (pMission);
     BEGIN_PFM_CREATE(m_fmLobby, pfmJoinGameReq, C, JOIN_GAME_REQ)
     END_PFM_CREATE
     pfmJoinGameReq->dwCookie = pMission->GetCookie();
@@ -2002,7 +2002,7 @@ void BaseClient::JoinMission(MissionInfo * pMission, const char* szMissionPasswo
 	{
 		SendLobbyMessages();
 		m_dwCookieToJoin = pMission->GetCookie();
-		assert(strlen(szMissionPassword) < c_cbGamePassword);
+		ZAssert(strlen(szMissionPassword) < c_cbGamePassword);
 		strncpy(m_strPasswordToJoin, szMissionPassword, c_cbGamePassword);
 		m_strPasswordToJoin[c_cbGamePassword - 1] = '\0';
 		// waiting for FM_L_JOIN_GAME_ACK. When we get that we can join it
@@ -2130,7 +2130,7 @@ HRESULT BaseClient::OnSessionLost(const char * szReason, FedMessaging * pthis)
     else if (pthis == &m_fmLobby)
         DisconnectLobby();
     else
-        assert(false);
+        ZAssert(false);
 
     return(S_OK);
 }
@@ -2174,7 +2174,7 @@ void BaseClient::ReceiveChat(IshipIGC*   pshipSender,
 /*
 void BaseClient::OfflineCommandToDrone (const ChatData* pcd, const DataBuoyIGC* pdb, CFSShip* pfsSender, IshipIGC* pshipTo, ImodelIGC** ppmodelTarget)
 {
-    assert (pfsSender);
+    ZAssert (pfsSender);
 
     IsideIGC*   pside = pshipTo->GetSide();
     if ((pcd->commandID != c_cidNone) &&
@@ -2186,7 +2186,7 @@ void BaseClient::OfflineCommandToDrone (const ChatData* pcd, const DataBuoyIGC* 
             {
                 //Create a buoy for this chat message
                 *ppmodelTarget = (ImodelIGC*)(pfsMission->GetIGCMission()->CreateObject(g.timeNow, OT_buoy, pdb, sizeof(*pdb)));
-                assert (*ppmodelTarget);
+                ZAssert (*ppmodelTarget);
 
                 ((IbuoyIGC*)*ppmodelTarget)->AddConsumer();
             }
@@ -2242,7 +2242,7 @@ void BaseClient::OfflineCommandToDrone (const ChatData* pcd, const DataBuoyIGC* 
             if (cid == c_cidJoin)
             {
                 //Join the targets wing
-                assert ((*ppmodelTarget)->GetObjectType() == OT_ship);
+                ZAssert ((*ppmodelTarget)->GetObjectType() == OT_ship);
 
                 WingID  wid = ((IshipIGC*)*ppmodelTarget)->GetWingID();
 
@@ -2436,7 +2436,7 @@ void    BaseClient::SendChat(IshipIGC*      pshipSender,
             END_PFM_CREATE
             pcd = &(pfmChatBuoy->cd);
 
-            assert (pmodelTarget);
+            ZAssert (pmodelTarget);
             pmodelTarget->Export(&(pfmChatBuoy->db));
         }
         else
@@ -2544,7 +2544,7 @@ Money BaseClient::GetBucketStatus(StationID stationID, short iBucket)
 Money        BaseClient::AddMoneyToBucket(IbucketIGC*    b,
                                          Money          m)
 {
-    assert (b);
+    ZAssert (b);
     Money   spent = b->AddMoney(m);
     SetMoney(GetMoney() - spent);
 
@@ -2674,7 +2674,7 @@ ZString BaseClient::LookupRankName(RankID rank, CivID civ)
 
     if (m_cRankInfo <= 0 && !GetIsZoneClub())
     {
-        assert(!m_fm.IsConnected() || !GetIsZoneClub());
+        ZAssert(!m_fm.IsConnected() || !GetIsZoneClub());
         szRankNameTemplate = "";
     }
     else
@@ -2709,7 +2709,7 @@ ZString BaseClient::LookupRankName(RankID rank, CivID civ)
 		//            nClosestRank = m_vRankInfo[iEntry].rank;
 		//        }
 		//    }
-		//    assert(nClosestRank >= 0);
+		//    ZAssert(nClosestRank >= 0);
     }
 
     char cbTemp[c_cbName + 8];
@@ -2881,7 +2881,7 @@ void BaseClient::StationTypeChange(IstationIGC* s)
 
 ItreasureIGC*  BaseClient::CreateTreasureLocal(Time now, IshipIGC* pship, IpartIGC* p, IpartTypeIGC* ppt, const Vector& position, float dv, float lifespan)
 {
-    assert(p);
+    ZAssert(p);
 
     short amount;
     switch (p->GetObjectType())
@@ -2904,9 +2904,9 @@ ItreasureIGC*  BaseClient::CreateTreasureLocal(Time now, IshipIGC* pship, IpartI
 
 ItreasureIGC*  BaseClient::CreateTreasureLocal(Time now, IshipIGC* pship, short amount, IpartTypeIGC* ppt, const Vector& position, float dv, float lifespan)
 {
-    assert(pship);
-    assert(ppt);
-    assert(dv > 1.0f);
+    ZAssert(pship);
+    ZAssert(ppt);
+    ZAssert(dv > 1.0f);
 
     DataTreasureIGC dt;
     dt.treasureCode = c_tcPart;
@@ -2931,7 +2931,7 @@ ItreasureIGC*  BaseClient::CreateTreasureLocal(Time now, IshipIGC* pship, short 
 
     //Note: bad form releasing a pointer before we return it but we know it will
     //stick around since it is in a cluster.
-    assert(t);
+    ZAssert(t);
     t->Release();
     return t;
 }
@@ -2996,7 +2996,7 @@ void BaseClient::KillShipEvent(Time now, IshipIGC* pShip, ImodelIGC* pLauncher, 
                 if (ammo > 0)
                 {
                     IpartTypeIGC*  pptAmmo = m_pCoreIGC->GetAmmoPack();
-                    assert(pptAmmo);
+                    ZAssert(pptAmmo);
 
                     if (randomInt(0, 4) == 0)
                         CreateTreasureLocal(now, pShip, ammo, pptAmmo, p1, 100.0f, 30.0f);
@@ -3009,7 +3009,7 @@ void BaseClient::KillShipEvent(Time now, IshipIGC* pShip, ImodelIGC* pLauncher, 
                 if (fuel > 0)
                 {
                     IpartTypeIGC*  pptFuel = m_pCoreIGC->GetFuelPack();
-                    assert(pptFuel);
+                    ZAssert(pptFuel);
 
                     if (randomInt(0, 4) == 0)
                         CreateTreasureLocal(now, pShip, fuel, pptFuel, p1, 100.0f, 30.0f);
@@ -3093,7 +3093,7 @@ void BaseClient::FireMissile(IshipIGC* pShip,
                             ImodelIGC* pTarget,
                             float flLock)
 {
-    assert (pShip == m_ship || !m_fm.IsConnected());
+    ZAssert (pShip == m_ship || !m_fm.IsConnected());
 
     if (pTarget &&
         ((pTarget->GetCluster() != m_ship->GetCluster()) ||
@@ -3104,7 +3104,7 @@ void BaseClient::FireMissile(IshipIGC* pShip,
     this->PlayFFEffect(effectFire);
 
     IclusterIGC*    pCluster = pShip->GetCluster();
-    assert (pCluster);
+    ZAssert (pCluster);
 
     const Vector&       myVelocity      = pShip->GetVelocity();
     const Orientation&  myOrientation   = pShip->GetOrientation();
@@ -3170,7 +3170,7 @@ void BaseClient::FireMissile(IshipIGC* pShip,
             dataMissile.missileID   = m_pCoreIGC->GenerateNewMissileID ();
             dataMissile.bDud        = false;
             ImissileIGC*  m = (ImissileIGC*)(m_pCoreIGC->CreateObject(timeFired, OT_missile, &dataMissile, sizeof(dataMissile)));
-            assert (m != NULL);
+            ZAssert (m != NULL);
             m->Release();
         }
     }
@@ -3232,12 +3232,12 @@ void BaseClient::FireExpendable(IshipIGC* pShip,
                                 IdispenserIGC* pDispenser,
                                 Time timeFired)
 {
-    assert(pShip == m_ship || !m_fm.IsConnected());
+    ZAssert(pShip == m_ship || !m_fm.IsConnected());
 
     this->PlayFFEffect(effectFire, pShip);
 
     IclusterIGC*    pCluster = pShip->GetCluster();
-    assert (pCluster);
+    ZAssert (pCluster);
 
     IexpendableTypeIGC* pet = pDispenser->GetExpendableType();
     ObjectType type = pet->GetObjectType();
@@ -3266,7 +3266,7 @@ void BaseClient::FireExpendable(IshipIGC* pShip,
 
         if (type == OT_chaffType)
         {
-            assert (type == OT_chaffType);
+            ZAssert (type == OT_chaffType);
 
             //Drop the chaff "behind" the ship
 
@@ -3283,7 +3283,7 @@ void BaseClient::FireExpendable(IshipIGC* pShip,
                                                                   OT_chaff,
                                                                   &dataChaff,
                                                                   sizeof(dataChaff)));
-            assert(c != NULL);
+            ZAssert(c != NULL);
 
             //Confuse any missiles lauched at the ship
             for (MissileLinkIGC*  pml = pCluster->GetMissiles()->first(); (pml != NULL); pml = pml->next()) {
@@ -3337,7 +3337,7 @@ void BaseClient::FireExpendable(IshipIGC* pShip,
                                                                     OT_mine,
                                                                     &dataMine,
                                                                     sizeof(dataMine)));
-                assert (m != NULL);
+                ZAssert (m != NULL);
                 m->Release();
             }
             else if (type == OT_probeType)
@@ -3362,7 +3362,7 @@ void BaseClient::FireExpendable(IshipIGC* pShip,
                                                                       OT_probe,
                                                                       &dataProbe,
                                                                       sizeof(dataProbe)));
-                assert (p != NULL);
+                ZAssert (p != NULL);
                 p->Release();
             }
         }
@@ -3594,7 +3594,7 @@ bool BaseClient::Reload(IshipIGC* pship, IlauncherIGC* plauncher, EquipmentType 
                                 if (pht->CanMount(ppt, 0))
                                 {
                                     short           a = ((IlauncherIGC*)p)->GetAmount();
-                                    assert (a > 0);
+                                    ZAssert (a > 0);
 
                                     if (pparttype == NULL)
                                     {
@@ -3610,10 +3610,10 @@ bool BaseClient::Reload(IshipIGC* pship, IlauncherIGC* plauncher, EquipmentType 
                                         plauncher = (IlauncherIGC*)p;
                                         pparttype = plauncher->GetPartType();
                                         ammo = plauncher->GetAmount();
-                                        assert (ammo > 0);
+                                        ZAssert (ammo > 0);
                                         maxAmmo = ((IlauncherTypeIGC*)pparttype)->GetAmount(pship);
 
-                                        assert (plauncherReload == NULL);
+                                        ZAssert (plauncherReload == NULL);
 
                                         if (ammo == maxAmmo)
                                             break;              //No point in continuing if we are full up
@@ -3657,7 +3657,7 @@ bool BaseClient::Reload(IshipIGC* pship, IlauncherIGC* plauncher, EquipmentType 
                     {
                         //Couldn't find a way to reload the existing launcher
                         //try again being less picky
-                        assert (plauncher);
+                        ZAssert (plauncher);
 
                         pparttype = NULL;
                         maxAmmo = 0x7fff;
@@ -3754,8 +3754,8 @@ void BaseClient::OnQuitSide()
     }
 
 
-    assert (m_ship->GetStation() == NULL);
-    assert (m_ship->GetCluster() == NULL);
+    ZAssert (m_ship->GetStation() == NULL);
+    ZAssert (m_ship->GetCluster() == NULL);
 
     {
         // set all ships to the null sector
@@ -3877,7 +3877,7 @@ void BaseClient::CreateDummyShip()
     ModifyShipData(&ds);
 
     m_ship = (IshipIGC*)(m_pCoreIGC->CreateObject(m_lastSend, OT_ship, &ds, sizeof(ds)));
-    assert (m_ship);
+    ZAssert (m_ship);
     m_ship->Release();
 };
 
@@ -3890,7 +3890,7 @@ void BaseClient::RemovePlayerFromSide(PlayerInfo* pPlayerInfo, QuitSideReason re
 {
     if (!pPlayerInfo)
     {
-        assert(false);
+        ZAssert(false);
         return;
     }
 
@@ -4038,13 +4038,13 @@ void BaseClient::RemovePlayerFromMission(PlayerInfo* pPlayerInfo, QuitSideReason
 {
     if (!pPlayerInfo)
     {
-        assert(false);
+        ZAssert(false);
         return;
     }
 
     // must call RemovePlayerFromSide first if the player is not on the team lobby
     ZAssert(pPlayerInfo->SideID() == SIDE_TEAMLOBBY);  
-    assert(pPlayerInfo);
+    ZAssert(pPlayerInfo);
     
     m_pMissionInfo->RemovePlayer(pPlayerInfo);
     // pPlayerInfo->SetReady(true); Imago commented out so afk does not reset
@@ -4079,7 +4079,7 @@ void BaseClient::RemovePlayerFromMission(PlayerInfo* pPlayerInfo, QuitSideReason
 
 void BaseClient::AddPlayerToMission(PlayerInfo* pPlayerInfo)
 {
-    assert(pPlayerInfo);
+    ZAssert(pPlayerInfo);
 
     pPlayerInfo->SetSideID(SIDE_TEAMLOBBY);
 
@@ -4100,13 +4100,13 @@ void BaseClient::AddPlayerToMission(PlayerInfo* pPlayerInfo)
 
 void BaseClient::AddPlayerToSide(PlayerInfo* pPlayerInfo, SideID sideID)
 {
-    assert(pPlayerInfo);
-    assert(pPlayerInfo->SideID() == SIDE_TEAMLOBBY);
+    ZAssert(pPlayerInfo);
+    ZAssert(pPlayerInfo->SideID() == SIDE_TEAMLOBBY);
 
     SideID sideOld = pPlayerInfo->SideID();
 
     m_pMissionInfo->RemovePlayer(pPlayerInfo);
-    assert(pPlayerInfo->GetMoney() == 0);
+    ZAssert(pPlayerInfo->GetMoney() == 0);
     // pPlayerInfo->SetReady(true); Imago commented out so afk does not reset
 
     if (pPlayerInfo == m_pPlayerInfo)
@@ -4192,7 +4192,7 @@ static void DoDecrypt(int size, char* pdata)
 }
 bool BaseClient::ResetStaticData(const char * szIGCStaticFile, ImissionIGC** ppStaticIGC, Time tNow, bool bEncrypt)
 {
-    assert(ppStaticIGC);
+    ZAssert(ppStaticIGC);
     if (&m_pCoreIGC == ppStaticIGC)
     {
         FlushGameState();
@@ -4202,7 +4202,7 @@ bool BaseClient::ResetStaticData(const char * szIGCStaticFile, ImissionIGC** ppS
     else
     {
         // In this special case, the static mission must have already been created and initialized
-        assert(*ppStaticIGC);
+        ZAssert(*ppStaticIGC);
     }
 
     // copy the core name
@@ -4247,13 +4247,13 @@ void BaseClient::BoardShip(IshipIGC*  pship)
 
     if (pship)
     {
-        assert(GetShip()->GetParentShip() == NULL);
+        ZAssert(GetShip()->GetParentShip() == NULL);
         StartLockDown("Boarding " + ZString(pship->GetName()) + "'s ship....", lockdownTeleporting);
     }
     else
     {
         IshipIGC* pshipParent = GetShip()->GetParentShip();
-        assert(pshipParent);
+        ZAssert(pshipParent);
         StartLockDown("Disembarking from " + ZString(pshipParent->GetName()) + "'s ship....", lockdownTeleporting);
     }
 }

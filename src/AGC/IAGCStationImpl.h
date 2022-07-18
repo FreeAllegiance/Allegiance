@@ -35,14 +35,14 @@ public:
 public:
   STDMETHODIMP put_ShieldFraction(float Val)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     GetIGC()->SetShieldFraction(Val);
     return S_OK;
   }
 
   STDMETHODIMP get_ShieldFraction(float* pVal)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pVal, GetIGC()->GetShieldFraction());
     return S_OK;
   }

@@ -114,7 +114,7 @@ HRESULT TCPropertyPageSite::Page_Create(REFCLSID clsidPage)
 HRESULT TCPropertyPageSite::Page_Attach(IPropertyPage* pPage)
 {
   // Ensure that no previous page is attached
-  assert(NULL == m_pPage);
+  ZAssert(NULL == m_pPage);
 
   // Set ourself as the page site for the page
   HRESULT hr = pPage->SetPageSite(&m_xPageSite);
@@ -486,7 +486,7 @@ HRESULT TCPropertyPageSite::Page_Help()
 // property page's interface method.
 HRESULT TCPropertyPageSite::Page_TranslateAccelerator(MSG* pMsg)
 {
-  assert(NULL != m_pPage);
+  ZAssert(NULL != m_pPage);
   return m_pPage->TranslateAccelerator(pMsg);
 }
 
@@ -516,7 +516,7 @@ HRESULT TCPropertyPageSite::Page_QI(REFIID iid, void** ppvObject)
     return E_NOINTERFACE;
 
   // Otherwise, delegate to the property page
-  assert(NULL != m_pPage);
+  ZAssert(NULL != m_pPage);
   return m_pPage->QueryInterface(iid, ppvObject);
 }
 
@@ -682,7 +682,7 @@ HRESULT TCPropertyPageSite::Activate()
 
     // Get the page site window
     HWND hwnd = OnGetWindow();
-    assert(NULL != hwnd);
+    ZAssert(NULL != hwnd);
 
     // Compute the page's rectangle
     RECT rect;

@@ -248,7 +248,7 @@ public:
 
         g_pCharInfoScreen = this;
 
-        m_pkeyboardInputOldFocus = GetWindow()->GetFocus();
+        m_pkeyboardInputOldFocus = GetEngineWindow()->GetFocus();
 
 #ifndef NO_CLUB_SERVER_CONNECTION 
 
@@ -370,7 +370,7 @@ public:
         m_pCivIds = new int[cNames];
         m_pStats = new CCharacterStats[cNames];
         int cInts = FillIntegerArray(pns, m_pCivIds, "CivIDs");
-        assert(cInts == cNames);
+        ZAssert(cInts == cNames);
 
         OnCivChange(); // init civImage
 
@@ -479,7 +479,7 @@ public:
             delete[] m_pCivIds;
 
         if(m_pkeyboardInputOldFocus)
-            GetWindow()->SetFocus(m_pkeyboardInputOldFocus);
+            GetEngineWindow()->SetFocus(m_pkeyboardInputOldFocus);
 
         g_pCharInfoScreen = NULL;
 
@@ -547,7 +547,7 @@ public:
                 if (i == m_cCivs)
                 {
                     //MessageBox(0, "Unknown CivID; CharInfoScreen.mdl is not in sync with AllClub's database.", "Error", 0);
-                    //assert(0);
+                    //ZAssert(0);
                     break;
                 }
                 else
@@ -600,7 +600,7 @@ public:
                 if (i == m_cCivs)
                 {
                     //MessageBox(0, "Unknown CivID; CharInfoScreen.mdl is not in sync with AllClub's database.", "Error", 0);
-                    assert(0);
+                    ZAssert(0);
                     break;
                 }
                 else
@@ -871,7 +871,7 @@ public:
         m_pbuttonEdit->SetEnabled(false);
 		    m_pbuttonEdit->SetHidden(true);
 
-        GetWindow()->SetFocus(m_peditPaneCharDescription);
+        GetEngineWindow()->SetFocus(m_peditPaneCharDescription);
 
         return true;
     }
@@ -880,7 +880,7 @@ public:
 
     bool OnDescriptionClick()
     {
-        GetWindow()->SetFocus(m_peditPaneCharDescription);
+        GetEngineWindow()->SetFocus(m_peditPaneCharDescription);
 
         return true;
     }

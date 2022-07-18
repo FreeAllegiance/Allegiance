@@ -51,6 +51,10 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='FZDebug|Win32'">
     <Import Project="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.props" Condition="exists('$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.props')" />
+    <Import Project="Shared.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='FZRetail|Win32'">
+    <Import Project="Shared.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -79,7 +83,6 @@
       <BrowseInformationFile>
       </BrowseInformationFile>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <LanguageStandard>stdcpp14</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -108,7 +111,6 @@
       <OmitFramePointers>false</OmitFramePointers>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ErrorReporting>None</ErrorReporting>
-      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Lib>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
@@ -128,7 +130,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='FZDebug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='FZRetail|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\src\effect\efwindow.cpp" />
     <ClCompile Include="..\src\effect\explosion.cpp" />
     <ClCompile Include="..\src\effect\framedata.cpp" />
     <ClCompile Include="..\src\effect\gamestate.cpp" />
@@ -161,7 +162,6 @@
     <ClInclude Include="..\src\effect\efimage.h" />
     <ClInclude Include="..\src\effect\efpane.h" />
     <ClInclude Include="..\src\effect\efpopup.h" />
-    <ClInclude Include="..\src\effect\efwindow.h" />
     <ClInclude Include="..\src\effect\explosion.h" />
     <ClInclude Include="..\src\effect\framedata.h" />
     <ClInclude Include="..\src\effect\gamestate.h" />

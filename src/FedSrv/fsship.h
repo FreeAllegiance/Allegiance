@@ -39,7 +39,7 @@ class CFSShip // abstract base class
 {
 public:
   Money GetMoney()            {return m_money;} // move this to Iship
-  void  SetMoney(Money money) {assert(money >= 0); m_money = money;}
+  void  SetMoney(Money money) {ZAssert(money >= 0); m_money = money;}
 
   void  AddKill()
   {
@@ -69,13 +69,13 @@ public:
 
   CFSPlayer * GetPlayer()
   {
-    assert(IsPlayer());
+    ZAssert(IsPlayer());
     return (CFSPlayer *) this;
   }
 
   CFSDrone * GetDrone()
   {
-    assert(!IsPlayer());
+    ZAssert(!IsPlayer());
     return (CFSDrone *) this;
   }
 
@@ -98,7 +98,7 @@ public:
 
   static CFSShip * GetShipFromID(ShipID shipID)  
   {
-    assert (shipID < c_cShipsMax && shipID >= 0);
+    ZAssert (shipID < c_cShipsMax && shipID >= 0);
     return m_rgpfsShip[shipID];
   }
   void          AnnounceExit(IclusterIGC* pclusterOld, ShipDeleteReason sdr);
@@ -116,16 +116,16 @@ public:
 
   ShipStatus*   GetShipStatus(SideID    sid)
   {
-    assert (sid >= 0);
-    assert (sid < c_cSidesMax);
+    ZAssert (sid >= 0);
+    ZAssert (sid < c_cSidesMax);
 
     return &(m_rgShipStatus[sid]);
   }
 
   ShipStatus*   GetOldShipStatus(SideID    sid)
   {
-    assert (sid >= 0);
-    assert (sid < c_cSidesMax);
+    ZAssert (sid >= 0);
+    ZAssert (sid < c_cSidesMax);
 
     return &(m_rgOldShipStatus[sid]);
   }
@@ -149,7 +149,7 @@ public:
 
   void          SetTreasureData(ObjectID oid, short amount)
   {
-      assert (m_oidTreasure == NA);
+      ZAssert (m_oidTreasure == NA);
       m_oidTreasure = oid;
       m_amountTreasure = amount;
   }
@@ -306,7 +306,7 @@ public:
   void            SetReady(bool fReady);
   void            UnreadyNoSide(void) 
   { 
-    assert(GetSide() == NULL); 
+    ZAssert(GetSide() == NULL); 
     m_fReady = false; 
   }
   bool            IsMissionOwner();

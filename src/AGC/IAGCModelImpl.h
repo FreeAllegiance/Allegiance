@@ -42,7 +42,7 @@ public:
    */
   STDMETHODIMP get_IsVisible(VARIANT_BOOL* pbVisible)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pbVisible, VARBOOL(GetIGC()->GetVisibleF()));
     return S_OK;
   }
@@ -56,7 +56,7 @@ public:
    */
   STDMETHODIMP get_IsSeenBySide(IAGCTeam* pTeam, VARIANT_BOOL* pbSeen)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
 
     IAGCPrivatePtr spPrivate(pTeam);
     if (NULL == spPrivate)
@@ -76,7 +76,7 @@ public:
    */
   STDMETHODIMP get_Position(IAGCVector** ppVector)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
 
     // Create an instance of the AGCVector object
     return GetAGCGlobal()->MakeAGCVector(GetIGC()->GetHitTest() ?
@@ -93,7 +93,7 @@ public:
    */
   STDMETHODIMP get_Velocity(IAGCVector** ppVector)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
 
     // Create an instance of the AGCVector object
     return GetAGCGlobal()->MakeAGCVector(GetIGC()->GetHitTest() ?
@@ -110,7 +110,7 @@ public:
    */
   STDMETHODIMP get_Orientation(IAGCOrientation** ppOrientation)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
 
     // Create an instance of the AGCOrientation object
     return GetAGCGlobal()->MakeAGCOrientation(GetIGC()->GetHitTest() ?
@@ -127,7 +127,7 @@ public:
    */
   STDMETHODIMP get_Radius(float* pfRadius)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pfRadius, GetIGC()->GetHitTest() ? GetIGC()->GetRadius() : 0.f);
     return S_OK;
   }
@@ -141,7 +141,7 @@ public:
    */
   STDMETHODIMP get_Team(IAGCTeam** ppTeam)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     if (GetIGC()->GetSide())
       return GetAGCGlobal()->GetAGCObject(GetIGC()->GetSide(), IID_IAGCTeam,
         (void**)ppTeam);
@@ -158,7 +158,7 @@ public:
    */
   STDMETHODIMP get_Mass(float* pfMass)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pfMass, GetIGC()->GetMass());
     return S_OK;
   }
@@ -172,7 +172,7 @@ public:
    */
   STDMETHODIMP get_Sector(IAGCSector** ppSector)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     if (!GetIGC()->GetCluster())
     {
       CLEAROUT(ppSector, (IAGCSector*)NULL);
@@ -191,7 +191,7 @@ public:
    */
   STDMETHODIMP get_Signature(float* pfSignature)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pfSignature, GetIGC()->GetSignature());
     return S_OK;
   }
@@ -205,7 +205,7 @@ public:
    */
   STDMETHOD(get_Name)(/*[out, retval]*/ BSTR* pVal)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pVal, (BSTR)NULL);
     CComBSTR bstrTemp(GetModelName(GetIGC())); 
     *pVal = bstrTemp.Detach();
@@ -221,7 +221,7 @@ public:
    */
 /*  STDMETHODIMP get_IsSelectable(VARIANT_BOOL* pbSelectable)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     // FIX make this work
     // FIX implement clearout
 //    * = GetIGC()->Get;
@@ -237,7 +237,7 @@ public:
    */
 /*  STDMETHODIMP get_IsScanner(VARIANT_BOOL* pbScanner)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     // FIX implement clearout
     * = GetIGC()->Get;
     return S_OK;
@@ -252,7 +252,7 @@ public:
    */
 /*  STDMETHODIMP get_IsPredictable(VARIANT_BOOL* pbPredictable)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     // FIX implement clearout
     * = GetIGC()->Get;
     return S_OK;
@@ -267,7 +267,7 @@ public:
    */
 /*  STDMETHODIMP get_IsScanRequired(VARIANT_BOOL* pbScanRequired)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     // FIX implement clearout
     * = GetIGC()->Get;
     return S_OK;
@@ -282,7 +282,7 @@ public:
    */
 /*  STDMETHODIMP get_IsStatic(VARIANT_BOOL* pbStatic)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     // FIX implement clearout
     * = GetIGC()->Get;
     return S_OK;
@@ -297,7 +297,7 @@ public:
    */
 /*  STDMETHODIMP get_IsDamagable(VARIANT_BOOL* pbDamagable)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     // FIX implement clearout
     * = GetIGC()->Get;
     return S_OK;
@@ -312,7 +312,7 @@ public:
    */
 /*  STDMETHODIMP get_IsHitable(VARIANT_BOOL* pbHitable)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     // FIX implement clearout
     * = GetIGC()->Get;
     return S_OK;

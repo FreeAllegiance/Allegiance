@@ -37,12 +37,12 @@ HRESULT CmissileIGC::Initialize(ImissionIGC* pMission, Time now, const void* dat
         DataMissileIGC*  dataMissile = (DataMissileIGC*)data;
 
         m_missileType = dataMissile->pmissiletype;
-        assert (m_missileType);
-        assert (m_missileType->GetObjectType() == OT_missileType);
+        ZAssert (m_missileType);
+        ZAssert (m_missileType->GetObjectType() == OT_missileType);
         m_missileType->AddRef();
 
         DataMissileTypeIGC*  dataMissileType = (DataMissileTypeIGC*)(m_missileType->GetData());
-        assert (dataMissileType);
+        ZAssert (dataMissileType);
 
         //Load the model for the missile
         HRESULT hr;
@@ -68,7 +68,7 @@ HRESULT CmissileIGC::Initialize(ImissionIGC* pMission, Time now, const void* dat
                            c_htsSphere);
         }
 
-        assert (SUCCEEDED(hr));
+        ZAssert (SUCCEEDED(hr));
         SetRadius(dataMissileType->radius);
         SetSignature(dataMissileType->signature);
         m_fraction = 1.0f;
@@ -85,15 +85,15 @@ HRESULT CmissileIGC::Initialize(ImissionIGC* pMission, Time now, const void* dat
         }
 
         m_launcher = dataMissile->pLauncher;
-        assert (m_launcher);
+        ZAssert (m_launcher);
         m_launcher->AddRef();
         {
             HitTest*    ht = GetHitTest();
 
             //lifespan == 0 => immortal missile that can hit until it gets terminated on the next update; this is bad
-            assert (dataMissileType->lifespan > 0.0f);
+            ZAssert (dataMissileType->lifespan > 0.0f);
             m_timeExpire = now + dataMissileType->lifespan;
-            assert (m_timeExpire != now);
+            ZAssert (m_timeExpire != now);
 
             //Can't hit your launcher
             ht->SetNoHit(m_launcher->GetHitTest());
@@ -262,7 +262,7 @@ static float    solve(const Vector& dP,
                       float         acceleration,
                       float         tOld)
 {
-    assert (acceleration > 0.0f);
+    ZAssert (acceleration > 0.0f);
 
     //General problem when will the missile hit the target
     //  Solve |dP + t * dV| = 1/2 acceleration t^2
@@ -412,7 +412,7 @@ void    CmissileIGC::Update(Time now)
                 SetRotation(r);
             }
 
-            assert (GetThingSite());
+            ZAssert (GetThingSite());
             GetThingSite()->SetAfterburnerThrust(backward, 1.0f);
         }
 

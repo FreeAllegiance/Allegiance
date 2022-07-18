@@ -108,7 +108,7 @@ public:
 // See Also: TCEditWindow::Undo, TCEditWindow::EmptyUndoBuffer, EM_CANUNDO
 inline BOOL TCEditWindow::CanUndo() const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (BOOL)::SendMessage(m_hWnd, EM_CANUNDO, 0, 0);
 }
 
@@ -128,7 +128,7 @@ inline BOOL TCEditWindow::CanUndo() const
 // See Also: EM_GETLINECOUNT
 inline int TCEditWindow::GetLineCount() const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, EM_GETLINECOUNT, 0, 0);
 }
 
@@ -150,7 +150,7 @@ inline int TCEditWindow::GetLineCount() const
 // See Also: TCEditWindow::SetModify, EM_GETMODIFY
 inline BOOL TCEditWindow::GetModify() const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (BOOL)::SendMessage(m_hWnd, EM_GETMODIFY, 0, 0);
 }
 
@@ -172,7 +172,7 @@ inline BOOL TCEditWindow::GetModify() const
 // See Also: TCEditWindow::GetModify, EM_SETMODIFY
 inline void TCEditWindow::SetModify(BOOL bModified)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, EM_SETMODIFY, bModified, 0);
 }
 
@@ -193,7 +193,7 @@ inline void TCEditWindow::SetModify(BOOL bModified)
 // See Also: TCEditWindow::SetRect, TCEditWindow::SetRectNP, EM_GETRECT
 inline void TCEditWindow::GetRect(LPRECT lpRect) const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, EM_GETRECT, 0, (LPARAM)lpRect);
 }
 
@@ -214,7 +214,7 @@ inline void TCEditWindow::GetRect(LPRECT lpRect) const
 // See Also: TCEditWindow::SetSel, EM_GETSEL
 inline void TCEditWindow::GetSel(int& nStartChar, int& nEndChar) const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, EM_GETSEL, (WPARAM)&nStartChar,(LPARAM)&nEndChar);
 }
 
@@ -225,7 +225,7 @@ inline void TCEditWindow::GetSel(int& nStartChar, int& nEndChar) const
 // high-order word.
 inline DWORD TCEditWindow::GetSel() const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return ::SendMessage(m_hWnd, EM_GETSEL, 0, 0);
 }
 
@@ -252,7 +252,7 @@ inline DWORD TCEditWindow::GetSel() const
 // See Also: TCEditWindow::SetHandle, EM_GETHANDLE
 inline HLOCAL TCEditWindow::GetHandle() const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (HLOCAL)::SendMessage(m_hWnd, EM_GETHANDLE, 0, 0);
 }
 
@@ -290,7 +290,7 @@ inline HLOCAL TCEditWindow::GetHandle() const
 // TCEditWindow::GetModify, EM_SETHANDLE, LocalAlloc, LocalFree
 inline void TCEditWindow::SetHandle(HLOCAL hBuffer)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, EM_SETHANDLE, (WPARAM)hBuffer, 0);
 }
 
@@ -324,7 +324,7 @@ inline void TCEditWindow::SetHandle(HLOCAL hBuffer)
 inline int TCEditWindow::GetLine(int nIndex, BSTR* pbstr) const
 {
   *pbstr = NULL;
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
 
   int cchLine = LineLength(nIndex);
   if (!cchLine)
@@ -351,7 +351,7 @@ inline int TCEditWindow::GetLine(int nIndex, BSTR* pbstr) const
 inline int TCEditWindow::GetLine(int nIndex, LPTSTR pszBuffer,
   int nMaxLength) const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   *(LPWORD)pszBuffer = (WORD)nMaxLength;
   return (int)::SendMessage(m_hWnd, EM_GETLINE, nIndex, (LPARAM)pszBuffer);
 }
@@ -370,7 +370,7 @@ inline int TCEditWindow::GetLine(int nIndex, LPTSTR pszBuffer,
 // TCEditWindow::Undo, CWindow::SetWindowText, EM_EMPTYUNDOBUFFER
 inline void TCEditWindow::EmptyUndoBuffer()
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, EM_EMPTYUNDOBUFFER, 0, 0);
 }
 
@@ -402,7 +402,7 @@ inline void TCEditWindow::EmptyUndoBuffer()
 // See Also: TCEditWindow::GetHandle, CWindow::GetWindowText, EM_FMTLINES
 inline BOOL TCEditWindow::FmtLines(BOOL bAddEOL)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (BOOL)::SendMessage(m_hWnd, EM_FMTLINES, bAddEOL, 0);
 }
 
@@ -435,7 +435,7 @@ inline BOOL TCEditWindow::FmtLines(BOOL bAddEOL)
 // CWindow::SetWindowText, EM_LIMITTEXT
 inline void TCEditWindow::LimitText(int nChars)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, EM_LIMITTEXT, nChars, 0);
 }
 
@@ -462,7 +462,7 @@ inline void TCEditWindow::LimitText(int nChars)
 // See Also: TCEditWindow::LineIndex, EM_LINEFROTCHAR
 inline int TCEditWindow::LineFromChar(int nIndex) const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, EM_LINEFROTCHAR, nIndex, 0);
 }
 
@@ -488,7 +488,7 @@ inline int TCEditWindow::LineFromChar(int nIndex) const
 // See Also: TCEditWindow::LineFromChar, EM_LINEINDEX
 inline int TCEditWindow::LineIndex(int nLine) const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, EM_LINEINDEX, nLine, 0);
 }
 
@@ -516,7 +516,7 @@ inline int TCEditWindow::LineIndex(int nLine) const
 // See Also: TCEditWindow::LineIndex, EM_LINELENGTH
 inline int TCEditWindow::LineLength(int nLine) const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, EM_LINELENGTH, nLine, 0);
 }
 
@@ -545,7 +545,7 @@ inline int TCEditWindow::LineLength(int nLine) const
 // See Also: TCEditWindow::LineIndex, EM_LINESCROLL
 inline void TCEditWindow::LineScroll(int nLines, int nChars)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, EM_LINESCROLL, nChars, nLines);
 }
 
@@ -571,7 +571,7 @@ inline void TCEditWindow::LineScroll(int nLines, int nChars)
 // See Also: CWindow::SetWindowText, EM_REPLACESEL
 inline void TCEditWindow::ReplaceSel(LPCTSTR pszNewText, BOOL bCanUndo)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, EM_REPLACESEL, bCanUndo, (LPARAM)pszNewText);
 }
 
@@ -600,7 +600,7 @@ inline void TCEditWindow::ReplaceSel(LPCTSTR pszNewText, BOOL bCanUndo)
 // See Also: TCEditWindow::GetPasswordChar, EM_SETPASSWORDCHAR
 inline void TCEditWindow::SetPasswordChar(TCHAR ch)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, EM_SETPASSWORDCHAR, ch, 0);
 }
 
@@ -637,7 +637,7 @@ inline void TCEditWindow::SetPasswordChar(TCHAR ch)
 // See Also: TCEditWindow::GetRect, TCEditWindow::SetRectNP, EM_SETRECT
 inline void TCEditWindow::SetRect(LPCRECT lpRect)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, EM_SETRECT, 0, (LPARAM)lpRect);
 }
 
@@ -669,7 +669,7 @@ inline void TCEditWindow::SetRect(LPCRECT lpRect)
 // See Also: TCEditWindow::GetRect, TCEditWindow::SetRect, EM_SETRECTNP
 inline void TCEditWindow::SetRectNP(LPCRECT lpRect)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, EM_SETRECTNP, 0, (LPARAM)lpRect);
 }
 
@@ -690,7 +690,7 @@ inline void TCEditWindow::SetRectNP(LPCRECT lpRect)
 // See Also: TCEditWindow::GetSel, TCEditWindow::ReplaceSel, EM_SETSEL
 inline void TCEditWindow::SetSel(DWORD dwSelection, BOOL bNoScroll)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, EM_SETSEL, LOWORD(dwSelection), HIWORD(dwSelection));
   if (!bNoScroll)
     ::SendMessage(m_hWnd, EM_SCROLLCARET, 0, 0);
@@ -705,7 +705,7 @@ inline void TCEditWindow::SetSel(DWORD dwSelection, BOOL bNoScroll)
 inline void TCEditWindow::SetSel(int nStartChar, int nEndChar,
   BOOL bNoScroll)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, EM_SETSEL, nStartChar, nEndChar);
   if (!bNoScroll)
     ::SendMessage(m_hWnd, EM_SCROLLCARET, 0, 0);
@@ -746,7 +746,7 @@ inline void TCEditWindow::SetSel(int nStartChar, int nEndChar,
 // See Also: CWindow::InvalidateRect, EM_SETTABSTOPS, ::MapDialogRect
 inline BOOL TCEditWindow::SetTabStops(int nTabStops, LPINT rgTabStops)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (BOOL)::SendMessage(m_hWnd, EM_SETTABSTOPS, nTabStops,
     (LPARAM)rgTabStops);
 }
@@ -754,9 +754,9 @@ inline BOOL TCEditWindow::SetTabStops(int nTabStops, LPINT rgTabStops)
 /////////////////////////////////////////////////////////////////////////////
 inline void TCEditWindow::SetTabStops()
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   LRESULT lResult = ::SendMessage(m_hWnd, EM_SETTABSTOPS, 0, 0);
-  assert(lResult);
+  ZAssert(lResult);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -765,7 +765,7 @@ inline void TCEditWindow::SetTabStops()
 // /cxEachStop/ dialog units.
 inline BOOL TCEditWindow::SetTabStops(const int& cxEachStop)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (BOOL)::SendMessage(m_hWnd, EM_SETTABSTOPS, 1,
     (LPARAM)(LPINT)&cxEachStop);
 }
@@ -786,7 +786,7 @@ inline BOOL TCEditWindow::SetTabStops(const int& cxEachStop)
 // See Also: TCEditWindow::CanUndo, EM_UNDO
 inline BOOL TCEditWindow::Undo()
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (BOOL)::SendMessage(m_hWnd, EM_UNDO, 0, 0);
 }
 
@@ -807,7 +807,7 @@ inline BOOL TCEditWindow::Undo()
 // TCEditWindow::Paste, WM_CLEAR
 inline void TCEditWindow::Clear()
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, WM_CLEAR, 0, 0);
 }
 
@@ -822,7 +822,7 @@ inline void TCEditWindow::Clear()
 // WM_COPY
 inline void TCEditWindow::Copy()
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, WM_COPY, 0, 0);
 }
 
@@ -844,7 +844,7 @@ inline void TCEditWindow::Copy()
 // TCEditWindow::Paste, WM_CUT
 inline void TCEditWindow::Cut()
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, WM_CUT, 0, 0);
 }
 
@@ -861,7 +861,7 @@ inline void TCEditWindow::Cut()
 // WM_PASTE
 inline void TCEditWindow::Paste()
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, WM_PASTE, 0, 0);
 }
 
@@ -884,7 +884,7 @@ inline void TCEditWindow::Paste()
 // See Also: CWindow::GetStyle, EM_SETREADONLY
 inline BOOL TCEditWindow::SetReadOnly(BOOL bReadOnly )
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (BOOL)::SendMessage(m_hWnd, EM_SETREADONLY, bReadOnly, 0L);
 }
 
@@ -900,7 +900,7 @@ inline BOOL TCEditWindow::SetReadOnly(BOOL bReadOnly )
 // See Also: TCEditWindow::GetLine, EM_GETFIRSTVISIBLELINE
 inline int TCEditWindow::GetFirstVisibleLine() const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, EM_GETFIRSTVISIBLELINE, 0, 0L);
 }
 
@@ -921,7 +921,7 @@ inline int TCEditWindow::GetFirstVisibleLine() const
 // See Also: TCEditWindow::SetPasswordChar, EM_GETPASSWORDCHAR
 inline TCHAR TCEditWindow::GetPasswordChar() const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (TCHAR)::SendMessage(m_hWnd, EM_GETPASSWORDCHAR, 0, 0L);
 }
 
@@ -938,7 +938,7 @@ inline TCHAR TCEditWindow::GetPasswordChar() const
 // See Also: TCEditWindow::GetMargins, EM_SETMARGINS
 inline void TCEditWindow::SetMargins(UINT nLeft, UINT nRight)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, EM_SETMARGINS, EC_LEFTMARGIN | EC_RIGHTMARGIN,
     MAKELONG(nLeft, nRight));
 }
@@ -955,7 +955,7 @@ inline void TCEditWindow::SetMargins(UINT nLeft, UINT nRight)
 // See Also: TCEditWindow::SetMargins, EM_GETMARGINS
 inline DWORD TCEditWindow::GetMargins() const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (DWORD)::SendMessage(m_hWnd, EM_GETMARGINS, 0, 0);
 }
 
@@ -986,7 +986,7 @@ inline DWORD TCEditWindow::GetMargins() const
 // EM_SETLIMITTEXT
 inline void TCEditWindow::SetLimitText(UINT nMax)
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   ::SendMessage(m_hWnd, EM_SETLIMITTEXT, nMax, 0);
 }
 
@@ -1005,7 +1005,7 @@ inline void TCEditWindow::SetLimitText(UINT nMax)
 // EM_GETLIMITTEXT
 inline UINT TCEditWindow::GetLimitText() const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (UINT)::SendMessage(m_hWnd, EM_GETLIMITTEXT, 0, 0);
 }
 
@@ -1030,7 +1030,7 @@ inline UINT TCEditWindow::GetLimitText() const
 // See Also: TCEditWindow::CharFromPos, EM_POSFROTCHAR
 inline POINT TCEditWindow::PosFromChar(UINT nChar) const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   POINT pt;
   ::SendMessage(m_hWnd, EM_POSFROTCHAR, WPARAM(&pt), nChar);
   return pt;
@@ -1053,7 +1053,7 @@ inline POINT TCEditWindow::PosFromChar(UINT nChar) const
 // See Also: TCEditWindow::PosFromChar, EM_CHARFROMPOS
 inline int TCEditWindow::CharFromPos(POINT pt) const
 {
-  assert(::IsWindow(m_hWnd));
+  ZAssert(::IsWindow(m_hWnd));
   return (int)::SendMessage(m_hWnd, EM_CHARFROMPOS, 0,
     MAKELPARAM(pt.x, pt.y));
 }

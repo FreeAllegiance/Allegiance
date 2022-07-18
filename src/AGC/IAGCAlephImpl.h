@@ -35,8 +35,8 @@ public:
 public:
   STDMETHODIMP get_Destination(IAGCAleph** ppDestination)
   {
-    assert(GetIGC());
-    assert(GetIGC()->GetDestination());
+    ZAssert(GetIGC());
+    ZAssert(GetIGC()->GetDestination());
     return GetAGCGlobal()->GetAGCObject(GetIGC()->GetDestination(),
       IID_IAGCAleph, (void**)ppDestination);
   }

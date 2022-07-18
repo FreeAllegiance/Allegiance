@@ -48,11 +48,11 @@ STDMETHODIMP CAdminGame::get_GameParameters(IAGCGameParameters** ppParams) // ov
 {
   // Perform default processing
   RETURN_FAILED(IAGCGameImplBase::get_GameParameters(ppParams));
-  assert(*ppParams);
+  ZAssert(*ppParams);
 
   // Get the IGC pointer
   ImissionIGC * pIGCMission = GetIGC();
-  assert(pIGCMission);
+  ZAssert(pIGCMission);
 
   // Populate the team names
   for (SideLinkIGC*   psl = pIGCMission->GetSides()->first(); (psl != NULL); psl = psl->next())
@@ -112,7 +112,7 @@ STDMETHODIMP CAdminGame::SendMsg(BSTR bstrMessage)
   if (!bstrMessage || !SysStringLen(bstrMessage))
     return S_FALSE;
 
-  assert(GetHostIGC());
+  ZAssert(GetHostIGC());
 
   USES_CONVERSION;
   GetHostIGC()->GetSite()->SendChat(NULL,   //from system
@@ -137,7 +137,7 @@ STDMETHODIMP CAdminGame::SendMsg(BSTR bstrMessage)
 STDMETHODIMP CAdminGame::Kill()
 {
 
-  assert(GetHostIGC());
+  ZAssert(GetHostIGC());
   delete GetHostIGC();
 
   return S_OK;
@@ -154,7 +154,7 @@ STDMETHODIMP CAdminGame::Kill()
  */
 STDMETHODIMP CAdminGame::get_Users(/*[out, retval]*/ IAdminUsers** ppUsers)
 {
-  assert(GetHostIGC());
+  ZAssert(GetHostIGC());
   //  CLEAROUT(ppGame, (IAdminGame*)NULL);
 
   RETURN_FAILED(CAdminSponsor<CAdminUsers>::Make(IID_IAdminUsers,
@@ -213,8 +213,8 @@ STDMETHODIMP CAdminGame::get_GameOwnerUser(/*[out, retval]*/ IAdminUser** ppUser
  */
 STDMETHODIMP CAdminGame::StartGame()
 {
-    assert(GetIGC());
-    assert(GetHostIGC());
+    ZAssert(GetIGC());
+    ZAssert(GetHostIGC());
     if (GetIGC()->GetMissionStage() == STAGE_NOTSTARTED || GetIGC()->GetMissionStage() == STAGE_STARTING)
     {
         GetHostIGC()->StartGame();
@@ -234,8 +234,8 @@ STDMETHODIMP CAdminGame::StartGame()
  */
 STDMETHODIMP CAdminGame::get_Description(BSTR * pbstrDescription)
 {
-    assert(GetIGC());
-    assert(GetHostIGC());
+    ZAssert(GetIGC());
+    ZAssert(GetHostIGC());
 
     char szDescrip[128];
 
@@ -282,7 +282,7 @@ STDMETHODIMP CAdminGame::get_Description(BSTR * pbstrDescription)
  */
 STDMETHODIMP CAdminGame::StartCountdown()
 {
-    assert(GetHostIGC());
+    ZAssert(GetHostIGC());
     GetHostIGC()->StartCountdown(c_fMissionBriefingCountdown);
     return S_OK;
 }
@@ -295,8 +295,8 @@ STDMETHODIMP CAdminGame::StartCountdown()
  */
 STDMETHODIMP CAdminGame::SetTeamName(int iSideID, BSTR bstrName)
 {
-    assert(GetIGC());
-    assert(GetHostIGC());
+    ZAssert(GetIGC());
+    ZAssert(GetHostIGC());
     if(!GetIGC()->GetSide(iSideID))
       return S_OK;
     USES_CONVERSION;
@@ -311,7 +311,7 @@ STDMETHODIMP CAdminGame::SetTeamName(int iSideID, BSTR bstrName)
  */
 STDMETHODIMP CAdminGame::OverrideTechBit(int iSideID, int nTechBitID, BOOL bSetting)
 {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     if (GetIGC()->GetMissionStage() == STAGE_NOTSTARTED && iSideID < c_cSidesMax && iSideID >= 0)
     {
         CFSMission * pfsmission = GetHostIGC();
@@ -336,8 +336,8 @@ STDMETHODIMP CAdminGame::OverrideTechBit(int iSideID, int nTechBitID, BOOL bSett
  */
 STDMETHODIMP CAdminGame::SetDetailsFiles(BSTR bstrName)
 {
-    assert(GetIGC());
-    assert(GetHostIGC());
+    ZAssert(GetIGC());
+    ZAssert(GetHostIGC());
     USES_CONVERSION;
     GetHostIGC()->SetDetailsFiles(OLE2A(bstrName));
     return S_OK;

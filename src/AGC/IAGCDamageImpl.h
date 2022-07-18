@@ -35,7 +35,7 @@ public:
 public:
   STDMETHODIMP get_Fraction(float* pfFraction)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pfFraction, GetIGC()->GetFraction());
     return S_OK;
   }

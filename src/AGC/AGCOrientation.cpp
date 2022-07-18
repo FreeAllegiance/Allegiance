@@ -26,7 +26,7 @@ HRESULT CAGCOrientation::GetRawOrientation(IAGCOrientation* pOrientation,
     IAGCOrientationPrivate* pPrivate = NULL;
     RETURN_FAILED(pOrientation->QueryInterface(__uuidof(pPrivate),
       (void**)&pPrivate));
-    assert(pPrivate);
+    ZAssert(pPrivate);
     if (!pPrivate)
       return E_INVALIDARG;
     HRESULT hr = pPrivate->CopyOrientationTo(pOrientationRaw);
@@ -104,7 +104,7 @@ STDMETHODIMP CAGCOrientation::Load(LPSTREAM pStm)
   RETURN_FAILED(pStm->Read(&cDims, sizeof(cDims), NULL));
   if (DIMENSIONS != cDims)
   {
-    assert(DIMENSIONS == cDims);
+    ZAssert(DIMENSIONS == cDims);
     return ERROR_INVALID_DATA;
   }
 

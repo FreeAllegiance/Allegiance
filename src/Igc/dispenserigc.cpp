@@ -31,18 +31,18 @@ CdispenserIGC::~CdispenserIGC(void)
 
 HRESULT     CdispenserIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
 {
-    assert (pMission);
+    ZAssert (pMission);
     m_pMission = pMission;
 
     ZRetailAssert (data && (dataSize == sizeof(DataPartIGC)));
     {
         m_partType = (IlauncherTypeIGC*)(((DataPartIGC*)data)->partType);
-        assert (m_partType);
+        ZAssert (m_partType);
         m_partType->AddRef();
 
         m_expendableType = (IexpendableTypeIGC*)(m_partType->GetExpendableType());
-        assert (m_expendableType);
-        assert ((m_expendableType->GetObjectType() == OT_mineType) ||
+        ZAssert (m_expendableType);
+        ZAssert ((m_expendableType->GetObjectType() == OT_mineType) ||
                 (m_expendableType->GetObjectType() == OT_probeType) ||
                 (m_expendableType->GetObjectType() == OT_chaffType));
 
@@ -83,12 +83,12 @@ void        CdispenserIGC::Terminate(void)
 
 void        CdispenserIGC::Update(Time   now)
 {
-    assert (m_ship);
+    ZAssert (m_ship);
 
     if (m_mountedFraction < 1.0f)
     {
         float   dt = now - m_ship->GetLastUpdate();
-        assert (dt >= 0.0f);
+        ZAssert (dt >= 0.0f);
 
         m_mountedFraction += dt * m_pMission->GetFloatConstant(c_fcidMountRate);
         if (m_mountedFraction < 1.0f)
@@ -108,8 +108,8 @@ void        CdispenserIGC::Update(Time   now)
               mineFireIGC,
               0, 0, 0, 0 };
 
-        assert (c_maskFire[ET_ChaffLauncher] == chaffFireIGC);
-        assert (c_maskFire[ET_Dispenser] == mineFireIGC);
+        ZAssert (c_maskFire[ET_ChaffLauncher] == chaffFireIGC);
+        ZAssert (c_maskFire[ET_Dispenser] == mineFireIGC);
 
         EquipmentType   et = m_expendableType->GetEquipmentType();
         
@@ -137,7 +137,7 @@ void        CdispenserIGC::SetShip(IshipIGC*       newVal, Mount mount)
         m_ship->Release();
 
     }
-    assert (m_mountID == c_mountNA);
+    ZAssert (m_mountID == c_mountNA);
 
     m_ship = newVal;
 
@@ -155,7 +155,7 @@ void        CdispenserIGC::SetShip(IshipIGC*       newVal, Mount mount)
 }
 void    CdispenserIGC::SetMountID(Mount newVal)
 {
-    assert (m_ship);
+    ZAssert (m_ship);
 
     if (newVal != m_mountID)
     {

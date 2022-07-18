@@ -68,17 +68,17 @@ CAGCEventDef::CAGCEventDef()
     const XEventDef* a = begin();
     const XEventDef* b = a + 1;
     while (end() != b)
-      assert(XLess()(*a++, *b++));
+      ZAssert(XLess()(*a++, *b++));
 
     // Validate that all group scopes match
     int nIndent = 0;
     for (const XEventDef* it = begin(); end() != it; ++it)
     {
-      assert(-1 <= it->m_nIndent && it->m_nIndent <= 1);
+      ZAssert(-1 <= it->m_nIndent && it->m_nIndent <= 1);
       nIndent += it->m_nIndent;
-      assert(0 <= nIndent);
+      ZAssert(0 <= nIndent);
     }
-    assert(0 == nIndent);
+    ZAssert(0 == nIndent);
   }
   #endif // _DEBUG
 }
@@ -117,7 +117,7 @@ void CAGCEventDef::Terminate()
   for (XNameMapIt it = s_pNameMap->begin(); it != s_pNameMap->end(); ++it)
   {
     const XEventDef* itFind = find(it->second);
-    assert(itFind != end());
+    ZAssert(itFind != end());
     if (!HIWORD(reinterpret_cast<DWORD>(itFind->m_pszName)))
       SysFreeString(const_cast<BSTR>(it->first));
   }
@@ -169,7 +169,7 @@ HRESULT CAGCEventDef::GetEventDescription(IAGCEvent* pEvent, BSTR* pbstrOut,
 {
   // Initialize the [out] parameter
   *pbstrOut = NULL;
-  assert(pEvent);
+  ZAssert(pEvent);
 
   // Find the definition of the event ID, if not specified
   if (!pDefHint)
@@ -190,7 +190,7 @@ HRESULT CAGCEventDef::GetEventDescription(IAGCEvent* pEvent, BSTR* pbstrOut,
       // Get the specified event's ID
       AGCEventID idEvent;
       RETURN_FAILED(pEvent->get_ID(&idEvent));
-      assert(pDefHint->m_id == idEvent);
+      ZAssert(pDefHint->m_id == idEvent);
     #endif // _DEBUG
   }
 
@@ -205,14 +205,14 @@ HRESULT CAGCEventDef::GetEventDescription(IAGCEvent* pEvent, BSTR* pbstrOut,
   }
 
   // Format the event
-  assert(pEvent);
+  ZAssert(pEvent);
   return ExpandFmtString(bstrFmt, pEvent, pbstrOut);
 }
 
 HRESULT CAGCEventDef::GetEventParameters (IAGCEvent* pEvent,
   CAGCEventDef::XParamStrings& rParamStrings, const XEventDef* pDefHint)
 {
-  assert(pEvent);
+  ZAssert(pEvent);
 
   // Find the definition of the event ID, if not specified
   if (!pDefHint)
@@ -233,7 +233,7 @@ HRESULT CAGCEventDef::GetEventParameters (IAGCEvent* pEvent,
       // Get the specified event's ID
       AGCEventID idEvent;
       RETURN_FAILED(pEvent->get_ID(&idEvent));
-      assert(pDefHint->m_id == idEvent);
+      ZAssert(pDefHint->m_id == idEvent);
     #endif // _DEBUG
   }
 
@@ -270,8 +270,8 @@ HRESULT CAGCEventDef::GetString(LPCOLESTR psz, BSTR* pbstrOut)
 HRESULT CAGCEventDef::ExpandFmtString(BSTR bstrFmt, IAGCEvent* pEvent,
   BSTR* pbstrOut)
 {
-  assert(BSTRLen(bstrFmt));
-  assert(pbstrOut);
+  ZAssert(BSTRLen(bstrFmt));
+  ZAssert(pbstrOut);
 
   // Create a growable stream into which we'll write
   IStreamPtr spStm;
@@ -305,11 +305,11 @@ HRESULT CAGCEventDef::ExpandFmtString(BSTR bstrFmt, IAGCEvent* pEvent,
   // Get the HGLOBAL underlying the stream
   HGLOBAL hGlobal = NULL;
   RETURN_FAILED(GetHGlobalFromStream(spStm, &hGlobal));
-  assert(hGlobal);
+  ZAssert(hGlobal);
 
   // Lock the HGLOBAL
   LPCOLESTR pszOut = reinterpret_cast<LPCOLESTR>(GlobalLock(hGlobal));
-  assert(pszOut);
+  ZAssert(pszOut);
 
   // Create a BSTR from the byte stream
   *pbstrOut = SysAllocStringLen(pszOut, cchStream);
@@ -324,7 +324,7 @@ HRESULT CAGCEventDef::ExpandFmtString(BSTR bstrFmt, IAGCEvent* pEvent,
 HRESULT CAGCEventDef::ExpandParams(BSTR bstrFmt, IAGCEvent* pEvent,
   CAGCEventDef::XParamStrings& rParams)
 {
-  assert(BSTRLen(bstrFmt));
+  ZAssert(BSTRLen(bstrFmt));
 
   // Initialize the parsing data
   XParseData data =
@@ -374,7 +374,7 @@ CAGCEventDef::ParseState_WriteVar(CAGCEventDef::XParseData& data)
 HRESULT __fastcall
 CAGCEventDef::ParseState_End(CAGCEventDef::XParseData& data)
 {
-  assert(data.m_bEndOfString);
+  ZAssert(data.m_bEndOfString);
   data.m_pfnNextState = NULL;
   return S_OK;
 }

@@ -47,7 +47,7 @@ class CprobeTypeIGC : public IprobeTypeIGC
 
         ~CprobeTypeIGC(void)
         {
-            assert (m_projectileType == NULL);
+            ZAssert (m_projectileType == NULL);
         }
 
     // IbaseIGC

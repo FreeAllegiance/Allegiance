@@ -116,14 +116,14 @@ class       ChullTypeIGC : public IhullTypeIGC
         }
         virtual float                GetMaxTurnRate(Axis    axis) const
         {
-            assert (axis >= 0);
-            assert (axis <= 3);
+            ZAssert (axis >= 0);
+            ZAssert (axis <= 3);
             return m_data->maxTurnRates[axis];
         }
         virtual float                GetTurnTorque(Axis    axis) const
         {
-            assert (axis >= 0);
-            assert (axis <= 3);
+            ZAssert (axis >= 0);
+            ZAssert (axis <= 3);
             return m_data->turnTorques[axis];
         }
         virtual float                GetThrust(void) const
@@ -162,7 +162,7 @@ class       ChullTypeIGC : public IhullTypeIGC
         }
         virtual PartMask             GetPartMask(EquipmentType et, Mount  mountID) const
         {
-            assert (mountID >= 0);
+            ZAssert (mountID >= 0);
             if (et == ET_Weapon)
             {
                 return (mountID < m_data->maxWeapons)
@@ -198,7 +198,7 @@ class       ChullTypeIGC : public IhullTypeIGC
 
         virtual bool                 CanMount(IpartTypeIGC* ppt, Mount  mountID) const
         {
-            assert (ppt);
+            ZAssert (ppt);
             bool    bMountable;
 
             if (mountID < 0)
@@ -221,7 +221,7 @@ class       ChullTypeIGC : public IhullTypeIGC
         }
         virtual const HardpointData& GetHardpointData(Mount hardpointID) const
         {
-            assert ((hardpointID >= 0) && (hardpointID < m_data->maxWeapons));
+            ZAssert ((hardpointID >= 0) && (hardpointID < m_data->maxWeapons));
             return ((HardpointData*)(((char*)m_data) + m_data->hardpointOffset))[hardpointID];
         }
 
@@ -258,15 +258,15 @@ class       ChullTypeIGC : public IhullTypeIGC
 
         virtual const Vector&        GetWeaponPosition(Mount mount) const
         {
-            assert (mount >= 0);
-            assert (mount < m_data->maxWeapons);
+            ZAssert (mount >= 0);
+            ZAssert (mount < m_data->maxWeapons);
 
             return m_positionWeapons[mount];
         }
         virtual const Orientation&   GetWeaponOrientation(Mount mount) const
         {
-            assert (mount >= 0);
-            assert (mount < m_data->maxWeapons);
+            ZAssert (mount >= 0);
+            ZAssert (mount < m_data->maxWeapons);
 
             return m_orientationWeapons[mount];
         }
@@ -357,15 +357,15 @@ class       ChullTypeIGC : public IhullTypeIGC
         }
         virtual const Vector&           GetLaunchPosition(int   slotID) const
         {
-            assert (slotID >= 0);
-            assert (slotID < m_nLaunchSlots);
+            ZAssert (slotID >= 0);
+            ZAssert (slotID < m_nLaunchSlots);
 
             return m_positionLaunches[slotID];
         }
         virtual const Vector&           GetLaunchDirection(int   slotID) const
         {
-            assert (slotID >= 0);
-            assert (slotID < m_nLaunchSlots);
+            ZAssert (slotID >= 0);
+            ZAssert (slotID < m_nLaunchSlots);
 
             return m_directionLaunches[slotID];
         }
@@ -376,26 +376,26 @@ class       ChullTypeIGC : public IhullTypeIGC
         }
         virtual int                     GetLandPlanes(int   slotID) const
         {
-            assert (slotID >= 0);
-            assert (slotID < m_nLandSlots);
+            ZAssert (slotID >= 0);
+            ZAssert (slotID < m_nLandSlots);
 
             return m_nLandPlanes[slotID];
         }
         virtual const Vector&           GetLandPosition(int slotID, int planeID) const
         {
-            assert (slotID >= 0);
-            assert (slotID < m_nLandSlots);
-            assert (planeID >= 0);
-            assert (planeID <= m_nLandPlanes[slotID]);
+            ZAssert (slotID >= 0);
+            ZAssert (slotID < m_nLandSlots);
+            ZAssert (planeID >= 0);
+            ZAssert (planeID <= m_nLandPlanes[slotID]);
 
             return m_positionLandPlanes[slotID][planeID];
         }
         virtual const Vector&           GetLandDirection(int slotID, int planeID) const
         {
-            assert (slotID >= 0);
-            assert (slotID < m_nLandSlots);
-            assert (planeID >= 0);
-            assert (planeID <= m_nLandPlanes[slotID]);
+            ZAssert (slotID >= 0);
+            ZAssert (slotID < m_nLandSlots);
+            ZAssert (planeID >= 0);
+            ZAssert (planeID <= m_nLandPlanes[slotID]);
 
             return m_directionLandPlanes[slotID][planeID];
         }

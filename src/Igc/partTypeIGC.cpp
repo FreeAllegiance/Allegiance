@@ -21,7 +21,7 @@ HRESULT         CpartTypeIGC::Initialize(ImissionIGC*   pMission,
                                          const void*    data,
                                          int            dataSize)
 {
-    assert (pMission);
+    ZAssert (pMission);
     m_pMission = pMission;
 
     ZRetailAssert (data && (dataSize >= sizeof(DataPartTypeIGC)));
@@ -29,13 +29,13 @@ HRESULT         CpartTypeIGC::Initialize(ImissionIGC*   pMission,
         //Note ... we need to allocate & copy the DataHullTypeIGC + the variable length fields
         m_dataSize = dataSize;
         m_data = (DataPartTypeIGC*)(new char [m_dataSize]);
-        assert (m_data);
+        ZAssert (m_data);
         memcpy(m_data, data, m_dataSize);
 
         if (m_data->successorPartID != NA)
         {
             m_pptSuccessor = pMission->GetPartType(m_data->successorPartID);
-            assert (m_pptSuccessor);
+            ZAssert (m_pptSuccessor);
         }
 
         pMission->AddPartType(this);
@@ -91,7 +91,7 @@ const char* IpartTypeIGC::GetEquipmentTypeName(EquipmentType et)
         return "afterburner";
 
     default:
-        assert(false);
+        ZAssert(false);
         return "";
     }
 }

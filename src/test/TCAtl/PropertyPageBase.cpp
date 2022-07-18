@@ -69,7 +69,7 @@ TCInsidePropPage* TCPropertyPageBase::GetInsidePage(UINT idCtrl)
     return pPage;
 
   // Return the page
-  assert(pPage->m_hWnd);
+  ZAssert(pPage->m_hWnd);
   return pPage;
 }
 
@@ -225,7 +225,7 @@ TCInsidePropPage* TCPropertyPageBase::GetInsidePageOfGroup(UINT idGroup,
     return pPage;
 
   // Return the page
-  assert(pPage->m_hWnd);
+  ZAssert(pPage->m_hWnd);
   return pPage;
 }
 
@@ -758,7 +758,7 @@ bool TCPropertyPageBase::CreateInsidePage(XInsidePage* pPage, bool bOfGroup)
         sprintf(sz3, "in page group 0x%08X with DWORD value 0x%08X.",
           pPage->m_pEntry->idPosCtrl, pPage->m_pEntry->dwData);
       _TRACE3("%hs%hs%hs\n", sz1, sz2, sz3);
-      assert(bCreated);
+      ZAssert(bCreated);
     }
   #endif
 
@@ -834,7 +834,7 @@ void TCPropertyPageBase::CreateInsidePages()
               "with a DWORD value of 0x%08x.\n\tDuplicate is being ignored.",
               TypeName(), idCtrl, dw);
             _TRACE1("%hs\n", sz);
-            assert(bInserted);
+            ZAssert(bInserted);
           #endif
         }
       }
@@ -890,7 +890,7 @@ void TCPropertyPageBase::CreateInsidePages()
               "with a bVisible value of true.\n\tOnly the first one has"
               "been created.", TypeName(), entry.idPosCtrl);
             _TRACE1("%hs\n", sz);
-            assert(!bOneIsVisible);
+            ZAssert(!bOneIsVisible);
           }
         #endif // _DEBUG
 
@@ -954,7 +954,7 @@ void TCPropertyPageBase::DestroyInsidePageMap(
     XInsidePage* pPage = it->second;
 
     // Ensure that the page window is destroyed
-    assert(!IsWindow(*pPage));
+    ZAssert(!IsWindow(*pPage));
 
     // Delete the page object
     delete pPage;
@@ -1108,7 +1108,7 @@ HRESULT TCPropertyPageBase::SetObjects(ULONG& cObjectsDest,
         ppUnkDest = NULL;
         cObjectsDest = 0;
       }
-      assert(0 == cObjectsDest);
+      ZAssert(0 == cObjectsDest);
 
       // Save the filtered objects in the specified destination fields
       if (vec.size())

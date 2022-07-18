@@ -144,7 +144,7 @@ CwarpPV* ImissionPV::CreatePVWrap(DataWarpIGC *ds,int dataSize,CMapPVCluster* cl
 CMapPVCluster::CMapPVCluster(ImissionPV* pmission,DataClusterIGC *ds,int dataSize)
 {
 	m_pMission = pmission;
-	assert(dataSize==sizeof(m_data));
+	ZAssert(dataSize==sizeof(m_data));
 	memcpy(&m_data,ds,dataSize);
 	for (int i=0;i < c_cSidesMax; i++) nStationsPerSide[i] = 0;
 }
@@ -252,8 +252,8 @@ const char* ImapPVMaker::IsValid(const MissionParams* pmp)
 const char *  ImapPVMaker::Create(const MissionParams*   pmp,
 							 ImissionPV*           pmission)
 {
-    assert (pmp->nTeams >= 2);
-    assert (pmp->nTeams <= c_cSidesMax);
+    ZAssert (pmp->nTeams >= 2);
+    ZAssert (pmp->nTeams <= c_cSidesMax);
 
 	if (pmp->szCustomMapFile[0] != '\0')
 	{
@@ -285,7 +285,7 @@ const char *  ImapPVMaker::Create(const MissionParams*   pmp,
         MakeMap(EastWest)
         MakeMap(LargeSplit)
         default:
-            assert (false);
+            ZAssert (false);
     }
 #undef MakeMap
 	return NULL;
@@ -316,7 +316,7 @@ static bool    pvFindPath(CMapPVCluster*    p2,
         return false;
 
     CMapPVCluster*    p1 = pclustersAdjacent[*pStart];
-    assert (p1);
+    ZAssert (p1);
 
     if (p1 == p2)
         return true;
@@ -394,7 +394,7 @@ static bool    pvEnoughPaths(CMapPVCluster**            pclusterBackTrack,
         SectorID    id = pcluster->GetObjectID();
         do
         {
-            assert (pclusterBackTrack[id] != NULL);
+            ZAssert (pclusterBackTrack[id] != NULL);
 
             pcluster = pclusterBackTrack[id];
             id = pcluster->GetObjectID();
@@ -431,7 +431,7 @@ VOID CmapPVMaker::GenerateMission(const MissionParams * pmp,
 {
     CMapPVData MapData;
 
-    assert(NULL == IsValid(pmp));
+    ZAssert(NULL == IsValid(pmp));
 
 
 	MapData.SetMission(pMission);
@@ -455,7 +455,7 @@ VOID CmapPVMaker::GenerateMission(const MissionParams * pmp,
                 float   nWarps = (float)(pwarps->n());
 
                 const int c_maxWarps = 10;
-                assert (pwarps->n() <= c_maxWarps);
+                ZAssert (pwarps->n() <= c_maxWarps);
 
                 float   offset[c_maxWarps] = {0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f};
                 float   displacement;
@@ -496,7 +496,7 @@ VOID CmapPVMaker::GenerateMission(const MissionParams * pmp,
  //               if ((pwarp->GetObjectID() < pwarp->GetDestination()->GetObjectID()) &&
  //                   (randomInt(0, pmp->iRandomEncounters) > 1))
  //               {
- //                   assert (nWarps < pwarpList->n());
+ //                   ZAssert (nWarps < pwarpList->n());
  //                   pwarps[nWarps++] = pwarp;
  //               }
  //           }
@@ -585,7 +585,7 @@ CMapPVCluster * CmapPVMaker::GenerateTeamCluster(CMapPVData * pMapData,
     CMapPVCluster * o = (CMapPVCluster *) pMapData->GetMission()->CreatePVCluster(
 		                                            &dc,
                                                     sizeof(dc));
-    assert(o);
+    ZAssert(o);
     return(o);
 }
 
@@ -633,7 +633,7 @@ CMapPVCluster * CmapPVMaker::GenerateNeutralCluster(CMapPVData * pMapData,
     CMapPVCluster * o = (CMapPVCluster *) pMapData->GetMission()->CreatePVCluster(
                                                     &dc,
                                                     sizeof(dc));
-    assert(o);
+    ZAssert(o);
     return(o);
 }
 
@@ -688,7 +688,7 @@ VOID CmapPVMaker::GenerateWarp(CMapPVData * pMapData,
     pdw->warpDef.radius = 100;
 
     IObject * o = pMapData->GetMission()->CreatePVWrap(pdw,sizeof(*pdw),pCluster);
-    assert(o);
+    ZAssert(o);
     o->Release();
 }
 
@@ -794,7 +794,7 @@ VOID CmapPVMaker::LinkClusters(CMapPVData* pMapData,
         break;
 
         default:
-            assert (false);
+            ZAssert (false);
     }
 
     //
@@ -1320,7 +1320,7 @@ VOID CmapPVMakerHiHigher::LinkClusters(CMapPVData * pMapData)
 
             if (mMMID == c_mmInsideOut)
             {
-                assert (pMapData->GetTeamClustersPerTeam() == 1);
+                ZAssert (pMapData->GetTeamClustersPerTeam() == 1);
                 sID1 = sIDp;
                 sIDp = sID0 + 1;
                 sIDn = ((i+1)%pMapData->GetTeams()) * pMapData->GetClustersPerTeam() + 1 + 1;
@@ -2030,7 +2030,7 @@ VOID CmapPVMakerGrid::GenerateTeamClusterScreenPosition(
         flTheta = (float) (2.0 * pi * sTeam / pMapData->GetTeams());
 
         static const float  radii[c_cSidesMax + 1] = {0.0f, 0.0f, 0.55f, 0.6f, 0.65f, 0.70f, 0.75f};
-        assert (pMapData->GetTeams() <= c_cSidesMax);
+        ZAssert (pMapData->GetTeams() <= c_cSidesMax);
         flRadius = radii[pMapData->GetTeams()];
     }
     else
@@ -2040,7 +2040,7 @@ VOID CmapPVMakerGrid::GenerateTeamClusterScreenPosition(
         static const float  radii0[c_cSidesMax + 1] = {0.0f, 0.0f, 0.475f, 0.525f, 0.575f, 0.625f, 0.675f};
         static const float  radii1[c_cSidesMax + 1] = {0.0f, 0.0f, 0.625f, 0.675f, 0.725f, 0.775f, 0.825f};
 
-        assert (pMapData->GetTeams() <= c_cSidesMax);
+        ZAssert (pMapData->GetTeams() <= c_cSidesMax);
         flRadius = (sID == 0)
                    ? radii0[pMapData->GetTeams()]
                    : radii1[pMapData->GetTeams()];
@@ -2216,9 +2216,9 @@ VOID CmapPVMakerEastWest::GenerateNeutralClusterScreenPosition(
 
 VOID CmapPVMakerEastWest::LinkClusters(CMapPVData * pMapData)
 {
-    assert (pMapData->GetTeams() == 2);
-    assert (pMapData->GetClustersPerTeam() == 13);
-    assert (pMapData->GetTeamClustersPerTeam() == 2);
+    ZAssert (pMapData->GetTeams() == 2);
+    ZAssert (pMapData->GetClustersPerTeam() == 13);
+    ZAssert (pMapData->GetTeamClustersPerTeam() == 2);
 
     for (SideID i = 0; (i < 2); i++)
     {
@@ -2374,7 +2374,7 @@ const char * CmapPVMakerFromIGCFile::GenerateMission(const char * igcfile,	Imiss
             if (type == OT_warp)
             {
 				nbwarps++;
-				assert(size == sizeof(DataWarpIGC));
+				ZAssert(size == sizeof(DataWarpIGC));
 				DataWarpIGC *p = (DataWarpIGC*)(pdata + sizeof(int) + sizeof(ObjectType));
 				// assume all clusters are in file BEFORE warps
 				// otherwise we reject the file
@@ -2391,21 +2391,21 @@ const char * CmapPVMakerFromIGCFile::GenerateMission(const char * igcfile,	Imiss
 			if (type == OT_cluster)
 			{
 				nbclusters++;
-				assert(size == sizeof(DataClusterIGC));
+				ZAssert(size == sizeof(DataClusterIGC));
 				DataClusterIGC *p  = (DataClusterIGC*)(pdata + sizeof(int) + sizeof(ObjectType));
 				pmission->CreatePVCluster(p,size);
 			}
 			if (type == OT_station)
 			{
 				nbstations++;
-				assert(size == sizeof(DataStationIGC));
+				ZAssert(size == sizeof(DataStationIGC));
 				DataStationIGC*  p = (DataStationIGC*)(pdata + sizeof(int) + sizeof(ObjectType));
 				// assume all clusters are in file BEFORE stations
 				CMapPVCluster *pcluster = pmission->GetCluster(p->clusterID);
 				if (pcluster)
 				{
 					SideID side = p->sideID;
-					assert(side>=0 && side<c_cSidesMax);
+					ZAssert(side>=0 && side<c_cSidesMax);
 					pcluster->GetStationsPerSide()[side]++;
 				}
 				else

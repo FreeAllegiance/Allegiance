@@ -241,7 +241,7 @@ public:
         m_bForceCRCCheck = bForceCRCCheck;
         m_cFilesDownloaded = 0;
 
-        assert(pSink);
+        ZAssert(pSink);
         m_pSink = pSink;
 
         m_phase = PHASE_GETTING_FILELIST;
@@ -311,7 +311,7 @@ public:
             {
                 case PHASE_VERIFYING_LOCAL:
 
-                    assert(m_pLocalFilesVerifier);
+                    ZAssert(m_pLocalFilesVerifier);
                     if(!ContinueLocalFilesVerification(m_pLocalFilesVerifier, dwTimeAlloted))
                     {
                         DestroyFilesVerifier(m_pLocalFilesVerifier);
@@ -679,7 +679,7 @@ public:
                     return true;
                 }
 
-                assert((int)cbWritten == nReadResult);
+                ZAssert((int)cbWritten == nReadResult);
 
                 cbDone += cbWritten;
 
@@ -798,7 +798,7 @@ public:
             //
             if (ftimeElapsed >= (m_cSecsLeft == -1 ? 5000:1000) && cbCurrentReading != m_cbLastReading)
             {
-              assert(ftimeElapsed > 0);
+              ZAssert(ftimeElapsed > 0);
 
               float fCurrentBytesPerMillisecond = float(cbCurrentReading - m_cbLastReading) / ftimeElapsed;
 
@@ -828,7 +828,7 @@ public:
        }
         else
         {
-            assert(_stricmp("FileList.txt", szCurrentFile) == 0);
+            ZAssert(_stricmp("FileList.txt", szCurrentFile) == 0);
 
             m_pSink->OnRetrievingFileListProgress(m_nFileListSize, cCurrentFileBytes);
         }
@@ -867,7 +867,7 @@ private:
 
     void BeginMainDownload()
     {
-        assert(IsDownloadListBuilt());
+        ZAssert(IsDownloadListBuilt());
 
         m_phase = PHASE_MAIN_DOWNLOAD;
         m_pSink->OnBeginDownloadProgressBar(m_cTotalBytes, m_cFiles);
@@ -992,7 +992,7 @@ private:
 
     void BeginLocalFilesAnalysis()
     {
-        assert(m_pLocalFilesVerifier == NULL);
+        ZAssert(m_pLocalFilesVerifier == NULL);
         m_phase = PHASE_VERIFYING_LOCAL;
         m_pSink->OnBeginAnalysis();
         m_pLocalFilesVerifier = CreateLocalFilesVerifier(this, m_bForceCRCCheck, m_nOfficialCRC, m_szArtPath);
@@ -1256,7 +1256,7 @@ private:
         FILETIME ft1;
         FILETIME ft2;
 
-        assert(cSeconds < 100 && cSeconds >= 0);
+        ZAssert(cSeconds < 100 && cSeconds >= 0);
 
         // converting to filetime takes care of leap year and all other weird date inconsistencies
         SystemTimeToFileTime(pst1, &ft1);
@@ -1418,14 +1418,14 @@ private:
         FILETIME ft;
 
         BOOL b = GetFileTime(hFile, NULL, NULL, &ft);
-        assert(b);
+        ZAssert(b);
 
         b = FileTimeToSystemTime(&ft, psystimeTrue);
-        assert(b);
+        ZAssert(b);
 
         *pnLocalFileLength = ::GetFileSize(hFile, NULL);
 
-        assert(*pnLocalFileLength != 0xFFFFFFFF);
+        ZAssert(*pnLocalFileLength != 0xFFFFFFFF);
 
         return hFile;
     }
@@ -1533,7 +1533,7 @@ void SetLocalFileTime(HANDLE hFile, char *szFileName, SYSTEMTIME * psystime)
     FILETIME ft;
 
     BOOL b = SystemTimeToFileTime(psystime, &ft);
-    assert(b);
+    ZAssert(b);
 
     b = SetFileTime(hFile, NULL, NULL, &ft);
 

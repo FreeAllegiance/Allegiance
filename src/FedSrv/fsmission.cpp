@@ -37,16 +37,16 @@ void CFSMission::InitSide(SideID sideID)
                       "Colossal Mining Corp",
                       "Midnight Runners" };
 */
-  assert(sideID >= 0 && sideID < c_cSidesMax);
+  ZAssert(sideID >= 0 && sideID < c_cSidesMax);
 
   strcpy(m_misdef.rgszName[sideID], sideNames[sideID]);
 
   /*
   if (m_misdef.misparms.rgCivID[sideID] == NA)
     m_misdef.misparms.rgCivID[sideID] = PickNewCiv(sideID, m_misdef.rgCivID);
-  assert (m_misdef.misparms.rgCivID[sideID] != NA);
+  ZAssert (m_misdef.misparms.rgCivID[sideID] != NA);
   */
-  assert (m_misdef.misparms.rgCivID[sideID] != NA);
+  ZAssert (m_misdef.misparms.rgCivID[sideID] != NA);
 
   //m_misdef.rgCivID        [sideID] = m_misdef.misparms.rgCivID[sideID];
   m_misdef.rgShipIDLeaders[sideID] = NA;
@@ -110,7 +110,7 @@ CFSMission::CFSMission(
 
   psiteMission->Create(this);
 
-  assert(!g.strLobbyServer.IsEmpty() == !!g.fmLobby.IsConnected());
+  ZAssert(!g.strLobbyServer.IsEmpty() == !!g.fmLobby.IsConnected());
 
   // keep track of whether this is a lobbied and/or club game
   m_misdef.misparms.bLobbiedGame = g.fmLobby.IsConnected();
@@ -144,7 +144,7 @@ CFSMission::CFSMission(
 
   if (szDesc)
   {
-    assert(lstrlen(szDesc) < sizeof(m_misdef.szDescription));
+    ZAssert(lstrlen(szDesc) < sizeof(m_misdef.szDescription));
     lstrcpy(m_misdef.szDescription, szDesc);
   }
   else
@@ -168,7 +168,7 @@ CFSMission::CFSMission(
   const CivilizationListIGC*  pcivs = m_pMission->GetCivilizations();
 
   const int cCivsMax = 20;
-  assert (pcivs->n() < cCivsMax);
+  ZAssert (pcivs->n() < cCivsMax);
 
   //Get random initial civs for each side, minimizing duplication vs. pre-existing sides
   CivID civIDs[cCivsMax];
@@ -277,7 +277,7 @@ CFSMission::~CFSMission()
   {
     CFSShip * pfsShip = (CFSShip *) pShiplink->data()->GetPrivateData();
     pShiplink = pShiplink->next();
-    assert (pfsShip->IsPlayer());
+    ZAssert (pfsShip->IsPlayer());
     RemovePlayerFromMission(pfsShip->GetPlayer(), QSR_ServerShutdown);
   }
 
@@ -320,7 +320,7 @@ CFSMission::~CFSMission()
       break;
     }
   }
-  assert (plinkFSMis);      // better have found it
+  ZAssert (plinkFSMis);      // better have found it
   m_pMission->Terminate();
   delete m_pMission;
   m_psiteMission->Destroy(this);
@@ -370,7 +370,7 @@ void CFSMission::AddPlayerToMission(CFSPlayer * pfsPlayer)
           pfsPlayer->GetName(), pfsPlayer->GetShipID(),
           GetCookie());
 
-  assert (pfsPlayer->GetPlayerScoreObject());
+  ZAssert (pfsPlayer->GetPlayerScoreObject());
 
   OldPlayerLink*  popl = GetOldPlayerLink(pfsPlayer->GetName());
   if (popl)
@@ -407,12 +407,12 @@ void CFSMission::AddPlayerToMission(CFSPlayer * pfsPlayer)
   pfsPlayer->GetIGCShip()->CreateDamageTrack();
 
   SendPlayerInfo(NULL, pfsPlayer, this);
-  assert(0 == g.fm.CbUsedSpaceInOutbox()); // everything should've been sent
+  ZAssert(0 == g.fm.CbUsedSpaceInOutbox()); // everything should've been sent
 
   // tell the lobby that this character is now in this mission
   if (g.fmLobby.IsConnected())
   {
-    assert(GetCookie()); // we can't be sending messages w/ cookies unless we have a real cookie
+    ZAssert(GetCookie()); // we can't be sending messages w/ cookies unless we have a real cookie
 
 	 // BT - 9/11/2010 ACSS - Supports authentication check of the CD Key.
 	char szAddress[64];
@@ -536,7 +536,7 @@ void CFSMission::RemovePlayerFromMission(CFSPlayer * pfsPlayer, QuitSideReason r
 
 void CFSMission::AddPlayerToSide(CFSPlayer * pfsPlayer, IsideIGC * pside)
 {
-  assert (pside);
+  ZAssert (pside);
   ShipID    shipid  = pfsPlayer->GetShipID();
   SideID    sideid  = pside->GetObjectID();
   bool      fTeamLeader   = false;
@@ -546,13 +546,13 @@ void CFSMission::AddPlayerToSide(CFSPlayer * pfsPlayer, IsideIGC * pside)
   // w0dk4 join-drop bug fix (allow more time when joining)
   pfsPlayer->SetJustJoined(true);
 
-  assert (sideid != SIDE_TEAMLOBBY);
+  ZAssert (sideid != SIDE_TEAMLOBBY);
 
   CFSSide*  pfsSide = CFSSide::FromIGC(pside);
 
   if (pfsPlayer->GetSide() == NULL || pfsPlayer->GetMission() != this)
   {
-    assert(false);
+    ZAssert(false);
     if (pfsPlayer->GetMission())
       RemovePlayerFromMission(pfsPlayer, QSR_Quit);
     pfsPlayer->GetMission()->AddPlayerToMission(pfsPlayer);
@@ -589,17 +589,17 @@ void CFSMission::AddPlayerToSide(CFSPlayer * pfsPlayer, IsideIGC * pside)
       fMissionOwner = true;
   }
 
-  assert(pside->GetActiveF()); // shouldn't be joining an inactive team
+  ZAssert(pside->GetActiveF()); // shouldn't be joining an inactive team
   m_misdef.rgcPlayers[sideid]++;
 
   // Set their stuff appropriate for this side
-  assert(pfsPlayer->GetMoney() == 0);
+  ZAssert(pfsPlayer->GetMoney() == 0);
 
   //pfsPlayer->GetIGCShip()->SetWingID(1); // TE: Default wing is Attack(1)  //Imago removed 6/10 #91
   if (!HasPlayers(pside, true)) // we have a new team leader
   {
     fTeamLeader = true;
-    assert (m_misdef.rgShipIDLeaders[sideid] == NA);
+    ZAssert (m_misdef.rgShipIDLeaders[sideid] == NA);
 
     SetLeaderID(sideid, shipid);
 
@@ -611,9 +611,9 @@ void CFSMission::AddPlayerToSide(CFSPlayer * pfsPlayer, IsideIGC * pside)
   }
 
   // announce the guy that we were called for. Make sure nothing got wacky
-  assert(IMPLIES(fMissionOwner, fTeamLeader));
+  ZAssert(IMPLIES(fMissionOwner, fTeamLeader));
 
-  assert(IFF(pside->GetActiveF(),
+  ZAssert(IFF(pside->GetActiveF(),
       (STAGE_NOTSTARTED == GetStage()) || (HasPlayers(pside, true) || m_misdef.misparms.bAllowEmptyTeams)));
 
   BEGIN_PFM_CREATE(g.fm, pfmJoinSide, S, JOIN_SIDE)
@@ -762,9 +762,9 @@ void CFSMission::AddPlayerToSide(CFSPlayer * pfsPlayer, IsideIGC * pside)
       }
     }
 
-    assert (pfsPlayer->GetIGCShip()->GetDeaths() == pfsPlayer->GetPlayerScoreObject()->GetDeaths());
-    assert (pfsPlayer->GetIGCShip()->GetEjections() == pfsPlayer->GetPlayerScoreObject()->GetEjections());
-    assert (pfsPlayer->GetIGCShip()->GetChildShips()->n() == 0);
+    ZAssert (pfsPlayer->GetIGCShip()->GetDeaths() == pfsPlayer->GetPlayerScoreObject()->GetDeaths());
+    ZAssert (pfsPlayer->GetIGCShip()->GetEjections() == pfsPlayer->GetPlayerScoreObject()->GetEjections());
+    ZAssert (pfsPlayer->GetIGCShip()->GetChildShips()->n() == 0);
     if (pfsPlayer->GetLifepodCluster() && (STAGE_STARTED == GetStage()))
     {
         //Flush the send buffer to clear out the flag information.
@@ -810,9 +810,9 @@ void CFSMission::AddPlayerToSide(CFSPlayer * pfsPlayer, IsideIGC * pside)
         {
             BucketLinkIGC* pbl = psl->data()->GetBuckets()->last();
             {
-              assert (pbl != NULL);
+              ZAssert (pbl != NULL);
               IbucketIGC* pbucket = pbl->data();
-              assert ((pbucket->GetBucketType() == OT_development) &&
+              ZAssert ((pbucket->GetBucketType() == OT_development) &&
                       (pbucket->GetBuyable()->GetObjectID() == c_didTeamMoney));
 
               BEGIN_PFM_CREATE(g.fm, pfmBucketStatus, S, BUCKET_STATUS)
@@ -986,7 +986,7 @@ void CFSMission::RemovePlayerFromSide(CFSPlayer * pfsPlayer, QuitSideReason reas
             }
           }
         }
-        assert(pfsNewLeader);
+        ZAssert(pfsNewLeader);
       }
 
       SetLeaderID(iSideNewOwner, shipidNewOwner);
@@ -1020,7 +1020,7 @@ void CFSMission::RemovePlayerFromSide(CFSPlayer * pfsPlayer, QuitSideReason reas
             iSideNewOwner = pside->GetObjectID();
             shipidNewOwner = GetLeader(iSideNewOwner)->GetShipID();
             fMissionOwner = true;
-            assert(m_misdef.rgShipIDLeaders[iSideNewOwner] == shipidNewOwner);
+            ZAssert(m_misdef.rgShipIDLeaders[iSideNewOwner] == shipidNewOwner);
             m_misdef.iSideMissionOwner = iSideNewOwner;
             break;
           }
@@ -1118,7 +1118,7 @@ void CFSMission::RemovePlayerFromSide(CFSPlayer * pfsPlayer, QuitSideReason reas
 
     payday = pfsPlayer->GetMoney() + pfsPlayer->GetIGCShip()->GetValue();
 
-    assert(STAGE_STARTING != m_misdef.stage || payday == 0);
+    ZAssert(STAGE_STARTING != m_misdef.stage || payday == 0);
   }
   else
     payday = 0;
@@ -1179,7 +1179,7 @@ void CFSMission::AddInvitation(SideID sid, char * szPlayerName)
  */
 bool CFSMission::IsInvited(CFSPlayer * pPlayer)
 {
-    assert(RequiresInvitation());
+    ZAssert(RequiresInvitation());
 
     for (std::vector<CFSSide*>::iterator _i(m_pFSSides.begin()); _i != m_pFSSides.end(); ++_i)
     {
@@ -1449,7 +1449,7 @@ IstationIGC * CFSMission::GetBase(IsideIGC * pside)
 //
 CFSPlayer * CFSMission::GetLeader(SideID sid)
 {
-  assert (NA != sid);
+  ZAssert (NA != sid);
   if (sid == SIDE_TEAMLOBBY) // lobby side never has a leader
       return NULL;
   ShipID shipid = m_misdef.rgShipIDLeaders[sid];
@@ -1464,8 +1464,8 @@ void    CFSMission::SetLeaderID(SideID sideID, ShipID shipID)
     if (m_misdef.rgShipIDLeaders[sideID] != NA)
     {
         CFSShip*    pfsShip = CFSShip::GetShipFromID(m_misdef.rgShipIDLeaders[sideID]);
-        assert (pfsShip);
-        assert (pfsShip->IsPlayer());
+        ZAssert (pfsShip);
+        ZAssert (pfsShip->IsPlayer());
         pfsShip->GetPlayerScoreObject()->StopCommand(m_pMission->GetLastUpdate());
     }
 
@@ -1474,8 +1474,8 @@ void    CFSMission::SetLeaderID(SideID sideID, ShipID shipID)
     if (shipID != NA)
     {
         CFSShip*    pfsShip = CFSShip::GetShipFromID(shipID);
-        assert (pfsShip);
-        assert (pfsShip->IsPlayer());
+        ZAssert (pfsShip);
+        ZAssert (pfsShip->IsPlayer());
         pfsShip->GetPlayerScoreObject()->StartCommand(m_pMission->GetLastUpdate());
     }
 }
@@ -1507,15 +1507,15 @@ void CFSMission::SetOwner(short iSide)
 
 void CFSMission::SetLeader(CFSPlayer * pfsPlayer)
 {
-  assert(pfsPlayer);
+  ZAssert(pfsPlayer);
 
   SideID sid = pfsPlayer->GetSide()->GetObjectID();
   ShipID shipId = pfsPlayer->GetShipID();
 
-  assert(0 <= sid && sid < m_misdef.misparms.nTeams);
+  ZAssert(0 <= sid && sid < m_misdef.misparms.nTeams);
 
   CFSPlayer * pfsOldLeader = GetLeader(sid);
-  assert(pfsOldLeader);
+  ZAssert(pfsOldLeader);
 
   if (pfsOldLeader->GetIGCShip()->GetWingID() == 0)
   {
@@ -1561,8 +1561,8 @@ void CFSMission::SetLeader(CFSPlayer * pfsPlayer)
  */
 void CFSMission::SetSideName(SideID sid, const char* szName)
 {
-  assert(sid >= 0 && sid < c_cSidesMax);
-  assert(strlen(szName) < c_cbName);
+  ZAssert(sid >= 0 && sid < c_cSidesMax);
+  ZAssert(strlen(szName) < c_cbName);
   IsideIGC* pside = m_pMission->GetSide(sid);
   if (!pside)
     return;
@@ -1609,7 +1609,7 @@ void CFSMission::SetSideName(SideID sid, const char* szName)
  */
 void CFSMission::SetSideSquad(SideID sid, SquadID squadID)
 {
-  assert(sid >= 0 && sid < c_cSidesMax);
+  ZAssert(sid >= 0 && sid < c_cSidesMax);
   IsideIGC* pside = m_pMission->GetSide(sid);
 
   // if the squad doesn't need to be changed, don't touch it.
@@ -1650,7 +1650,7 @@ void CFSMission::SetSideSquad(SideID sid, SquadID squadID)
       CFSPlayer* pfsLeader = GetLeader(sid);
       if (squadID != NA)
       {
-        assert(pfsLeader);
+        ZAssert(pfsLeader);
         for (SquadMembershipLink* pSquadLink = pfsLeader->GetSquadMembershipList()->first();
           pSquadLink != NULL; pSquadLink = pSquadLink->next())
         {
@@ -1658,7 +1658,7 @@ void CFSMission::SetSideSquad(SideID sid, SquadID squadID)
             szSquadName = pSquadLink->data()->GetName();
         }
       }
-      assert((squadID == NA) == (szSquadName == NULL));
+      ZAssert((squadID == NA) == (szSquadName == NULL));
   }
 
   // use SetSideName to send the new squadID along with the new name
@@ -1749,7 +1749,7 @@ void CFSMission::SetStage(STAGE stage)
 {
   if (m_misdef.stage != stage)
   {
-    assert(m_misdef.stage < stage || stage == STAGE_NOTSTARTED); // it's a one-way road (sort of)
+    ZAssert(m_misdef.stage < stage || stage == STAGE_NOTSTARTED); // it's a one-way road (sort of)
     debugf("SetStage, stage=%d, mission=%x\n", stage, GetCookie());
     m_misdef.stage = stage;
     m_misdef.fInProgress = stage == STAGE_STARTED;
@@ -1774,7 +1774,7 @@ void CFSMission::SetStage(STAGE stage)
  */
 void CFSMission::GiveSideMoney(IsideIGC * pside, Money money)
 {
-  assert (money >= 0);
+  ZAssert (money >= 0);
   if (money != 0)
   {
       SideID sideID = pside->GetObjectID();
@@ -1794,8 +1794,8 @@ void CFSMission::GiveSideMoney(IsideIGC * pside, Money money)
 void CFSMission::SetMissionParams(const MissionParams & misparmsNew)
 {
   MissionParams misparms = misparmsNew;
-  assert(GetStage() == STAGE_NOTSTARTED);
-  assert(misparms.Invalid() == NULL);
+  ZAssert(GetStage() == STAGE_NOTSTARTED);
+  ZAssert(misparms.Invalid() == NULL);
 
   // don't even think about changing the IGC static stuff.
   misparms.verIGCcore = m_misdef.misparms.verIGCcore;
@@ -1825,7 +1825,7 @@ void CFSMission::SetMissionParams(const MissionParams & misparmsNew)
       while (pside->GetShips()->first())
       {
         CFSShip* pship = (CFSShip*)(pside->GetShips()->first()->data()->GetPrivateData());
-        assert(pship->IsPlayer());
+        ZAssert(pship->IsPlayer());
         RemovePlayerFromSide(
           pship->GetPlayer(),
           QSR_SideDestroyed
@@ -2037,7 +2037,7 @@ void CFSMission::StartCountdown(float fCountdownLength)
         }
 
         const StationListIGC*   pstations = pside->GetStations();
-        assert (pstations->n() >= 1);
+        ZAssert (pstations->n() >= 1);
 
         const int       c_stationsMax = 20;
         IstationIGC*    stations[c_stationsMax];
@@ -2049,15 +2049,15 @@ void CFSMission::StartCountdown(float fCountdownLength)
                 IstationIGC*    pstation = psl->data();
                 if (pstation->GetStationType()->HasCapability(c_sabmRestart))
                 {
-                    assert (nStations < c_stationsMax);
+                    ZAssert (nStations < c_stationsMax);
                     stations[nStations++] = pstation;
                 }
             }
         }
-        assert (nStations >= 1);
+        ZAssert (nStations >= 1);
 
         IstationIGC*            pstation = stations[0];
-        assert (pstation);
+        ZAssert (pstation);
         if (nStations == 1)
         {
             //Start all ships at that station
@@ -2096,8 +2096,8 @@ void CFSMission::StartCountdown(float fCountdownLength)
                 {
                     IshipIGC*   pship = pshipLink->data();
                     WingID      wid = pship->GetWingID();
-                    assert (wid >= 0);
-                    assert (wid < c_widMax);
+                    ZAssert (wid >= 0);
+                    ZAssert (wid < c_widMax);
 
                     if (players[wid]++ == 0)
                         unassignedWings++;
@@ -2121,7 +2121,7 @@ void CFSMission::StartCountdown(float fCountdownLength)
                             widMax = i;
                     }
                 }
-                assert (widMax != -1);
+                ZAssert (widMax != -1);
 
                 //Find the least populated station
                 int stationMin = 0;
@@ -2150,8 +2150,8 @@ void CFSMission::StartCountdown(float fCountdownLength)
                 {
                     IshipIGC*   pship = pshipLink->data();
                     WingID      wid = pship->GetWingID();
-                    assert (wid >= 0);
-                    assert (wid < c_widMax);
+                    ZAssert (wid >= 0);
+                    ZAssert (wid < c_widMax);
 
                     int   stationMin;
                     if (assignment[wid] == -1)
@@ -2170,7 +2170,7 @@ void CFSMission::StartCountdown(float fCountdownLength)
                     else
                         stationMin = assignment[wid];
 
-                    assert (stationMin >= 0);
+                    ZAssert (stationMin >= 0);
                     IstationIGC*    pstation = stations[stationMin];
 
                     pshipLink->data()->SetStation(pstation);
@@ -2325,7 +2325,7 @@ void CFSMission::DoPayday(IsideIGC* pside)
 
 void CFSMission::DoTick(Time timeNow)
 {
-    assert (GetStage() == STAGE_STARTED);
+    ZAssert (GetStage() == STAGE_STARTED);
 
     ImissionIGC*            pm = GetIGCMission();
     const MissionParams*    pmp = pm->GetMissionParams();
@@ -2400,7 +2400,7 @@ void CFSMission::DoTick(Time timeNow)
                         IsideIGC*   pside = psl->data();
 
                         IbucketIGC* pbucket = pside->GetBuckets()->last()->data();
-                        assert ((pbucket->GetBucketType() == OT_development) &&
+                        ZAssert ((pbucket->GetBucketType() == OT_development) &&
                                 (pbucket->GetBuyable()->GetObjectID() == c_didTeamMoney));
 
                         DWORD   time = pbucket->GetTime();
@@ -2781,7 +2781,7 @@ void CFSMission::RecordGameResults()
     for (SideLinkIGC* itSide = pSides->first(); itSide; itSide = itSide->next())
     {
       IsideIGC* pside = itSide->data();
-      assert(pside);
+      ZAssert(pside);
 
       // Record the team results
       RecordTeamResults(pside);
@@ -2859,7 +2859,7 @@ void CFSMission::RecordTeamResults(IsideIGC* pside)
     for (ShipLinkIGC* itShip = pShips->first(); itShip; itShip = itShip->next())
     {
       IshipIGC* pship = itShip->data();
-      assert(pship);
+      ZAssert(pship);
 
       // Filter-out non-player ships
       if (ISPLAYER(pship))
@@ -3047,7 +3047,7 @@ void CFSMission::QueueGameoverMessage()
           nPlayerIndex++;
       }
   }
-  assert(nPlayerIndex <= nNumPlayers);
+  ZAssert(nPlayerIndex <= nNumPlayers);
 
   // send the players in chunks of no more than 50 players at a time
   const int nMaxPlayersPerMsg = 50;
@@ -3267,7 +3267,7 @@ void CFSMission::ProcessGameOver()
           PlayerScoreObject*  ppso = commander[sideID];
           if (ppso)
           {
-            assert (dtPlayed[sideID] >= 0.0f);
+            ZAssert (dtPlayed[sideID] >= 0.0f);
 
             //Average points earned per player minute
             float   commandScore = scoreEarned[sideID] / dtPlayed[sideID];
@@ -3392,7 +3392,7 @@ void CFSMission::ProcessGameOver()
   {
     CFSShip * pfsShip = (CFSShip *) pShiplink->data()->GetPrivateData();
 
-    assert(pfsShip->IsPlayer());
+    ZAssert(pfsShip->IsPlayer());
 
     // Review: since ready has changed to this cheezy "away from keyboard" thing,
     // set everyone as not away from keyboard.
@@ -3503,7 +3503,7 @@ IsideIGC*   CFSMission::CheckForVictoryByStationKill(IstationIGC* pstationKilled
     {
 
         int nStationsTotal = 0;
-        assert (c_cSidesMax == 6);
+        ZAssert (c_cSidesMax == 6);
         int nStationsPerSide[c_cSidesMax] = {0, 0, 0, 0, 0, 0};
 
         {
@@ -3554,7 +3554,7 @@ IsideIGC*   CFSMission::CheckForVictoryByStationKill(IstationIGC* pstationKilled
 
     if (pmp->IsTerritoryGame() && (psideWon == NULL))
 	{
-        assert (c_cSidesMax == 6);
+        ZAssert (c_cSidesMax == 6);
         unsigned char nTerritoriesPerSide[c_cSidesMax] = {0, 0, 0, 0, 0, 0};
 
         const ClusterListIGC*   pclusters = m_pMission->GetClusters();
@@ -3607,7 +3607,7 @@ IsideIGC*   CFSMission::CheckForVictoryByStationKill(IstationIGC* pstationKilled
         SideID  sid = 0;
         for (SideLinkIGC*   l = psides->first(); (l != NULL); l = l->next())
         {
-            assert (sid == l->data()->GetObjectID());
+            ZAssert (sid == l->data()->GetObjectID());
             pfmGameState->conquest[sid] = l->data()->GetConquestPercent();
             pfmGameState->territory[sid] = l->data()->GetTerritoryCount();
             pfmGameState->nFlags[sid] = l->data()->GetFlags();
@@ -3791,7 +3791,7 @@ IsideIGC*   CFSMission::CheckForVictoryByFlags(IsideIGC*    psideTest, SideID si
         SideID  sid = 0;
         for (SideLinkIGC*   l = m_pMission->GetSides()->first(); (l != NULL); l = l->next())
         {
-            assert (sid == l->data()->GetObjectID());
+            ZAssert (sid == l->data()->GetObjectID());
             pfmGameState->conquest[sid] = l->data()->GetConquestPercent();
             pfmGameState->territory[sid] = l->data()->GetTerritoryCount();
             pfmGameState->nFlags[sid] = l->data()->GetFlags();
@@ -3903,7 +3903,7 @@ void CFSMission::SendLobbyMissionInfo(CFSPlayer * pfsPlayer)
  */
 void CFSMission::QueueLobbyMissionInfo()
 {
-  assert(g.fmLobby.IsConnected());
+  ZAssert(g.fmLobby.IsConnected());
 
   SquadID rgSquadIDs[c_cSidesMax];
   int nSquadCount = 0;
@@ -4249,7 +4249,7 @@ void CFSMission::SendMissionInfo(CFSPlayer * pfsPlayer, IsideIGC*   pside)
         SideID  sid = 0;
         for (SideLinkIGC*   l = m_pMission->GetSides()->first(); (l != NULL); l = l->next())
         {
-            assert (sid == l->data()->GetObjectID());
+            ZAssert (sid == l->data()->GetObjectID());
             pfmGameState->conquest[sid] = l->data()->GetConquestPercent();
             pfmGameState->territory[sid] = l->data()->GetTerritoryCount();
             pfmGameState->nFlags[sid] = l->data()->GetFlags();
@@ -4303,7 +4303,7 @@ bool CFSMission::FAllReady()
 		int   maxTeamRank = 1;       // TE: Added for rank balancing
 
         SideLinkIGC*   psl = m_pMission->GetSides()->first();
-        assert (psl);
+        ZAssert (psl);
 		// KGJV: fix initial values
         minPlayers = m_misdef.misparms.nMaxPlayersPerTeam; // or anything 'big' enough
 		maxPlayers = 0;//psl->data()->GetShips()->n();
@@ -4458,7 +4458,7 @@ CivID   CFSMission::PickNewCiv(SideID nSides, CivID   rgCivs[])
     int cCivMin = 0x7ffffff;
 
     const int   cCivsMax = 20;
-    assert (m_pMission->GetCivilizations()->n() < cCivsMax);
+    ZAssert (m_pMission->GetCivilizations()->n() < cCivsMax);
     CivID   civIDs[cCivsMax];
 
     for (pcl = m_pMission->GetCivilizations()->first(); (pcl != NULL); pcl = pcl->next())
@@ -4487,7 +4487,7 @@ CivID   CFSMission::PickNewCiv(SideID nSides, CivID   rgCivs[])
             }
         }
     }
-    assert (cCivMin != 0x7ffffff);
+    ZAssert (cCivMin != 0x7ffffff);
 
     return civIDs[RandomInt(0, nCivMin)];
 }
@@ -4495,7 +4495,7 @@ CivID   CFSMission::PickNewCiv(SideID nSides, CivID   rgCivs[])
 
 DelPositionReqReason CFSMission::CheckPositionRequest(CFSPlayer * pfsPlayer, IsideIGC * pside)
 {
-  assert(pside);
+  ZAssert(pside);
   SideID sideID = pside->GetObjectID();
   const MissionParams*  pmp = m_pMission->GetMissionParams();
   IsideIGC* psideCurrent = pfsPlayer->GetSide();
@@ -4649,7 +4649,7 @@ DelPositionReqReason CFSMission::CheckPositionRequest(CFSPlayer * pfsPlayer, Isi
 
 void CFSMission::RequestPosition(CFSPlayer * pfsPlayer, IsideIGC * pside, bool bRejoin)
 {
-  assert(pside);
+  ZAssert(pside);
   SideID sideID = pside->GetObjectID();
   const MissionParams*  pmp = m_pMission->GetMissionParams();
 
@@ -4703,7 +4703,7 @@ void CFSMission::RequestPosition(CFSPlayer * pfsPlayer, IsideIGC * pside, bool b
  */
 void CFSMission::VacateStation(IstationIGC * pstation)
 {
-    assert (pstation->GetMission() == m_pMission);
+    ZAssert (pstation->GetMission() == m_pMission);
 
     IsideIGC*   psideGhost = NULL;
 
@@ -4760,8 +4760,8 @@ void CFSMission::VacateStation(IstationIGC * pstation)
                     IshipIGC*   pship = pshiplink->data();
                     pshiplink = pshiplink->next();
 
-                    assert (pship->GetParentShip() == NULL);
-                    assert (pship->IsGhost());
+                    ZAssert (pship->GetParentShip() == NULL);
+                    ZAssert (pship->IsGhost());
                     pship->SetStation(ps);
                 }
                 break;
@@ -4786,7 +4786,7 @@ void CFSMission::AddJoinRequest(CFSPlayer * pfsPlayer, IsideIGC * pside)
   m_listJoinReq.last(pjr);
 
   // must go through the lobby to change missions
-  assert(pfsPlayer->GetMission() == this);
+  ZAssert(pfsPlayer->GetMission() == this);
 }
 
 
@@ -4894,7 +4894,7 @@ bool CFSMission::RemoveJoinRequest(CFSPlayer * pfsPlayer, IsideIGC * psideDest)
  */
 void CFSMission::SetAutoAccept(IsideIGC * pside, bool fAccept)
 {
-  assert(IMPLIES(!pside, !fAccept));
+  ZAssert(IMPLIES(!pside, !fAccept));
   SideID sideID = pside ? pside->GetObjectID() : NA;
   if (pside)
     m_misdef.rgfAutoAccept[sideID] = fAccept;
@@ -4989,7 +4989,7 @@ void CFSMission::SetMaxTeamImbalance(int imbalance)
  */
 void CFSMission::FlushSides()
 {
-  assert(GetStage() == STAGE_NOTSTARTED);
+  ZAssert(GetStage() == STAGE_NOTSTARTED);
 
   // turn on auto accept for all sides
   // KGJV: changed to turn on auto accept off
@@ -5059,7 +5059,7 @@ bool CFSMission::GetLockSides()
  */
 void CFSMission::RandomizeSides()
 {
-  assert(GetStage() == STAGE_NOTSTARTED);
+  ZAssert(GetStage() == STAGE_NOTSTARTED);
 
   // turn on auto accept for all sides
   // KGJV: changed to turn on auto accept off
@@ -5241,7 +5241,7 @@ void CFSMission::DeactivateSide(IsideIGC * pside)
    // KGJV #62
   //if (!m_misdef.misparms.bAllowEmptyTeams)
   //{
-      assert(pside->GetMission() == m_pMission);
+      ZAssert(pside->GetMission() == m_pMission);
       debugf("DeactivateSide side=%d.\n", pside->GetObjectID());
       pside->SetActiveF(false);
       SideID sideid = pside->GetObjectID();
@@ -5420,7 +5420,7 @@ void CFSMission::CheckForSideAllReady(IsideIGC * pside)
 {
   SideID sideid = pside->GetObjectID();
 
-  // If a player is moved to NOAT at the same time another player is joining, an assert will fire.
+  // If a player is moved to NOAT at the same time another player is joining, an ZAssert will fire.
   if (sideid <= NA)
 	  return;
 
@@ -5478,7 +5478,7 @@ void CFSMission::DeleteCluster(IclusterIGC * pIclusterIGC)
   {
     std::vector<CFSCluster*>::iterator i = std::find(m_pFSClusters.begin(), m_pFSClusters.end(), pFSCluster);
 
-    assert(i != m_pFSClusters.end()); // assert that we found the pointer to delete
+    ZAssert(i != m_pFSClusters.end()); // ZAssert that we found the pointer to delete
 
     delete static_cast<CFSCluster*>(*i);
 
@@ -5516,7 +5516,7 @@ void CFSMission::DeleteSide(IsideIGC * pIsideIGC)
   {
     std::vector<CFSSide*>::iterator i = std::find(m_pFSSides.begin(), m_pFSSides.end(), pFSSide);
 
-    assert(i != m_pFSSides.end()); // assert that we found the pointer to delete
+    ZAssert(i != m_pFSSides.end()); // ZAssert that we found the pointer to delete
 
     delete (CFSSide*)(*i);
 
@@ -5692,7 +5692,7 @@ void CFSMission::UpdateAlliances(SideID sideID,SideID sideAlly)
 				if (!found_group)
 				{
 					// create a new group
-					assert(numgroups<=c_cAlliancesMax) ; // shouldnt happen...
+					ZAssert(numgroups<=c_cAlliancesMax) ; // shouldnt happen...
 					groups[numgroups] = AlliesMasks[i];
 					Allies[i] = numgroups;
 					numgroups++;
@@ -5772,7 +5772,7 @@ void Ballot::CastVote(CFSPlayer* pfsPlayer, bool bVote)
   {
     SideID sideID = pfsPlayer->GetSide()->GetObjectID();
 
-    assert(sideID >= 0);
+    ZAssert(sideID >= 0);
 
     // if they are on a valid side, tally the vote
     if (sideID >= 0 && m_cAbstaining[sideID] > 0)
@@ -5802,7 +5802,7 @@ BallotType Ballot::GetType()
 // initializes the ballot for a given vote proposed by a player to their team
 void Ballot::Init(CFSPlayer* pfsInitiator, const ZString& strProposalName, const ZString& strBallotText)
 {
-  assert(pfsInitiator);
+  ZAssert(pfsInitiator);
 
   // store some misc. info about the vote
   float c_fVoteDuration = 30.0f;
@@ -5825,7 +5825,7 @@ void Ballot::Init(CFSPlayer* pfsInitiator, const ZString& strProposalName, const
   }
 
   // add the players
-  assert(pfsInitiator->GetSide());
+  ZAssert(pfsInitiator->GetSide());
   const ShipListIGC* shipsList = pfsInitiator->GetSide()->GetShips();
   m_vShips.Reserve(shipsList->n());
   SideID sideIDInitiator = m_groupID;
@@ -5861,7 +5861,7 @@ void Ballot::Init(CFSPlayer* pfsInitiator, const ZString& strProposalName, const
 // initializes the ballot for a given vote proposed by a team to all other teams
 void Ballot::Init(CFSSide* pfsideInitiator, const ZString& strProposalName, const ZString& strBallotText)
 {
-  assert(pfsideInitiator);
+  ZAssert(pfsideInitiator);
 
   // store some misc. info about the vote
   float c_fVoteDuration = 30.0f;
@@ -5888,7 +5888,7 @@ void Ballot::Init(CFSSide* pfsideInitiator, const ZString& strProposalName, cons
   m_vShips.Reserve(shipsList->n());
   SideID sideIDInitiator = pfsideInitiator->GetSideIGC()->GetObjectID();
 
-  assert(sideIDInitiator >= 0);
+  ZAssert(sideIDInitiator >= 0);
   for (ShipLinkIGC* shipLink = shipsList->first(); shipLink; shipLink = shipLink->next())
   {
     CFSShip * pfsShip = (CFSShip*)shipLink->data()->GetPrivateData();
@@ -6033,7 +6033,7 @@ void MutinyBallot::OnPassed()
 		  {
 				// get the old leader
 				CFSPlayer * pfspOldLeader = m_pmission->GetLeader(sideID);
-				assert(pfspOldLeader); // this should really never assert ...
+				ZAssert(pfspOldLeader); // this should really never ZAssert ...
 
 				// if player who proposed is already leader, we do nothing (leader change between Ballot start and end)
 				if (pfspOldLeader == pfssNewLeader) return;

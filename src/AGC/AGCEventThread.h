@@ -108,7 +108,7 @@ inline void CAGCEventThread::OnMessage(UINT idMsg, int cParams,
   {
     case e_TriggerEvent:
     {
-      assert(4 <= cParams);
+      ZAssert(4 <= cParams);
       XEventSinks* pSinks = reinterpret_cast<XEventSinks*>(rgParams[0]);
       UINT         cbData =      static_cast<UINT        >(rgParams[1]);
       BYTE*        pbData = reinterpret_cast<BYTE*       >(rgParams[2]);
@@ -169,7 +169,7 @@ inline void WINAPI CAGCEventThread::ArgumentReleaseProc(UINT idMsg,
   {
     case e_TriggerEvent:
     {
-      assert(4 <= cParams);
+      ZAssert(4 <= cParams);
       XEventSinks* pSinks = reinterpret_cast<XEventSinks*>(rgParams[0]);
       UINT         cbData =      static_cast<UINT        >(rgParams[1]);
       BYTE*        pbData = reinterpret_cast<BYTE*       >(rgParams[2]);

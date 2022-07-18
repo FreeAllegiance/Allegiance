@@ -38,7 +38,7 @@ namespace Training
     {
         // first, get the ship and its target
         IshipIGC*   pShip = static_cast<IshipIGC*> (static_cast<ImodelIGC*> (*m_pTarget));
-        assert (pShip);
+        ZAssert (pShip);
         ImodelIGC*  pTarget = pShip->GetCommandTarget (c_cmdCurrent);
 
         // there is an option to cache the target the first time this target is evaluated.

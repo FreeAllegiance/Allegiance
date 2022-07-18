@@ -49,7 +49,7 @@ public:
 
     void Construct()
     {
-        assert(m_pBuyable);
+        ZAssert(m_pBuyable);
         m_szModel = m_pBuyable->GetModelName();
         
         m_pImageBrackets = GetModeler()->LoadImage("conshadebracketsbmp", true);

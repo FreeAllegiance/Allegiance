@@ -80,7 +80,7 @@ bool IsServerAllowed(const char *ip)
 HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnFrom, FEDMESSAGE * pfm)
 {
   CFLServer * pServer = CFLServer::FromConnection(cnxnFrom);
-  assert(pServer);
+  ZAssert(pServer);
 
   cnxnFrom.ResetAbsentCount();
   
@@ -311,11 +311,11 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 			// BT - 1/27/2012 - Enables lobby to return ranks when ACSS is disabled using old callsign(rank) format.
 			rankRetrieved = true;
 
-			std::tr1::regex rgx("(\\W+)?((?:\\w|@)+)(\\((\\d+)\\))?");
-			std::tr1::smatch result;
+			std::regex rgx("(\\W+)?((?:\\w|@)+)(\\((\\d+)\\))?");
+			std::smatch result;
 			std::string charName(szCharacterName);
 
-			if(std::tr1::regex_search(charName, result, rgx) == true)
+			if(std::regex_search(charName, result, rgx) == true)
 			{
 				if(result.size() > 2)
 					sprintf((char *) szCharacterName, "%s%s", result[1].str().c_str(), result[2].str().c_str());
@@ -467,7 +467,7 @@ int LobbyServerSite::OnMessageBox(FedMessaging * pthis, const char * strText, co
 #ifndef NO_MSG_CRC
 void LobbyServerSite::OnBadCRC(FedMessaging * pthis, CFMConnection & cnxn, BYTE * pMsg, DWORD cbMsg)
 {
-  assert(0); // we should never get a bad crc from one of our own servers.
+  ZAssert(0); // we should never get a bad crc from one of our own servers.
 }
 #endif
 
@@ -488,7 +488,7 @@ CFLServer::CFLServer(CFMConnection * pcnxn) :
   m_iMaxGames(20),		   // KGJV #114
   m_iCurGames(0)	// Imago
 {
-  assert(m_pcnxn);
+  ZAssert(m_pcnxn);
   m_pcnxn->SetPrivateData((DWORD) this); // set up two-way link between connection and this
 
   m_pCounters = g_pLobbyApp->AllocatePerServerCounters(pcnxn->GetName());  

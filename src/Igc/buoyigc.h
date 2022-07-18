@@ -80,7 +80,7 @@ class CbuoyIGC : public TmodelIGC<IbuoyIGC>
         virtual void                 ReleaseConsumer(void)
         {
             m_nConsumers--;
-            assert (m_nConsumers >= 0);
+            ZAssert (m_nConsumers >= 0);
 
             if (m_nConsumers == 0)
                 Terminate();

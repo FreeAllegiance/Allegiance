@@ -38,6 +38,7 @@ class ZoneClubScreen :
     public EventTargetContainer<ZoneClubScreen>
 {
 private:
+    TRef<TrekApp>      m_pTrekApp;
     TRef<Modeler>      m_pmodeler;
     TRef<Pane>         m_ppane;
     TRef<ButtonPane>   m_pbuttonGames;
@@ -69,7 +70,8 @@ private:
     static bool s_bWasAuthenticated;
  
 public:
-    ZoneClubScreen(Modeler* pmodeler, Number* ptime) :
+    ZoneClubScreen(TrekApp* pTrekApp, Modeler* pmodeler, Number* ptime) :
+        m_pTrekApp(pTrekApp),
         m_pSession(NULL),
         m_bErrorOccured(false),
         m_bMessageStage(false),
@@ -128,7 +130,7 @@ public:
 
         if (g_bQuickstart)
 			// mdvalley: &ZoneClubScreen:: needed.
-            AddEventTarget(&ZoneClubScreen::OnButtonGames, GetWindow(), 0.01f);
+            AddEventTarget(&ZoneClubScreen::OnButtonGames, GetEngineWindow(), 0.01f);
 
         trekClient.FlushSessionLostMessage();
     }
@@ -211,7 +213,7 @@ public:
         m_bConnectLobby = bConnectLobby;
         m_screenPostConnect = screenid;
 
-        assert (!trekClient.LoggedOn() && !trekClient.m_fm.IsConnected());
+        ZAssert (!trekClient.LoggedOn() && !trekClient.m_fm.IsConnected());
         HRESULT hr = E_FAIL;
 #ifdef USEAUTH
         TRef<IZoneAuthClient> pzac;
@@ -253,7 +255,7 @@ public:
             DWORD cbZoneTicket;
             DWORD cbName = sizeof(ci.szName);
             ZSucceeded(pzac->GetTicket(&ci.pZoneTicket, &cbZoneTicket, ci.szName, &cbName));
-            assert(cbName <= sizeof(ci.szName));
+            ZAssert(cbName <= sizeof(ci.szName));
             ci.cbZoneTicket = cbZoneTicket;
 
             if(m_bConnectLobby)
@@ -272,39 +274,11 @@ public:
             if (g_fZoneAuth)
             pzac->GetDefaultLogonInfo(m_szName, m_szPWOrig, &m_fRememberPW);
 #else
-            lstrcpy(m_szName, trekClient.GetSavedCharacterName());
-
-			// BT - Steam - User is logged into steam, and has a steam profile name
-			// The steam reviewer was somehow launching the game with steam authorization but no persona name. If 
-			// there is an player name, then the server rejects the user as a hacker with a DPlay error. 
-			bool isUserLoggedIntoSteamWithValidPlayerName = SteamUser() != nullptr && strlen(m_szName) > 0;
 
 #endif
-		  // wlp - don't ask for callsign if it was on the command line
-          if (!g_bAskForCallSign || isUserLoggedIntoSteamWithValidPlayerName == true) // BT - STEAM
-		  {
-			  // BT - STEAM - Add players callsign and token.
-			  CallsignTagInfo callSignTagInfo;
+            ZString characterName = m_pTrekApp->GetCallsignHandler()->GetCleanedFullCallsign()->GetValue();
 
-			  ZString characterName = callSignTagInfo.Render(m_szName);
-
-			  this->OnLogon(characterName, "", false);
-	      } // wlp - end of dont ask for callsign 
-		  else
-		  {
-            TRef<IPopup> plogonPopup = CreateLogonPopup(m_pmodeler, this, 
-                (trekClient.GetIsZoneClub() ? 
-                  LogonAllegianceZone :
-#ifdef USEAUTH
-                  LogonFreeZone
-#else
-                  LogonLAN
-#endif
-                ), strPrompt, m_szName, m_szPWOrig, m_fRememberPW);
-            Point point(c_PopupX, c_PopupY);
-            Rect rect(point, point);
-            GetWindow()->GetPopupContainer()->OpenPopup(plogonPopup, rect, false);
-		    }// wlp = end of else ask for callsign
+            this->OnLogon(characterName, "", false);
         }
     }
 
@@ -648,7 +622,7 @@ public:
                             trekClient.m_pAutoDownload = CreateAutoDownload();
 
                         IAutoUpdateSink * pAutoUpdateSink = trekClient.OnBeginAutoUpdate(this, false);
-                        assert(pAutoUpdateSink);
+                        ZAssert(pAutoUpdateSink);
 
                         trekClient.m_pAutoDownload->SetFTPSite(PCC(trekClient.GetCfgInfo().strFilelistSite),
                                                                PCC(trekClient.GetCfgInfo().strFilelistDirectory),
@@ -761,7 +735,7 @@ public:
         //
         // User must have pressed Okay button after error
         //
-        assert(m_pmsgBox);
+        ZAssert(m_pmsgBox);
         GetWindow()->GetPopupContainer()->ClosePopup(m_pmsgBox);
         GetWindow()->RestoreCursor();
 
@@ -788,7 +762,7 @@ public:
         GetWindow()->GetPopupContainer()->OpenPopup(pmsgBox, false);
 
         // pause to let the "connecting..." box draw itself
-        AddEventTarget(&ZoneClubScreen::OnUsernameAndPassword, GetWindow(), 0.1f);
+        AddEventTarget(&ZoneClubScreen::OnUsernameAndPassword, GetEngineWindow(), 0.1f);
     }
 
     bool OnUsernameAndPassword()
@@ -844,7 +818,7 @@ public:
             if (g_fZoneAuth)
             {
                 ZSucceeded(pzac->GetTicket(&ci.pZoneTicket, &cbZoneTicket, ci.szName, &cbName));
-                assert(cbName <= sizeof(ci.szName));
+                ZAssert(cbName <= sizeof(ci.szName));
                 ci.cbZoneTicket = cbZoneTicket;
             }
             else
@@ -932,8 +906,8 @@ bool ZoneClubScreen::s_bWasAuthenticated = false;
 //
 //////////////////////////////////////////////////////////////////////////////
 
-TRef<Screen> CreateZoneClubScreen(Modeler* pmodeler, Number * ptime)
+TRef<Screen> CreateZoneClubScreen(TrekApp* pTrekApp, Modeler* pmodeler, Number * ptime)
 {
-    return new ZoneClubScreen(pmodeler, ptime);
+    return new ZoneClubScreen(pTrekApp, pmodeler, ptime);
 }
 

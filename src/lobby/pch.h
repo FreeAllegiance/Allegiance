@@ -35,7 +35,6 @@
 
 #include <map>
 
-#define __MODULE__ "Lobby"
 #include <zlib.h>
 #include <utility.h>
 

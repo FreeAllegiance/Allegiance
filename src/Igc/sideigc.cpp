@@ -27,7 +27,7 @@ HRESULT         CsideIGC::Initialize(ImissionIGC*   pMission,
     m_data = *((DataSideIGC*)data);
 
     m_pCivilization = pMission->GetCivilization(m_data.civilizationID);
-    assert (m_pCivilization);
+    ZAssert (m_pCivilization);
     m_pCivilization->AddRef();
 
     m_ttbmBuildingTechs.ClearAll(); //Will automatically adjust for starting buildings
@@ -112,7 +112,7 @@ void            CsideIGC::DestroyBuckets(void)
 
 void            CsideIGC::CreateBuckets(void)
 {
-    assert(!m_buckets.first());
+    ZAssert(!m_buckets.first());
 
     if (m_pMission->GetMissionParams()->bAllowDevelopments)
     {
@@ -194,7 +194,7 @@ void            CsideIGC::CreateBuckets(void)
                                                                                OT_bucket,
                                                                                &db,
                                                                                sizeof(db)));
-                    assert (b);
+                    ZAssert (b);
 
                     b->Release();   //Creating the bucket adds it to the side's list of buckets
                 }
@@ -224,7 +224,7 @@ void            CsideIGC::CreateBuckets(void)
 								OT_bucket,
 								&db,
 								sizeof(db)));
-							assert(b);
+							ZAssert(b);
 							b->Release();   //Creating the bucket adds it to the side's list of buckets
 						}
 					}
@@ -248,7 +248,7 @@ void            CsideIGC::CreateBuckets(void)
                                                                                    OT_bucket,
                                                                                    &db,
                                                                                    sizeof(db)));
-                        assert (b);
+                        ZAssert (b);
                         b->Release();   //Creating the bucket adds it to the side's list of buckets
                     }
                 }
@@ -273,7 +273,7 @@ void            CsideIGC::CreateBuckets(void)
                                                                                    OT_bucket,
                                                                                    &db,
                                                                                    sizeof(db)));
-                        assert (b);
+                        ZAssert (b);
                         b->Release();   //Creating the bucket adds it to the side's list of buckets
                     }
                 }
@@ -298,7 +298,7 @@ void            CsideIGC::CreateBuckets(void)
                                                                                    OT_bucket,
                                                                                    &db,
                                                                                    sizeof(db)));
-                        assert (b);
+                        ZAssert (b);
 
                         if (IlauncherTypeIGC::IsLauncherType(p->GetEquipmentType()))
                         {
@@ -422,7 +422,7 @@ void CsideIGC::UpdateTerritory()
         ClusterLinkIGC* lc;
         while (lc = m_territoryClusters.first()) {
             IclusterIGC* c = lc->data();
-            assert(c);
+            ZAssert(c);
             delete lc;          //remove it from the list
             c->Release();       //reduce the ref count
         }
@@ -433,7 +433,7 @@ void CsideIGC::UpdateTerritory()
     // Add all clusters claimed by our stations
     for (StationLinkIGC* l = this->GetStations()->first(); (l != NULL); l = l->next()) {
         IclusterIGC*   pcluster = l->data()->GetCluster();
-        assert(pcluster);
+        ZAssert(pcluster);
 
         if (!m_territoryClusters.find(pcluster)) {
             bool enemyStation = false;
@@ -460,7 +460,7 @@ void CsideIGC::UpdateTerritory()
     // Check the clusters without stations
     for (ClusterLinkIGC* lc = GetMission()->GetClusters()->first(); (lc != NULL); lc = lc->next()) {
         IclusterIGC*   pcluster = lc->data();
-        assert(pcluster);
+        ZAssert(pcluster);
 
         if (!clustersVisited.find(pcluster)) {
             bool emptySector = true;
@@ -478,7 +478,7 @@ void CsideIGC::UpdateTerritory()
                 // add the found, connected clusters to the territory and visited clusters
                 for (ClusterLinkIGC* lc = clLinkedClusters.first(); (lc != NULL); lc = lc->next()) {
                     IclusterIGC*   pconnectedCluster = lc->data();
-                    assert(pconnectedCluster);
+                    ZAssert(pconnectedCluster);
 
                     if (isTerritory) {
                         //debugf(" adding %s because its surrounded (origin sector: %s).\n", pconnectedCluster->GetName(), pcluster->GetName());
@@ -499,7 +499,7 @@ long CsideIGC::GetProsperityPercentBought(void) const
   for (BucketLinkIGC* it = pBuckets->first(); it; it = it->next())
   {
     IbucketIGC* pBucket = it->data();
-    assert(pBucket);
+    ZAssert(pBucket);
 
     if (OT_development == pBucket->GetBucketType())
       if (c_didTeamMoney == pBucket->GetBuyable()->GetObjectID())
@@ -517,7 +517,7 @@ long CsideIGC::GetProsperityPercentComplete(void) const
   for (BucketLinkIGC* it = pBuckets->first(); it; it = it->next())
   {
     IbucketIGC* pBucket = it->data();
-    assert(pBucket);
+    ZAssert(pBucket);
 
     if (OT_development == pBucket->GetBucketType())
       if (c_didTeamMoney == pBucket->GetBuyable()->GetObjectID())

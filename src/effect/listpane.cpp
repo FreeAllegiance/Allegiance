@@ -309,7 +309,7 @@ public:
                 
                 if (m_indexSelection == -1)
                 {
-                    assert(false);
+                    ZAssert(false);
                     pitem = NULL;
                 }
             }

@@ -293,7 +293,7 @@ void CServiceModule::TermAGC()
   if (NULL != m_spEventLogger)
   {
     IAGCEventLoggerPrivatePtr spPrivate(m_spEventLogger);
-    assert(NULL != spPrivate);
+    ZAssert(NULL != spPrivate);
 
     // Terminate the event logger
     ZSucceeded(spPrivate->Terminate());
@@ -404,20 +404,20 @@ HRESULT CServiceModule::get_EventLog(IAGCEventLogger** ppEventLogger)
 void CServiceModule::RegisterCOMObjects() 
 {
   // Make sure we haven't already been here
-  assert(m_shevtMTAReady.IsNull());
-  assert(m_shevtMTAExit.IsNull());
-  assert(m_shthMTA.IsNull());
+  ZAssert(m_shevtMTAReady.IsNull());
+  ZAssert(m_shevtMTAExit.IsNull());
+  ZAssert(m_shthMTA.IsNull());
 
   // Create thread synchronization objects
   m_shevtMTAReady = CreateEvent(NULL, false, false, NULL);
   m_shevtMTAExit  = CreateEvent(NULL, false, false, NULL);
-  assert(!m_shevtMTAReady.IsNull());
-  assert(!m_shevtMTAExit.IsNull());
+  ZAssert(!m_shevtMTAReady.IsNull());
+  ZAssert(!m_shevtMTAExit.IsNull());
 
   // Create the thread to keep the MTA alive and register the class objects
   DWORD dwID = 0;
   m_shthMTA = CreateThread(NULL, 8192, MTAKeepAliveThunk, this, 0, &dwID);
-  assert(!m_shthMTA.IsNull());
+  ZAssert(!m_shthMTA.IsNull());
 
   // Wait for the new thread to do its initialization work
   WaitForSingleObject(m_shevtMTAReady, INFINITE);
@@ -443,10 +443,10 @@ void CServiceModule::RegisterCOMObjects()
 void CServiceModule::RevokeCOMObjects() 
 {
   // Make sure that we have registered correctly
-  assert(m_shevtMTAReady.IsNull());
-  assert(!m_shevtMTAExit.IsNull());
-  assert(!m_shthMTA.IsNull());
-  assert(WAIT_TIMEOUT == WaitForSingleObject(m_shthMTA, 0));
+  ZAssert(m_shevtMTAReady.IsNull());
+  ZAssert(!m_shevtMTAExit.IsNull());
+  ZAssert(!m_shthMTA.IsNull());
+  ZAssert(WAIT_TIMEOUT == WaitForSingleObject(m_shthMTA, 0));
 
   // Signal the MTA keep-alive thread to exit
   SetEvent(m_shevtMTAExit);
@@ -942,7 +942,7 @@ VOID CServiceModule::RunAsExecutable()
 
         SetConsoleCtrlHandler(HandlerRoutine, true);
 
-        assert(g.hKillReceiveEvent);
+        ZAssert(g.hKillReceiveEvent);
 		//Imago - parents restart everything after tricking the lobby into sending the client to our child
 #if defined(SRV_PARENT)
 		g.bRestarting = false;
@@ -1346,12 +1346,12 @@ void CServiceModule::MTAKeepAliveThread()
       REGCLS_MULTIPLEUSE);
 
   // Signal the 'Ready' event
-  assert(!m_shevtMTAReady.IsNull());
+  ZAssert(!m_shevtMTAReady.IsNull());
   SetEvent(m_shevtMTAReady);
   RETURN_FAILED_VOID(m_hrMTAKeepAlive);
 
   // Wait for the 'Exit' event
-  assert(!m_shevtMTAExit.IsNull());
+  ZAssert(!m_shevtMTAExit.IsNull());
   WaitForSingleObject(m_shevtMTAExit, INFINITE);
 
   // Note: the following call was moved here from the ReceiveThread function

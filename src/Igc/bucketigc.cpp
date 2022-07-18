@@ -21,13 +21,13 @@ HRESULT         CbucketIGC::Initialize(ImissionIGC* pMission,
                                        const void*  data,
                                        int          dataSize)
 {
-    assert (pMission);
+    ZAssert (pMission);
     m_pMission = pMission;
 
 	ZRetailAssert (data && (dataSize == sizeof(DataBucketIGC)));
     m_data = *((DataBucketIGC*)data);
 
-    assert (m_data.side);
+    ZAssert (m_data.side);
     m_data.side->AddRef();
 
     m_price = m_data.buyable->GetPrice();
@@ -76,7 +76,7 @@ HRESULT         CbucketIGC::Initialize(ImissionIGC* pMission,
 
     m_data.side->AddBucket(this);
 
-    assert (m_data.buyable);
+    ZAssert (m_data.buyable);
     m_data.buyable->AddRef();
 
     m_lastUpdate = now;
@@ -88,7 +88,7 @@ void            CbucketIGC::Terminate(void)
 {
     AddRef();
 
-    assert (m_data.side);
+    ZAssert (m_data.side);
 
     if (m_pbucketPredecessor)
     {
@@ -97,12 +97,12 @@ void            CbucketIGC::Terminate(void)
     }
     m_pMission->GetIgcSite()->BucketChangeEvent(c_bcTerminated, this);
 
-    assert (m_data.side);
+    ZAssert (m_data.side);
     m_data.side->DeleteBucket(this);
     m_data.side->Release();
     m_data.side = NULL;
 
-    assert (m_data.buyable);
+    ZAssert (m_data.buyable);
     m_data.buyable->Release();
     m_data.buyable = NULL;
 

@@ -51,17 +51,17 @@ HRESULT CmineIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, 
         DataMineTypeIGC*  dataMineType;
         if (dataMineBase->exportF)
         {
-            assert (dataSize >= sizeof(DataMineExport));
+            ZAssert (dataSize >= sizeof(DataMineExport));
 
             DataMineExport* dataMineExport = (DataMineExport*)dataMineBase;
 
             m_mineType = (ImineTypeIGC*)(pMission->GetExpendableType(dataMineExport->minetypeID));
-            assert (m_mineType);
-            assert (m_mineType->GetObjectType() == OT_mineType);
+            ZAssert (m_mineType);
+            ZAssert (m_mineType->GetObjectType() == OT_mineType);
 
             pcluster = pMission->GetCluster(dataMineExport->clusterID);
 
-            assert (m_mineType);
+            ZAssert (m_mineType);
             dataMineType = (DataMineTypeIGC*)(m_mineType->GetData());
 
             pshipLauncher = pMission->GetShip(dataMineExport->launcherID);
@@ -71,15 +71,15 @@ HRESULT CmineIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, 
         }
         else
         {
-            assert (dataSize == sizeof(DataMineIGC));
+            ZAssert (dataSize == sizeof(DataMineIGC));
 
             DataMineIGC*    dataMine = (DataMineIGC*)dataMineBase;
 
             m_mineType = dataMine->pminetype;
             pcluster = dataMine->pcluster;
 
-            assert (m_mineType);
-            assert (m_mineType->GetObjectType() == OT_mineType);
+            ZAssert (m_mineType);
+            ZAssert (m_mineType->GetObjectType() == OT_mineType);
             dataMineType = (DataMineTypeIGC*)(m_mineType->GetData());
 
             pshipLauncher = dataMine->pshipLauncher;
@@ -94,8 +94,8 @@ HRESULT CmineIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, 
             m_launcher->AddRef();
         }
 
-        assert (GetSide());
-        assert (pcluster);
+        ZAssert (GetSide());
+        ZAssert (pcluster);
 
         m_mineType->AddRef();
 
@@ -109,9 +109,9 @@ HRESULT CmineIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, 
 
         {
             //lifespan == 0 => immortal mine that can hit until it gets terminated on the next update; this is bad
-            assert (dataMineType->lifespan > 0.0f);
+            ZAssert (dataMineType->lifespan > 0.0f);
             m_timeExpire = m_time0 + dataMineType->lifespan;
-            assert (m_timeExpire != m_time0);
+            ZAssert (m_timeExpire != m_time0);
         }
         SetMass(0.0f);
 

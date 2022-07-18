@@ -210,7 +210,7 @@ void TCWorkerThread::Close()
     InterlockedExchange((long*)&m_bClosed, (long)true);
 
     // Get the thread handle and ID
-    assert(m_pth);
+    ZAssert(m_pth);
     HANDLE hth     = m_pth->m_hThread;
     DWORD idThread = m_pth->m_nThreadID;
 
@@ -313,7 +313,7 @@ void TCWorkerThread::PostMessageEx(UINT idMsg, int cParams, LPARAM* rgParams)
   IUnknown* punk = OnGetUnknown();
   TC_WorkItemRelProc pfnRelease = OnGetWorkItemRelProc();
   XWorkItem* pItem = new XWorkItem(punk, pfnRelease, idMsg, cParams, rgParams);
-  assert(pItem);
+  ZAssert(pItem);
 
   #if defined(XWorkItem_TRACE)
     GetDebugOutput()->WriteLen(60,

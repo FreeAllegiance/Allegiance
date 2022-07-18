@@ -875,7 +875,7 @@ struct  CommandData
 
     Match   MatchCommand(const char*    szString) const
     {
-        assert (szString);
+        ZAssert (szString);
         const char* p1 = szString;
         const char* p2 = szVerb;
 
@@ -936,10 +936,10 @@ struct GlobalAttributeSet
         {
             for (int i = 0; (i < c_gaMax); i++)
             {
-                assert (m_attributes[i] > 0.0f);
-                assert (m_attributes[i] < 100.0f);
-                assert (gas.m_attributes[i] > 0.0f);
-                assert (gas.m_attributes[i] < 100.0f);
+                ZAssert (m_attributes[i] > 0.0f);
+                ZAssert (m_attributes[i] < 100.0f);
+                ZAssert (gas.m_attributes[i] > 0.0f);
+                ZAssert (gas.m_attributes[i] < 100.0f);
 
                 m_attributes[i] *= gas.m_attributes[i];
             }
@@ -947,8 +947,8 @@ struct GlobalAttributeSet
 
         float    GetAttribute(GlobalAttribute ga) const
         {
-            assert (m_attributes[ga] > 0.0f);
-            assert (m_attributes[ga] < 100.0f);
+            ZAssert (m_attributes[ga] > 0.0f);
+            ZAssert (m_attributes[ga] < 100.0f);
 
             return m_attributes[ga];
         }
@@ -2141,7 +2141,7 @@ class CompactOrientation
         {
             Quaternion q(orientation);
 
-            assert (q.GetA() >= 0.0f);
+            ZAssert (q.GetA() >= 0.0f);
 
             m_qa = (unsigned short)(q.GetA() * 65535.0f + 0.5f);
 
@@ -2186,7 +2186,7 @@ class   CompactTime          //2 bytes
             long    delta = (long)(timeBase.clock() - timeNow.clock());
             m_timeOffset = (short)delta;
 
-            assert (m_timeOffset == delta);
+            ZAssert (m_timeOffset == delta);
         }
 
         void        Export(Time   timeBase, Time* timeNow)  const
@@ -2288,7 +2288,7 @@ class   CompactVelocity     //5 bytes
             }
             else
             {
-                assert (speed < 1000.0f);
+                ZAssert (speed < 1000.0f);
 
                 m_speed = ((unsigned short)(speed * 8.0f)) |
                                      ((unsigned short)(v.x >= 0.0f ? 0 : 0x2000)) |
@@ -2400,7 +2400,7 @@ class   CompactShipFractions         //6 bytes
 
         void        SetEnergy(float maxEnergy, float   energy)
         {
-			// mmf note rixian inverter trips second assert in BytePercentage, only effects debug build of server
+			// mmf note rixian inverter trips second ZAssert in BytePercentage, only effects debug build of server
 			m_bpEnergy = maxEnergy == 0.0f ? BytePercentage(0.0f) : BytePercentage(energy / maxEnergy);
         }
 
@@ -2952,15 +2952,15 @@ class IbaseIGC : public IObject
         virtual void            Update(Time   now)          {}
 
         //Exporting an object which doesn't support export is also bad.
-        virtual int             Export(void*   data) const  { assert (false); return -1;}
+        virtual int             Export(void*   data) const  { ZAssert (false); return -1;}
 
         // GetUniqueID() is provided for convenience because AGC uses GetObjectType and GetObjectID often.
         virtual int             GetUniqueID(void) const     { return GetObjectType() | (GetObjectID() << 16); }
         virtual ObjectType      GetObjectType(void) const = 0;
 
         //Calling either of these methods on something that doesn't have either an object ID or a mission is bad.
-        virtual ObjectID        GetObjectID(void) const     { assert (false); return NA;}
-        virtual ImissionIGC*    GetMission(void) const      { assert (false); return NULL; }
+        virtual ObjectID        GetObjectID(void) const     { ZAssert (false); return NA;}
+        virtual ImissionIGC*    GetMission(void) const      { ZAssert (false); return NULL; }
 };
 
 class ItypeIGC : public IbaseIGC
@@ -3154,7 +3154,7 @@ class ImodelIGC : public IbaseIGC
         virtual void                 SetIcon(IObject* picon) = 0;
 
         virtual SideID               GetFlag(void) const        { return NA; };
-        virtual void                 SetFlag(SideID sideID)     { assert (false); }
+        virtual void                 SetFlag(SideID sideID)     { ZAssert (false); }
 
         virtual const DamageBucketList*  GetDamageBuckets(void) const = 0;
         virtual void                     AddDamageBucket(DamageBucket*   db) = 0;
@@ -4612,15 +4612,15 @@ extern const int c_ttTypebits[OT_modelEnd+1];
 
 inline int GetTypebits(ObjectType  ot)
 {
-    assert (c_ttTypebits[OT_warp] == c_ttWarp);
-    assert (c_ttTypebits[OT_ship] == c_ttShip);
-    assert (c_ttTypebits[OT_asteroid] == c_ttAsteroid);
-    assert (c_ttTypebits[OT_station] == c_ttStation);
-    assert (c_ttTypebits[OT_treasure] == c_ttTreasure);
-    assert (c_ttTypebits[OT_missile] == c_ttMissile);
-    assert (c_ttTypebits[OT_mine] == c_ttMine);
-    assert (c_ttTypebits[OT_probe] == c_ttProbe);
-    assert (c_ttTypebits[OT_buoy] == c_ttBuoy);
+    ZAssert (c_ttTypebits[OT_warp] == c_ttWarp);
+    ZAssert (c_ttTypebits[OT_ship] == c_ttShip);
+    ZAssert (c_ttTypebits[OT_asteroid] == c_ttAsteroid);
+    ZAssert (c_ttTypebits[OT_station] == c_ttStation);
+    ZAssert (c_ttTypebits[OT_treasure] == c_ttTreasure);
+    ZAssert (c_ttTypebits[OT_missile] == c_ttMissile);
+    ZAssert (c_ttTypebits[OT_mine] == c_ttMine);
+    ZAssert (c_ttTypebits[OT_probe] == c_ttProbe);
+    ZAssert (c_ttTypebits[OT_buoy] == c_ttBuoy);
 
     return c_ttTypebits[ot];
 }
@@ -4942,15 +4942,15 @@ class   DamageTrack
 
         void    AddDamageBucket(DamageBucket*   pdb)
         {
-            assert (pdb);
+            ZAssert (pdb);
             m_buckets.last(pdb);
         }
 
         void    DeleteDamageBucket(DamageBucket*   pdb)
         {
-            assert (pdb);
+            ZAssert (pdb);
             DamageBucketLink*   pdbl = m_buckets.find(pdb);
-            assert (pdbl);
+            ZAssert (pdbl);
             delete pdbl;
         }
 
@@ -4977,18 +4977,18 @@ class   DamageBucket
     public:
         ~DamageBucket(void)
         {
-            assert (m_model);
+            ZAssert (m_model);
             m_model->DeleteDamageBucket(this);
             m_model->Release();
 
-            assert (m_track);
+            ZAssert (m_track);
             m_track->DeleteDamageBucket(this);
         }
 
         void    Initialize(Time timeNow, ImodelIGC*  pmodel)
         {
-            assert (m_model == NULL);
-            assert (pmodel);
+            ZAssert (m_model == NULL);
+            ZAssert (pmodel);
 
             m_model = pmodel;
             pmodel->AddRef();
@@ -5014,8 +5014,8 @@ class   DamageBucket
 
         void        SwitchSlots(int     idSlot)
         {
-            assert (idSlot >= 0);
-            assert (idSlot < c_iDamageSlotCount);
+            ZAssert (idSlot >= 0);
+            ZAssert (idSlot < c_iDamageSlotCount);
 
             m_totalDamage -= m_damage[idSlot];
             m_damage[idSlot] = 0.0f;
@@ -5025,8 +5025,8 @@ class   DamageBucket
                                 int     idSlot,
                                 float   d)
         {
-            assert (idSlot >= 0);
-            assert (idSlot < c_iDamageSlotCount);
+            ZAssert (idSlot >= 0);
+            ZAssert (idSlot < c_iDamageSlotCount);
 
             m_totalDamage += d;
             m_damage[idSlot] += d;
@@ -5049,11 +5049,11 @@ class   DamageBucket
             m_track(ptrack),
             m_totalDamage(0.0f)
         {
-            assert (pmodel);
+            ZAssert (pmodel);
             pmodel->AddRef();
             pmodel->AddDamageBucket(this);
 
-            assert (ptrack);
+            ZAssert (ptrack);
             ptrack->AddDamageBucket(this);
 
             for (int i = 0; (i < c_iDamageSlotCount); i++)
@@ -5104,7 +5104,7 @@ class   DamageTrackSet
         void            DeleteTrack(DamageTrack*    pdt)
         {
             DamageTrackLink*    pdtl = m_tracks.find(pdt);
-            assert (pdtl);
+            ZAssert (pdtl);
             delete pdtl;
         }
 
@@ -5129,8 +5129,8 @@ AmmoState   GetAmmoState(IshipIGC*  pship);
 
 inline void        AddIbaseIGC(BaseListIGC*        list, IbaseIGC* base)
 {
-    assert (list);
-    assert (base);
+    ZAssert (list);
+    ZAssert (base);
 
     ZVerify(list->last(base));
     base->AddRef();
@@ -5139,8 +5139,8 @@ inline void        AddIbaseIGC(BaseListIGC*        list, IbaseIGC* base)
 
 inline void        DeleteIbaseIGC(BaseListIGC*     list, IbaseIGC* base)
 {
-	assert(list);
-	assert(base);
+	ZAssert(list);
+	ZAssert(base);
 
 	// BT - 9/17 - Debugging AllSrv crashes.
 	if (list == nullptr)
@@ -5181,7 +5181,7 @@ inline void        DeleteIbaseIGC(BaseListIGC*     list, IbaseIGC* base)
 
 inline IbaseIGC*   GetIbaseIGC(const BaseListIGC*  list, ObjectID    id)
 {
-    assert (list);
+    ZAssert (list);
 
     for (BaseLinkIGC*   l = list->first();
          (l != NULL);
@@ -5238,7 +5238,7 @@ class   Waypoint
             if(pmodelTarget)
             {
 
-                assert ((o != c_oEnter) ||
+                ZAssert ((o != c_oEnter) ||
                         (pmodelTarget->GetObjectType() == OT_ship) ||
                         (pmodelTarget->GetObjectType() == OT_station) ||
                         (pmodelTarget->GetObjectType() == OT_warp) ||
@@ -5300,12 +5300,12 @@ class   GotoPlan
             m_maskWaypoints(0)
         {
             //Gotoplan is always a child of its ship, so no need to addref the ship pointer
-            assert (pship);
+            ZAssert (pship);
         }
 
         ~GotoPlan(void)
         {
-            assert (m_pship);
+            ZAssert (m_pship);
         }
 
         void    SetSkill(float fSkill)
@@ -5324,7 +5324,7 @@ class   GotoPlan
         void    Set(Waypoint::Objective o,
                     ImodelIGC*          pmodelTarget)
         {
-            assert (pmodelTarget);
+            ZAssert (pmodelTarget);
 
             m_wpTarget.Set(o, pmodelTarget);
             m_wpWarp.Reset();
@@ -5570,7 +5570,7 @@ class PlayerScoreObject
             m_fScore = 0.0f;
 			m_rankRatio = 1.0f;
 
-            assert (!m_bConnected);
+            ZAssert (!m_bConnected);
         }
 
 		void SetRankRatio(float rankRatio)
@@ -5590,7 +5590,7 @@ class PlayerScoreObject
 
         void    Connect(Time t)
         {
-            assert (!m_bConnected);
+            ZAssert (!m_bConnected);
 
             m_bConnected = true;
 
@@ -5634,8 +5634,8 @@ class PlayerScoreObject
                         bool            bWin,
                         bool            bLose)
         {
-            assert (!m_bConnected);
-            assert (!(bWin && bLose)); 
+            ZAssert (!m_bConnected);
+            ZAssert (!(bWin && bLose)); 
 
             m_bWin = bWin;
             m_bLose = bLose;
@@ -5876,7 +5876,7 @@ class PlayerScoreObject
 
         void                       SetPersist(const PersistPlayerScoreObject * p)
         {
-            assert (p);
+            ZAssert (p);
 
             m_persist = *p;
             m_fCombatRating = m_persist.GetCombatRating();

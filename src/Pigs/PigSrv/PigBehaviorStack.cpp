@@ -28,7 +28,7 @@ CPigBehaviorStack::CPigBehaviorStack() :
 HRESULT CPigBehaviorStack::Init(CPig* pPig)
 {
   // Save the specified pig reference
-  assert(!m_pPig);
+  ZAssert(!m_pPig);
   m_pPig = pPig;
 
   // Indicate success
@@ -64,14 +64,14 @@ STDMETHODIMP CPigBehaviorStack::InterfaceSupportsErrorInfo(REFIID riid)
 STDMETHODIMP CPigBehaviorStack::get_Count(long* pnCount)
 {
   // Delegate to the pig object
-  assert(m_pPig);
+  ZAssert(m_pPig);
   return m_pPig->Stack_get_Count(pnCount);
 }
 
 STDMETHODIMP CPigBehaviorStack::get__NewEnum(IUnknown** ppunkEnum)
 {
   // Delegate to the pig object
-  assert(m_pPig);
+  ZAssert(m_pPig);
   return m_pPig->Stack_get__NewEnum(ppunkEnum);
 }
 
@@ -83,14 +83,14 @@ STDMETHODIMP CPigBehaviorStack::Push(BSTR bstrType, BSTR bstrCommandLine,
   IPigBehavior** ppBehavior)
 {
   // Delegate to the pig object
-  assert(m_pPig);
+  ZAssert(m_pPig);
   return m_pPig->Stack_Push(bstrType, bstrCommandLine, ppBehavior);
 }
 
 STDMETHODIMP CPigBehaviorStack::Pop()
 {
   // Delegate to the pig object
-  assert(m_pPig);
+  ZAssert(m_pPig);
   return m_pPig->Stack_Pop();
 }
 
@@ -98,14 +98,14 @@ STDMETHODIMP CPigBehaviorStack::get_Top(long nFromTop,
   IPigBehavior** ppBehavior)
 {
   // Delegate to the pig object
-  assert(m_pPig);
+  ZAssert(m_pPig);
   return m_pPig->Stack_get_Top(nFromTop, ppBehavior);
 }
 
 STDMETHODIMP CPigBehaviorStack::get_Pig(IPig** ppPig)
 {
   CLEAROUT(ppPig, (IPig*)NULL);
-  assert(m_pPig);
+  ZAssert(m_pPig);
   IPigPtr spPig(m_pPig);
   *ppPig = spPig.Detach();
   return S_OK;

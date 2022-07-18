@@ -83,7 +83,7 @@ bool UTL::PrivilegedUser(const char* szName, DWORD dwCookie) {
 
 void UTL::SetUrlRoot(const char * szUrlRoot)
 {
-    assert (szUrlRoot);
+    ZAssert (szUrlRoot);
     strcpy(s_szUrlRoot, szUrlRoot);
 }
 
@@ -91,7 +91,7 @@ void UTL::SetUrlRoot(const char * szUrlRoot)
 void UTL::SetArtPath(const char* szArtwork)
 {
   int cbsz = lstrlen(szArtwork);
-  assert(cbsz > 0 && cbsz < MAX_PATH);
+  ZAssert(cbsz > 0 && cbsz < MAX_PATH);
   bool fTrailingBS = szArtwork[cbsz - 1] == '\\';
   lstrcpy(s_artworkPath, szArtwork);
   if (!fTrailingBS)
@@ -109,7 +109,7 @@ HRESULT UTL::getFile(    const char*    name,
                          bool           createF)
 {
     HRESULT rc = E_FAIL;
-    assert (name && extension && artwork && *s_artworkPath);
+    ZAssert (name && extension && artwork && *s_artworkPath);
     
     strcpy(artwork, s_artworkPath);
     {
@@ -323,7 +323,7 @@ char*    UTL::strdup(const char* s)
     if (s)
     {
         char*   r = new char [strlen(s) + 1];
-        assert (r);
+        ZAssert (r);
         strcpy(r, s);
         return r;
     }
@@ -333,7 +333,7 @@ char*    UTL::strdup(const char* s)
 
 void    UTL::putName(char*         name, const char*   newVal)
 {
-    assert (name);
+    ZAssert (name);
 
     if (newVal)
     {
@@ -346,7 +346,7 @@ void    UTL::putName(char*         name, const char*   newVal)
 
 void    UTL::putFileName(char*         fileName, const char*   newVal)
 {
-    assert (fileName);
+    ZAssert (fileName);
 
     if (newVal)
     {
@@ -370,7 +370,7 @@ List_utl::List_utl(void)
 
 void            List_utl::first(Link_utl*   l)
 {
-    assert (l);
+    ZAssert (l);
 
     l->unlink();
 
@@ -390,7 +390,7 @@ void            List_utl::first(Link_utl*   l)
         
 void            List_utl::last(Link_utl*   l)
 {
-    assert (l);
+    ZAssert (l);
 
     l->unlink();
 
@@ -573,7 +573,7 @@ void               Lock_utl::unlock(void) const
     ** only be called from the controlling thread & therefore we don't
     ** have to worry about other threads making simultaneous calls.
     */
-    assert (GetCurrentThreadId() == t->m_locking_threadID);       //NYI
+    ZAssert (GetCurrentThreadId() == t->m_locking_threadID);       //NYI
 
     if (--(t->m_locks) == 0)
     {

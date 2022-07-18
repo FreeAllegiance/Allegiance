@@ -269,12 +269,12 @@ public:
 		PathString pathStr = pathStr.GetCurrentDirectoryA();
 		printf(pathStr);
 
-        TRef<UpdatingConfiguration> pConfiguration = new UpdatingConfiguration(
+        TRef<EngineConfigurationWrapper> pConfiguration = new EngineConfigurationWrapper(new UpdatingConfiguration(
             std::make_shared<FallbackConfigurationStore>(
                 CreateJsonConfigurationStore(GetExecutablePath() + "\\config_mdlc.json"),
                 std::make_shared<RegistryConfigurationStore>(HKEY_CURRENT_USER, ALLEGIANCE_REGISTRY_KEY_ROOT "\\MDLC3DSettings")
                 )
-        );
+        ));
         
 		// Imago DX9 junk
 		if( PromptUserForVideoSettings(false, 0, GetModuleHandle(NULL), pathStr, pConfiguration) == false )

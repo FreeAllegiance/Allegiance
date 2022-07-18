@@ -70,19 +70,19 @@ class CcloakIGC : public IcloakIGC
 
         virtual void             Activate(void)
         {
-            assert (m_ship);
+            ZAssert (m_ship);
             if (!m_fActive)
             {
                 m_ship->ChangeSignature(m_typeData->signature);
                 m_fActive = true;
 
                 m_cloaking = 0.0f;
-				assert (m_ship->GetCloaking() == 1.0f);
+				ZAssert (m_ship->GetCloaking() == 1.0f);
             }
         }
         virtual void             Deactivate(void)
         {
-            assert (m_ship);
+            ZAssert (m_ship);
 
             if (m_fActive)
             {

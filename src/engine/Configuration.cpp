@@ -36,10 +36,7 @@ const TRef<SimpleModifiableValue<bool>>& UpdatingConfiguration::GetBool(std::str
 }
 
 bool UpdatingConfiguration::GetBoolValue(std::string key, bool valueDefault) {
-    if (mBoolMap->Has(key) == true) {
-        return mBoolMap->Get(key)->GetValue();
-    }
-    return m_inner->ReadBool(key, valueDefault);
+    return GetBool(key, valueDefault)->GetValue();
 }
 
 void UpdatingConfiguration::SetBoolValue(std::string key, bool value) {
@@ -54,10 +51,7 @@ const TRef<SimpleModifiableValue<float>>& UpdatingConfiguration::GetFloat(std::s
 }
 
 float UpdatingConfiguration::GetFloatValue(std::string key, float valueDefault) {
-    if (mFloatMap->Has(key) == true) {
-        return mFloatMap->Get(key)->GetValue();
-    }
-    return m_inner->ReadFloat(key, valueDefault);
+    return GetFloat(key, valueDefault)->GetValue();
 }
 
 void UpdatingConfiguration::SetFloatValue(std::string key, float value) {
@@ -72,10 +66,7 @@ const TRef<SimpleModifiableValue<float>>& UpdatingConfiguration::GetInt(std::str
 }
 
 int UpdatingConfiguration::GetIntValue(std::string key, int valueDefault) {
-    if (mIntMap->Has(key) == true) {
-        return (int)mIntMap->Get(key)->GetValue();
-    }
-    return m_inner->ReadInt(key, valueDefault);
+    return (int)GetInt(key, valueDefault)->GetValue();
 }
 
 void UpdatingConfiguration::SetIntValue(std::string key, int value) {
@@ -90,10 +81,7 @@ const TRef<SimpleModifiableValue<ZString>>& UpdatingConfiguration::GetString(std
 }
 
 std::string UpdatingConfiguration::GetStringValue(std::string key, const std::string& valueDefault) {
-    if (mStringMap->Has(key) == true) {
-        return std::string(mStringMap->Get(key)->GetValue());
-    }
-    return m_inner->ReadString(key, valueDefault);
+    return std::string(GetString(key, valueDefault)->GetValue());
 }
 
 void UpdatingConfiguration::SetStringValue(std::string key, const std::string& value) {

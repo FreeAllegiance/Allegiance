@@ -41,7 +41,7 @@ public:
     // Initialization and cleanup
     //
 
-    virtual void SetFocusWindow(Window* pwindow, bool bStartFullscreen)    = 0;
+    virtual void SetFocusWindow(Window* pwindow)    = 0;
     virtual void TerminateEngine(bool bEngineAppTerminate = false)               = 0;
     virtual bool IsDeviceReady(bool& bChanges)                             = 0;
 
@@ -67,6 +67,7 @@ public:
     virtual bool            IsFullscreen()                                 = 0;
     virtual ZString         GetDeviceName()                                = 0;
 	virtual const TRef<ModifiableWinPointValue> GetResolutionSizeModifiable()		   = 0;
+    virtual TRef<PointValue> GetResolution() = 0;
     virtual const WinPoint GetFullscreenSize()							   = 0;
     virtual float           GetGammaLevel()                                = 0;
 

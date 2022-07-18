@@ -4,7 +4,7 @@
 // curtc
 // sql stuff 
 
-#define CSTATEMENTS 100 // we will assert if we add more statements than defined here
+#define CSTATEMENTS 100 // we will ZAssert if we add more statements than defined here
 #define CCOLPARMMAX 20 // same for columns or parameters (combined)
 enum SQLPARM
 {

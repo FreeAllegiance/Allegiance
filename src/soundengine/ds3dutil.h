@@ -25,7 +25,7 @@ inline D3DVECTOR& ConvertVector(D3DVECTOR& vectDest, const Vector& vectSrc)
     return vectDest;
 };
 
-// A helper to assert that a given vector is (more or less) a unit vector.
+// A helper to ZAssert that a given vector is (more or less) a unit vector.
 inline void ZAssertIsUnitVector(const Vector& vect)
 {
 #ifdef _DEBUG

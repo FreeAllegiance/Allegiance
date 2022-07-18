@@ -141,7 +141,7 @@ void WINAPI TCUtilityThread_ArgumentReleaseProc(UINT idMsg, int cParams,
 //        {
 //          case e_NotifyEngineer:
 //          {
-//            assert(2 == cParams);
+//            ZAssert(2 == cParams);
 //            CBonus* psi = reinterpret_cast<CBonus*>(rgParams[0]);
 //            LPCTSTR psz = reinterpret_cast<LPCTSTR>(rgParams[1]);
 //            NotifyEngineer(psi, psz);
@@ -149,14 +149,14 @@ void WINAPI TCUtilityThread_ArgumentReleaseProc(UINT idMsg, int cParams,
 //          }
 //          case e_NotifyManager:
 //          {
-//            assert(1 == cParams);
+//            ZAssert(1 == cParams);
 //            CWeatherRpt* pwr = reinterpret_cast<CWeatherRpt*>(rgParams[0]);
 //            NotifyManager(pwr);
 //            return;
 //          }
 //          case e_NotifyExecutive:
 //          {
-//            assert(1 == cParams);
+//            ZAssert(1 == cParams);
 //            CBottomLine* pbl = reinterpret_cast<CBottomLine*>(rgParams[0]);
 //            NotifyExecutive(pbl);
 //            return;
@@ -193,7 +193,7 @@ void WINAPI TCUtilityThread_ArgumentReleaseProc(UINT idMsg, int cParams,
 //        {
 //          case e_NotifyEngineer:
 //          {
-//            assert(2 == cParams);
+//            ZAssert(2 == cParams);
 //            CBonus* psi = reinterpret_cast<CBonus*>(rgParams[0]);
 //            LPCTSTR psz = reinterpret_cast<LPCTSTR>(rgParams[1]);
 //            delete psi;
@@ -202,14 +202,14 @@ void WINAPI TCUtilityThread_ArgumentReleaseProc(UINT idMsg, int cParams,
 //          }
 //          case e_NotifyManager:
 //          {
-//            assert(1 == cParams);
+//            ZAssert(1 == cParams);
 //            CWeatherRpt* pwr = reinterpret_cast<CWeatherRpt*>(rgParams[0]);
 //            delete pwr;
 //            return;
 //          }
 //          case e_NotifyExecutive:
 //          {
-//            assert(1 == cParams);
+//            ZAssert(1 == cParams);
 //            CBottomLine* pbl = reinterpret_cast<CBottomLine*>(rgParams[0]);
 //            delete pbl;
 //            return;
@@ -250,7 +250,7 @@ void WINAPI TCUtilityThread_ArgumentReleaseProc(UINT idMsg, int cParams,
 //      void CMyClass::NotifyExecutive(int cParams, LPARAM* rgParams)
 //      {
 //        // Unpack the arguments
-//        assert(1 == cParams);
+//        ZAssert(1 == cParams);
 //        CBottomLine* pbl = reinterpret_cast<CBottomLine*>(rgParams[0]);
 //        …
 //        // Delete or process the arguments

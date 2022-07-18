@@ -1,4 +1,4 @@
-ADD_DEFINITIONS(-D__MODULE__="SoundEngine")
+
 INCLUDE_DIRECTORIES(../Inc ../zlib)
 
 SET(SoundEngine_SRC

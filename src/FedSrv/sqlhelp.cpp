@@ -81,7 +81,7 @@ void SQLWhatsWrong(SQLSMALLINT ssiHandleType, SQLHANDLE sh)
   }
   // if we can't access the database, we're screwed, so give up.
   // TODO: Make the exit more graceful
-  assert(0); // let's at least break in debug build
+  ZAssert(0); // let's at least break in debug build
   exit(EXIT_FAILURE);
 }
 
@@ -189,7 +189,7 @@ int AddCol(void * pvBuff, SQLSMALLINT ssiCType, SQLPARM parmtype, int cbBuff)
     if (location)
     {
         location += strlen (szParameterName);
-        assert (*location == '=');
+        ZAssert (*location == '=');
         location++;
         char*   szBufferPtr = szBuffer;
         while (!isspace (*location))

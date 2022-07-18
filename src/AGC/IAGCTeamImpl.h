@@ -36,7 +36,7 @@ public:
 public:
   STDMETHODIMP get_Name(BSTR* pbstr)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CComBSTR bstrTemp(GetIGC()->GetName()); 
     CLEAROUT(pbstr, (BSTR)bstrTemp);
     bstrTemp.Detach();
@@ -45,23 +45,23 @@ public:
 
   STDMETHODIMP get_Stations(IAGCStations** ppStations)
   {
-    assert(GetIGC());
-    assert(GetIGC()->GetStations());
+    ZAssert(GetIGC());
+    ZAssert(GetIGC()->GetStations());
     return GetAGCGlobal()->GetAGCObject(GetIGC()->GetStations(),
       IID_IAGCStations, (void**)ppStations);
   }
 
   STDMETHODIMP get_Ships(IAGCShips** ppShips)
   {
-    assert(GetIGC());
-    assert(GetIGC()->GetShips());
+    ZAssert(GetIGC());
+    ZAssert(GetIGC()->GetShips());
     return GetAGCGlobal()->GetAGCObject(GetIGC()->GetShips(), IID_IAGCShips,
       (void**)ppShips);
   }
 
   STDMETHODIMP get_Civ(BSTR* pbstr)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
 
     const char * pCivName;
     IcivilizationIGC * p = GetIGC()->GetCivilization();
@@ -79,8 +79,8 @@ public:
   ///////////////////////////////////////////////////////////////////////////  
   STDMETHODIMP SendChat(BSTR bstrText, short idWing, AGCSoundID idSound)
   {
-    assert(GetIGC());
-    assert(GetIGC()->GetMission()->GetIgcSite());
+    ZAssert(GetIGC());
+    ZAssert(GetIGC()->GetMission()->GetIgcSite());
 
     // Do nothing if string is empty
     if (!BSTRLen(bstrText))
@@ -114,8 +114,8 @@ public:
   STDMETHODIMP SendCommand(BSTR bstrCommand, IAGCModel* pModelTarget,
     short idWing, AGCSoundID idSound)
   {
-    assert(GetIGC());
-    assert(GetIGC()->GetMission()->GetIgcSite());
+    ZAssert(GetIGC());
+    ZAssert(GetIGC()->GetMission()->GetIgcSite());
 
     // Convert the command string to a command ID
     CommandID idCmd;

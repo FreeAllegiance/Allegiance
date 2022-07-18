@@ -59,14 +59,22 @@ HRESULT DDVideo::InitDirectDraw()
 	//hRet = DirectDrawCreate(NULL,&pDD, NULL);
 
     hRet = pDD->QueryInterface(IID_IDirectDraw7, (LPVOID *) & m_lpDD);
+
+    if (FAILED(hRet) == true) {
+        return hRet;
+    }
       
 	//Set cooperative level
 	if (m_bWindowed) { //#112
 		m_lpDD->SetCooperativeLevel(m_hWnd, DDSCL_ALLOWREBOOT | DDSCL_NORMAL | DDSCL_MULTITHREADED);
 	} else {
-		hRet = m_lpDD->SetCooperativeLevel(m_hWnd,DDSCL_EXCLUSIVE |DDSCL_ALLOWREBOOT| DDSCL_ALLOWMODEX | DDSCL_FULLSCREEN | DDSCL_MULTITHREADED);
+        hRet = m_lpDD->SetCooperativeLevel(m_hWnd, DDSCL_EXCLUSIVE | DDSCL_ALLOWREBOOT | DDSCL_ALLOWMODEX | DDSCL_FULLSCREEN | DDSCL_MULTITHREADED);
 		m_lpDD->SetDisplayMode(800,600,16,g_DX9Settings.m_refreshrate,0);
 	}
+
+    if (FAILED(hRet) == true) {
+        return hRet;
+    }
 	
 	ZeroMemory(&ddsd, sizeof(ddsd));
 	ddsd.dwSize = sizeof(ddsd);
@@ -78,9 +86,21 @@ HRESULT DDVideo::InitDirectDraw()
 	if (m_bWindowed) {
 		LPDIRECTDRAWCLIPPER lpClipper;
 		hRet = m_lpDD->CreateSurface(&ddsd, &m_lpDDSPrimary, NULL);
+        if (FAILED(hRet) == true) {
+            return hRet;
+        }
 		hRet = m_lpDD->CreateClipper( 0, &lpClipper, NULL );
+        if (FAILED(hRet) == true) {
+            return hRet;
+        }
 		hRet = lpClipper->SetHWnd( 0, m_hWnd );
+        if (FAILED(hRet) == true) {
+            return hRet;
+        }
 		hRet = m_lpDDSPrimary->SetClipper( lpClipper );
+        if (FAILED(hRet) == true) {
+            return hRet;
+        }
 		ddsd.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
 		ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN;
 		ddsd.dwWidth = 800;

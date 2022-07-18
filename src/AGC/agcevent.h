@@ -142,9 +142,9 @@ public:
 // Types
 protected:
   typedef TCObjectLock<CAGCEvent> XLock;
-  struct less_BSTR : public std::binary_function<CComBSTR, CComBSTR, bool>
+  struct less_BSTR
   {
-    result_type operator()(first_argument_type a1, second_argument_type a2) const
+    bool operator()(CComBSTR a1, CComBSTR a2) const
     {
       return _wcsicmp((BSTR)a1, (BSTR)a2) < 0;
     }

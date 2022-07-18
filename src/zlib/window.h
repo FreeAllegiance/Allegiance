@@ -62,8 +62,6 @@ private:
     bool     m_bMouseInside;
     WinPoint m_lastPointMouse;
 
-    Window* m_pwindowParent;
-
     TList<TRef<Window> > m_listChildren;
 
     TRef<IKeyboardInput> m_pkeyboardInputFocus;
@@ -147,9 +145,6 @@ public:
     void RemoveChild(Window* pchild);
     void RemoveAllChildren();
 
-    Window* GetParent() { return m_pwindowParent; }
-    const Window* GetParent() const { return m_pwindowParent; }
-
     //
     // Window message handlers
     //
@@ -180,7 +175,6 @@ public:
     //
 
     Window(
-              Window*  pwindowParent,
         const WinRect& rect          = WinRect(0, 0, -1, -1),
         const ZString& strTitle      = ZString(),
         const ZString& strClass      = ZString(),
@@ -190,7 +184,6 @@ public:
     );
 
     BOOL Create(
-            Window*     pwindowParent,
             const WinRect& rect = WinRect(0, 0, -1, -1),
             LPCSTR      szTitle = NULL,
             LPCSTR      szClass = NULL,
@@ -243,7 +236,6 @@ public:
     // Idle processing
     //
 
-    void EnableIdleFunction(bool bEnable = true);
     virtual void DoIdle();
 
     //

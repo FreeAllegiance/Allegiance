@@ -32,8 +32,8 @@ CAdminSessionEventSink::CAdminSessionEventSink() :
 void CAdminSessionEventSink::Init(CAdminSession* pSession)
 {
   // Save the owning session object
-  assert(pSession);
-  assert(!m_pSession);
+  ZAssert(pSession);
+  ZAssert(!m_pSession);
   m_pSession = pSession;
 
   // Add ourself to the GIT
@@ -43,7 +43,7 @@ void CAdminSessionEventSink::Init(CAdminSession* pSession)
 
 void CAdminSessionEventSink::Term()
 {
-  assert(m_dwGITCookie);
+  ZAssert(m_dwGITCookie);
 
   // Revoke all events for which we are registered
   GetAGCGlobal()->RevokeAllEvents(reinterpret_cast<IAGCEventSink*>(this));
@@ -59,7 +59,7 @@ void CAdminSessionEventSink::Term()
 
 STDMETHODIMP CAdminSessionEventSink::OnEventTriggered(IAGCEvent* pEvent)
 {
-  assert(m_pSession);
+  ZAssert(m_pSession);
   // #define CAdminSessionEventSink_TRACE_OnEventTriggered
   #ifdef CAdminSessionEventSink_TRACE_OnEventTriggered
     _TRACE_BEGIN

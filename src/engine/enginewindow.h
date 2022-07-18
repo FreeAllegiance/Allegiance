@@ -8,8 +8,7 @@
 #include "engine.h"
 #include "inputengine.h"
 #include "menu.h"
-
-#include "Configuration.h"
+#include "VideoSettingsDX9.h"
 
 class Context;
 class EngineApp;
@@ -18,6 +17,92 @@ class Surface;
 class TransformImage;
 class TranslateTransform2;
 class WrapImage;
+
+class ExponentialMovingAverageTracker {
+private:
+    double m_avg;
+    double m_alpha;
+
+public:
+    ExponentialMovingAverageTracker(int approx_window_size) :
+        m_avg(0),
+        m_alpha( 1.0f / approx_window_size)
+    {}
+
+    void AddSample(double value) {
+        m_avg = (value * m_alpha) + (1.0 - m_alpha) * m_avg;
+    }
+
+    double getAverage() const {
+        return m_avg;
+    }
+};
+
+class MaximumTracker {
+private:
+    double m_max;
+    int m_count;
+    int m_samples_ago;
+
+public:
+    MaximumTracker(int size) :
+        m_count(size),
+        m_max(0.0),
+        m_samples_ago(size)
+    {
+    }
+
+    void AddSample(double value) {
+        m_samples_ago++;
+        if (m_samples_ago > m_count || m_max <= value) {
+            m_max = value;
+            m_samples_ago = 0;
+        }
+    }
+
+    double getMaximum() const {
+        return m_max;
+    }
+};
+
+class MultiTracker {
+public:
+    ExponentialMovingAverageTracker avg;
+    MaximumTracker max;
+
+    MultiTracker(int window_size) :
+        avg(window_size),
+        max(window_size)
+    {}
+};
+
+class RenderTimings {
+private:
+    std::map<int, MultiTracker> m_map;
+
+public:
+    RenderTimings() :
+        m_map({
+            { 10, MultiTracker(10) },
+            { 100, MultiTracker(100) },
+            { 1000, MultiTracker(1000) },
+            { 10000, MultiTracker(10000) }
+            })
+    {
+
+    }
+
+    void AddSample(double value) {
+        for (auto& kv : m_map) {
+            kv.second.avg.AddSample(value);
+            kv.second.max.AddSample(value);
+        }
+    }
+
+    const std::map<int, MultiTracker>& getMap() const {
+        return m_map;
+    }
+};
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -56,21 +141,6 @@ protected:
         }
     };
 
-    class MenuCommandSink : public IMenuCommandSink {
-    private:
-        EngineWindow* m_pwindow;
-
-    public:    
-        MenuCommandSink(EngineWindow* pwindow) :
-            m_pwindow(pwindow)
-        {
-        }
-
-        void OnMenuCommand(IMenuItem* pitem);
-    };
-
-    friend class MenuCommandSink;
-
     //////////////////////////////////////////////////////////////////////////////
     //
     // Static Members
@@ -88,19 +158,21 @@ protected:
     //
     //////////////////////////////////////////////////////////////////////////////
 
-    TRef<UpdatingConfiguration> m_pConfiguration;
+    TRef<EngineConfigurationWrapper> m_pConfiguration;
+    TRef<ValueList> m_pConfigurationUpdater;
+
+    std::map<std::string, RenderTimings> m_timings = {};
+    Time m_tPreviousFramePresented;
+    uint32_t m_iPreviousFrameTRefAdded;
+    uint32_t m_iPreviousFrameTRefRemoved;
 
     TRef<Engine>               m_pengine;
-    TRef<Modeler>              m_pmodeler;
     TRef<InputEngine>          m_pinputEngine;
     TRef<ButtonEvent::Sink>    m_pbuttonEventSink;
-    TRef<MouseInputStream>     m_pmouse;
     TRef<ModifiablePointValue> m_ppointMouse;
-	EngineApp *					m_pEngineApp;
 
     TRef<Surface>              m_psurface;
     TRef<ICaption>             m_pcaption;
-    WinRect                    m_rectWindowed;
 
     TRef<IKeyboardInput>       m_pkeyboardInput;
 
@@ -108,8 +180,7 @@ protected:
     TRef<WrapImage>            m_pwrapImage;
     TRef<TransformImage>       m_ptransformImageCursor;
     TRef<TranslateTransform2>  m_ptranslateTransform;
-    TRef<Image>                m_pimageCursor;
-    TRef<IPopupContainer>      m_ppopupContainer;
+    TRef<WrapImage>            m_pimageCursor;
 
     WinPoint                   m_offsetWindowed;
 
@@ -129,6 +200,7 @@ protected:
 	bool						m_bWindowStateMinimised;
 	bool						m_bWindowStateRestored;
 	bool						m_bClickBreak;
+    bool m_bRenderingEnabled;
 
     int                        m_modeIndex;
 
@@ -150,20 +222,9 @@ protected:
 
     TRef<ButtonEvent::Sink>    m_peventSink;
 
-    //
-    // menu
-    //
-
-    TRef<IMenuCommandSink>     m_pmenuCommandSink;
-    TRef<IMenuItem>            m_pitemDevice;
-//    TRef<IMenuItem>            m_pitemRenderer;
-    TRef<IMenuItem>            m_pitemResolution;
-    TRef<IMenuItem>            m_pitemRendering;
-    TRef<IMenuItem>            m_pitemBPP; // KGJV 32B
-  //  TRef<IMenuItem>            m_pitemAllowSecondary;
-//    TRef<IMenuItem>            m_pitemAllow3DAcceleration;
-    TRef<IMenuItem>            m_pitemHigherResolution;
-    TRef<IMenuItem>            m_pitemLowerResolution;
+    TRef<EventSourceImpl> m_pcloseEventSource;
+    TRef<TEvent<Time>::SourceImpl> m_pevaluateFrameEventSource;
+    TRef<TEvent<bool>::SourceImpl> m_pactivateEventSource;
 
     //
     // Performance
@@ -206,11 +267,12 @@ protected:
     void UpdateWindowStyle();
     void UpdateSurfacePointer();
     void UpdateCursor();
+
+    bool CheckDeviceAndUpdate();
     
     void UpdateInput();
     void HandleMouseMessage(UINT message, const Point& point, UINT nFlags = 0);
 
-    void ParseCommandLine(const ZString& strCommandLine, bool& bStartFullscreen);
     void DoIdle();
     bool ShouldDrawFrame();
     bool RenderFrame();
@@ -221,21 +283,16 @@ protected:
     // menu
     //
 
-    void    OnEngineWindowMenuCommand(IMenuItem* pitem);
     ZString GetRendererString();
     ZString GetDeviceString();
     ZString GetResolutionString();
     ZString GetRenderingString();
     ZString GetPixelFormatString(); // KGJV 32B
-    void    UpdateMenuStrings();
 
 public:
     EngineWindow(
-              EngineApp*   papp,
-        UpdatingConfiguration* pConfiguration,
-        const ZString&     strCommandLine,
+        EngineConfigurationWrapper* pConfiguration,
         const ZString&     strTitle         = ZString(),
-              bool         bStartFullscreen = false,
         const WinRect&     rect             = WinRect(0, 0, -1, -1),
         const WinPoint&    sizeMin          = WinPoint(1, 1),
               HMENU        hmenu            = NULL
@@ -253,24 +310,36 @@ public:
     // EngineWindow methods
     //
 
-	// Added so that we could reorganise the device creation order.
-	void			InitialiseTime();
-	void			PostWindowCreationInit();
+    // These need to be set here before this object is fully functional
+    void SetEngine(Engine* pengine);
 
     Number*          GetTime()           { return m_pnumberTime;             }
     Time             GetTimeStart()      { return m_timeStart;               }
     Engine*          GetEngine()         { return m_pengine;                 }
-    Modeler*         GetModeler()        { return m_pmodeler;                }
     bool             GetFullscreen()     { return m_pengine->IsFullscreen(); }
     bool             GetShowFPS()        { return m_bFPS;                    }
-    IPopupContainer* GetPopupContainer() { return m_ppopupContainer;         }
     InputEngine*     GetInputEngine()    { return m_pinputEngine;            }
     const Point&     GetMousePosition()  { return m_ppointMouse->GetValue(); }
     ModifiablePointValue* GetMousePositionModifiable() { return m_ppointMouse; }
 	Time&		   	 GetMouseActivity()  { return m_timeLastMouseMove;		 } //Imago: Added to adjust AFK status from mouse movment
     bool             GetActive()         { return m_bActive;                 }
+    const TRef<IKeyboardInput>& GetKeyboardInput() { return m_pkeyboardInput; };
 
-    TRef<IPopup> GetEngineMenu(IEngineFont* pfont);
+    void SetRenderingEnabled(bool bEnabled) {
+        m_bRenderingEnabled = bEnabled;
+    }
+
+    IEventSource* GetOnCloseEventSource() {
+        return m_pcloseEventSource;
+    }
+
+    TEvent<Time>::Source* GetEvaluateFrameEventSource() {
+        return m_pevaluateFrameEventSource;
+    }
+
+    TEvent<bool>::Source* GetActivateEventSource() {
+        return m_pactivateEventSource;
+    }
 
     RectValue* GetScreenRectValue();
     RectValue* GetRenderRectValue();
@@ -279,11 +348,12 @@ public:
     void SetSizeable(bool bSizeable);
     void SetFullscreenSize(const Vector& point);
     void ChangeFullscreenSize(bool bLarger);
-    void SetMouseEnabled(bool bEnable);
 
     WinPoint GetSize();
     WinPoint GetWindowedSize();
     WinPoint GetFullscreenSize();
+
+    TRef<PointValue> GetResolution();
 
     void OutputPerformanceCounters();
     void SetImage(Image* pimage);
@@ -308,12 +378,11 @@ public:
 
     virtual ZString GetFPSString(float dtime, float mspf, Context* pcontext);
 
-    virtual void EvaluateFrame(Time time) {}
     virtual void RenderSizeChanged(bool bSmaller) {
         int x = (int)m_pengine->GetResolutionSizeModifiable()->GetValue().X();
         int y = (int)m_pengine->GetResolutionSizeModifiable()->GetValue().Y();
-        m_pConfiguration->GetInt("Graphics.ResolutionX", x)->SetValue((float)x);
-        m_pConfiguration->GetInt("Graphics.ResolutionY", y)->SetValue((float)y);
+        m_pConfiguration->GetGraphicsResolutionX()->SetValue((float)x);
+        m_pConfiguration->GetGraphicsResolutionY()->SetValue((float)y);
     }
 
     //

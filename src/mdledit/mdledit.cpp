@@ -10,6 +10,9 @@
 
 #include "pch.h"
 
+#include "enginewindow.h"
+#include "VideoSettingsDX9.h"
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // The main entry point
@@ -107,7 +110,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////
 
 class MDLEditWindow :
-    public EffectWindow,
+    public EngineWindow,
     public IIntegerEventSink,
     //public IEventSink,
     public IMenuCommandSink,
@@ -506,6 +509,9 @@ public:
 
     TRef<TestGeo>          m_ptestGeo;
 
+    //
+    TRef<Modeler> m_pmodeler;
+    Modeler*         GetModeler() { return m_pmodeler; }
 
     //////////////////////////////////////////////////////////////////////////////
     //
@@ -515,19 +521,16 @@ public:
 
     MDLEditWindow(
         EffectApp* papp, 
-        UpdatingConfiguration* pConfiguration,
+        EngineConfigurationWrapper* pConfiguration,
         const ZString& strCommandLine, 
         bool bImageTest,
         bool bTest, 
         int initialTest,
 		const ZString& strArtPath
     ) :
-        EffectWindow(
-            papp,
+        EngineWindow(
             pConfiguration,
-            strCommandLine,
             "MDLEdit",
-            false,
             WinRect(0 + CD3DDevice9::Get()->GetDeviceSetupParams()->iWindowOffsetX, 
 					0 + CD3DDevice9::Get()->GetDeviceSetupParams()->iWindowOffsetY,
 					CD3DDevice9::Get()->GetCurrentMode()->mode.Width + 
@@ -552,10 +555,8 @@ public:
 		TrekResources::Initialize(GetModeler());
 
 		// Perform post window creation initialisation. Initialise the time value.
-		PostWindowCreationInit( );
-		InitialiseTime();
+        SetEngine(m_pengine);
 
-        SetEffectWindow(this);
         GetModeler()->SetSite(new ModelerSiteImpl());
 
         //
@@ -1460,6 +1461,10 @@ public:
         return GetModeler()->GetNameSpace("model")->FindFont("defaultFont");
     }
 
+    TRef<IPopupContainer> GetPopupContainer() {
+        return CreatePopupContainer(); //todo: Rock is breaking things badly
+    }
+
     void ShowMenu()
     {
          m_pmenu =
@@ -1493,7 +1498,8 @@ public:
 
         switch (pitem->GetID()) {
             case idmOptions:
-                return GetEngineMenu(GetFont());
+                //rock: broken
+                //return GetEngineMenu(GetFont());
                 break;
         }
 
@@ -1659,12 +1665,12 @@ public:
             pathStr = szValue;
 		}
 
-        TRef<UpdatingConfiguration> pConfiguration = new UpdatingConfiguration(
+        TRef<EngineConfigurationWrapper> pConfiguration = new EngineConfigurationWrapper(new UpdatingConfiguration(
             std::make_shared<FallbackConfigurationStore>(
                 CreateJsonConfigurationStore(GetExecutablePath() + "\\config_mdledit.json"),
                 std::make_shared<RegistryConfigurationStore>(HKEY_CURRENT_USER, ALLEGIANCE_REGISTRY_KEY_ROOT "\\MDLEdit3DSettings")
             )
-        );
+        ));
 
 		// Ask the user for video settings.
 		if( PromptUserForVideoSettings(false, 0, GetModuleHandle(NULL), pathStr, pConfiguration) == false )

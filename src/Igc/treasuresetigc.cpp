@@ -18,7 +18,7 @@
 // CtreasureSetIGC
 HRESULT     CtreasureSetIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
 {
-    assert (pMission);
+    ZAssert (pMission);
     m_pMission = pMission;
 
     ZRetailAssert (data && (dataSize >= sizeof(DataTreasureSetIGC)));
@@ -26,7 +26,7 @@ HRESULT     CtreasureSetIGC::Initialize(ImissionIGC* pMission, Time now, const v
     int size;
     if (((DataTreasureSetIGC*)data)->nTreasureData == 0)
     {
-        assert (dataSize == sizeof(DataTreasureSetIGC));
+        ZAssert (dataSize == sizeof(DataTreasureSetIGC));
 
         const short c_maxDefault = 10;
         m_maxTreasureData = c_maxDefault;
@@ -37,13 +37,13 @@ HRESULT     CtreasureSetIGC::Initialize(ImissionIGC* pMission, Time now, const v
     {
         m_maxTreasureData = ((DataTreasureSetIGC*)data)->nTreasureData;
 
-        assert (dataSize == int(sizeof(DataTreasureSetIGC) +
+        ZAssert (dataSize == int(sizeof(DataTreasureSetIGC) +
                                 m_maxTreasureData *
                                 sizeof(TreasureData)));
 
         size = dataSize;
     }
-    assert (size >= dataSize);
+    ZAssert (size >= dataSize);
 
     m_data = (DataTreasureSetIGC*)(new char [size]);
     memcpy(m_data, data, dataSize);

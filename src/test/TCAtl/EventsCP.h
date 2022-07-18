@@ -128,11 +128,11 @@ void TCComEventsCP<T, IV, piid>::OnMessage(UINT idMsg, int cParams,
     case e_idFireEvents:
     {
       // Get the call pointer from the parameter list
-      assert(1 == cParams);
+      ZAssert(1 == cParams);
       TCComEventCall<IV>* pCall = (TCComEventCall<IV>*)rgParams[0];
 
       // Call FireEvents in the context of the utility thread
-      assert(pCall);
+      ZAssert(pCall);
       FireEvents(*pCall);
       break;
     }
@@ -150,11 +150,11 @@ void TCComEventsCP<T, IV, piid>::ReleaseArgs(UINT idMsg, int cParams,
     case e_idFireEvents:
     {
       // Get the call pointer from the parameter list
-      assert(1 == cParams);
+      ZAssert(1 == cParams);
       TCComEventCall<IV>* pCall = (TCComEventCall<IV>*)rgParams[0];
 
       // Delete the call pointer
-      assert(pCall);
+      ZAssert(pCall);
       delete pCall;
       break;
     }

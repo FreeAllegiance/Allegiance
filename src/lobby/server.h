@@ -59,7 +59,7 @@ public:
   void RemovePlayer()
   {
     --m_cPlayers;
-    assert (m_cPlayers >= 0);
+    ZAssert (m_cPlayers >= 0);
   }
 
   PER_SERVER_COUNTERS * GetCounters()

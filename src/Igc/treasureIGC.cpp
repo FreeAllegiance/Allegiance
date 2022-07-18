@@ -46,7 +46,7 @@ HRESULT     CtreasureIGC::Initialize(ImissionIGC* pMission, Time now, const void
         if (m_data.treasureCode == c_tcPart)
         {
             IpartTypeIGC*   pt = pMission->GetPartType(m_data.treasureID);
-            assert (pt);
+            ZAssert (pt);
 
             m_buyable = (IbuyableIGC*)(pt);
 
@@ -65,7 +65,7 @@ HRESULT     CtreasureIGC::Initialize(ImissionIGC* pMission, Time now, const void
                     case ET_Pack:
                     {
                         short a = ((DataPackTypeIGC*)(pt->GetData()))->amount;
-                        assert (a > 2);
+                        ZAssert (a > 2);
                         m_data.amount = randomInt(a/2, a);
                     }
                     break;
@@ -75,13 +75,13 @@ HRESULT     CtreasureIGC::Initialize(ImissionIGC* pMission, Time now, const void
                 }
             }
 
-            assert (m_buyable);
+            ZAssert (m_buyable);
             m_buyable->AddRef();
         }
         else if (m_data.treasureCode == c_tcDevelopment)
         {
             m_buyable = (IbuyableIGC*)(pMission->GetDevelopment(m_data.treasureID));
-            assert (m_buyable);
+            ZAssert (m_buyable);
             m_buyable->AddRef();
         }
         else
@@ -135,7 +135,7 @@ HRESULT     CtreasureIGC::Initialize(ImissionIGC* pMission, Time now, const void
 
                 SetName("Flag");
                 IsideIGC*   pside = pMission->GetSide(m_data.treasureID);
-                assert (pside);
+                ZAssert (pside);
                 SetSide(pside);
             }
             else
@@ -149,7 +149,7 @@ HRESULT     CtreasureIGC::Initialize(ImissionIGC* pMission, Time now, const void
         }
         else
         {
-            assert ((m_data.treasureCode == c_tcCash) || (m_data.treasureCode == c_tcPowerup));
+            ZAssert ((m_data.treasureCode == c_tcCash) || (m_data.treasureCode == c_tcPowerup));
             name = cName;
             icon = (m_data.treasureCode == c_tcCash) ? "cashicon" : "iconpu";
         }
@@ -167,7 +167,7 @@ HRESULT     CtreasureIGC::Initialize(ImissionIGC* pMission, Time now, const void
                            ? (c_mtStatic | c_mtHitable | c_mtSeenBySide | c_mtPredictable)
                            : (c_mtCastRay | c_mtSeenBySide | c_mtPredictable));
 
-            assert (SUCCEEDED(rc));
+            ZAssert (SUCCEEDED(rc));
         }
         else
         {
@@ -175,7 +175,7 @@ HRESULT     CtreasureIGC::Initialize(ImissionIGC* pMission, Time now, const void
                       m_stationaryF
                       ? (c_mtStatic | c_mtHitable | c_mtSeenBySide | c_mtPredictable)
                       : (c_mtCastRay | c_mtSeenBySide | c_mtPredictable));
-            assert (SUCCEEDED(rc));
+            ZAssert (SUCCEEDED(rc));
 
             Orientation o;
             Rotation    r;
@@ -235,7 +235,7 @@ void CtreasureIGC::Update(Time now)
             else
             {
                 //Still moving ... calculate the object's position at the start and stop
-                assert (m_speed0 != 0.0f);
+                ZAssert (m_speed0 != 0.0f);
                 Vector p1 = m_data.p0 + 
                             m_data.v0 *
                             (dt1 - 0.5f * dt1 * dt1 * c_deceleration / m_speed0);

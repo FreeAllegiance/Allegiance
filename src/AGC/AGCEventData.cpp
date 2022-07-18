@@ -22,7 +22,7 @@ void CAGCEventData::GetVarData(BSTR* pbstrContext, BSTR* pbstrSubject,
   CAGCEventData::XProperties* pProperties) const
 {
   // Get a pointer to the beginning of the variable data block
-  assert(m_pbData && m_cbData >= sizeof(XData));
+  ZAssert(m_pbData && m_cbData >= sizeof(XData));
   XData* pData = reinterpret_cast<XData*>(m_pbData);
   BYTE* pbData = reinterpret_cast<BYTE*>(pData + 1);
 
@@ -84,7 +84,7 @@ UINT CAGCEventData::ComputeVariableDataSize(LPCSTR pszContext,
   {
     // Get the argument name
     LPCSTR pszArgName = va_arg(argptr, LPCSTR);
-    assert(!IsBadStringPtrA(pszArgName, UINT(-1)));
+    ZAssert(!IsBadStringPtrA(pszArgName, UINT(-1)));
 
     // Get the argument name length
     UINT cchName = strlen(pszArgName);
@@ -140,7 +140,7 @@ UINT CAGCEventData::ComputeVariableDataSize(LPCSTR pszContext,
         ULARGE_INTEGER cbSize;
         LARGE_INTEGER dlibMove = {0, 0};
         ZSucceeded(stm.Seek(dlibMove, STREAM_SEEK_CUR, &cbSize));
-        assert(0 == cbSize.HighPart);
+        ZAssert(0 == cbSize.HighPart);
         cbTotal += sizeof(cbSize.LowPart) + cbSize.LowPart;
         break;
       }
@@ -180,7 +180,7 @@ UINT CAGCEventData::ComputeVariableDataSize(LPCSTR pszContext,
     int _cb = (cb);                    \
     if (_cb)                           \
     {                                  \
-      assert(cbData >= _cb);           \
+      ZAssert(cbData >= _cb);           \
       CopyMemory(pbData, pData, _cb);  \
       cbData -= _cb;                   \
       pbData += _cb;                   \
@@ -279,7 +279,7 @@ void CAGCEventData::CopyVariableData(LPCSTR pszContext, LPCOLESTR pszSubject,
         ULARGE_INTEGER cbSize;
         LARGE_INTEGER dlibMove = {0, 0};
         ZSucceeded(stm.Seek(dlibMove, STREAM_SEEK_CUR, &cbSize));
-        assert(0 == cbSize.HighPart);
+        ZAssert(0 == cbSize.HighPart);
 
         // Save the size of the persistent object
         COPY_VAR(cbSize.LowPart);
@@ -398,7 +398,7 @@ UINT CAGCEventData::CreateBSTRFromData(BYTE* pbData, BSTR* pbstr)
 
   // Create the BSTR from the persistence block
   *pbstr = SysAllocStringByteLen(reinterpret_cast<LPCSTR>(pbData), cbData);
-  assert(*pbstr);
+  ZAssert(*pbstr);
 
   // Return the number of bytes consumed
   return sizeof(cbData) + cbData;
@@ -422,7 +422,7 @@ UINT CAGCEventData::CreateBSTRFromData_LPSTR(BYTE* pbData, BSTR* pbstr)
 
   // Create the BSTR from the converted persistence block
   *pbstr = SysAllocStringLen(pwsz, cch);
-  assert(*pbstr);
+  ZAssert(*pbstr);
 
   // Return the number of bytes consumed
   return sizeof(cch) + cch;
@@ -442,7 +442,7 @@ UINT CAGCEventData::CreateBSTRFromData_LPWSTR(BYTE* pbData, BSTR* pbstr)
   // Create the BSTR from the persistence block
   UINT cch = cb / sizeof(OLECHAR);
   *pbstr = SysAllocStringLen(reinterpret_cast<LPOLESTR>(pbData), cch);
-  assert(*pbstr);
+  ZAssert(*pbstr);
 
   // Return the number of bytes consumed
   return sizeof(cb) + cb;

@@ -650,7 +650,7 @@ class   Transform44
 
         inline void    SetPosition(const Vector& xyz)
         {
-            assert(xyz.Length() < 100000);
+            ZAssert(xyz.Length() < 100000);
             m_position = xyz;
             m_modifiedF = true;
         }
@@ -792,7 +792,7 @@ class   HitTest : public Transform44
             m_timeStop(0),
             m_pkdrRoot(NULL)
         {
-            assert (data);
+            ZAssert (data);
             data->AddRef();
 
             m_endpoints[0][0].highF = 
@@ -812,7 +812,7 @@ class   HitTest : public Transform44
 
         ~HitTest(void)
         {
-            assert (m_data);
+            ZAssert (m_data);
             m_data->Release();
         }
 
@@ -843,8 +843,8 @@ class   HitTest : public Transform44
             if (m_tStop > 0.0f)
                 m_stopPosition += m_tStop * m_velocity;
 
-            assert (m_stopPosition.LengthSquared() >= 0.0f);
-            assert (m_stopPosition.LengthSquared() < 1.0e12f);
+            ZAssert (m_stopPosition.LengthSquared() >= 0.0f);
+            ZAssert (m_stopPosition.LengthSquared() < 1.0e12f);
         }
         void                    Move(float t)
         {
@@ -859,7 +859,7 @@ class   HitTest : public Transform44
 
                 m_tStop -= t;
 
-                assert (GetPosition() * GetPosition() >= 0.0f);
+                ZAssert (GetPosition() * GetPosition() >= 0.0f);
             }
         }
 
@@ -888,10 +888,10 @@ class   HitTest : public Transform44
 
         void    UpdateStaticBB(float r)
         {
-            assert (m_staticF);
+            ZAssert (m_staticF);
 
             //let's assume were using the xy & z axes.
-            assert (c_nAxes == 3);
+            ZAssert (c_nAxes == 3);
             for (int i = 0; (i < c_nAxes); i++)
             {
                 float   v = GetPosition()[i];
@@ -987,22 +987,22 @@ class   HitTest : public Transform44
         {
 			// mmf replaced asserts with log msg, rewrite to zero
 			if (!(v.LengthSquared() < (100000.0f * 100000.0f))) {
-				debugf("mmf Utility.h SetVelocity: v.LengthSquared debug build would have called assert and exited, commented out and set to zero for now\n");   
+				debugf("mmf Utility.h SetVelocity: v.LengthSquared debug build would have called ZAssert and exited, commented out and set to zero for now\n");   
 				m_velocity.x = 0.0f; m_velocity.y = 0.0f; m_velocity.z = 0.0f;
 			} else {
 			    m_velocity = v;
 			}
 
 		    if (!(v * v >= 0.0f)) {
-				debugf("mmf Utility.h SetVelocity: v^2 debug build would have called assert and exited, commented out and set to zero for now\n");   
+				debugf("mmf Utility.h SetVelocity: v^2 debug build would have called ZAssert and exited, commented out and set to zero for now\n");   
 			    m_velocity.x = 0.0f; m_velocity.y = 0.0f; m_velocity.z = 0.0f;
 			} else {
 			    m_velocity = v;
 			}
             
 			// mmf orig code
-			// assert (v * v >= 0.0f);
-            // assert (v.LengthSquared() < (100000.0f * 100000.0f));
+			// ZAssert (v * v >= 0.0f);
+            // ZAssert (v.LengthSquared() < (100000.0f * 100000.0f));
             // m_velocity = v;
 			// mmf end orig code
         }
@@ -1077,7 +1077,7 @@ class   HitTest : public Transform44
 
         virtual Vector    GetCenter(HitTestShape  hts) const
         {
-            assert (false); //Should never be called for anything except convex hulls
+            ZAssert (false); //Should never be called for anything except convex hulls
             return Vector::GetZero();
         }
 
@@ -1326,8 +1326,8 @@ class   BytePercentage
         :
             m_percentage((unsigned char)(f * (float)Divisor + 0.5f))
         {
-            assert ((f * (float)Divisor + 0.5f) >= 0.0f);
-            assert ((f * (float)Divisor + 0.5f) < (float)(Divisor + 1));
+            ZAssert ((f * (float)Divisor + 0.5f) >= 0.0f);
+            ZAssert ((f * (float)Divisor + 0.5f) < (float)(Divisor + 1));
         }
 
         unsigned char   GetChar(void) const
@@ -1341,8 +1341,8 @@ class   BytePercentage
 
         BytePercentage& operator = (float f)
         {
-			/*assert((f * (float)Divisor + 0.5f) >= 0.0f);
-			assert((f * (float)Divisor + 0.5f) < (float)(Divisor + 1));*/
+			/*ZAssert((f * (float)Divisor + 0.5f) >= 0.0f);
+			ZAssert((f * (float)Divisor + 0.5f) < (float)(Divisor + 1));*/
 
 			// Fix for crash when a user drops a probe right when entering an aleph. 
 			if ((f * (float)Divisor + 0.5f) < 0.0f)
@@ -1374,14 +1374,14 @@ extern const Rotation      c_rotationZero;
 // safe strcpy
 static char * Strcpy(char * szDst, const char * szSrc)
 {
-  assert(szDst);
+  ZAssert(szDst);
   return lstrcpyA(szDst, szSrc ? szSrc : "");
 }
         
 // safe strncpy
 static char * Strncpy(char * szDst, const char * szSrc, size_t cb)
 {
-  assert(szDst);
+  ZAssert(szDst);
   return strncpy(szDst, szSrc ? szSrc : "", cb);
 }
         
@@ -1420,8 +1420,8 @@ public:
   }
   Func Call()
   {
-    assert(pfunc);
-    assert(!IsBadCodePtr((FARPROC)pfunc));
+    ZAssert(pfunc);
+    ZAssert(!IsBadCodePtr((FARPROC)pfunc));
     return pfunc;
   }
 

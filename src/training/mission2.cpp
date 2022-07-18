@@ -107,7 +107,7 @@ namespace Training
 
         // put the commander ship in the scene
         IshipIGC*   pCommander = pCore->GetShip(m_commanderID);
-        assert(pCommander);
+        ZAssert(pCommander);
         Vector      position(500.0f, 0.0f, 0.0f);
         pCommander->SetPosition(position);
         pCommander->SetOrientation(Orientation(pCommander->GetOrientation().GetForward() * -1.0f, position * -1.0f));
@@ -400,7 +400,7 @@ namespace Training
 
         // XXX hope ship faces empty space
 
-        if (GetWindow()->GetInputEngine()->GetJoystickCount() > 0)
+        if (GetEngineWindow()->GetInputEngine()->GetJoystickCount() > 0)
         {
             // tm_2_14
             // If your joystick has a throttle control, you can use that 
@@ -729,7 +729,7 @@ namespace Training
             pSetControlConstraintsAction->EnableInputAction(afterburnerButtonIGC);
             pGoal->AddStartAction(pSetControlConstraintsAction);
         
-            if (GetWindow()->GetInputEngine()->GetJoystickCount() > 0)
+            if (GetEngineWindow()->GetInputEngine()->GetJoystickCount() > 0)
             {
                 // tm_2_32
                 // Activate the booster with your joystick by pressing and 

@@ -322,7 +322,7 @@ public:
 
   GUID                GetSessionGuid()    
   {
-    assert( m_pDirectPlayServer || m_pDirectPlayClient );
+    ZAssert( m_pDirectPlayServer || m_pDirectPlayClient );
     return m_guidInstance;
   }
   int                 SendMessages(CFMRecipient * precip, FMGuaranteed fmg, FMFlush fmf);
@@ -467,7 +467,7 @@ public:
 
   void            AddConnectionToGroup(CFMGroup * pgrp, CFMConnection * pcnxn)
   { 
-    assert(pgrp && pcnxn);
+    ZAssert(pgrp && pcnxn);
     static CTempTimer tt("in AddConnectionToGroup", .01f);
     tt.Start();
     pgrp->AddConnection(this, pcnxn); 
@@ -476,7 +476,7 @@ public:
 
   void            DeleteConnectionFromGroup(CFMGroup * pgrp, CFMConnection * pcnxn)
   { 
-    assert(pgrp && pcnxn);
+    ZAssert(pgrp && pcnxn);
     static CTempTimer tt("in DeleteConnectionFromGroup", .01f);
     tt.Start();
     pgrp->DeleteConnection(this, pcnxn); 
@@ -506,7 +506,7 @@ public:
 
   IDirectPlay8Server *  GetDPlayServer() // only messaging stuff should need this
   {
-    assert( m_pDirectPlayServer );
+    ZAssert( m_pDirectPlayServer );
     return m_pDirectPlayServer;
 
   } 
@@ -730,7 +730,7 @@ class AddMsg
 public:
   AddMsg(FEDMSGID fmid, const char * szMsgName)
   {
-    assert (fmid <= MAXMESSAGES);
+    ZAssert (fmid <= MAXMESSAGES);
     g_rgszMsgNames[fmid] = szMsgName;
   }
 };

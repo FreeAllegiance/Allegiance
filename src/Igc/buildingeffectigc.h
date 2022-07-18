@@ -54,7 +54,7 @@ class CbuildingEffectIGC : public TmodelIGC<IbuildingEffectIGC>
                 m_timeComplete = m_timeShrink   + c_dtShrink;
             }
 
-            assert (sizeof(DataBuildingEffectIGC) != sizeof(DataBuildingEffectExport));
+            ZAssert (sizeof(DataBuildingEffectIGC) != sizeof(DataBuildingEffectExport));
             IclusterIGC*    pcluster;
             const Color*    pcolor;
             if (dataSize == sizeof(DataBuildingEffectIGC))
@@ -62,14 +62,14 @@ class CbuildingEffectIGC : public TmodelIGC<IbuildingEffectIGC>
                 DataBuildingEffectIGC*  dataBuilding = (DataBuildingEffectIGC*)data;
 
                 m_pshipBuilder = dataBuilding->pshipBuilder;
-                assert (m_pshipBuilder);
+                ZAssert (m_pshipBuilder);
                 m_pshipBuilder->SetStateM(drillingMaskIGC | buildingMaskIGC);
 
                 m_pside = m_pshipBuilder->GetSide();
                 m_pstationType = (IstationTypeIGC*)(m_pshipBuilder->GetBaseData());
 
                 m_pasteroid = dataBuilding->pasteroid;
-                assert (m_pasteroid);
+                ZAssert (m_pasteroid);
                 m_pasteroid->SetBuildingEffect(this);
 
                 pcluster = dataBuilding->pcluster;
@@ -84,7 +84,7 @@ class CbuildingEffectIGC : public TmodelIGC<IbuildingEffectIGC>
                 pcluster = pMission->GetCluster(dataBuilding->clusterID);
 
                 m_pasteroid = pcluster->GetAsteroid(dataBuilding->asteroidID);
-                assert (m_pasteroid);
+                ZAssert (m_pasteroid);
                 m_pasteroid->SetBuildingEffect(this);
 
                 pcolor = &(dataBuilding->color);
@@ -99,9 +99,9 @@ class CbuildingEffectIGC : public TmodelIGC<IbuildingEffectIGC>
 
             GetHitTest()->SetNoHit(m_pasteroid->GetHitTest());
 
-            assert (GetVelocity().LengthSquared() == 0.0f);
+            ZAssert (GetVelocity().LengthSquared() == 0.0f);
 
-            assert (pcluster);
+            ZAssert (pcluster);
             SetCluster(pcluster);
 
             //Set the BB's effect, since it was probably created as a result of a collision.
@@ -150,7 +150,7 @@ class CbuildingEffectIGC : public TmodelIGC<IbuildingEffectIGC>
                 pdbe->positionStart = m_positionStart;
                 pdbe->positionStop = m_positionStop;
 
-                assert (m_pshipBuilder);
+                ZAssert (m_pshipBuilder);
                 pdbe->color = m_pshipBuilder->GetSide()->GetColor();
             }
 
@@ -219,7 +219,7 @@ class CbuildingEffectIGC : public TmodelIGC<IbuildingEffectIGC>
                 SetPosition(position);
                 SetRadius(radius);
 
-                assert (GetThingSite());
+                ZAssert (GetThingSite());
                 GetThingSite()->SetColors(aInner, fInner, fOuter);
             }
         }
@@ -303,7 +303,7 @@ class CbuildingEffectIGC : public TmodelIGC<IbuildingEffectIGC>
 
         virtual void    MakeUnhitable(void)
         {
-            assert (m_pasteroid);
+            ZAssert (m_pasteroid);
             m_pasteroid = NULL;
 
             TmodelIGC<IbuildingEffectIGC>::MakeUnhitable();        //Virtual wrapper for a non-virtual function
@@ -314,8 +314,8 @@ class CbuildingEffectIGC : public TmodelIGC<IbuildingEffectIGC>
             if ((now >= m_timeShrink) && m_pshipBuilder)
             {
                 //transform the asteroid into the station
-                assert (m_pstationType);
-                assert (m_pside);
+                ZAssert (m_pstationType);
+                ZAssert (m_pside);
 
                 GetMyMission()->GetIgcSite()->SendChatf(m_pshipBuilder, CHAT_TEAM, m_pside->GetObjectID(),
                                                         m_pstationType->GetCompletionSound(), 
@@ -343,7 +343,7 @@ class CbuildingEffectIGC : public TmodelIGC<IbuildingEffectIGC>
 
                 IasteroidIGC*   pasteroid = m_pasteroid;
                 m_pasteroid->SetBuildingEffect(NULL);     //Clear the building effect so it isn't nuked along with the asteroid
-                assert (m_pasteroid == NULL);
+                ZAssert (m_pasteroid == NULL);
 
                 GetMyMission()->GetIgcSite()->BuildStation(pasteroid,
                                                            m_pside,

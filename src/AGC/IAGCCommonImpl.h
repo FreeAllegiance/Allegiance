@@ -144,7 +144,7 @@ public:
 /*  STDMETHODIMP get_UniqueID(AGCUniqueID* pObjectID)
   {
     debugf("IAGCCommonImpl::get_UniqueID:()\n");
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pObjectID, (AGCUniqueID)GetIGC()); // return IGC ptr for now, TODO: make better
     return S_OK;
   }

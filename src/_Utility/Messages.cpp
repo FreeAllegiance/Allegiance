@@ -176,13 +176,13 @@ void VerifyMessage(LPBYTE pb, CB cbTotal)
   while (cbRunning < cbTotal)
   {
     FEDMESSAGE * pfm = (FEDMESSAGE *) pb;
-    assert(pfm->cbmsg > 0);
-    assert(pfm->fmid > 0);
+    ZAssert(pfm->cbmsg > 0);
+    ZAssert(pfm->fmid > 0);
     cbRunning += pfm->cbmsg;
     pb += pfm->cbmsg;
     cMsgs++;
   }
-  assert(cbRunning == cbTotal);
+  ZAssert(cbRunning == cbTotal);
 #endif
 }
 
@@ -272,7 +272,7 @@ FedMessaging::FedMessaging(IFedMessagingSite * pfmSite) :
   m_pHostAddress(NULL), // KGJV pigs - was uninitialized
   m_pDeviceAddress(NULL) // KGJV pigs - was uninitialized
 {
-  assert (pfmSite);
+  ZAssert (pfmSite);
   InitializeCriticalSection( &m_csMsgList );
 }
 
@@ -296,7 +296,7 @@ FedMessaging::~FedMessaging()
  */
 void FedMessaging::SetDefaultRecipient(CFMRecipient * precip, FMGuaranteed fmg)
 {
-  assert(0 == CbUsedSpaceInOutbox()); // should call this BEFORE you queue any messages
+  ZAssert(0 == CbUsedSpaceInOutbox()); // should call this BEFORE you queue any messages
   m_precipDefault = precip;
   m_fmGuaranteedDefault = fmg;
 }
@@ -343,7 +343,7 @@ void * FedMessaging::PFedMsgCreate(bool fQueueMsg, BYTE * pbFMBuff, FEDMSGID fmi
 
   // BT - WOPR - If we aren't going to queue the message, then we don't care if we are connected. This supports AllegianceInterop clients.
   if(fQueueMsg == true)
-	assert (IsConnected());
+	ZAssert (IsConnected());
 
 StartOver: // if we overrun our buffer, need to start over after flushing it
   va_start(vl, cbfm); // make sure we have the last required parm
@@ -423,18 +423,18 @@ StartOver: // if we overrun our buffer, need to start over after flushing it
     {
       m_pbFMNext = pBlobDst;
       // check for overrun buffer--relies on unsigned CB, otherwise check for free space >= 0
-      assert(CbFreeSpaceInOutbox() <= GetBuffOutSize()); 
+      ZAssert(CbFreeSpaceInOutbox() <= GetBuffOutSize()); 
     }
     else // need to allocate space
     {
       // allocate a new blob to return the message in
-      assert (((FEDMESSAGE *)pbFM)->cbmsg <= sizeof(m_rgbbuffAlloc));
+      ZAssert (((FEDMESSAGE *)pbFM)->cbmsg <= sizeof(m_rgbbuffAlloc));
       BYTE * pbMsg = (BYTE *) GlobalAllocPtr(GMEM_MOVEABLE, ((FEDMESSAGE *)pbFM)->cbmsg);
       CopyMemory(pbMsg, pbFM, ((FEDMESSAGE *)pbFM)->cbmsg);
       pbFM = pbMsg;
     }
   }
-  assert(((FEDMESSAGE*)pbFM)->cbmsg > 0 && ((FEDMESSAGE*)pbFM)->fmid > 0);
+  ZAssert(((FEDMESSAGE*)pbFM)->cbmsg > 0 && ((FEDMESSAGE*)pbFM)->fmid > 0);
   return pbFM;
 }
 
@@ -453,16 +453,16 @@ FEDMESSAGE * FedMessaging::PfmGetNext(FEDMESSAGE * pfm)
   BYTE * pfmNext = (BYTE*)pfm + pfm->cbmsg;
 
   //  <NKM> 30-Aug-2004
-  // Changed the next assert from
-  //  assert(pfmNext >= BuffIn()  && (BYTE*) pfm < (BuffIn()) + sizeof(m_rgbbuffInPacket));
+  // Changed the next ZAssert from
+  //  ZAssert(pfmNext >= BuffIn()  && (BYTE*) pfm < (BuffIn()) + sizeof(m_rgbbuffInPacket));
   // as the 2nd half is now bogus as we don't have a fixed size input buffer no more :)
-  assert( pfmNext >= BuffIn() );
+  ZAssert( pfmNext >= BuffIn() );
 
   if (pfmNext - BuffIn() >= (int) PacketSize()) // no more messages in packet
   {
    //WLP = added connection test for disconnect from server interruption
    if (m_fConnected) // WLP - only if we have a connection
-    assert((BYTE*)pfmNext == BuffIn() + PacketSize()); // should be exactly equal
+    ZAssert((BYTE*)pfmNext == BuffIn() + PacketSize()); // should be exactly equal
 
 	return NULL;
   }
@@ -482,17 +482,17 @@ FEDMESSAGE * FedMessaging::PfmGetNext(FEDMESSAGE * pfm)
  */
 void FedMessaging::QueueExistingMsg(const FEDMESSAGE * pfm)
 {
-  assert(m_fConnected);
-  assert(pfm->cbmsg > 0);
-  assert(pfm->fmid > 0);
+  ZAssert(m_fConnected);
+  ZAssert(pfm->cbmsg > 0);
+  ZAssert(pfm->fmid > 0);
   if (CbFreeSpaceInOutbox() < pfm->cbmsg) // overrun buffer--send it if we have a default recipient
   {
-    assert(m_precipDefault);
+    ZAssert(m_precipDefault);
     SendToDefault(FM_FLUSH);
   }
   CopyMemory(m_pbFMNext, pfm, pfm->cbmsg);
   m_pbFMNext += pfm->cbmsg;
-  assert(CbFreeSpaceInOutbox() <= GetBuffOutSize()); 
+  ZAssert(CbFreeSpaceInOutbox() <= GetBuffOutSize()); 
 }
 
 
@@ -608,9 +608,9 @@ int FedMessaging::SendToDefault(FMFlush fmf)
  */
 int FedMessaging::SendMessages(CFMRecipient * precip, FMGuaranteed fmg, FMFlush fmf)
 {
-  assert(m_fConnected);
+  ZAssert(m_fConnected);
   // if they don't supply a recip, then they better have previously supplied one
-  assert (precip || m_precipDefault);
+  ZAssert (precip || m_precipDefault);
   if (precip)
   {
     m_precipDefault = NULL;
@@ -623,7 +623,7 @@ int FedMessaging::SendMessages(CFMRecipient * precip, FMGuaranteed fmg, FMFlush 
   HRESULT hr;
   hr = S_OK;
   int cbToSend = CbUsedSpaceInOutbox();
-  assert(cbToSend <= GetBuffOutSize());
+  ZAssert(cbToSend <= GetBuffOutSize());
 
   if (cbToSend > 0)
   {
@@ -713,7 +713,7 @@ HRESULT FedMessaging::OnSysMessage( const DPlayMsg& msg )
     }
 
     // Only get this if I'm a server
-    assert( m_pDirectPlayServer != 0 );
+    ZAssert( m_pDirectPlayServer != 0 );
 
     //  <NKM> 23-Aug-2004
     // Do the DPLAY bizare API thing...
@@ -740,7 +740,7 @@ HRESULT FedMessaging::OnSysMessage( const DPlayMsg& msg )
 		return hr;
 	}
 
-	assert( hr == DPNERR_BUFFERTOOSMALL );
+	ZAssert( hr == DPNERR_BUFFERTOOSMALL );
 
     pPlayerInfo = (DPN_PLAYER_INFO*) new BYTE[dwSize];
     ZeroMemory( pPlayerInfo, dwSize );
@@ -1111,7 +1111,7 @@ HRESULT FedMessaging::ReceiveMessages()
  */
 HRESULT FedMessaging::ConnectToDPAddress(LPVOID pvAddress)
 {
-  assert(0);
+  ZAssert(0);
   return DPN_OK;
 //   HRESULT hr = m_pDirectPlay->InitializeConnection(pvAddress, 0);
 //   if (FAILED(hr))
@@ -1137,17 +1137,17 @@ HRESULT FedMessaging::ConnectToDPAddress(LPVOID pvAddress)
  */
 HRESULT FedMessaging::Connect(const char * szAddress)
 {
-    assert(0);
+    ZAssert(0);
   return DPN_OK;
-//   assert(m_pDirectPlay);
-//   assert(!m_fConnected);
+//   ZAssert(m_pDirectPlay);
+//   ZAssert(!m_fConnected);
 //   void * pvAddress = NULL;
 //   DWORD dwAddressSize;
 //   HRESULT hr = E_FAIL;
 //   // Find out how big the address buffer needs to be--intentional fail 1st time
 //   hr = m_pDirectPlayLobby->CreateAddress(DPSPGUID_TCPIP, DPAID_INet, szAddress,
 //           lstrlen(szAddress) + 1, pvAddress, &dwAddressSize);
-//   assert(DPERR_BUFFERTOOSMALL == hr);
+//   ZAssert(DPERR_BUFFERTOOSMALL == hr);
     
 //   pvAddress = new char[dwAddressSize];
 //   ZSucceeded(m_pDirectPlayLobby->CreateAddress(DPSPGUID_TCPIP, DPAID_INet, szAddress,
@@ -1236,9 +1236,9 @@ bool FedMessaging::KillSvr()
 HRESULT FedMessaging::InitDPlayClient()
 {
   HRESULT hr = E_FAIL;
-  assert( !m_fConnected);
-  assert( !m_pDirectPlayClient );
-  assert( !m_pDirectPlayServer );
+  ZAssert( !m_fConnected);
+  ZAssert( !m_pDirectPlayClient );
+  ZAssert( !m_pDirectPlayServer );
 
   // Create an IDirectPlay interface
   m_pfmSite->OnPreCreate(this);
@@ -1282,9 +1282,9 @@ HRESULT FedMessaging::InitDPlayClient()
 HRESULT FedMessaging::InitDPlayServer()
 {
   HRESULT hr = E_FAIL;
-  assert( !m_fConnected);
-  assert( !m_pDirectPlayClient );
-  assert( !m_pDirectPlayServer );
+  ZAssert( !m_fConnected);
+  ZAssert( !m_pDirectPlayClient );
+  ZAssert( !m_pDirectPlayServer );
 
   // Create an IDirectPlay interface
   m_pfmSite->OnPreCreate(this);
@@ -1342,7 +1342,7 @@ HRESULT FedMessaging::HostSession( GUID guidApplication, bool fKeepAlive, HANDLE
 {
   HRESULT hr = E_FAIL;
 
-  assert(!m_fConnected);
+  ZAssert(!m_fConnected);
   if (false) // TODO: How do we know when to make sure dplaysvr isn't hosed?
   {
     if (!KillSvr())
@@ -1552,7 +1552,7 @@ HRESULT FedMessaging::JoinSessionInstance( GUID guidApplication, GUID guidInstan
   if ( !m_pDirectPlayClient ) InitDPlayClient(); // WLP - make client when needed
   // WLP - end init code
 
-  assert (m_pDirectPlayClient );
+  ZAssert (m_pDirectPlayClient );
 
   if ( !m_pDirectPlayClient )
     return E_FAIL;
@@ -1651,7 +1651,7 @@ CFMGroup * FedMessaging::GetGroupFromDpid(DPID dpid)
 
 HRESULT FedMessaging::GetIPAddress(CFMConnection & cnxn, char szRemoteAddress[64])
 {
-  //assert( m_pDirectPlayServer != 0 );
+  //ZAssert( m_pDirectPlayServer != 0 );
 
   IDirectPlay8Address* pAddress;
 
@@ -1693,7 +1693,7 @@ HRESULT FedMessaging::GetIPAddress(CFMConnection & cnxn, char szRemoteAddress[64
 
 HRESULT FedMessaging::GetListeningPort(DWORD* dwPort)	// mdvalley: Finds the port the server is listening at
 {
-	assert(m_pDirectPlayServer);
+	ZAssert(m_pDirectPlayServer);
 
 	if(!m_pDirectPlayServer)
 		return E_FAIL;			// needs a better error code, or something.
@@ -1760,7 +1760,7 @@ hr = InitDPlayClient();
   // restore the hourglass cursor
   SetCursor(LoadCursor(NULL, IDC_WAIT));
 
-  assert( m_pDirectPlayClient ); // WLP 2005 - uncommented
+  ZAssert( m_pDirectPlayClient ); // WLP 2005 - uncommented
 
   DPN_APPLICATION_DESC   dpnAppDesc;
   IDirectPlay8Address*   pDP8AddressHost  = 0;
@@ -1917,7 +1917,7 @@ void FedMessaging::SetSessionDetails(char * szDetails) // tokenized name/value p
   //  <NKM> 07-Aug-2004
   // Change to use Application Desc from DPlay4 Session Desc structures
   DWORD size = 0;
-  assert( m_pDirectPlayServer );
+  ZAssert( m_pDirectPlayServer );
   HRESULT hr = m_pDirectPlayServer->GetApplicationDesc( 0, &size, 0 );
   if( hr != DPNERR_BUFFERTOOSMALL )
   {
@@ -1943,7 +1943,7 @@ void FedMessaging::SetSessionDetails(char * szDetails) // tokenized name/value p
 DWORD FedMessaging::GetCountConnections()
 {
     DWORD size = 0; //sizeof( DPN_APPLICATION_DESC );
-    assert( m_pDirectPlayServer );
+    ZAssert( m_pDirectPlayServer );
 
     // first get size we need
     HRESULT hr2 = m_pDirectPlayServer->GetApplicationDesc( 0, &size, 0 );
@@ -2007,7 +2007,7 @@ CFMConnection::CFMConnection(FedMessaging * pfm, const char * szName, DPID dpid)
     m_cAbsentCount(0),
     m_dwPrivate(0)
 {
-  assert(GetDPID() == dpid);
+  ZAssert(GetDPID() == dpid);
   // debugf("CFMConnection: pfm=%8x dpid=%8x, name=%s, playerdata(this)=%p\n", pfm, dpid, szName, this );
 }
 

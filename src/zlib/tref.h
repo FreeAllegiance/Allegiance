@@ -54,12 +54,22 @@ public:
 		return true;
 	}
 
+    static uint64_t& totalAdded() {
+        static uint64_t total;
+        return total;
+    }
+
+    static uint64_t& totalRemoved() {
+        static uint64_t total;
+        return total;
+    }
 
 #ifdef _DEBUG
 	virtual
 #endif
 		DWORD_OR_UINT32T __stdcall AddRef()
 	{
+        totalAdded()++;
 		return ++m_count;
 	}
 
@@ -73,6 +83,7 @@ public:
 		__try
 		{
 #endif
+            totalRemoved()++;
 			if (--m_count == 0) {
 				delete this;
 				return 0;
@@ -87,7 +98,6 @@ public:
 		return m_count;
 	}
 };
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // Object Interface

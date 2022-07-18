@@ -24,11 +24,11 @@ extern "C" const CLSID CLSID_AGCGlobal;
       {
         hr = _Module.GetClassObject(CLSID_AGCGlobal, IID_IClassFactory,
           (void**)&m_spcf);
-        assert(SUCCEEDED(hr) && NULL != m_spcf);
+        ZAssert(SUCCEEDED(hr) && NULL != m_spcf);
       }
       IAGCGlobalPtr spGlobal;
       hr = m_spcf->CreateInstance(NULL, IID_IAGCGlobal, (void**)&spGlobal);
-      assert(NULL != spGlobal);
+      ZAssert(NULL != spGlobal);
       return spGlobal;
     }
 
@@ -85,9 +85,9 @@ extern "C" const CLSID CLSID_AGCGlobal;
 
   #ifndef _assert_h_
 
-    #ifndef assert
-      #define assert(x) while (false) {}
-    #endif // !assert
+    #ifndef ZAssert
+      #define ZAssert(x) while (false) {}
+    #endif // !ZAssert
 
     inline void debugf(const char* , ...) {}    
   #endif // !_assert_h_
@@ -181,7 +181,7 @@ extern "C" const CLSID CLSID_AGCGlobal;
     #ifdef _DEBUG
       if (NULL == m_spGlobal)
         debugf("CAGCModule::GetAGCGlobal(): Init not successfully called!\n");
-      assert(NULL != m_spGlobal);
+      ZAssert(NULL != m_spGlobal);
     #endif // _DEBUG
     return m_spGlobal;
   }
@@ -196,7 +196,7 @@ extern "C" const CLSID CLSID_AGCGlobal;
 
     // Get the AGC resource module
     HINSTANCE hinst = GetAGCGlobal()->GetResourceInstance();
-    assert(hinst);
+    ZAssert(hinst);
 
     // Warning: Not thread-safe,
     //   (but it shouldn't matter, since this function will typically only be
@@ -229,7 +229,7 @@ extern "C" const CLSID CLSID_AGCGlobal;
     if (!IsRegistered())
     {
       HRESULT hr = Register();
-      assert(hr);
+      ZAssert(hr);
       if (FAILED(hr))
         return hr;
     }

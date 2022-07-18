@@ -164,7 +164,7 @@ void IExternalConnectionImpl<T>::DumpConnection(int nDirection,
     const LPCSTR pszClass = TCTypeName(T);
 
     // Format the method name string
-    assert(1 == nDirection || -1 == nDirection);
+    ZAssert(1 == nDirection || -1 == nDirection);
     const LPCSTR pszMethod =
       (nDirection > 0) ? "AddConnection" : "ReleaseConnection";
 

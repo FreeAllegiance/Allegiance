@@ -12,7 +12,6 @@
 #ifndef _WIN32_WINNT
   #define _WIN32_WINNT 0x0A00
 #endif
-#define __MODULE__ "PigSrv"                                                //
 
 //imago 10/14
 #undef _ATL_DEBUG_QI

@@ -204,8 +204,8 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
             if (cluster || pclusterOld)
             {
                 //Can't move to a cluster or move to a cluster without a hull
-                assert ((!cluster) || (m_myHullType.GetHullType() != NULL) || (m_pshipParent != NULL));
-                assert (GetSide() != NULL);
+                ZAssert ((!cluster) || (m_myHullType.GetHullType() != NULL) || (m_pshipParent != NULL));
+                ZAssert (GetSide() != NULL);
 
                 SetRipcordModel(NULL);
 
@@ -222,7 +222,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                     if (cluster)
                     {
                         //Can't be in a cluster and in a station simultaneously
-                        assert (m_station == NULL);
+                        ZAssert (m_station == NULL);
 
                         cluster->AddShip(this);
                         m_maxMineAmount = 0.0f;
@@ -310,8 +310,8 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
         }
         virtual void                SetFraction(float newVal)
         {
-            assert (newVal >= 0.0f);
-            assert (newVal <= 1.0f);
+            ZAssert (newVal >= 0.0f);
+            ZAssert (newVal <= 1.0f);
             m_fraction = newVal;
             if (newVal > m_fractionLastOrder)
                 m_fractionLastOrder = newVal;
@@ -340,7 +340,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
         // IscannerIGC
         bool            InScannerRange(ImodelIGC*   pModel) const
         {
-            assert (pModel);
+            ZAssert (pModel);
 
             bool    rc;
             if (m_pshipParent == NULL)
@@ -379,7 +379,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 
         bool             CanSee(ImodelIGC*   pModel) const
         {
-            assert (pModel);
+            ZAssert (pModel);
 
             IsideIGC*   side = GetSide();
 
@@ -456,7 +456,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                     s->AddRef();
                     s->AddShip(this);           //This also sets the ship's cluster to NULL
 
-                    assert (GetCluster() == NULL);
+                    ZAssert (GetCluster() == NULL);
 
                     if (m_bAutopilot)
                     {
@@ -515,12 +515,12 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 
             SetCluster(NULL);
             //TmodelIGC<IshipIGC>::SetCluster(NULL);
-            assert (m_station == NULL);
+            ZAssert (m_station == NULL);
 
             if (m_pshipParent != NULL)
             {
                 SetParentShip(NULL);
-                assert (m_myHullType.GetHullType() == NULL);
+                ZAssert (m_myHullType.GetHullType() == NULL);
             }
             else
             {
@@ -706,23 +706,23 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 
         virtual ImodelIGC*           GetCommandTarget(Command i)  const
         {
-            assert (i >= 0);
-            assert (i < c_cmdMax);
+            ZAssert (i >= 0);
+            ZAssert (i < c_cmdMax);
 
             return m_commandTargets[i];
         }
         virtual CommandID            GetCommandID(Command i) const
         {
-            assert (i >= 0);
-            assert (i < c_cmdMax);
+            ZAssert (i >= 0);
+            ZAssert (i < c_cmdMax);
 
             return m_commandIDs[i];
         }
         virtual void                 SetCommand(Command i, ImodelIGC* target, CommandID cid)
         {
             //debugf("%s: SetCommand(%d, %s in %s, %d)\n", GetName(), i, (target ? GetModelName(target) : "NULL"), ((target && target->GetCluster()) ? target->GetCluster()->GetName() : "-"), cid);
-            assert (i >= 0);
-            assert (i < c_cmdMax);
+            ZAssert (i >= 0);
+            ZAssert (i < c_cmdMax);
 
             CommandID cidOld = m_commandIDs[i];
             ImodelIGC*  pmodelOld = m_commandTargets[i];
@@ -806,7 +806,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
             if (ploadout)
             {
                 ploadout->hullID = m_myHullType.GetObjectID();
-                assert (ploadout->hullID != NA);
+                ZAssert (ploadout->hullID != NA);
 
                 ExpandedPartData*   ppd = ploadout->PartData0();
                 for (PartLinkIGC*   ppl = m_parts.first(); (ppl != NULL); ppl = ppl->next())
@@ -989,7 +989,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
         virtual bool                PurchaseShipLoadout(short                cbLoadout,
                                                         const ShipLoadout*   ploadout)
         {
-            assert (m_station);
+            ZAssert (m_station);
 
             //Did the hull change?
             IhullTypeIGC*   pht = m_myHullType.GetHullType();
@@ -1034,7 +1034,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                     if (m_station->CanBuy(ppt))
                     {
                         ppt = (IpartTypeIGC*)(m_station->GetSuccessor(ppt));
-                        assert (m_myHullType.CanMount(ppt, ppdNext->mountID));
+                        ZAssert (m_myHullType.CanMount(ppt, ppdNext->mountID));
 
                         IpartIGC*   ppart = CreateAndAddPart(ppt, ppdNext->mountID, ppdNext->amount);
                         ppart->Arm();
@@ -1157,7 +1157,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                                                      const Vector&              positionReference,
                                                      ServerHeavyShipUpdate*     pshipupdate) const
         {
-            assert (GetPosition().LengthSquared() != 0.0f);
+            ZAssert (GetPosition().LengthSquared() != 0.0f);
             pshipupdate->shipID = m_shipID;
 
             pshipupdate->time.Set(timeReference, GetMyLastUpdate());
@@ -1172,7 +1172,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 
         virtual void                ExportShipUpdate(ClientShipUpdate*     pshipupdate) const
         {
-            assert (GetPosition().LengthSquared() != 0.0f);
+            ZAssert (GetPosition().LengthSquared() != 0.0f);
 
             //Message generated on the client so convert to server time
             pshipupdate->time = GetMyMission()->GetIgcSite()->ServerTimeFromClientTime(GetMyLastUpdate());
@@ -1238,14 +1238,14 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 
         Mount   HitTreasure(TreasureCode treasureCode, ObjectID objectID, short amount)
         {
-            assert (m_myHullType.GetHullType());
+            ZAssert (m_myHullType.GetHullType());
 
             switch (treasureCode)
             {
                 case c_tcPart:
                 {
                     IpartTypeIGC*   ppt = GetMyMission()->GetPartType(objectID);
-                    assert (ppt);
+                    ZAssert (ppt);
 
                     //Can we carry the thing?
                     EquipmentType   et = ppt->GetEquipmentType();
@@ -1347,8 +1347,8 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                 break;
                 case c_tcFlag:
                 {
-                    assert (m_sidFlag == NA);
-                    assert (objectID != NA);
+                    ZAssert (m_sidFlag == NA);
+                    ZAssert (objectID != NA);
                     m_sidFlag = objectID;
                 }
                 break;
@@ -1406,16 +1406,16 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
         {
             if (m_turretID != turretID)
             {
-                assert (m_pshipParent);
+                ZAssert (m_pshipParent);
 
                 if (m_turretID != NA)
                 {
-                    assert (!m_pshipParent->GetHullType()->GetHardpointData(m_turretID).bFixed);
+                    ZAssert (!m_pshipParent->GetHullType()->GetHardpointData(m_turretID).bFixed);
 
                     IweaponIGC* pw = (IweaponIGC*)(m_pshipParent->GetMountedPart(ET_Weapon, m_turretID));
                     if (pw)
                     {
-                        assert (pw->GetGunner() == this);
+                        ZAssert (pw->GetGunner() == this);
                         pw->SetGunner(NULL);
                     }
                 }
@@ -1427,7 +1427,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                     IweaponIGC* pw = (IweaponIGC*)(m_pshipParent->GetMountedPart(ET_Weapon, m_turretID));
                     if (pw)
                     {
-                        assert (!m_pshipParent->GetHullType()->GetHardpointData(m_turretID).bFixed);
+                        ZAssert (!m_pshipParent->GetHullType()->GetHardpointData(m_turretID).bFixed);
                         pw->SetGunner(this);
                     }
                 }
@@ -1469,12 +1469,12 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 
         virtual void                AddChildShip(IshipIGC* pship)
         {
-            assert (pship);
+            ZAssert (pship);
             AddIbaseIGC((BaseListIGC*)&m_shipsChildren, pship);
         }
         virtual void                DeleteChildShip(IshipIGC* pship)
         {
-            assert (pship);
+            ZAssert (pship);
             DeleteIbaseIGC((BaseListIGC*)&m_shipsChildren, pship);
         }
 
@@ -1489,20 +1489,20 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 
         virtual IpartIGC*           CreateAndAddPart(IpartTypeIGC*  ppt, Mount mount, short amount)
         {
-            assert (ppt);
+            ZAssert (ppt);
 
-            assert (GetMountedPart(ppt->GetEquipmentType(), mount) == NULL);
-            assert (m_myHullType.CanMount(ppt, mount));
+            ZAssert (GetMountedPart(ppt->GetEquipmentType(), mount) == NULL);
+            ZAssert (m_myHullType.CanMount(ppt, mount));
 
             IpartIGC*   part = GetMyMission()->CreatePart(GetMyLastUpdate(), ppt);
-            assert (part);
+            ZAssert (part);
 
 			// Xynth -"Fix to avoid crash 8963864" 
 			if (part)
 			{
 				part->SetShip(this, mount);
-				assert(part->GetShip() == this);
-				assert(part->GetMountID() == mount);
+				ZAssert(part->GetShip() == this);
+				ZAssert(part->GetMountID() == mount);
 
 				part->SetAmount(amount);
 
@@ -1529,13 +1529,13 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 
         virtual float               GetRipcordTimeLeft(void) const
         {
-            // assert(fRipcordActive());
+            // ZAssert(fRipcordActive());
 
             return m_dtRipcordCountdown;
         }
         virtual void                ResetRipcordTimeLeft(void)
         {
-            assert (m_myHullType.GetHullType());
+            ZAssert (m_myHullType.GetHullType());
             m_dtRipcordCountdown = m_myHullType.GetRipcordSpeed();
         }
 
@@ -1744,15 +1744,15 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
         }
         virtual void                SetAutoDonate(IshipIGC* pship)
         {
-            assert (pship != this);
+            ZAssert (pship != this);
 
             //Anyone donating to me now donates to my new target
             if (pship)
             {
                 IsideIGC*   pside = GetSide();
-                assert (pside);
-                assert (pship->GetSide() == pside);
-                assert (pship->GetAutoDonate() == NULL);
+                ZAssert (pside);
+                ZAssert (pship->GetSide() == pside);
+                ZAssert (pship->GetAutoDonate() == NULL);
 
                 //Was anyone on my ide donating to me ... if so, they start donating to the new person
                 for (ShipLinkIGC*   psl = pside->GetShips()->first();
@@ -1919,7 +1919,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                 if (LegalCommand(m_commandIDs[c_cmdAccepted], m_commandTargets[c_cmdAccepted]) ||
                     PickDefaultOrder(pcluster, positionMe, true))
                 {
-                    assert (m_station);
+                    ZAssert (m_station);
                     IsideIGC*   psideMe = GetSide();
 
                     int     cEnemy = 0;
@@ -2053,13 +2053,13 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
             m_pbaseData = pbase;
             if (m_pilotType == c_ptBuilder)
             {
-                assert (pbase->GetObjectType() == OT_stationType);
+                ZAssert (pbase->GetObjectType() == OT_stationType);
                 m_abmOrders = ((IstationTypeIGC*)pbase)->GetBuildAABM();
             }
             else
             {
-                assert (m_pilotType == c_ptLayer);
-                assert ((pbase->GetObjectType() == OT_mineType) ||
+                ZAssert (m_pilotType == c_ptLayer);
+                ZAssert ((pbase->GetObjectType() == OT_mineType) ||
                         (pbase->GetObjectType() == OT_probeType));
             }
         }
@@ -2282,7 +2282,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                         // Check if there is an old player command we should be continuing
                         if (!pmodel && m_commandTargets[c_cmdQueued]) {
                             IclusterIGC* pcommandCluster = m_commandTargets[c_cmdQueued]->GetCluster();
-                            assert(pcommandCluster);
+                            ZAssert(pcommandCluster);
                             pmodel = FindTarget(this,
                                 c_ttNeutral | c_ttAsteroid | c_ttNearest |
                                 c_ttLeastTargeted | c_ttCowardly,
@@ -2398,7 +2398,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 
                     if (pmodel)
                     {
-                        assert (m_pbaseData);
+                        ZAssert (m_pbaseData);
 
                         CommandID   cid = (m_abmOrders != c_aabmBuildable) ? c_cidBuild : c_cidGoto;
 
@@ -2464,7 +2464,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 
         bool    IsGhost(void) const
         {
-            assert (GetMyMission());
+            ZAssert (GetMyMission());
             return m_nDeaths > GetMyMission()->GetMissionParams()->iLives;
         }
 

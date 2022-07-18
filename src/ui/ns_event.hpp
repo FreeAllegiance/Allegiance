@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "ui.h"
 #include "items.hpp"
+#include "UiState.h"
 
 class EventToBoolean : public ModifiableBoolean, IEventSink {
     TRef<IEventSource> m_pEnableSource;
@@ -243,12 +243,57 @@ public:
             EventVoidToOne<float>::CreateOnEventPropagatorFunction(),
             EventVoidToOne<Point>::CreateOnEventPropagatorFunction(),
             EventVoidToOne<ZString>::CreateOnEventPropagatorFunction(),
-            EventVoidToMultiple<ZString, ZString, ZString>::CreateOnEventPropagatorFunction()
+            //EventVoidToMultiple<ZString, ZString, ZString>::CreateOnEventPropagatorFunction(),
+                [](sol::this_state state, const std::shared_ptr<SolEventSinkInitializer>& psinkInitializer, TRef<SolEventSource> psource, sol::function transformer) {
+                sol::object start = psource->MakeSolObject(state);
+
+                sol::function_result transformer_result = transformer(start);
+
+                std::vector<sol::object> obj;
+                for (sol::object entry : transformer_result) {
+                    obj.push_back(entry);
+                }
+
+                TRef<IEventSink> sink = psinkInitializer->Initialize(psource, obj);
+                psource->AddSink(sink);
+            },
+            [](sol::this_state state, const std::shared_ptr<SolEventSinkInitializer>& psinkInitializer, TRef<SolEventSource> psource) {
+                sol::object start = psource->MakeSolObject(state);
+
+                TRef<IEventSink> sink = psinkInitializer->Initialize(psource, { start });
+                psource->AddSink(sink);
+            }
+            //[](sol::this_state state, SolEventSinkInitializer* psinkInitializer, TRef<SolEventSource> psource, std::function<sol::object(sol::object)> transformer) {
+            //    sol::object start = psource->MakeSolObject(state);
+
+            //    sol::object transformer_result = start;
+
+            //    if (start.is<sol::variadic_results>()) {
+
+            //        //sol::variadic_results start_variadic = start.as<sol::variadic_results>();
+            //        //((std::function<sol::object(sol::variadic_results)>)transformer)(start_variadic);
+            //    }
+            //    else {
+            //        transformer_result = transformer(start);
+            //    }
+
+            //    TRef<IEventSink> sink = psinkInitializer->Initialize(psource, transformer_result);
+            //    psource->AddSink(sink);
+            //},
+            //[](sol::this_state state, SolEventSinkInitializer* psinkInitializer, TRef<SolEventSource> psource) {
+            //    sol::object start = psource->MakeSolObject(state);
+
+            //    sol::object transformer_result = start;
+
+            //    TRef<IEventSink> sink = psinkInitializer->Initialize(psource, transformer_result);
+            //    psource->AddSink(sink);
+            //}
         );
 
-        table["Get"] = [](const TRef<Image>& image, std::string string) {
+        table["Get"] = [](sol::this_state L, const TRef<Image>& image, std::string string) {
             MouseEventImage* ptr = (MouseEventImage*)(Image*)image;
-            return ptr->GetEventSource(string);
+
+            return SolEventSourceVoid::Create(ptr->GetEventSource(string));
         };
 
         table["GetPoint"] = [](const TRef<Image>& image, std::string string) {
@@ -257,6 +302,9 @@ public:
         };
 
         table["Filter"] = sol::overload(
+            [](const TRef<SolEventSource>& pEventSource, const TRef<Boolean>& active) {
+                return (TRef<SolEventSource>)new SolEventSourceFiltered(pEventSource, active);
+            },
             [](const TRef<IEventSource>& pEventSource, const TRef<Boolean>& active) {
                 //this should be optimized so that the boolean value switches the link on off instead of filtering each entry
                 //memory leak here when the source isn't cleaned up
@@ -281,7 +329,7 @@ public:
             std::map<TRef<IEventSource>, TRef<Boolean>> mapOptions;
 
             table.for_each([&mapOptions](sol::object key, sol::object value) {
-                TRef<IEventSource> mapKey = key.as<const TRef<IEventSource>&>();
+                TRef<IEventSource> mapKey = key.as<const TRef<SolEventSource>&>();
                 mapOptions[mapKey] = wrapValue<bool>(value);
             });
             
@@ -292,7 +340,7 @@ public:
             std::map<TRef<IEventSource>, TRef<Number>> mapOptions;
 
             table.for_each([&mapOptions](sol::object key, sol::object value) {
-                TRef<IEventSource> mapKey = key.as<const TRef<IEventSource>&>();
+                TRef<IEventSource> mapKey = key.as<const TRef<SolEventSource>&>();
                 mapOptions[mapKey] = wrapValue<float>(value);
             });
 
@@ -303,7 +351,7 @@ public:
             std::map<TRef<IEventSource>, TRef<StringValue>> mapOptions;
 
             table.for_each([&mapOptions](sol::object key, sol::object value) {
-                TRef<IEventSource> mapKey = key.as<const TRef<IEventSource>&>();
+                TRef<IEventSource> mapKey = key.as<const TRef<SolEventSource>&>();
                 mapOptions[mapKey] = wrapString(value);
             });
 
@@ -314,7 +362,7 @@ public:
             std::map<TRef<IEventSource>, TRef<Image>> mapOptions;
 
             table.for_each([&mapOptions](sol::object key, sol::object value) {
-                TRef<IEventSource> mapKey = key.as<const TRef<IEventSource>&>();
+                TRef<IEventSource> mapKey = key.as<const TRef<SolEventSource>&>();
                 mapOptions[mapKey] = value.as<const TRef<Image>&>();
             });
 

@@ -21,7 +21,7 @@ HRESULT         CcivilizationIGC::Initialize(ImissionIGC*   pMission,
                                              const void*    data,
                                              int            dataSize)
 {
-    assert (pMission);
+    ZAssert (pMission);
     m_pMission = pMission;
 
 	ZRetailAssert (data && (dataSize == sizeof(DataCivilizationIGC)));
@@ -30,12 +30,12 @@ HRESULT         CcivilizationIGC::Initialize(ImissionIGC*   pMission,
     pMission->AddCivilization(this);
 
     m_pstInitial = pMission->GetStationType(m_data.initialStationTypeID);
-    assert (m_pstInitial);
+    ZAssert (m_pstInitial);
     m_pstInitial->AddRef();
-    assert (m_pstInitial->HasCapability(c_sabmRestart));
+    ZAssert (m_pstInitial->HasCapability(c_sabmRestart));
 
     m_phtLifepod = pMission->GetHullType(m_data.lifepod);
-    assert (m_phtLifepod);
+    ZAssert (m_phtLifepod);
     m_phtLifepod->AddRef();
 
     return S_OK;
@@ -43,11 +43,11 @@ HRESULT         CcivilizationIGC::Initialize(ImissionIGC*   pMission,
 
 void            CcivilizationIGC::Terminate(void)
 {
-    assert (m_pstInitial);
+    ZAssert (m_pstInitial);
     m_pstInitial->Release();
     m_pstInitial = NULL;
 
-    assert (m_phtLifepod);
+    ZAssert (m_phtLifepod);
     m_phtLifepod->Release();
     m_phtLifepod = NULL;
 

@@ -95,7 +95,7 @@ inline void TCAutoMutex::Lock()
 
 inline DWORD TCAutoMutex::Lock(DWORD dwMilliseconds)
 {
-  assert(!m_hmtx.IsNull());
+  ZAssert(!m_hmtx.IsNull());
   return WaitForSingleObject(m_hmtx, dwMilliseconds);
 }
 

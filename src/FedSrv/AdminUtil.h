@@ -134,7 +134,7 @@ public:
 
     if (m_iidInterface == NULL)
     {
-        assert(m_pCAdminLimbObj == NULL);
+        ZAssert(m_pCAdminLimbObj == NULL);
 
         RETURN_FAILED(m_pCAdminLimbObj->CreateInstance(&m_pCAdminLimbObj)); // CreateInstance() is static
         
@@ -143,7 +143,7 @@ public:
         //
         m_pCAdminLimbObj->SetBaseSponsor(this);
     }
-    assert(m_pCAdminLimbObj);
+    ZAssert(m_pCAdminLimbObj);
 
     hr = m_pCAdminLimbObj->QueryInterface(iidInterface, &m_iidInterface);
 

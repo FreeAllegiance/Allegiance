@@ -13,7 +13,7 @@ tlsUINT32 Time::s_dwNegativeOffset;
 
 void    Time::Pause (void)
 {
-    assert (! IsPaused ());
+    ZAssert (! IsPaused ());
 
   #ifdef _DEBUG_TRAINING
     // save the current time as the clock
@@ -32,7 +32,7 @@ bool    Time::IsPaused (void)
 
 void    Time::Continue (void)
 {
-    assert (IsPaused ());
+    ZAssert (IsPaused ());
 
   #ifdef _DEBUG_TRAINING
     // get the current time to see how long the system was paused,

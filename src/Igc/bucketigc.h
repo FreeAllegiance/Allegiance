@@ -39,7 +39,7 @@ class       CbucketIGC : public IbucketIGC
 
         virtual void    Update(Time now)
         {
-            assert (now >= m_lastUpdate);
+            ZAssert (now >= m_lastUpdate);
 
             if (m_investedMoney > 0)
             {
@@ -53,7 +53,7 @@ class       CbucketIGC : public IbucketIGC
                         ForceComplete(now);
                     }
 
-                    assert (m_price > 0);
+                    ZAssert (m_price > 0);
                     {
                         DWORD   mim = 1000 * ((m_investedMoney * m_timeToBuild) / m_price);
                         if (m_investedMilliseconds > mim)
@@ -83,7 +83,7 @@ class       CbucketIGC : public IbucketIGC
         virtual short                   GetObjectID(void) const
         {
             const short c_bucketMultiplier = 0x7fff / (1 + OT_bucketEnd - OT_bucketStart);
-            assert (c_bucketMultiplier >= 500);
+            ZAssert (c_bucketMultiplier >= 500);
 
             return m_data.buyable->GetObjectID() +
                    (m_data.buyable->GetObjectType() - OT_bucketStart) * c_bucketMultiplier;
@@ -156,14 +156,14 @@ class       CbucketIGC : public IbucketIGC
 
         virtual void                    SetPrice(Money m)
         {
-            assert (m_investedMoney == 0);
-            assert (m > 0);
+            ZAssert (m_investedMoney == 0);
+            ZAssert (m > 0);
             m_price = m;
         }
 
         virtual int                     GetPercentBought(void) const
         {
-            assert (m_price > 0);
+            ZAssert (m_price > 0);
             return ((100 * m_investedMoney) / m_price);
         }
         virtual int                     GetPercentComplete(void) const
@@ -179,7 +179,7 @@ class       CbucketIGC : public IbucketIGC
 
         virtual void                    ForceComplete(Time now)
         {
-            assert (m_data.side->CanBuy(m_data.buyable));
+            ZAssert (m_data.side->CanBuy(m_data.buyable));
 
             switch(m_data.buyable->GetObjectType())
             {
@@ -199,7 +199,7 @@ class       CbucketIGC : public IbucketIGC
                         StationLinkIGC*    psl = m_data.side->GetStations()->first();
                         while (true)
                         {
-                            assert (psl);
+                            ZAssert (psl);
                             if (psl->data()->CanBuy(m_data.buyable))
                             {
                                 pstation = psl->data();
@@ -223,7 +223,7 @@ class       CbucketIGC : public IbucketIGC
                         StationLinkIGC*    psl = m_data.side->GetStations()->first();
                         while (true)
                         {
-                            assert (psl);
+                            ZAssert (psl);
                             if (psl->data()->CanBuy(m_data.buyable))
                             {
                                 pstation = psl->data();
@@ -257,7 +257,7 @@ class       CbucketIGC : public IbucketIGC
                 }
                 break;
                 default:
-                    assert (false);
+                    ZAssert (false);
             }
         }
 

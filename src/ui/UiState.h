@@ -1,13 +1,12 @@
 #pragma once
 
-#ifndef __MODULE__
-#define __MODULE__ "Ui"
-#endif
-#include "model.h"
-
 #include <functional>
 #include <list>
 #include <memory>
+
+#include "model.h"
+#include "event.h"
+#include "valuetransform.h"
 
 #include "Exposer.h"
 
@@ -62,12 +61,14 @@ public:
 };
 
 class UiState : public UiObjectContainer {
+public:
+    typedef std::map<std::string, std::shared_ptr<Exposer>> UiState::InnerMapType;
 
 private:
     std::string m_name;
 public:
     using UiObjectContainer::UiObjectContainer;
-    UiState(std::string name, std::map<std::string, std::shared_ptr<Exposer>> map = {}) :
+    UiState(std::string name, UiState::InnerMapType map = {}) :
         m_name(name),
         UiObjectContainer(map)
     {}
@@ -153,6 +154,40 @@ public:
 typedef UiList<TRef<UiObjectContainer>> ContainerList;
 typedef UiList<TRef<Image>> ImageList;
 
+template <typename T>
+class TableUiList : public UiList<T> {
+private:
+
+public:
+    TableUiList(sol::table table) : 
+        UiList({})
+    {
+        std::vector<T> list;
+
+        table.for_each([&list](const sol::object& key, const sol::object& value) {
+            list.push_back(value.as<T>());
+        });
+
+        GetListInternal() = list;
+    }
+};
+
+template <typename EntryType, typename ...Types>
+class TransformedList : public UiList<EntryType> {
+
+private:
+    std::function<std::vector<EntryType>(Types...)> m_callback;
+
+public:
+    TransformedList(std::function<std::vector<EntryType>(Types...)> callback, TRef<TStaticValue<Types>>... values) :
+        UiList<EntryType>({}),
+        m_callback(callback)
+    {
+        AddChild(new CallbackWhenChanged<Types...>([this](Types... values) {
+            GetListInternal() = m_callback(values...);
+        }, values...));
+    }
+};
 
 template <typename ResultEntryType, typename OriginalEntryType>
 class MappedList : public UiList<ResultEntryType> {
@@ -181,5 +216,177 @@ public:
         }
 
         GetListInternal() = list;
+    }
+};
+
+class CallbackSinkWithTRef : public CallbackSink {
+private:
+    std::vector<TRef<IObject>> m_vector;
+
+public:
+    CallbackSinkWithTRef(std::function<void()> callback) :
+        CallbackSink(callback)
+    {}
+
+    void AddTRef(TRef<IObject> value) {
+        m_vector.push_back(value);
+    }
+
+};
+
+class SolEventSource : public EventSourceImpl {
+
+public:
+    SolEventSource() :
+        EventSourceImpl()
+    {
+    }
+
+    virtual ~SolEventSource() {
+    }
+
+    virtual sol::object MakeSolObject(sol::this_state L) = 0;
+};
+
+class SolEventSinkInitializer {
+    typedef std::function<std::function<void()>(std::vector<sol::object>)> CallbackType;
+
+private:
+    CallbackType m_funcInitialize;
+
+public:
+    SolEventSinkInitializer(CallbackType funcCallback) :
+        m_funcInitialize(funcCallback)
+    {}
+
+    TRef<IEventSink> Initialize(TRef<SolEventSource> psource, std::vector<sol::object> object) {
+        auto sink = new CallbackSinkWithTRef(m_funcInitialize(object));
+
+        //workaround
+        sink->AddTRef(psource);
+
+        return sink;
+    }
+
+    static std::shared_ptr<SolEventSinkInitializer> Create(CallbackType callbackInitializer) {
+        return std::make_shared<SolEventSinkInitializer>(callbackInitializer);
+    }
+
+    static std::shared_ptr<SolEventSinkInitializer> CreateFromCallback(std::function<void()> callback) {
+        return std::make_shared<SolEventSinkInitializer>([callback](std::vector<sol::object> obj) {
+            return [callback]() {
+                callback();
+            };
+        });
+    }
+
+    template <typename T>
+    static std::shared_ptr<SolEventSinkInitializer> CreateFromModifiable(TRef<SimpleModifiableValue<T>> pvalue) {
+        return std::make_shared<SolEventSinkInitializer>([pvalue](std::vector<sol::object> obj) {
+            TRef<TStaticValue<T>> end = obj.at(0).as<TRef<TStaticValue<T>>>();
+            return [pvalue, end]() {
+                pvalue->SetValue(end->GetValue());
+            };
+        });
+    }
+
+    template <typename T>
+    static std::shared_ptr<SolEventSinkInitializer> CreateFromSink(TRef<typename TEvent<T>::Sink> psink) {
+        return std::make_shared<SolEventSinkInitializer>([psink](std::vector<sol::object> obj) {
+            TRef<TStaticValue<T>> pvalue = obj.at(0).as<TRef<TStaticValue<T>>>();
+
+            return [psink, pvalue]() {
+                psink->OnEvent(nullptr, pvalue->GetValue());
+            };
+        });
+    }
+};
+
+class SolEventSourceFiltered : public SolEventSource {
+private:
+    TRef<SolEventSource> m_psource;
+    IEventSink* m_psink;
+    TRef<Boolean> m_pactive;
+
+public:
+    SolEventSourceFiltered(TRef<SolEventSource> psource, TRef<Boolean> pactive) :
+        m_psource(psource),
+        m_pactive(pactive),
+        SolEventSource(),
+        m_psink(nullptr)
+    {
+        m_psink = new CallbackSink([this]() {
+            if (this->m_pactive->GetValue()) {
+                this->Trigger();
+            }
+        });
+        m_psource->AddSink(m_psink);
+    }
+
+    ~SolEventSourceFiltered() override {
+        if (m_psink) {
+            m_psource->RemoveSink(m_psink);
+        }
+    }
+
+    sol::object MakeSolObject(sol::this_state L) override {
+        return m_psource->MakeSolObject(L);
+    }
+};
+
+class SolEventSourceVoid : public SolEventSource {
+private:
+    TRef<IEventSource> m_psource;
+    TRef<IEventSink> m_psink;
+
+public:
+    SolEventSourceVoid(TRef<IEventSource> source) :
+        m_psource(source)
+    {
+        m_psink = new CallbackSink([this]() {
+            this->Trigger();
+        });
+        source->AddSink(m_psink);
+    }
+
+    ~SolEventSourceVoid() {
+        m_psource->RemoveSink(m_psink);
+    }
+
+    sol::object MakeSolObject(sol::this_state L) override {
+        return sol::nil;
+    }
+
+    static TRef<SolEventSource> Create(TRef<IEventSource> source) {
+        return new SolEventSourceVoid(source);
+    }
+};
+
+template <typename T>
+class SolEventSourceFromValue : public SolEventSource, public TEvent<T>::SourceImpl {
+    typedef TRef<TStaticValue<T>> WrappedType;
+private:
+    WrappedType m_value;
+    IEventSink* m_sink;
+
+public:
+    SolEventSourceFromValue() :
+        m_value(WrappedType()),
+        SolEventSource(),
+        TEvent<T>::SourceImpl()
+    {
+        m_sink = new CallbackValueSink<T>([this](T value) {
+            m_value->SetValue(value.as<T>());
+            SolEventSource::Trigger();
+        });
+        TEvent<T>::SourceImpl::AddSink(m_sink)
+    }
+
+    ~SolEventSourceFromValue() {
+        delete m_sink;
+    }
+
+    sol::object MakeSolObject(sol::this_state L) override {
+        return sol::make_object<WrappedType>(L, m_value);
     }
 };

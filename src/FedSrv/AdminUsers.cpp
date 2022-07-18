@@ -111,7 +111,7 @@ STDMETHODIMP CAdminUsers :: get__NewEnum(IUnknown** ppunkEnum)
   typedef CComObject<CComEnum<IEnumVARIANT, &IID_IEnumVARIANT, VARIANT,
     _Copy<VARIANT> > > CEnum;
   CEnum* pEnum = new CEnum;
-  assert(NULL != pEnum);
+  ZAssert(NULL != pEnum);
 
   //
   // Copy the pCAdminGame elements into to a temporary CComVariant vector

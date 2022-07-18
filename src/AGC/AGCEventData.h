@@ -94,7 +94,7 @@ inline CAGCEventData::CAGCEventData(AGCEventID idEvent, LPCSTR pszContext,
 
   // Allocate memory for the data
   m_pbData = new BYTE[m_cbData];
-  assert(m_pbData);
+  ZAssert(m_pbData);
 
   // Copy the fixed data to the memory
   XData* pFixed = reinterpret_cast<XData*>(m_pbData);
@@ -141,28 +141,28 @@ inline BYTE* CAGCEventData::Detach(UINT* pcbData)
 
 inline AGCEventID CAGCEventData::GetEventID() const
 {
-  assert(m_pbData && m_cbData >= sizeof(XData));
+  ZAssert(m_pbData && m_cbData >= sizeof(XData));
   XData* pData = reinterpret_cast<XData*>(m_pbData);
   return pData->m_id;
 }
 
 inline DATE CAGCEventData::GetTime() const
 {
-  assert(m_pbData && m_cbData >= sizeof(XData));
+  ZAssert(m_pbData && m_cbData >= sizeof(XData));
   XData* pData = reinterpret_cast<XData*>(m_pbData);
   return pData->m_time;
 }
 
 inline long CAGCEventData::GetSubjectID() const
 {
-  assert(m_pbData && m_cbData >= sizeof(XData));
+  ZAssert(m_pbData && m_cbData >= sizeof(XData));
   XData* pData = reinterpret_cast<XData*>(m_pbData);
   return pData->m_idSubject;
 }
 
 inline long CAGCEventData::GetArgCount() const
 {
-  assert(m_pbData && m_cbData >= sizeof(XData));
+  ZAssert(m_pbData && m_cbData >= sizeof(XData));
   XData* pData = reinterpret_cast<XData*>(m_pbData);
   return pData->m_cArgTriplets;
 }

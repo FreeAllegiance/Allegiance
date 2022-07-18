@@ -18,7 +18,7 @@
 // CprojectileTypeIGC
 HRESULT     CprojectileTypeIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
 {
-    assert (pMission);
+    ZAssert (pMission);
     m_pMission = pMission;
 
     ZRetailAssert (data && (dataSize == sizeof(DataProjectileTypeIGC)));

@@ -56,7 +56,7 @@ extern "C" int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
   #else
     TCCoInit coInit();
   #endif
-  assert(coInit.Succeeded());
+  ZAssert(coInit.Succeeded());
 
   // Initialize the ATL _Module object
   _Module.Init(ObjectMap, GetModuleHandle(NULL), &LIBID_PigsLib);

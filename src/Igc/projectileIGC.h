@@ -72,8 +72,8 @@ class CprojectileIGC : public TmodelIGC<IprojectileIGC>
         }
         virtual void                SetLauncher(ImodelIGC* newVal)
         {
-            assert (!m_launcher);       //Only set once
-            assert (newVal);
+            ZAssert (!m_launcher);       //Only set once
+            ZAssert (newVal);
 
             newVal->AddRef();
             m_launcher = newVal;
@@ -83,8 +83,8 @@ class CprojectileIGC : public TmodelIGC<IprojectileIGC>
         }
         virtual void                SetGunner(IshipIGC* newVal)
         {
-            assert (!m_launcher);       //Only set once
-            assert (newVal);
+            ZAssert (!m_launcher);       //Only set once
+            ZAssert (newVal);
 
             newVal->AddRef();
             m_launcher = newVal;

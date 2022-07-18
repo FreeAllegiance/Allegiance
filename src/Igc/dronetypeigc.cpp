@@ -21,7 +21,7 @@ HRESULT         CdroneTypeIGC::Initialize(ImissionIGC*  pMission,
                                          const void*    data,
                                          int            dataSize)
 {
-    assert (pMission);
+    ZAssert (pMission);
     m_pMission = pMission;
 
 	ZRetailAssert (data && (dataSize == sizeof(DataDroneTypeIGC)));
@@ -33,7 +33,7 @@ HRESULT         CdroneTypeIGC::Initialize(ImissionIGC*  pMission,
                 : pMission->GetExpendableType(m_data.etidLaid);
 
 	// KGJV - fix for debug mode - to remove later
-    //assert ((m_petLaid != NULL) == (m_data.pilotType == c_ptLayer));
+    //ZAssert ((m_petLaid != NULL) == (m_data.pilotType == c_ptLayer));
 
     pMission->AddDroneType(this);
 
@@ -42,7 +42,7 @@ HRESULT         CdroneTypeIGC::Initialize(ImissionIGC*  pMission,
 
 void            CdroneTypeIGC::Terminate(void)
 {
-    assert (m_pMission);
+    ZAssert (m_pMission);
 
     m_pMission->DeleteDroneType(this);
 }

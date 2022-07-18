@@ -112,7 +112,7 @@ class CpackIGC : public IpackIGC
                 }
                 else
                 {
-                    assert (m_typeData->packType == c_packFuel);
+                    ZAssert (m_typeData->packType == c_packFuel);
                     maxAmount = short(pht->GetMaxFuel());
                 }
 

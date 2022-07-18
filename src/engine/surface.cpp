@@ -126,8 +126,8 @@ public:
                 m_size.Y(),
                 false,
                 szTextureName,
-                0,
-                bSystemMemory ? D3DPOOL_SCRATCH : D3DPOOL_MANAGED
+                ALLEG_D9EX_IF(bSystemMemory ? 0 : D3DUSAGE_DYNAMIC, 0),
+                bSystemMemory ? D3DPOOL_SCRATCH : ALLEG_D9EX_IF(D3DPOOL_DEFAULT, D3DPOOL_MANAGED)
             );
             ZAssert( hr == D3D_OK );
             m_ppf = new PixelFormat(pVRAMMan->GetTextureFormat(m_hTexture));
@@ -871,6 +871,13 @@ public:
             // do the blt
             ZAssert( m_hTexture != INVALID_TEX_HANDLE );
 
+            if (m_stype.Test(SurfaceTypeDummy()) == true) {
+                // we are attempting to draw to a dummy surface, this should never happen
+                debugf("Drawing to dummy surface: CopySubsetFromSrc");
+                ZAssert(false);
+                return;
+            }
+
 			// Lock this texture and copy over.
 			D3DLOCKED_RECT lockRect;
 			hr = CVRAMManager::Get()->LockTexture( m_hTexture, &lockRect );
@@ -1224,6 +1231,13 @@ public:
 			}
 			else
 			{
+                if (m_stype.Test(SurfaceTypeDummy()) == true) {
+                    // we are attempting to draw to a dummy surface, this should never happen
+                    debugf("Drawing to dummy surface: UnclippedFill");
+                    ZAssert(false);
+                    return;
+                }
+
 				// Perform software fill. Lock the texture.
 				HRESULT hr;
 				D3DLOCKED_RECT lockRect;

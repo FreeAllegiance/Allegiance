@@ -55,6 +55,8 @@ public:
 	// BT - STEAM
 	ZString GetSha1Hash();
 	static FILETIME GetMostRecentFileModificationTime(ZString &searchPath);
+
+    static void CreateDirectoryRecursivelyForFilepath(ZString filepath);
 };
 
 class ZWriteFile : public ZFile {

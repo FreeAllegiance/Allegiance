@@ -22,7 +22,7 @@ public:
   m_dwID(c_dwID),
   m_pcnxn(pcnxn)
   {
-    assert(pcnxn);
+    ZAssert(pcnxn);
     m_pcnxn->SetPrivateData((DWORD) this); // set up two-way link between connection and this
   }
   ~CFLClient()
@@ -32,7 +32,7 @@ public:
   bool IsValidThisPtr() // this
   {
     bool fValid = this && (c_dwID == m_dwID);
-    assert (fValid); // this should only be false if either a bug in the client, or hacked client
+    ZAssert (fValid); // this should only be false if either a bug in the client, or hacked client
     return fValid;
   }
   static CFLClient * FromConnection(CFMConnection & cnxn) 

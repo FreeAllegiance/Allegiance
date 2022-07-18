@@ -30,7 +30,6 @@
 #include <atlbase.h>
 
 // Allegiance Includes
-#define __MODULE__ "PigConfig"
 #include <zlib.h>
 #include <TCLib.h>
 

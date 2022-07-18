@@ -550,7 +550,7 @@ public:
     // Copies the specified portion of the data
     virtual void GetData(void* dest, unsigned nOffset, unsigned nLength)
     {
-        assert(nOffset + nLength <= datasize);
+        ZAssert(nOffset + nLength <= datasize);
         memset(dest, 0, nLength);
     };
 };

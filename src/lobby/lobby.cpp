@@ -201,7 +201,7 @@ inline void CServiceModule::Init(_ATL_OBJMAP_ENTRY* p, HINSTANCE h, UINT nServic
     m_status.dwWaitHint = 0;
 }
 
-LONG CServiceModule::Unlock()
+LONG CServiceModule::Unlock() throw()
 {
     LONG l = CComModule::Unlock();
     if (l == 0 && !m_bService)

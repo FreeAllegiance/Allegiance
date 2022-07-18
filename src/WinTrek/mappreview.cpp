@@ -234,7 +234,7 @@ private:
 
 	static void GetClusterOwners(CMapPVCluster* pcluster, SideID& sideOwner, SideID& sideSecondaryOwner)
 	{
-		assert (c_cSidesMax == 6);
+		ZAssert (c_cSidesMax == 6);
 		int nStations[c_cSidesMax] = {0, 0, 0, 0, 0, 0};
 
 		// count the stations by side
@@ -475,7 +475,7 @@ private:
 			{
 				CwarpPV* pWarp = warpLink->data();
 				CwarpPV* pwarpDestination = pWarp->GetDestination();
-				assert (pwarpDestination != NULL);
+				ZAssert (pwarpDestination != NULL);
 				if (pWarp->GetObjectID() > pwarpDestination->GetObjectID())
 				{
 					Color colorWarp = 0.5f * Color::White(); // upped from 0.5f to 0.7f //imago put back to match sectormap.cpp 7/17/09

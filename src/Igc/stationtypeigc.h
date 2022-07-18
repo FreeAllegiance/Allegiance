@@ -215,15 +215,15 @@ class       CstationTypeIGC : public IstationTypeIGC
         }
         virtual const Vector&           GetLaunchPosition(int   slotID) const
         {
-            assert (slotID >= 0);
-            assert (slotID < m_nLaunchSlots);
+            ZAssert (slotID >= 0);
+            ZAssert (slotID < m_nLaunchSlots);
 
             return m_positionLaunches[slotID];
         }
         virtual const Vector&           GetLaunchDirection(int   slotID) const
         {
-            assert (slotID >= 0);
-            assert (slotID < m_nLaunchSlots);
+            ZAssert (slotID >= 0);
+            ZAssert (slotID < m_nLaunchSlots);
 
             return m_directionLaunches[slotID];
         }
@@ -238,26 +238,26 @@ class       CstationTypeIGC : public IstationTypeIGC
         }
         virtual int                     GetLandPlanes(int   slotID) const
         {
-            assert (slotID >= 0);
-            assert (slotID < m_nLandSlots);
+            ZAssert (slotID >= 0);
+            ZAssert (slotID < m_nLandSlots);
 
             return m_nLandPlanes[slotID];
         }
         virtual const Vector&           GetLandPosition(int slotID, int planeID) const
         {
-            assert (slotID >= 0);
-            assert (slotID < m_nLandSlots);
-            assert (planeID >= 0);
-            assert (planeID <= m_nLandPlanes[slotID]);
+            ZAssert (slotID >= 0);
+            ZAssert (slotID < m_nLandSlots);
+            ZAssert (planeID >= 0);
+            ZAssert (planeID <= m_nLandPlanes[slotID]);
 
             return m_positionLandPlanes[slotID][planeID];
         }
         virtual const Vector&           GetLandDirection(int slotID, int planeID) const
         {
-            assert (slotID >= 0);
-            assert (slotID < m_nLandSlots);
-            assert (planeID >= 0);
-            assert (planeID <= m_nLandPlanes[slotID]);
+            ZAssert (slotID >= 0);
+            ZAssert (slotID < m_nLandSlots);
+            ZAssert (planeID >= 0);
+            ZAssert (planeID <= m_nLandPlanes[slotID]);
 
             return m_directionLandPlanes[slotID][planeID];
         }

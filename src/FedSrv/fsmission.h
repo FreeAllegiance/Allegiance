@@ -14,12 +14,12 @@
 
 inline unsigned char   SideMask(SideID sid)
 {
-    assert (sid >= 0);
+    ZAssert (sid >= 0);
     return (unsigned char)(0x01 << sid);
 }
 inline unsigned char   SideMask(IsideIGC* pside)
 {
-    assert (pside);
+    ZAssert (pside);
     return SideMask(pside->GetObjectID());
 }
 
@@ -279,7 +279,7 @@ public:
   IstationIGC *         GetBase(IsideIGC * pside);
   int                   GetCountSides()   
   {
-    assert(m_pMission->GetSides()->n() == m_misdef.misparms.nTeams);
+    ZAssert(m_pMission->GetSides()->n() == m_misdef.misparms.nTeams);
     return m_misdef.misparms.nTeams;
   }
   void                  RecordGameResults();
@@ -333,12 +333,12 @@ public:
   void                  SetForceReady(SideID iSide, bool fForceReady);
   bool                  GetForceReady(SideID iSide) 
   {
-    assert(iSide > NA); 
+    ZAssert(iSide > NA); 
     return !!m_misdef.rgfForceReady[iSide];
   }
   bool                  GetReady(SideID iSide)      
   {
-    assert(iSide > NA); 
+    ZAssert(iSide > NA); 
     return !!m_misdef.rgfReady[iSide];
   }
   void                  PlayerReadyChange(CFSPlayer * pfsPlayer);

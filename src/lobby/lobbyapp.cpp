@@ -164,7 +164,7 @@ CLobbyApp::CLobbyApp(ILobbyAppSite * plas) :
 	m_lastDrmHashUpdate.dwLowDateTime = 0;
 	strcpy(m_szDrmHashFilename, "");
 
-  assert(m_plas);
+  ZAssert(m_plas);
   m_plas->LogEvent(EVENTLOG_INFORMATION_TYPE, LE_Creating);
 
   // Imago 9/14 // BT - STEAM
@@ -1121,7 +1121,7 @@ void CLobbyApp::RemoveAllPlayersFromMission(CFLMission* pMission)
         ++iterPlayer;
     }
 
-    assert(pMission->GetPlayerCount() == 0);
+    ZAssert(pMission->GetPlayerCount() == 0);
   }
 }
 
@@ -1154,7 +1154,7 @@ void CLobbyApp::RemoveAllPlayersFromServer(CFLServer* pServer)
         ++iterPlayer;
     }
 
-    assert(pServer->GetPlayerCount() == 0);
+    ZAssert(pServer->GetPlayerCount() == 0);
   }
 }
 

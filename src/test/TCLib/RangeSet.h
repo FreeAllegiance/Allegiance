@@ -13,7 +13,7 @@
 /////////////////////////////////////////////////////////////////////////////
 //
 template <class _Key>
-struct rangeset_less : public std::binary_function<_Key, _Key, bool>
+struct rangeset_less
 {
   typedef typename _Key::value_compare value_compare;
   bool operator()(const _Key& x, const _Key& y) const

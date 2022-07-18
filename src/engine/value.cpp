@@ -188,16 +188,9 @@ void Value::Changed()
     if (!m_bChanged) {
         m_bChanged = true;
 
-        TList<Value*>::Iterator iter(m_listParents);
-
-        while (!iter.End()) {
-            Value* pvalue = iter.Value();
-
-            //  , get this to work
-            //if (!pvalue->m_bChanged) {
-                pvalue->ChildChanged(this, NULL);
-            //}
-            iter.Next();
+        for (auto iter = m_listParents.begin(); iter != m_listParents.end(); ++iter) {
+            Value* pvalue = *iter;
+            pvalue->ChildChanged(this, NULL);
         }
     }
 }
@@ -207,8 +200,8 @@ void Value::ChangeTo(Value* pvalue)
     ZAssert(pvalue != this);
     TRef<Value> pvalueSave = this;
 
-    while (m_listParents.GetCount() != 0) {
-        m_listParents.GetFront()->ChildChanged(this, pvalue);
+    while (m_listParents.begin() != m_listParents.end()) {
+        (*m_listParents.begin())->ChildChanged(this, pvalue);
     };
 }
 
@@ -219,14 +212,22 @@ bool Value::IsConstant()
 
 void Value::AddParent(Value* pvalue)
 {
-    m_listParents.PushFront(pvalue);
+    m_listParents.insert(m_listParents.begin(), pvalue);
 }
 
 void Value::RemoveParent(Value* pvalue)
 {
-    ZAssert(m_listParents.Find(pvalue));
-    m_listParents.Remove(pvalue);
-    if (m_listParents.GetCount() == 0) {
+    auto iter = m_listParents.begin();
+    while (iter != m_listParents.end()) {
+        if (*iter == pvalue) {
+            iter = m_listParents.erase(iter);
+        }
+        else {
+            ++iter;
+        }
+    }
+
+    if (m_listParents.size() == 0) {
         OnNoParents();
     }
 }
@@ -392,7 +393,7 @@ ZString Value::GetString(int indent)
 ValueList::ValueList(Site* psite) :
     m_psite(psite),
     m_list(),
-    m_iter(m_list)
+    m_iter(m_list.begin())
 {
     ZAssert(psite == NULL || (((DWORD)psite) > 0x10));
 }
@@ -409,14 +410,16 @@ ValueList::~ValueList()
 void ValueList::PushFront(Value* pvalue)
 {
     pvalue->AddParent(this);
-    m_list.PushFront(pvalue);
+    m_list.insert(m_list.begin(), pvalue);
+    m_iter = m_list.begin();
     Changed();
 }
 
 void ValueList::PushEnd(Value* pvalue)
 {
     pvalue->AddParent(this);
-    m_list.PushEnd(pvalue);
+    m_list.push_back(pvalue);
+    m_iter = m_list.begin();
     Changed();
 }
 
@@ -424,10 +427,19 @@ void ValueList::Remove(Value* pvalueArg)
 {
     TRef<Value> pvalue = pvalueArg;
 
-    if (m_list.Remove(pvalue)) {
-        pvalue->RemoveParent(this);
-        Changed();
+    auto iter = m_list.begin();
+    while (iter != m_list.end()) {
+        if ((Value*)*iter == pvalueArg) {
+            iter = m_list.erase(iter);
+
+            pvalue->RemoveParent(this);
+            Changed();
+        }
+        else {
+            ++iter;
+        }
     }
+    m_iter = m_list.begin();
 }
 
 bool ValueList::DoFold()
@@ -452,16 +464,20 @@ bool ValueList::DoFold()
 
 void ValueList::ChildChanged(Value* pvalue, Value* pvalueNew)
 {
-    ZAssert(m_list.Find(pvalue));
+    auto found_iter = std::find_if(m_list.begin(), m_list.end(), [pvalue](const TRef<Value>& entry) {
+        return pvalue == (Value*)entry;
+        });
+    ZAssert(found_iter != m_list.end());
     ZAssert(pvalue != pvalueNew); //would be a waste if it was called with the same argument
 
     if (pvalueNew) {
         pvalue->RemoveParent(this);
         pvalueNew->AddParent(this);
         if (m_psite != NULL && m_psite->RemoveValue(pvalueNew)) {
-            m_list.Remove(pvalue);
+            m_list.erase(found_iter);
+            m_iter = m_list.begin();
         } else {
-            m_list.Replace(pvalue, pvalueNew);
+            *found_iter = pvalueNew;
         }
     }
 
@@ -496,13 +512,14 @@ int ValueList::GetNodeCount()
 
 int ValueList::GetCount()
 {
-    return m_list.GetCount();
+    return m_list.size();
 }
 
 Value* ValueList::GetFirst()
 {
-    if (m_iter.First()) {
-        return m_iter.Value();
+    m_iter = m_list.begin();
+    if (m_list.begin() != m_list.end()) {
+        return *m_list.begin();
     }
 
     return NULL;
@@ -510,8 +527,9 @@ Value* ValueList::GetFirst()
 
 Value* ValueList::GetLast()
 {
-    if (m_iter.Last()) {
-        return m_iter.Value();
+    if (m_list.size() > 0) {
+        m_iter = --m_list.end();
+        return *m_iter;
     }
 
     return NULL;
@@ -519,8 +537,11 @@ Value* ValueList::GetLast()
 
 Value* ValueList::GetNext()
 {
-    if (m_iter.Next()) {
-        return m_iter.Value();
+    if (m_iter == m_list.end()) {
+        return NULL;
+    }
+    if (++m_iter != m_list.end()) {
+        return *m_iter;
     }
 
     return NULL;
@@ -528,8 +549,9 @@ Value* ValueList::GetNext()
 
 Value* ValueList::GetPrevious()
 {
-    if (m_iter.Prev()) {
-        return m_iter.Value();
+    if (m_iter != m_list.begin()) {
+        m_iter--;
+        return *m_iter;
     }
 
     return NULL;
@@ -537,8 +559,8 @@ Value* ValueList::GetPrevious()
 
 Value* ValueList::GetCurrent()
 {
-    if (!m_iter.End()) {
-        return m_iter.Value();
+    if (m_iter != m_list.end()) {
+        return *m_iter;
     } else {
         return NULL;
     }
@@ -546,23 +568,18 @@ Value* ValueList::GetCurrent()
 
 Value* ValueList::RemoveCurrent()
 {
-    if (!m_iter.End()) {
-        m_iter.Remove();
-        if (!m_iter.End()) {
-            return m_iter.Value();
-        }
-    }
-    return NULL;
+    m_iter = m_list.erase(m_iter);
+    return GetCurrent();
 }
 
 bool ValueList::IsFirst()
 {
-    return m_iter.IsFirst();
+    return m_iter == m_list.begin();
 }
 
 bool ValueList::IsLast()
 {
-    return m_iter.IsLast();
+    return m_iter == --m_list.end();
 }
 
 ZString ValueList::GetString(int indent)
@@ -571,44 +588,15 @@ ZString ValueList::GetString(int indent)
 
     ZString str = "[\n";
 
-    m_iter.First();
-
-    while (!m_iter.End()) {
-        str += Indent(indent + 1) + m_iter.Value()->GetChildString(indent + 1);
-
-        m_iter.Next();
-
-        if (m_iter.End()) {
-            str += "\n";
-        } else {
-            str += ",\n";
-        }
-    }
-
     return str + Indent(indent) + "]";
 }
 
 void ValueList::Write(IMDLBinaryFile* pmdlFile)
 {
-    pmdlFile->WriteList(m_list.GetCount());
-
-    m_iter.First();
-
-    while (!m_iter.End()) {
-        m_iter.Value()->Write(pmdlFile);
-        pmdlFile->WriteEnd();
-        m_iter.Next();
-    }
 }
 
 void ValueList::FillImportTable(IMDLBinaryFile* pfile)
 {
-    m_iter.First();
-
-    while (!m_iter.End()) {
-        m_iter.Value()->FillImportTable(pfile);
-        m_iter.Next();
-    }
 }
 
 class OrNumber : public Number {

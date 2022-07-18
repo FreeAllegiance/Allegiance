@@ -20,7 +20,7 @@ CFLMission::CFLMission(CFLServer * pServer, CFLClient * pClientCreator) :
   m_pClientCreator(pClientCreator),
   m_fNotifiedCreator(false)
 {
-  assert(m_pServer);
+  ZAssert(m_pServer);
   char szRemote[64];
   g_pLobbyApp->GetFMServers().GetIPAddress(*m_pServer->GetConnection(), szRemote);
   
@@ -66,7 +66,7 @@ void CFLMission::SetLobbyInfo(FMD_LS_LOBBYMISSIONINFO * plmi)
     debugf("!!! Got FMD_LS_LOBBYMISSIONINFO for mission (cookie=%x) that I don't know about\n", plmi->dwCookie);
     // we could just pass the server in to this function, but this seems like a reasonable and cheap check & balance to make sure the mission maps back to the server
     CFLServer * pServer = pMission->GetServer();  
-    assert(pServer);
+    ZAssert(pServer);
     m_plmi = (FMD_LS_LOBBYMISSIONINFO*) HeapAlloc(hHeap, 0, plmi->cbmsg);
     CopyMemory(m_plmi, plmi, plmi->cbmsg);
 	if (m_plmi->dwPort != pServer->GetServerPort() && m_plmi->dwPort != 0) {
@@ -97,7 +97,7 @@ void CFLMission::RemovePlayer()
 {
   m_pServer->RemovePlayer();
   --m_cPlayers;
-  assert (m_cPlayers >= 0);
+  ZAssert (m_cPlayers >= 0);
 }
 
 
@@ -110,7 +110,7 @@ void CFLMission::NotifyCreator()
     END_PFM_CREATE
     char szServer[64];
     g_pLobbyApp->GetFMServers().GetIPAddress(*GetServer()->GetConnection(), szServer);
-    assert(lstrlen(szServer) < sizeof(pfmJoinMission->szServer)); // as long as szServer is fixed length
+    ZAssert(lstrlen(szServer) < sizeof(pfmJoinMission->szServer)); // as long as szServer is fixed length
     Strcpy(pfmJoinMission->szServer, szServer);
     pfmJoinMission->dwCookie = GetCookie();
 	pfmJoinMission->dwPort = GetServer()->GetServerPort();	// KGJV #114: pass the port to the client

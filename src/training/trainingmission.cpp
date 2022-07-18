@@ -85,7 +85,7 @@ namespace Training
     /* void */  TrainingMission::~TrainingMission (void)
     {
         // clean up the old condition
-        assert (m_pCondition == 0);
+        ZAssert (m_pCondition == 0);
         delete m_pDeadCondition;
 
         // clean up the wait conditions
@@ -532,7 +532,7 @@ namespace Training
     //------------------------------------------------------------------------------
     void            TrainingMission::KillStationEvent(IstationIGC* pStation, ImodelIGC* pLauncher)
     {
-        assert(pStation);
+        ZAssert(pStation);
         IsideIGC* pside = pStation->GetSide();
         debugf("TrainingMission::KillStationEvent for %s, side: %s\n",pStation->GetName(), pside ? pside->GetName() : "NULL");
 
@@ -690,8 +690,8 @@ namespace Training
             civs[0] = 201;
         }
 
-        assert (sizeofArray(szSideNames) == c_cSidesMax);
-        assert (sizeofArray(civs) == c_cSidesMax);
+        ZAssert (sizeofArray(szSideNames) == c_cSidesMax);
+        ZAssert (sizeofArray(civs) == c_cSidesMax);
 
         // set up the civs associated with the sides. There are more sides than civs, so we want to loop
         // over them once
@@ -718,7 +718,7 @@ namespace Training
             ds.nFlags = 0;
             ds.sideID = sid;
             ds.gasAttributes.Initialize();
-            assert (civs[sid] != NA);
+            ZAssert (civs[sid] != NA);
             ds.civilizationID = civs[sid];
             ds.color.SetRGBA(fSideColors[sid][0], fSideColors[sid][1], fSideColors[sid][2]);
             strcpy(ds.name, szSideNames[sid]);
@@ -789,7 +789,7 @@ namespace Training
 
         // set the trail color
         ThingSite*      pThingSite = trekClient.GetShip ()->GetThingSite();
-        assert (pThingSite);
+        ZAssert (pThingSite);
         pThingSite->SetTrailColor (pCore->GetSide (0)->GetColor());
 
         // create the commander ship
@@ -862,7 +862,7 @@ namespace Training
         IsideIGC*           pSide = pShip->GetSide ();
         if (pSide)
         {
-            assert (static_cast<SideID> (pSide->GetObjectID ()) == side);
+            ZAssert (static_cast<SideID> (pSide->GetObjectID ()) == side);
             pShip->SetSide (NULL);
         }
 

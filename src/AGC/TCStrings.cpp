@@ -44,7 +44,7 @@ STDMETHODIMP CTCStrings::get__NewEnum(IUnknown** ppunkEnum)
   typedef CComObject<CComEnum<IEnumVARIANT, &IID_IEnumVARIANT, VARIANT,
     _Copy<VARIANT> > > CEnum;
   CEnum* pEnum = new CEnum;
-  assert(NULL != pEnum);
+  ZAssert(NULL != pEnum);
 
   // Lock the object
   CLock lock(this);

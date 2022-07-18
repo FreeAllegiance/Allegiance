@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include "ui.h"
 #include "items.hpp"
 
 using namespace std::literals;
@@ -28,7 +27,7 @@ public:
                 });
             }
 
-            return (TRef<FontValue>)(FontValue*)new TransformedValue4<TRef<IEngineFont>, float, bool, bool, bool>([name](float size, bool bold, bool italic, bool underline) {
+            return (TRef<FontValue>)(FontValue*)new TransformedValue<TRef<IEngineFont>, float, bool, bool, bool>([name](float size, bool bold, bool italic, bool underline) {
                 return CreateEngineFont(name, std::min(100, (int)size), 0, bold, italic, underline);
             }, size, props["Bold"], props["Italic"], props["Underline"]);
         };

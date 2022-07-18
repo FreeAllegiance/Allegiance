@@ -75,8 +75,8 @@ class       CsideIGC : public IsideIGC
         }
         virtual void                    SetCivilization(IcivilizationIGC*   pciv)
         {
-            assert (pciv);
-            assert (m_pCivilization);
+            ZAssert (pciv);
+            ZAssert (m_pCivilization);
 
             if (m_pCivilization != pciv)
             {
@@ -383,7 +383,7 @@ class       CsideIGC : public IsideIGC
 
         virtual void                        AddToStockpile(IbuyableIGC* b, short count)
         {
-            assert (count > 0);
+            ZAssert (count > 0);
 
             //See if there are already entries in the stockpile
             StockpileLink*  plink = m_stockpile.first();
@@ -406,17 +406,17 @@ class       CsideIGC : public IsideIGC
                 m_stockpile.first(plink);
             }
 
-            assert (plink);
+            ZAssert (plink);
             plink->data().count += count;
         }
         virtual short                        RemoveFromStockpile(IbuyableIGC* b, short count)
         {
-            assert (count > 0);
+            ZAssert (count > 0);
 
             StockpileLink*  plink = m_stockpile.first();
             while (plink)
             {
-                assert (plink->data().count > 0);
+                ZAssert (plink->data().count > 0);
 
                 if (plink->data().buyable == b)
                 {
@@ -624,7 +624,7 @@ class       CsideIGC : public IsideIGC
                         case OT_development:
                         {
                             IdevelopmentIGC*    d = (IdevelopmentIGC*)pbuy;
-                            assert (d->GetObjectType() == OT_development);
+                            ZAssert (d->GetObjectType() == OT_development);
 
                             if (d->IsObsolete(m_data.ttbmDevelopmentTechs))
                             {

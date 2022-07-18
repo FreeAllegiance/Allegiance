@@ -47,18 +47,16 @@ public:
     bool           m_bEndOfString;
   };
 protected:
-  struct XLess :
-    public std::binary_function<const XEventDef&, const XEventDef&, bool>
+  struct XLess
   {
-    result_type operator()(first_argument_type a, second_argument_type b) const
+    bool operator()(const XEventDef& a, const XEventDef& b) const
     {
       return a.m_id < b.m_id;
     }
   };
-  struct XLessName :
-    public std::binary_function<const LPCOLESTR&, const LPCOLESTR&, bool>
+  struct XLessName
   {
-    result_type operator()(first_argument_type a, second_argument_type b) const
+    bool operator()(const LPCOLESTR& a, const LPCOLESTR& b) const
     {
       return _wcsicmp(a, b) < 0;
     }

@@ -54,7 +54,7 @@ public:
     // Create a range COM object to be reused multiple times
     ZSucceeded(T::CreateRange(RT(), RT(), &m_spRange));
     m_spRange.QueryInterface(&m_spPrivate);  
-    assert(NULL != m_spPrivate);
+    ZAssert(NULL != m_spPrivate);
     m_spRange.QueryInterface(&m_spPersist);    
     if (NULL == m_spPersist)
     {
@@ -82,7 +82,7 @@ public:
     typedef CComObject<CComEnum<IEnumVARIANT, &IID_IEnumVARIANT, VARIANT,
       _Copy<VARIANT> > > CEnum;
     CEnum* pEnum = new CEnum;
-    assert(NULL != pEnum);
+    ZAssert(NULL != pEnum);
     IUnknownPtr spEnum(pEnum);
 
     // Get the number of items in the collection
@@ -345,8 +345,8 @@ public:
     m_ranges.clear();
 
     // Read each range item
-    assert(NULL != m_spPrivate);
-    assert(NULL != m_spPersist);
+    ZAssert(NULL != m_spPrivate);
+    ZAssert(NULL != m_spPersist);
     for (DWORD i = 0; i < cItems; ++i)
     {
       RETURN_FAILED(m_spPersist->Load(pStm));
@@ -368,8 +368,8 @@ public:
     RETURN_FAILED(pStm->Write(&cItems, sizeof(cItems), NULL));
 
     // Write each range to the stream
-    assert(NULL != m_spPrivate);
-    assert(NULL != m_spPersist);
+    ZAssert(NULL != m_spPrivate);
+    ZAssert(NULL != m_spPersist);
     for (XRangeIt it = m_ranges.begin(); it != m_ranges.end(); ++it)
     {
       RETURN_FAILED(m_spPrivate->InitFromRange(&(*it)));
@@ -383,7 +383,7 @@ public:
   {
     XLock lock(static_cast<T*>(this));
     ULARGE_INTEGER uli;
-    assert(NULL != m_spPersist);
+    ZAssert(NULL != m_spPersist);
     RETURN_FAILED(m_spPersist->GetSizeMax(&uli));
 
     pCbSize->HighPart = 0;

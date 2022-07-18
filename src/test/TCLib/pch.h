@@ -12,7 +12,6 @@
 
 #define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers
 #define _WIN32_DCOM
-#define __MODULE__ "TCLib"
 
 #pragma warning(disable: 4786)
 

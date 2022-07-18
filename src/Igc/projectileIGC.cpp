@@ -45,13 +45,13 @@ HRESULT CprojectileIGC::Initialize(ImissionIGC* pMission, Time now, const void* 
             m_projectileType->AddRef();
 
             DataProjectileTypeIGC*  dataProjectileType = (DataProjectileTypeIGC*)m_projectileType->GetData();
-            assert (dataProjectileType);
+            ZAssert (dataProjectileType);
 
             //Load the model for the projectile
             if (iswalpha(dataProjectileType->modelName[0]))
             {
                 HRESULT hr = Load(0, dataProjectileType->modelName, dataProjectileType->textureName, NULL, c_mtCastRay | c_mtNotPickable);
-                assert (SUCCEEDED(hr));
+                ZAssert (SUCCEEDED(hr));
                 SetRadius(dataProjectileType->radius);
             }
             else
@@ -64,7 +64,7 @@ HRESULT CprojectileIGC::Initialize(ImissionIGC* pMission, Time now, const void* 
                                dataProjectileType->bDirectional,
                                dataProjectileType->width,
                                c_mtCastRay | c_mtNotPickable);
-                assert (SUCCEEDED(hr));
+                ZAssert (SUCCEEDED(hr));
                 GetHitTest()->SetRadius(0.0f);
                 GetThingSite()->SetRadius(dataProjectileType->radius);
             }
@@ -83,10 +83,10 @@ HRESULT CprojectileIGC::Initialize(ImissionIGC* pMission, Time now, const void* 
                 HitTest*    ht = GetHitTest();
 
                 //lifespan == 0 => immortal projectile that can hit until it gets terminated on the next update; this is bad
-                assert (dataProjectile->lifespan > 0.0f);
+                ZAssert (dataProjectile->lifespan > 0.0f);
                 ht->SetTimeStart(now);
                 ht->SetTimeStop(m_timeExpire = now + dataProjectile->lifespan); //intentional assignment
-                assert (m_timeExpire != now);
+                ZAssert (m_timeExpire != now);
             }
 
             SetMass(0.0f);

@@ -2,6 +2,7 @@
 #define _gamestate_H_
 
 #include <tref.h>
+#include "event.h"
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -13,7 +14,6 @@ class IEngineFont;
 class StringPane;
 class ZString;
 class Pane;
-class IEventSource;
 class Modeler;
 class ButtonPane;
 class GameStateContainer : public IObject {

@@ -74,7 +74,7 @@ const IID* CAGCGlobal::InterpretIID(const void* pvIgc, REFIID iid)
 STDMETHODIMP_(void) CAGCGlobal::RegisterObjectCreator(REFIID riid,
   PFNAGCCreator pfnCreator)
 {
-  assert(pfnCreator);
+  ZAssert(pfnCreator);
 
   // Lock the object for the duration of this method
   XLock lock(this);
@@ -88,7 +88,7 @@ STDMETHODIMP_(void) CAGCGlobal::RegisterObjectCreator(REFIID riid,
 
 STDMETHODIMP_(void) CAGCGlobal::RevokeObjectCreator(REFIID riid)
 {
-  assert(!"NOT IMPLEMENTED!");
+  ZAssert(!"NOT IMPLEMENTED!");
 }
 
 STDMETHODIMP CAGCGlobal::GetAGCObject(const void* pvIgc, REFIID riid,
@@ -114,13 +114,13 @@ STDMETHODIMP CAGCGlobal::GetAGCObject(const void* pvIgc, REFIID riid,
   XAGCCreatorMapIt itCreator = m_mapCreator.find(*piid);
   if (m_mapCreator.end() == itCreator)
   {
-    assert(false);
+    ZAssert(false);
     return E_UNEXPECTED;
   }
 
   // Call the creator function to create an AGC wrapper for the Igc object
   PFNAGCCreator pfn = itCreator->second;
-  assert(pfn);
+  ZAssert(pfn);
   RETURN_FAILED((*pfn)(const_cast<void*>(pvIgc), *piid, ppUnk));
 
   // Add the AGC wrapper to the map
@@ -137,17 +137,17 @@ STDMETHODIMP_(void) CAGCGlobal::AddAGCObject(const void* pvIgc,
   XLock lock(this);
 
   // Ensure that the specified Igc pointer is not already in the map
-  assert(m_map.end() == m_map.find(const_cast<void*>(pvIgc)));
+  ZAssert(m_map.end() == m_map.find(const_cast<void*>(pvIgc)));
 
   // Ensure that the specified AGC pointer supports IAGCPrivate
-  assert(NULL != IAGCPrivatePtr(pUnkAGC));
+  ZAssert(NULL != IAGCPrivatePtr(pUnkAGC));
 
   // Insert the pair into the map
   #ifdef _DEBUG
     std::pair<XIgcToAGCMapIt, bool> result =
   #endif
     m_map.insert(std::make_pair(const_cast<void*>(pvIgc), pUnkAGC));
-  assert(result.second);
+  ZAssert(result.second);
 }
 
 
@@ -188,7 +188,7 @@ STDMETHODIMP_(void) CAGCGlobal::SetEventSinksAreGITCookies(
   // Can't change mode when event sinks are already registered
   #ifdef _DEBUG
     if (m_RegEvents.size())
-      assert(!m_bEventSinksAreGITCookies == !bEventSinksAreGITCookies);
+      ZAssert(!m_bEventSinksAreGITCookies == !bEventSinksAreGITCookies);
   #endif // _DEBUG
 
   m_bEventSinksAreGITCookies = !!bEventSinksAreGITCookies;
@@ -222,7 +222,7 @@ STDMETHODIMP_(void) CAGCGlobal::RegisterEvent(AGCEventID eventID,
   {
     if (GetEventSinksAreGITCookies())
     {
-      // This will assert if pEventSink is not a cookie in the GIT
+      // This will ZAssert if pEventSink is not a cookie in the GIT
       IAGCEventSinkPtr spEventSink;
       GetInterfaceFromGlobal(reinterpret_cast<DWORD>(pEventSink),
         IID_IAGCEventSink, (void**)&spEventSink);
@@ -269,7 +269,7 @@ STDMETHODIMP_(boolean) CAGCGlobal::RevokeEvent(AGCEventID eventID,
   {
     if (GetEventSinksAreGITCookies())
     {
-      // This will assert if pEventSink is not a cookie in the GIT
+      // This will ZAssert if pEventSink is not a cookie in the GIT
       IAGCEventSinkPtr spEventSink;
       GetInterfaceFromGlobal(reinterpret_cast<DWORD>(pEventSink),
         IID_IAGCEventSink, (void**)&spEventSink);
@@ -306,7 +306,7 @@ STDMETHODIMP_(void) CAGCGlobal::RegisterEventRanges(
   IAGCEventIDRanges* pRanges, AGCUniqueID uniqueID,
   IAGCEventSink* pEventSink)
 {
-  assert(pRanges);
+  ZAssert(pRanges);
 
   // Register all event ID's that are not group ID's
   XLock lock(this);
@@ -332,7 +332,7 @@ STDMETHODIMP_(void) CAGCGlobal::RegisterEventRanges(
 STDMETHODIMP_(void) CAGCGlobal::RevokeEventRanges(IAGCEventIDRanges* pRanges,
   AGCUniqueID uniqueID, IAGCEventSink* pEventSink)
 {
-  assert(pRanges);
+  ZAssert(pRanges);
 
   // Revoke all event ID's that are not group ID's
   XLock lock(this);
@@ -367,7 +367,7 @@ STDMETHODIMP_(int) CAGCGlobal::RevokeAllEvents(IAGCEventSink* pEventSink)
   {
     if (GetEventSinksAreGITCookies())
     {
-      // This will assert if pEventSink is not a cookie in the GIT
+      // This will ZAssert if pEventSink is not a cookie in the GIT
       IAGCEventSinkPtr spEventSink;
       GetInterfaceFromGlobal(reinterpret_cast<DWORD>(pEventSink),
         IID_IAGCEventSink, (void**)&spEventSink);
@@ -407,7 +407,7 @@ STDMETHODIMP_(int) CAGCGlobal::RegisterAllEvents(IAGCEventSink* pEventSink)
   {
     if (GetEventSinksAreGITCookies())
     {
-      // This will assert if pEventSink is not a cookie in the GIT
+      // This will ZAssert if pEventSink is not a cookie in the GIT
       IAGCEventSinkPtr spEventSink;
       GetInterfaceFromGlobal(reinterpret_cast<DWORD>(pEventSink),
         IID_IAGCEventSink, (void**)&spEventSink);
@@ -556,7 +556,7 @@ STDMETHODIMP_(void) CAGCGlobal::TriggerEvent(HAGCLISTENERS hListeners,
   // Note: I've put this outside of the timer, since it only happens once.
   if (!m_pthEvents)
     m_pthEvents = new CAGCEventThread(this);
-  assert(m_pthEvents);
+  ZAssert(m_pthEvents);
 
   // Initialize the timer
   static CTempTimer timerTriggerEvent("in TriggerEvent", .01f);
@@ -601,7 +601,7 @@ STDMETHODIMP_(void) CAGCGlobal::TriggerEventSynchronous(HAGCLISTENERS hListeners
   // Create the event thread, if not already created
   if (!m_pthEvents)
     m_pthEvents = new CAGCEventThread(this);
-  assert(m_pthEvents);
+  ZAssert(m_pthEvents);
 
   // Get the event sinks for this event/subject/objects, if not specified
   if (!hListeners)
@@ -678,7 +678,7 @@ STDMETHODIMP_(void) CAGCGlobal::SetAvailableEventIDRanges(
   IAGCEventIDRanges* pRanges)
 {
   // Copy the specified rangeset
-  assert(pRanges);
+  ZAssert(pRanges);
   XLock lock(this);
   IAGCRangesPrivatePtr spPrivate(pRanges);
   ZSucceeded(spPrivate->CopyRangesTo(&m_EventIDRanges));
@@ -692,7 +692,7 @@ STDMETHODIMP_(void) CAGCGlobal::GetAvailableEventIDRanges(
   CComObject<CAGCEventIDRanges>* pRanges = NULL;
   ZSucceeded(pRanges->CreateInstance(&pRanges));
   IAGCRangesPrivatePtr spPrivate(pRanges);
-  assert(NULL != spPrivate);
+  ZAssert(NULL != spPrivate);
 
   // Copy the rangeset into the new object
   {
@@ -775,7 +775,7 @@ STDMETHODIMP CAGCGlobal::RegisterInterfaceInGlobal(IUnknown* pUnk,
   HRESULT hr = GetGIT()->RegisterInterfaceInGlobal(pUnk, riid, pdwCookie);
   if (FAILED(hr))
   {
-    assert(!"CAGCGlobal::RegisterInterfaceInGlobal()");
+    ZAssert(!"CAGCGlobal::RegisterInterfaceInGlobal()");
   }
   return hr;
 }
@@ -788,7 +788,7 @@ STDMETHODIMP CAGCGlobal::RevokeInterfaceFromGlobal(DWORD dwCookie)
   HRESULT hr = GetGIT()->RevokeInterfaceFromGlobal(dwCookie);
   if (FAILED(hr))
   {
-    assert(!"CAGCGlobal::RevokeInterfaceFromGlobal()");
+    ZAssert(!"CAGCGlobal::RevokeInterfaceFromGlobal()");
   }
   return hr;
 }
@@ -802,7 +802,7 @@ STDMETHODIMP CAGCGlobal::GetInterfaceFromGlobal(DWORD dwCookie,
   HRESULT hr = GetGIT()->GetInterfaceFromGlobal(dwCookie, riid, ppv);
   if (FAILED(hr))
   {
-    assert(!"CAGCGlobal::GetInterfaceFromGlobal()");
+    ZAssert(!"CAGCGlobal::GetInterfaceFromGlobal()");
   }
   return hr;
 }

@@ -59,7 +59,7 @@ namespace Training
         // to avoid unwanted crashes, not to provide any kind of desired behavior.
         // Note that if the objects don't exist, a constraint should have caught
         // the situation and appropriately handled it, so this shouldn't fail.
-        assert (*m_pObject and *m_pTarget);
+        ZAssert (*m_pObject and *m_pTarget);
         if (*m_pObject and *m_pTarget)
         {
             // The algorithm here is to get the vector of the forward orientation and 
@@ -102,9 +102,9 @@ namespace Training
     //------------------------------------------------------------------------------
     void        ObjectPointingAtCondition::SetVectorMask (const Vector& vectorMask)
     {
-        assert ((vectorMask.X () == 0.0f) or (vectorMask.X () == NA));
-        assert ((vectorMask.Y () == 0.0f) or (vectorMask.Y () == NA));
-        assert ((vectorMask.Z () == 0.0f) or (vectorMask.Z () == NA));
+        ZAssert ((vectorMask.X () == 0.0f) or (vectorMask.X () == NA));
+        ZAssert ((vectorMask.Y () == 0.0f) or (vectorMask.Y () == NA));
+        ZAssert ((vectorMask.Z () == 0.0f) or (vectorMask.Z () == NA));
         m_vectorMask = vectorMask;
     }
 

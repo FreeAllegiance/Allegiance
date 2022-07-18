@@ -46,10 +46,10 @@ public:
   ///////////////////////////////////////////////////////////////////////////
   void Init(ULONG cbData, void* pvData)
   {
-    assert(!m_pbBegin && !m_pbPosition && !m_pbEnd);
-    assert(cbData);
-    assert(pvData);
-    assert(!IsBadReadPtr(pvData, cbData));
+    ZAssert(!m_pbBegin && !m_pbPosition && !m_pbEnd);
+    ZAssert(cbData);
+    ZAssert(pvData);
+    ZAssert(!IsBadReadPtr(pvData, cbData));
     m_pbBegin = m_pbPosition = reinterpret_cast<BYTE*>(pvData);
     m_pbEnd   = m_pbBegin + cbData;
   }
@@ -60,16 +60,16 @@ public:
   ///////////////////////////////////////////////////////////////////////////
   STDMETHODIMP Read(void* pv, ULONG cb, ULONG* pcbRead)
   {
-    assert(m_pbBegin && m_pbPosition && m_pbEnd);
-    assert(!IsBadWritePtr(pv, cb));
-    assert(!pcbRead || !IsBadWritePtr(pcbRead, sizeof(*pcbRead)));
+    ZAssert(m_pbBegin && m_pbPosition && m_pbEnd);
+    ZAssert(!IsBadWritePtr(pv, cb));
+    ZAssert(!pcbRead || !IsBadWritePtr(pcbRead, sizeof(*pcbRead)));
 
     // Compute the number of bytes that can be read
     ULONG nMax = m_pbEnd - m_pbPosition;
     nMax = std::min(nMax, cb);
 
     // Copy the maximum number of bytes to the specified buffer
-    assert(!IsBadReadPtr(m_pbPosition, nMax));
+    ZAssert(!IsBadReadPtr(m_pbPosition, nMax));
     CopyMemory(pv, m_pbPosition, nMax);
 
     // Update the current position
@@ -86,16 +86,16 @@ public:
   ///////////////////////////////////////////////////////////////////////////
   STDMETHODIMP Write(const void* pv, ULONG cb, ULONG* pcbWritten)
   {
-    assert(m_pbBegin && m_pbPosition && m_pbEnd);
-    assert(!IsBadReadPtr(pv, cb));
-    assert(!pcbWritten || !IsBadWritePtr(pcbWritten, sizeof(*pcbWritten)));
+    ZAssert(m_pbBegin && m_pbPosition && m_pbEnd);
+    ZAssert(!IsBadReadPtr(pv, cb));
+    ZAssert(!pcbWritten || !IsBadWritePtr(pcbWritten, sizeof(*pcbWritten)));
 
     // Compute the number of bytes that can be written
     ULONG nMax = m_pbEnd - m_pbPosition;
     nMax = std::min(nMax, cb);
 
     // Copy the maximum number of bytes from the specified buffer
-    assert(!IsBadWritePtr(m_pbPosition, nMax));
+    ZAssert(!IsBadWritePtr(m_pbPosition, nMax));
     CopyMemory(m_pbPosition, pv, nMax);
 
     // Update the current position
@@ -117,8 +117,8 @@ public:
   STDMETHODIMP Seek(LARGE_INTEGER dlibMove, DWORD dwOrigin,
     ULARGE_INTEGER* plibNewPosition)
   {
-    assert(m_pbBegin && m_pbPosition && m_pbEnd);
-    assert(!plibNewPosition || !IsBadWritePtr(plibNewPosition,
+    ZAssert(m_pbBegin && m_pbPosition && m_pbEnd);
+    ZAssert(!plibNewPosition || !IsBadWritePtr(plibNewPosition,
       sizeof(*plibNewPosition)));
 
     // Clear the specified [out] parameter, if not NULL
@@ -184,7 +184,7 @@ public:
   ///////////////////////////////////////////////////////////////////////////
   STDMETHODIMP SetSize(ULARGE_INTEGER libNewSize)
   {
-    assert(m_pbBegin && m_pbPosition && m_pbEnd);
+    ZAssert(m_pbBegin && m_pbPosition && m_pbEnd);
 
     // Validate the specified size as in 32-bit range
     if (0 != libNewSize.HighPart)
@@ -206,7 +206,7 @@ public:
   STDMETHODIMP CopyTo(IStream* pstm, ULARGE_INTEGER cb,
     ULARGE_INTEGER* pcbRead, ULARGE_INTEGER* pcbWritten)
   {
-    assert(m_pbBegin && m_pbPosition && m_pbEnd);
+    ZAssert(m_pbBegin && m_pbPosition && m_pbEnd);
 
     // Initialize the [out] parameters
     if (pcbRead)
@@ -244,7 +244,7 @@ public:
   ///////////////////////////////////////////////////////////////////////////
   STDMETHODIMP Commit(DWORD grfCommitFlags)
   {
-    assert(m_pbBegin && m_pbPosition && m_pbEnd);
+    ZAssert(m_pbBegin && m_pbPosition && m_pbEnd);
     UNUSED(grfCommitFlags);
     return S_OK;
   }
@@ -252,7 +252,7 @@ public:
   ///////////////////////////////////////////////////////////////////////////
   STDMETHODIMP Revert(void)
   {
-    assert(m_pbBegin && m_pbPosition && m_pbEnd);
+    ZAssert(m_pbBegin && m_pbPosition && m_pbEnd);
     return S_OK;
   }
 
@@ -260,7 +260,7 @@ public:
   STDMETHODIMP LockRegion(ULARGE_INTEGER libOffset,
     ULARGE_INTEGER cb, DWORD dwLockType)
   {
-    assert(m_pbBegin && m_pbPosition && m_pbEnd);
+    ZAssert(m_pbBegin && m_pbPosition && m_pbEnd);
     UNUSED(libOffset);
     UNUSED(cb);
     UNUSED(dwLockType);
@@ -271,7 +271,7 @@ public:
   STDMETHODIMP UnlockRegion(ULARGE_INTEGER libOffset,
     ULARGE_INTEGER cb, DWORD dwLockType)
   {
-    assert(m_pbBegin && m_pbPosition && m_pbEnd);
+    ZAssert(m_pbBegin && m_pbPosition && m_pbEnd);
     UNUSED(libOffset);
     UNUSED(cb);
     UNUSED(dwLockType);
@@ -281,7 +281,7 @@ public:
   ///////////////////////////////////////////////////////////////////////////
   STDMETHODIMP Stat(STATSTG* pstatstg, DWORD grfStatFlag)
   {
-    assert(m_pbBegin && m_pbPosition && m_pbEnd);
+    ZAssert(m_pbBegin && m_pbPosition && m_pbEnd);
     UNUSED(grfStatFlag);
 
     // Initialize the specified structures
@@ -310,7 +310,7 @@ public:
   ///////////////////////////////////////////////////////////////////////////
   STDMETHODIMP Clone(IStream** ppstm)
   {
-    assert(m_pbBegin && m_pbPosition && m_pbEnd);
+    ZAssert(m_pbBegin && m_pbPosition && m_pbEnd);
 
     // Initialize the [out] parameter
     CLEAROUT(ppstm, (IStream*)NULL);

@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include "ui.h"
 #include "items.hpp"
 #include "UiState.h"
 #include <list>
@@ -105,6 +104,47 @@ public:
     static void AddNamespace(LuaScriptContext& context) {
         sol::table table = context.GetLua().create_table();
 
+        context.GetLua().new_usertype<TRef<UiList<sol::object>>>("TRef<UiList<sol::object>>",
+            "new", sol::no_constructor,
+            "Get", [](sol::this_state s, const TRef<UiList<sol::object>>& list, std::string key) {
+                if (key == "append entry") {
+                    return std::make_shared<SolEventSinkInitializer>([list](std::vector<sol::object> obj) {
+                        sol::object entry = obj.at(0);
+
+                        return [list, entry]() {
+                            list->InsertAtEnd(entry);
+                        };
+                    });
+                } else if (key == "insert entry") {
+                    return std::make_shared<SolEventSinkInitializer>([list](std::vector<sol::object> obj) {
+                        TRef<Number> position = obj.at(0).as<TRef<Number>>();
+                        sol::object entry = obj.at(1);
+
+                        return [list, position, entry]() {
+                            list->Insert((int)position->GetValue(), entry);
+                        };
+                    });
+                } else if (key == "remove entry") {
+                    return std::make_shared<SolEventSinkInitializer>([list](std::vector<sol::object> obj) {
+                        TRef<Number> position = obj.at(0).as<TRef<Number>>();
+
+                        return [list, position]() {
+                            int ipos = (int)position->GetValue();
+                            if (ipos < 0) {
+                                return;
+                            }
+                            list->Remove(ipos);
+                        };
+                    });
+                }
+                throw std::runtime_error("Expected argument to be one of 'append entry', ...");
+            }
+        );
+
+        table["CreateEventSink"] = [](TRef<UiList<sol::object>> start) {
+            return (TRef<UiList<sol::object>>)new UiList<sol::object>(start->GetList());
+        };
+
         table["Map"] = [&context](TRef<UiList<sol::object>> list, sol::function callback) {
             auto wrapped_callback = context.WrapCallback<sol::object, sol::object, TRef<Number>>(callback, sol::nil);
 
@@ -120,6 +160,22 @@ public:
 
         table["Count"] = [](TRef<UiList<sol::object>> list) {
             return (TRef<Number>)new ListCount<sol::object>(list);
+        };
+
+        table["Find"] = [&context](TRef<UiList<sol::object>> list, sol::function callback) {
+            auto wrapped_callback = context.WrapCallback<TRef<Boolean>, sol::object>(callback, new Boolean(false));
+            return (TRef<Number>)new TransformedValueNotStatic<float, UiList<sol::object>*>([wrapped_callback](TRef<UiList<sol::object>> list) {
+                int index = 0;
+                for (const sol::object& entry : list->GetList()) {
+                    TRef<Boolean> found = wrapped_callback(entry);
+                    if (found->GetValue() == true) {
+                        return (float)index;
+                    }
+                    index++;
+                }
+
+                return -1.0f;
+            }, list);
         };
 
         context.GetLua().set("List", table);

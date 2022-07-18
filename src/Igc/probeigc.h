@@ -158,7 +158,7 @@ class CprobeIGC : public TmodelIGC<IprobeIGC>
     // IscannerIGC
         bool            InScannerRange(ImodelIGC*   pModel) const
         {
-            assert (pModel);
+            ZAssert (pModel);
 
             bool    rc;
             IclusterIGC*    pcluster = GetCluster();
@@ -188,7 +188,7 @@ class CprobeIGC : public TmodelIGC<IprobeIGC>
 
         bool             CanSee(ImodelIGC*   pModel) const
         {
-            assert (pModel);
+            ZAssert (pModel);
 
             IsideIGC*   side = GetSide();
 

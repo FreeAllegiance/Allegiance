@@ -62,8 +62,8 @@ float    solveForImpact(const Vector&      deltaP,
                         float              radius,
                         Vector*            direction)
 {
-    assert (speed >= 0.0f);
-    assert (direction);
+    ZAssert (speed >= 0.0f);
+    ZAssert (direction);
     float   t;
     float   c = deltaP * deltaP - radius * radius;
     if (c <= 0.0f)
@@ -124,10 +124,10 @@ float    solveForLead(ImodelIGC*        shooter,
                       Vector*           direction,
                       float             skill)
 {
-    assert (shooter);
-    assert (target);
-    assert (weapon);
-    assert (direction);
+    ZAssert (shooter);
+    ZAssert (target);
+    ZAssert (weapon);
+    ZAssert (direction);
 
     const Vector&       myPosition = shooter->GetPosition();
     const Vector&       myVelocity = shooter->GetVelocity();
@@ -137,7 +137,7 @@ float    solveForLead(ImodelIGC*        shooter,
     const Vector&       hisVelocity = target->GetVelocity() * skill;
 
     IprojectileTypeIGC* pt = weapon->GetProjectileType();
-    assert (pt);
+    ZAssert (pt);
 	float speed = pt->GetSpeed() * (weapon->GetAmmoPerShot() ? shooter->GetSide()->GetGlobalAttributeSet().GetAttribute(c_gaSpeedAmmo) : 1);
 
     return solveForImpact(hisPosition - (myPosition + weapon->GetPosition() * myOrientation),
@@ -159,7 +159,7 @@ float    turnToFace(const Vector&       deltaTarget,
 
     const IhullTypeIGC* pht = pship->GetHullType();
 
-    assert (controls);
+    ZAssert (controls);
     controls->jsValues[c_axisRoll] = 0.0f;      //Ships never try to roll
 
     const Orientation&  myOrientation = pship->GetOrientation();
@@ -213,7 +213,7 @@ float    turnToFace(const Vector&       deltaTarget,
             float   tm = pship->GetTorqueMultiplier();
 
             float   mass = pship->GetMass();
-            assert (mass > 0.0f);
+            ZAssert (mass > 0.0f);
             {
                 float   yawRate = pship->GetCurrentTurnRate(c_axisYaw);
                 yaw -= (float)(skill * fabs(yawRate) * (0.5f * yawRate * mass / (tm * pht->GetTurnTorque(c_axisYaw))));
@@ -341,7 +341,7 @@ bool  FindableModel(ImodelIGC*          m,
                     break;
 
                     default:
-                        assert (false);
+                        ZAssert (false);
                 }
             }
             else
@@ -504,7 +504,7 @@ ImodelIGC*  FindTarget(IshipIGC*           pship,
                                           : ((ttMask & c_ttAllTypes) == c_ttTreasure)
                                             ? (const ModelListIGC*)(pcluster->GetTreasures())
                                             : pcluster->GetPickableModels()));
-    assert (models);
+    ZAssert (models);
 	ImodelIGC*      pmodelTarget = NULL;
     if (models->n() != 0)
     {
@@ -531,7 +531,7 @@ ImodelIGC*  FindTarget(IshipIGC*           pship,
             else
                 mLink = (mLink && (mLink != models->last())) ? mLink->next() : models->first();
         }
-        assert (mLink);
+        ZAssert (mLink);
         float   capacity;
         if ((abmAbilities & c_aabmMineHe3) != 0)
             capacity = pside->GetMission()->GetFloatConstant(c_fcidCapacityHe3);
@@ -581,8 +581,8 @@ ImodelIGC*  FindTarget(IshipIGC*           pship,
                     bool    bReplace;
                     if (ttMask & c_ttLeastTargeted)
                     {
-                        assert ((ttMask & c_ttAllTypes) == c_ttAsteroid);
-                        assert (m->GetObjectType() == OT_asteroid);
+                        ZAssert ((ttMask & c_ttAllTypes) == c_ttAsteroid);
+                        ZAssert (m->GetObjectType() == OT_asteroid);
 
 
                         n = 0;
@@ -671,7 +671,7 @@ ImodelIGC*  FindTarget(IshipIGC*           pship,
         bool    firstMatchF = false;
         do
         {
-            assert (pcluster);
+            ZAssert (pcluster);
 
             //Push the destinations of the warps in pcluster onto the end the list of
             //warps that are an extra jump away
@@ -715,7 +715,7 @@ ImodelIGC*  FindTarget(IshipIGC*           pship,
                 }
             }
 
-            assert (pwlOneAway->n() > 0);
+            ZAssert (pwlOneAway->n() > 0);
             WarpLinkIGC*    plink = (ttMask & c_ttPrevious) ? pwlOneAway->last() : pwlOneAway->first();
             IwarpIGC*       pwarp = plink->data();
 
@@ -869,7 +869,7 @@ ImodelIGC*  FindTarget(IshipIGC*           pship,
         if (pmodel)
         {
             IclusterIGC*    pc = pmodel->GetCluster();
-            assert (pc);
+            ZAssert (pc);
             int d = GetDistance(pship, pclusterStart, pc, distanceBest);
             if (d < distanceBest)
             {
@@ -895,11 +895,11 @@ IwarpIGC* FindPath(IshipIGC*    pship,
                    IclusterIGC* pclusterTarget,
                    bool         bCowardly)
 {
-    assert (pship);
+    ZAssert (pship);
     IsideIGC*   pside = pship->GetSide();
 
     IclusterIGC*    pclusterCurrent = pship->GetCluster();
-    assert (pclusterCurrent);
+    ZAssert (pclusterCurrent);
 
     if (pclusterCurrent == pclusterTarget)
         return NULL;
@@ -919,14 +919,14 @@ IwarpIGC* FindPath(IshipIGC*    pship,
             IwarpIGC*   pwarp = wLink->data();
             if (pship->CanSee(pwarp))
             {
-                assert (pwarp->GetDestination());
+                ZAssert (pwarp->GetDestination());
                 IclusterIGC*    pclusterDestination = pwarp->GetDestination()->GetCluster();
                 if ((!bCowardly) ||
                     (pclusterTarget == pclusterDestination) ||
                     IsFriendlyCluster(pclusterDestination, pside))
                 {
                     PathLink*   pl = new PathLink;
-                    assert (pl);
+                    ZAssert (pl);
 
                     Path&       path = pl->data();
                     path.distance = (pwarp->GetPosition() - positionShip).LengthSquared();
@@ -995,7 +995,7 @@ IwarpIGC* FindPath(IshipIGC*    pship,
                     if (explored.find(pclusterDestination) == NULL)
                     {
                         PathLink*   ppl = new PathLink;
-                        assert (ppl);
+                        ZAssert (ppl);
 
                         Path&       ppathNew = ppl->data();
                         ppathNew.pwarpStart = path.pwarpStart;
@@ -1015,8 +1015,8 @@ IwarpIGC* FindPath(IshipIGC*  pShip,
                    ImodelIGC* pTarget,
                    bool       bCowardly)
 {
-    assert (pShip);
-    assert (pTarget);
+    ZAssert (pShip);
+    ZAssert (pTarget);
 
     IclusterIGC*    pclusterTarget = pTarget->GetMission()->GetIgcSite()->GetCluster(pShip, pTarget);
 
@@ -1028,7 +1028,7 @@ bool    SearchClusters(ImodelIGC*    pmodel,
                        bool          (*pfnCluster)(IclusterIGC*  pcluster,
                                                    void*         pdata))
 {
-    assert (pmodel);
+    ZAssert (pmodel);
 
     bool    rc = false; // mmf initialize to false
     IclusterIGC*    pcluster = pmodel->GetCluster();
@@ -1076,7 +1076,7 @@ const char* GetModelType(ImodelIGC* pmodel)
             {
                 static const char*  szNames[] = {"", "", "Powerup", "", "Cash", ""};
                 TreasureCode tc = ((ItreasureIGC*)pmodel)->GetTreasureCode();
-                assert ((tc == c_tcPowerup) || (tc == c_tcCash) || (tc == c_tcFlag));
+                ZAssert ((tc == c_tcPowerup) || (tc == c_tcCash) || (tc == c_tcFlag));
                 return szNames[tc];
             }
         }
@@ -1087,7 +1087,7 @@ const char* GetModelType(ImodelIGC* pmodel)
 
         default:
         {
-            assert (pmodel->GetObjectType() == OT_missile);
+            ZAssert (pmodel->GetObjectType() == OT_missile);
             return ((ImissileIGC*)pmodel)->GetMissileType()->GetName();
         }
     }
@@ -1095,7 +1095,7 @@ const char* GetModelType(ImodelIGC* pmodel)
 
 const char* GetModelName(ImodelIGC* pmodel)
 {
-    assert (pmodel);
+    ZAssert (pmodel);
     const char* n = pmodel->GetName();
 
     if (n[0] != '\0')
@@ -1109,7 +1109,7 @@ const char* GetModelName(ImodelIGC* pmodel)
 
 AmmoState   GetAmmoState(IshipIGC*  pship)
 {
-    assert (pship);
+    ZAssert (pship);
 
     //speed hack ... assume that 500 rounds is enough for anything without checking guns
     short   ammo = pship->GetAmmo();
@@ -1168,7 +1168,7 @@ GotoPositionMask Waypoint::DoApproach(IshipIGC*        pship,
 {
     GotoPositionMask    gpm;
 
-    assert (nLand > 0);
+    ZAssert (nLand > 0);
 
     //The best bay is the one where the distance between our rest position and the approach strip is the smallest
     Vector  dpNow = myPosition - itsPosition;
@@ -1199,11 +1199,11 @@ GotoPositionMask Waypoint::DoApproach(IshipIGC*        pship,
 
             // pc^2 + 2pd pc t + pd^2 t^2 - r^2 = 0
 
-            assert (pdirection->LengthSquared() >= 0.98f);
-            assert (pdirection->LengthSquared() <= 1.02f);
+            ZAssert (pdirection->LengthSquared() >= 0.98f);
+            ZAssert (pdirection->LengthSquared() <= 1.02f);
             float   b = *pcenter * *pdirection;
             float   c = *pcenter * *pcenter - myRadius * myRadius;
-            assert (c < 0.0f);
+            ZAssert (c < 0.0f);
 
 			// mmf added check for negative
 			// revisit what to set t to in this case splat
@@ -1214,7 +1214,7 @@ GotoPositionMask Waypoint::DoApproach(IshipIGC*        pship,
 			} else { t = sqrt(b*b - c) - b; }
 
             // float   t = sqrt(b*b - c) - b;
-            assert (t >= 0.0f);
+            ZAssert (t >= 0.0f);
 
             goal = *pcenter + *pdirection * t;
         }
@@ -1328,13 +1328,13 @@ GotoPositionMask Waypoint::GetGotoPosition(IshipIGC*           pship,
                                            ImodelIGC**         ppmodelSkip,
                                            Vector*             pvectorFacing)
 {
-    assert (pship);
+    ZAssert (pship);
 
     const Vector&       myPosition = pship->GetPosition();
 
     GotoPositionMask    gpm;
 
-    assert (m_pmodelTarget);
+    ZAssert (m_pmodelTarget);
     const Vector&   itsPosition = m_pmodelTarget->GetPosition();
 
     if (m_objective == Waypoint::c_oGoto)
@@ -1464,8 +1464,8 @@ GotoPositionMask Waypoint::GetGotoPosition(IshipIGC*           pship,
                         *ppmodelSkip = m_pmodelTarget;
                     }
                     else {
-                        assert(nLand > 0);
-                        assert(nLand <= c_maxLandSlots);
+                        ZAssert(nLand > 0);
+                        ZAssert(nLand <= c_maxLandSlots);
 
                         Vector  centers[c_maxLandSlots];
                         Vector  directions[c_maxLandSlots];
@@ -1506,7 +1506,7 @@ GotoPositionMask Waypoint::GetGotoPosition(IshipIGC*           pship,
             {
                 //Trying to dock ...
                 IhullTypeIGC*   pht = pship->GetBaseHullType();
-                assert (pht);
+                ZAssert (pht);
                 const IstationTypeIGC*  pst = ((IstationIGC*)m_pmodelTarget)->GetStationType();
 
                 {
@@ -1523,8 +1523,8 @@ GotoPositionMask Waypoint::GetGotoPosition(IshipIGC*           pship,
                     }
                     else
                     {
-                        assert (nLand > 0);
-                        assert (nLand <= c_maxLandSlots);
+                        ZAssert (nLand > 0);
+                        ZAssert (nLand <= c_maxLandSlots);
 
                         Vector  centers[c_maxLandSlots];
                         Vector  directions[c_maxLandSlots];
@@ -1697,7 +1697,7 @@ bool    Dodge(IshipIGC*     pship,
               float         tMax)
 {
     IclusterIGC*    pcluster = pship->GetCluster();
-    assert (pcluster);
+    ZAssert (pcluster);
 
     const Vector&       myPosition = pship->GetPosition();
     const Vector&       myVelocity = pship->GetVelocity();
@@ -1742,7 +1742,7 @@ bool    Dodge(IshipIGC*     pship,
                             : 0.0f;
 
 
-                assert (t >= 0.0f);
+                ZAssert (t >= 0.0f);
 
                 if (t < tCollide)
                 {
@@ -1836,10 +1836,10 @@ bool    GotoPlan::SetControls(float  dt, bool bDodge, ControlData*  pcontrols, i
 
     if (m_maskWaypoints != 0)
     {
-        assert (m_wpTarget.m_pmodelTarget);
+        ZAssert (m_wpTarget.m_pmodelTarget);
 
         IclusterIGC*    pcluster = m_pship->GetCluster();
-        assert (pcluster);
+        ZAssert (pcluster);
 
         if (pcluster != m_pvOldCluster)
         {
@@ -1988,7 +1988,7 @@ bool    GotoPlan::SetControls(float  dt, bool bDodge, ControlData*  pcontrols, i
             ImodelIGC*          pmodelSkip;
             Vector              facing;
 
-            assert (m_maskWaypoints & c_wpTarget);
+            ZAssert (m_maskWaypoints & c_wpTarget);
             gpm = ((m_maskWaypoints & c_wpWarp) ? m_wpWarp : m_wpTarget).GetGotoPosition(m_pship,
                                                                                          distanceRest,
                                                                                          positionRest,
@@ -2082,7 +2082,7 @@ bool    GotoPlan::SetControls(float  dt, bool bDodge, ControlData*  pcontrols, i
                         float               tm   = m_pship->GetTorqueMultiplier();
                         const IhullTypeIGC* pht  = m_pship->GetHullType();
                         float               mass = m_pship->GetMass();
-                        assert (mass > 0.0f);
+                        ZAssert (mass > 0.0f);
 
                         float   rollRate = m_pship->GetCurrentTurnRate(c_axisRoll);
                         roll -= (float)(m_fSkill * fabs(rollRate) * (0.5f * rollRate * mass / (tm * pht->GetTurnTorque(c_axisRoll))));
@@ -2175,7 +2175,7 @@ if (d2 < dMax2)             //Object is closer that our goal
 
                     Vector  dp = itsPosition - myPosition;
                     float   dot = dp * path;
-                    assert (dot >= 0.0f);
+                    ZAssert (dot >= 0.0f);
 
                     Vector  closest = myPosition + path * (dot / distance2);
                     Vector  offset = closest - itsPosition;
@@ -2211,7 +2211,7 @@ if (d2 < dMax2)             //Object is closer that our goal
                         float   tangentLength2 = tangent.LengthSquared();
 
                         float   dot = dp * tangent;
-                        assert (dot > 0.0f);
+                        ZAssert (dot > 0.0f);
 
                         Vector  pca = tangent * (dot / tangentLength2);
                         Vector  radial = (pca - dp).Normalize();
@@ -2325,12 +2325,12 @@ bool        LineOfSightExist(const IclusterIGC* pcluster,
                              const ImodelIGC*   pmodel1,
                              const ImodelIGC*   pmodel2)
 {
-    assert (pcluster);
-    assert (pmodel1);
-    assert (pmodel1->GetObjectType() != OT_asteroid);
-    assert (pmodel2);
-    assert (pmodel1->GetCluster() == pcluster);
-    assert (pmodel2->GetCluster() == pcluster);
+    ZAssert (pcluster);
+    ZAssert (pmodel1);
+    ZAssert (pmodel1->GetObjectType() != OT_asteroid);
+    ZAssert (pmodel2);
+    ZAssert (pmodel1->GetCluster() == pcluster);
+    ZAssert (pmodel2->GetCluster() == pcluster);
 
     // P1 is the eye,and P2 is the center of the target that we want to know whether or not is visible
     const Vector&   P1 = pmodel1->GetPosition();
@@ -2376,7 +2376,7 @@ bool        LineOfSightExist(const IclusterIGC* pcluster,
                     // the angle between them.
                     float   fCosineSeparationAngle = dot * fOverLengthV13;
 
-                    //assert (fCosineSeparationAngle > 0.0f);       //This should be true, but it only takes a little round-off to spoil a day
+                    //ZAssert (fCosineSeparationAngle > 0.0f);       //This should be true, but it only takes a little round-off to spoil a day
                     {
                         // Get the radius of the obscuring model, and scale it to simulate a dense core
                         // or variable geometry. We then compute the coverage angle of the obscuring
@@ -2431,7 +2431,7 @@ IshipIGC*   CreateDrone(ImissionIGC*     pmission,
 
     if (pszName)
     {
-        assert (strlen(pszName) < c_cbName - 4);
+        ZAssert (strlen(pszName) < c_cbName - 4);
         strcpy(ds.name, pszName);
 
         //Is the name unique?
@@ -2457,7 +2457,7 @@ IshipIGC*   CreateDrone(ImissionIGC*     pmission,
                                                         OT_ship, &ds,
                                                         sizeof(DataShipIGC)));
 
-    assert (ship);
+    ZAssert (ship);
 
     //Try to fill out the drone with the specified parts
     {
@@ -2549,7 +2549,7 @@ const char*     GetClusterWarningText(ClusterWarning cw)
         "Station at risk of capture"
     };
 
-    assert(cw >= 0 && cw < c_cwMax);
+    ZAssert(cw >= 0 && cw < c_cwMax);
     return c_pszAlerts[cw];
 }
 
@@ -2557,7 +2557,7 @@ DamageTrack::DamageTrack(DamageTrackSet* pdts)
 :
     m_pset(pdts)
 {
-    assert (pdts);
+    ZAssert (pdts);
     pdts->AddTrack(this);
 }
 
@@ -2565,7 +2565,7 @@ DamageTrack::~DamageTrack(void)
 {
     Reset();
 
-    assert (m_pset);
+    ZAssert (m_pset);
     m_pset->DeleteTrack(this);
 }
 
@@ -2722,7 +2722,7 @@ int GetDistance(IshipIGC*     pship,
                 IclusterIGC*  pclusterStop,
                 int           maxDistance)
 {
-    assert (pcluster != pclusterStop);
+    ZAssert (pcluster != pclusterStop);
 
     int distance = 1;
 
@@ -2736,7 +2736,7 @@ int GetDistance(IshipIGC*     pship,
 
     while (true)
     {
-        assert (pcluster);
+        ZAssert (pcluster);
         clustersVisited.first(pcluster);    //We've already visited this cluster
 
         //Push the destinations of the warps in pcluster onto the end the list of
@@ -2773,7 +2773,7 @@ int GetDistance(IshipIGC*     pship,
             pwlTwoAway = pwl;
         }
 
-        assert (pwlOneAway->n() > 0);
+        ZAssert (pwlOneAway->n() > 0);
         WarpLinkIGC*    plink = pwlOneAway->first();
         IwarpIGC*       pwarp = plink->data();
 
@@ -2859,7 +2859,7 @@ void    CreateAsteroid(ImissionIGC*         pmission,
     da.up = CrossProduct(da.forward, xAxis);
     if (da.up.LengthSquared() <= 0.1f)
         da.up = CrossProduct(da.forward, zAxis);
-    assert(da.up.LengthSquared() > 0.1f);
+    ZAssert(da.up.LengthSquared() > 0.1f);
     da.up.SetNormalize();
 
     da.asteroidDef.radius = (short) randomInt(da.asteroidDef.radius, 2*da.asteroidDef.radius);
@@ -2888,7 +2888,7 @@ void    CreateAsteroid(ImissionIGC*         pmission,
                                          OT_asteroid,
                                          &da,
                                          sizeof(da));
-    assert (o);
+    ZAssert (o);
     o->Release();
 }
 
@@ -2922,7 +2922,7 @@ static IstationIGC* CreatePedestalAndFlag(ImissionIGC*     pmission,
 
     {
         IstationTypeIGC*    ppedestal = pmission->GetStationTypes()->last()->data();
-        assert (ppedestal->HasCapability(c_sabmPedestal));
+        ZAssert (ppedestal->HasCapability(c_sabmPedestal));
 
         ds.stationTypeID = ppedestal->GetObjectID();
         strcpy(ds.name, ppedestal->GetName());
@@ -2932,7 +2932,7 @@ static IstationIGC* CreatePedestalAndFlag(ImissionIGC*     pmission,
                                                                      OT_station,
                                                                      &ds,
                                                                      sizeof(ds)));
-    assert(pstation);
+    ZAssert(pstation);
 
     DataTreasureIGC dt;
     dt.treasureCode = c_tcFlag;
@@ -2951,7 +2951,7 @@ static IstationIGC* CreatePedestalAndFlag(ImissionIGC*     pmission,
     ItreasureIGC* t = (ItreasureIGC *)(pmission->CreateObject(now, OT_treasure,
                                                               &dt, sizeof(dt)));
 
-    assert (t);
+    ZAssert (t);
     t->Release();
 
     //Bad form here ... but we know that the station's release count will not go to zero

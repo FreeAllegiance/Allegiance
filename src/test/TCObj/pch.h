@@ -12,7 +12,6 @@
 
 #define VC_EXTRALEAN        // Exclude rarely-used stuff from Windows headers
 #define _WIN32_DCOM         // Enable DCOM features
-#define __MODULE__ "TCObj"
 
 // CRT headers
 #include <crtdbg.h>

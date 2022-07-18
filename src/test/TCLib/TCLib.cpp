@@ -24,7 +24,7 @@ class __declspec(uuid("0002e005-0000-0000-c000-000000000046")) StdComponentCateg
     TCHAR szBuffer[512];
 
     nBuf = _vstprintf(szBuffer, lpszFormat, args);
-    assert(nBuf < sizeof(szBuffer));
+    ZAssert(nBuf < sizeof(szBuffer));
 
     USES_CONVERSION;
     ZDebugOutputImpl(T2CA(szBuffer));
@@ -777,7 +777,7 @@ HRESULT CompareObjectsThruThisStream(IStream* pstm1, IUnknown* punk2)
   ULARGE_INTEGER uliPos1 = {0, 0}, uliPos2 = {0, 0};
   RETURN_FAILED(pstm1->Seek(liMove, STREAM_SEEK_END, &uliPos1));
   RETURN_FAILED(spstm2->Seek(liMove, STREAM_SEEK_END, &uliPos2));
-  assert(!uliPos1.HighPart && !uliPos2.HighPart);
+  ZAssert(!uliPos1.HighPart && !uliPos2.HighPart);
   if (uliPos1.LowPart != uliPos2.LowPart)
     return S_FALSE;
 
@@ -1035,7 +1035,7 @@ void _cdecl TCErrLog(LPCTSTR lpszFormat, ...)
   TCHAR szBuffer[512];
 
   nBuf = _vstprintf(szBuffer, lpszFormat, args);
-  assert(nBuf < sizeof(szBuffer));
+  ZAssert(nBuf < sizeof(szBuffer));
 
   #ifdef _DEBUG
     ZDebugOutputImpl(szBuffer);

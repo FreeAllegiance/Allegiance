@@ -254,7 +254,7 @@ void TCComDualEventCall<If_vtbl>::SetDispParamsV(DISPID dispid, UINT cArgs,
   va_list argptr)
 {
   // This function should only be called, at most, once per instance
-  assert(NULL == m_DispParams.rgvarg);
+  ZAssert(NULL == m_DispParams.rgvarg);
 
   // Save the specified dispatch id
   m_dispid = dispid;

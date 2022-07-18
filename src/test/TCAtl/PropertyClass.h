@@ -825,7 +825,7 @@ template <class T, class Dest, class Src>
 HRESULT TCComPropertyPut(T* pThis, Dest& dest, Src& src,
   bool* pbChanged = NULL)
 {
-  assert(NULL != pThis);
+  ZAssert(NULL != pThis);
 
   bool bLocked = false;
   HRESULT hr = S_OK;
@@ -926,7 +926,7 @@ HRESULT TCComPropertyPut(T* pThis, Dest& dest, Src& src, DISPID dispid,
 template <class T, class Dest, class Src>
 HRESULT TCComPropertyGet(T* pThis, Dest* pDest, Src& src, bool bLock = true)
 {
-  assert(NULL != pThis);
+  ZAssert(NULL != pThis);
 
   bool bLocked = false;
   HRESULT hr = S_OK;

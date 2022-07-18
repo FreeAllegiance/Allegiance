@@ -101,7 +101,7 @@ void LoadTechBits()
     while (SQL_SUCCEEDED(SQL_GETROW(TechBitsAll)))
     {
       // database ensures all bit ids are unique
-      assert(TechBitsAll_BitID < cTechs);
+      ZAssert(TechBitsAll_BitID < cTechs);
       SqlStrCpy(g.rgTechs[TechBitsAll_BitID], TechBitsAll_Name, sizeof(TechBitsAll_Name));
     }
   #endif // !defined(ALLSRV_STANDALONE)
@@ -212,7 +212,7 @@ void LoadStaticMapInfo()
       SQLSTRCPY(g.vStaticMapInfo[i].cbIGCFile, GetStaticMaps_FileName);
       SQLSTRCPY(g.vStaticMapInfo[i].cbFriendlyName, GetStaticMaps_MapName);
       g.vStaticMapInfo[i].nNumTeams = GetStaticMaps_NumTeams;
-      assert(GetStaticMaps_NumTeams > 1 && GetStaticMaps_NumTeams <= c_cSidesMax);
+      ZAssert(GetStaticMaps_NumTeams > 1 && GetStaticMaps_NumTeams <= c_cSidesMax);
     }
   }
 #else
@@ -420,7 +420,7 @@ void FetchGlobalAttributeSet(GlobalAttributeID gaid, GlobalAttributeSet& gas)
       GlobalAttrs_ID = gaid;
       SQL_GO(GetGlobalAttrs);
       SQLRETURN sqlret = SQL_GETROW(GetGlobalAttrs);
-      assert(SQL_SUCCEEDED(sqlret));
+      ZAssert(SQL_SUCCEEDED(sqlret));
       #define DBTOGAS(attr) (1.0f + (float) (attr) / 100.0f)
 
       #define DBGSA(x)     gas.SetAttribute(c_ga##x,                  DBTOGAS(GlobalAttrs_##x));
@@ -761,7 +761,7 @@ if (pfsMission->RequiresInvitation())
   if ((iSide == NA) || ((iSide == SIDE_TEAMLOBBY) && pmp->bLockSides))
   {
     iSide = SIDE_TEAMLOBBY;	// TE: Made all players join lobby when joining game
-    assert (iSide != NA);
+    ZAssert (iSide != NA);
   }
 
   // put them on the team lobby side
@@ -770,7 +770,7 @@ if (pfsMission->RequiresInvitation())
 
   if (!psideReq)
   {
-    assert(false);
+    ZAssert(false);
     psideReq = pMission->GetSide(SIDE_TEAMLOBBY);
   }
 
@@ -945,7 +945,7 @@ void GotLogonDetails(CQLogonStats * pquery)
 	steamID.SetFromUint64(pqd->steamID);
 
     pfsPlayer = new CFSPlayer(pcnxn, pqd->characterID, pqd->szCDKey, pship, !! pqd->fCanCheat, steamID);
-    assert(pfsPlayer);
+    ZAssert(pfsPlayer);
 
 	/* pkk May 6th: Disabled bandwidth patch
 	// w0dk4 Bandwidth Patch
@@ -1062,9 +1062,9 @@ void SetCharStats(int                   characterID,
       return;
     }
 
-    assert(pso.GetScore() >= 0.0f);
+    ZAssert(pso.GetScore() >= 0.0f);
 
-    assert (pSide);
+    ZAssert (pSide);
     CivID   civID = pSide->GetCivilization()->GetObjectID();
 
     PersistPlayerScoreObject& ppso = pso.GetPersist();
@@ -1172,8 +1172,8 @@ void SetCharStats(int                   characterID,
 	//     note pfsPlayer can be NULL so added check for that
 	if (0.0f == pso.GetTimePlayed())
     {   return;    }
-    assert(pso.GetScore() >= 0.0f);
-	assert(pSide);
+    ZAssert(pso.GetScore() >= 0.0f);
+	ZAssert(pSide);
     PersistPlayerScoreObject& ppso = pso.GetPersist();
     RankID  Rank = ppso.GetRank();
 	if (pfsPlayer != NULL) debugf("PlayerName =%s, ",pfsPlayer->GetName());
@@ -1301,7 +1301,7 @@ void RecordSquadGame(const SideListIGC*  psides, IsideIGC* psideWon)
           pqd->squadIDLost5 = NA;
     }
 
-    assert(linkSide == NULL || linkSide->data() == psideWon && linkSide->next() == NULL);
+    ZAssert(linkSide == NULL || linkSide->data() == psideWon && linkSide->next() == NULL);
 
     g.sql.PostQuery(pquery);
   #endif // !defined(ALLSRV_STANDALONE)
@@ -1369,7 +1369,7 @@ void LoadDbCache()
     {
         vnShipIdList[nCount] = ShipTypeIDs_ShipTypeID;
         ++nCount;
-        assert(nCount <= g_cShipTypes);
+        ZAssert(nCount <= g_cShipTypes);
     }
 
     // Load all projectiles
@@ -1668,11 +1668,11 @@ void LoadDbCache()
         pdht->rechargeRate                   = ShipTypes_RateRechargeEnergy;
 
         /*
-        assert (ShipTypes_flRateYaw == ShipTypes_flRatePitch);
-        assert (ShipTypes_flRateYaw == ShipTypes_flRateRoll);
+        ZAssert (ShipTypes_flRateYaw == ShipTypes_flRatePitch);
+        ZAssert (ShipTypes_flRateYaw == ShipTypes_flRateRoll);
 
-        assert (ShipTypes_flDriftYaw == ShipTypes_flDriftPitch);
-        assert (ShipTypes_flDriftYaw == ShipTypes_flDriftPitch);
+        ZAssert (ShipTypes_flDriftYaw == ShipTypes_flDriftPitch);
+        ZAssert (ShipTypes_flDriftYaw == ShipTypes_flDriftPitch);
 
         debugf("%s\n", pdht->name);
         debugf("\t%16.3f%16.3f\n", ShipTypes_flRateYaw,   fYaw);
@@ -1710,7 +1710,7 @@ void LoadDbCache()
 
         TechsListToBits(ShipTypes_TechBitsReqd, pdht->ttbmRequired);
         TechsListToBits(ShipTypes_TechBitsEffect, pdht->ttbmEffects);
-        assert (pdht->ttbmEffects <= pdht->ttbmRequired);
+        ZAssert (pdht->ttbmEffects <= pdht->ttbmRequired);
 
         AttachPoints_ShipTypeID = ShipTypes_ShipTypeID;
         pdht->maxWeapons = 0;
@@ -1732,7 +1732,7 @@ void LoadDbCache()
 
             //Never more than 4 unmanned weapons (and they have to be listed
             //first)
-            assert ((!phpd->bFixed) ||
+            ZAssert ((!phpd->bFixed) ||
                     (( (char*)phpd - ((char*)pdht + pdht->hardpointOffset) ) <
                      c_maxUnmannedWeapons * sizeof(HardpointData)));
 
@@ -1752,7 +1752,7 @@ void LoadDbCache()
 
             phpd++;
           }
-          //assert (iAttach == g.cAttachPoints);
+          //ZAssert (iAttach == g.cAttachPoints);
         }
 
         /*
@@ -1786,7 +1786,7 @@ void LoadDbCache()
     {
         vnDevelopmentIdList[nCount] = DevelopmentIDs_DevelopmentID;
         ++nCount;
-        assert(nCount <= g_cDevelopments);
+        ZAssert(nCount <= g_cDevelopments);
     }
 
     for (i = 0; i < nCount; i++)
@@ -1807,7 +1807,7 @@ void LoadDbCache()
         dd.timeToBuild = Developments_SecondsToBuild;
         dd.completionSound = Developments_CompletedSound;
         dd.groupID = Developments_GroupID;
-        assert (dd.timeToBuild > 0);
+        ZAssert (dd.timeToBuild > 0);
         dd.developmentID = Developments_ID;
         if (NA == Developments_GlobalAttribute)
           Developments_GlobalAttribute = 0; // IGC wants zero for no global attribute
@@ -1850,7 +1850,7 @@ void LoadDbCache()
       TechsListToBits(Drones_TechBitsReqd, ddt.ttbmRequired);
       TechsListToBits(Drones_TechBitsEffect, ddt.ttbmEffects);
       ddt.timeToBuild   = Drones_SecToBuild;
-      //assert (ddt.timeToBuild > 0);
+      //ZAssert (ddt.timeToBuild > 0);
       ddt.pilotType     = (PilotType)Drones_DroneType;
       ddt.hullTypeID    = Drones_ShipTypeID;
       ddt.droneTypeID   = Drones_ID;
@@ -1894,7 +1894,7 @@ void LoadDbCache()
       st.armorRegeneration  = Stations_RateRegenArmor;
       st.shieldRegeneration = Stations_RateRegenShield;
       st.timeToBuild        = Stations_SecondsToBuild;
-      assert (st.timeToBuild > 0);
+      ZAssert (st.timeToBuild > 0);
       st.radius             = Stations_Radius;
       st.income             = Stations_Income;
       st.stationTypeID      = Stations_ID;
@@ -1989,13 +1989,13 @@ void LoadDbCache()
                                                  &dts, sizeof(DataTreasureSetIGC));
         pb->Release();
     }
-    assert (g.trekCore->GetTreasureSets()->n() > 0);  // we should have at least 1
+    ZAssert (g.trekCore->GetTreasureSets()->n() > 0);  // we should have at least 1
 
     SQL_GO(TreasureChance);
     while (SQL_SUCCEEDED(SQL_GETROW(TreasureChance)))
     {
       ItreasureSetIGC*  pts = g.trekCore->GetTreasureSet(TreasureChance_SetID);
-      assert (pts);
+      ZAssert (pts);
 
       pts->AddTreasureData(TreasureChance_TreasureCode, TreasureChance_ObjectID, TreasureChance_Chance);
     }
@@ -2071,7 +2071,7 @@ void SendPlayerInfo(CFSPlayer * pfsPlayer, CFSShip * pfsShip, CFSMission* pfsMis
     CFSPlayer * pfsPlayerSent = pfsShip->GetPlayer(); // the player being sent
     PersistPlayerScoreObjectList * pperplrscoList = pfsPlayerSent->GetPersistPlayerScoreObjectList();
     cCivs = pperplrscoList->n();
-    assert(cCivsMax >= cCivs);
+    ZAssert(cCivsMax >= cCivs);
     PersistPlayerScoreObjectLink * pl = NULL;
     int i = 0;
     for (pl = pperplrscoList->first(); pl; pl = pl->next())
@@ -2107,7 +2107,7 @@ void SendPlayerInfo(CFSPlayer * pfsPlayer, CFSShip * pfsShip, CFSMission* pfsMis
   IsideIGC* pside = pfsShip->GetIGCShip()->GetSide();
   if (pside)
   {
-      assert (pfsMission);
+      ZAssert (pfsMission);
       pfmPlayerInfo->iSide      = pside->GetObjectID();
   }
   else
@@ -2187,7 +2187,7 @@ void CheatSides(CFSShip * pfsShip, CFSMission * pfsMission)
       IstationIGC * pstation = pfsshipT->GetStation();
       if (!pstation)
       {
-        assert (pship);
+        ZAssert (pship);
         if (pcluster) // they're flying
         {
           Vector vPosition = pship->GetPosition();
@@ -2212,7 +2212,7 @@ void CheatSides(CFSShip * pfsShip, CFSMission * pfsMission)
       }
       else // docked
       {
-        assert (pcluster);
+        ZAssert (pcluster);
         if (pfsShip)
           SendChatMessage(NULL, CHAT_INDIVIDUAL, pfsShip, c_fCheatsOff,
               "  %s is docked at station %s in sector %s",
@@ -2240,7 +2240,7 @@ CFSDrone * CreateStockDrone(IdroneTypeIGC * pdronetype, IsideIGC* pSide, IbaseIG
                                     pdronetype->GetMoveSkill(),
                                     pdronetype->GetBravery());
 
-    assert (pship);
+    ZAssert (pship);
     if (pbase)
         pship->SetBaseData(pbase);
     pship->CreateDamageTrack();
@@ -2256,15 +2256,15 @@ CFSDrone * CreateStockDrone(IdroneTypeIGC * pdronetype, IsideIGC* pSide, IbaseIG
         const char* pszName;
         if (pt == c_ptBuilder)
         {
-            assert (pbase);
-            assert (pbase->GetObjectType() == OT_stationType);
+            ZAssert (pbase);
+            ZAssert (pbase->GetObjectType() == OT_stationType);
             pszName = ((IstationTypeIGC*)pbase)->GetBuilderName();
         }
         else
         {
             pszName = pdronetype->GetName();
         }
-        assert (strlen(pszName) < c_cbName - 4);
+        ZAssert (strlen(pszName) < c_cbName - 4);
         strcpy(bfr, pszName);
 
         _itoa(pship->GetObjectID(), bfr + strlen(bfr), 10);
@@ -2284,9 +2284,9 @@ CFSDrone * CreateStockDrone(IdroneTypeIGC * pdronetype, IsideIGC* pSide, IbaseIG
 
 bool    LeaveShip(CFSShip* pfsShip, IshipIGC*  pshipParent)
 {
-    assert (pfsShip);
-    assert (pfsShip->IsPlayer());
-    assert (pshipParent);
+    ZAssert (pfsShip);
+    ZAssert (pfsShip->IsPlayer());
+    ZAssert (pshipParent);
 
     bool    bLeft = false;
 
@@ -2294,12 +2294,12 @@ bool    LeaveShip(CFSShip* pfsShip, IshipIGC*  pshipParent)
     {
         IshipIGC*   pship = pfsShip->GetIGCShip();
 
-        assert (pship != pshipParent);
-        assert (pship->GetParentShip() == pshipParent);
-        assert (pship->GetCluster() == NULL);
+        ZAssert (pship != pshipParent);
+        ZAssert (pship->GetParentShip() == pshipParent);
+        ZAssert (pship->GetCluster() == NULL);
 
         CFSShip*    pfsShipParent = (CFSShip*)(pshipParent->GetPrivateData());
-        assert (pfsShipParent->IsPlayer());
+        ZAssert (pfsShipParent->IsPlayer());
 
         pship->SetParentShip(NULL);
 
@@ -2314,8 +2314,8 @@ bool    LeaveShip(CFSShip* pfsShip, IshipIGC*  pshipParent)
 		pss->SetStateTime(g.timeNow.clock());
         pss->SetParentID(NA);
         pss->SetHullID(pht->GetObjectID());
-        assert (pship->GetStation());
-        assert (pss->GetStationID() == pship->GetStation()->GetObjectID());
+        ZAssert (pship->GetStation());
+        ZAssert (pss->GetStationID() == pship->GetStation()->GetObjectID());
 
         BEGIN_PFM_CREATE(g.fm, pfmLeave, S, LEAVE_SHIP)
         END_PFM_CREATE
@@ -2329,9 +2329,9 @@ bool    LeaveShip(CFSShip* pfsShip, IshipIGC*  pshipParent)
 
 bool    BoardShip(CFSShip* pfsShip, IshipIGC*  pshipBoard)
 {
-    assert (pfsShip);
-    assert (pfsShip->IsPlayer());
-    assert (pshipBoard);
+    ZAssert (pfsShip);
+    ZAssert (pfsShip->IsPlayer());
+    ZAssert (pshipBoard);
 
     bool    bBoarded = false;
 
@@ -2364,7 +2364,7 @@ bool    BoardShip(CFSShip* pfsShip, IshipIGC*  pshipBoard)
                         if (startMount == NA)
                             startMount = maxMount - 1;
                         else
-                            assert (pship->GetParentShip() != NULL);
+                            ZAssert (pship->GetParentShip() != NULL);
 
                         turret = startMount;
                         while (true)
@@ -2418,7 +2418,7 @@ bool    BoardShip(CFSShip* pfsShip, IshipIGC*  pshipBoard)
                         const ShipListIGC*  pchildren = pship->GetChildShips();
 
                         //If we have kids and we are boarding another ship, we must be at a station
-                        assert ((pchildren->n() == 0) || (pship->GetCluster() == NULL));
+                        ZAssert ((pchildren->n() == 0) || (pship->GetCluster() == NULL));
 
                         ShipLinkIGC*        psl;
 
@@ -2434,7 +2434,7 @@ bool    BoardShip(CFSShip* pfsShip, IshipIGC*  pshipBoard)
                     {
                         //The player is about to lose some expensive hardware ... credit them for it
                         Money   refund = pship->GetValue();
-                        assert(refund >= 0);
+                        ZAssert(refund >= 0);
 
                         if (refund > 0)
                         {
@@ -2469,7 +2469,7 @@ bool    BoardShip(CFSShip* pfsShip, IshipIGC*  pshipBoard)
                     IclusterIGC* pcluster = pship->GetCluster();
                     if (pcluster)
                     {
-                        assert (pshipOldParent == pshipBoard);
+                        ZAssert (pshipOldParent == pshipBoard);
                         g.fm.SendMessages(GetGroupSectorFlying(pcluster), FM_GUARANTEED, FM_FLUSH);
                     }
                     else
@@ -2587,7 +2587,7 @@ bool CheatCreateDrones(CFSShip * pfsShip, ZString & strCheat)
           p.y += random(-200.0f, 200.0f);
           p.z += random(-200.0f, 200.0f);
           CFSDrone* pdrone = CreateStockDrone(pdronetype, psideDrone);
-          assert (pdrone);
+          ZAssert (pdrone);
           pdrone->GetIGCShip()->SetAmmo(0x7fff);
           pdrone->GetIGCShip()->SetPosition(p);
           pdrone->GetIGCShip()->SetCluster(pcluster);
@@ -2608,7 +2608,7 @@ BOOL FAR PASCAL EnumPlayersCallback(DPID dpId, DWORD dwPlayerType,
   CFSMission * pfsMission = pdep->pfsShip->GetMission();
   char rgchdpn[256]; // buffer for DPNAME
   char szIndent[15];
-  assert (pdep->indent < sizeof(szIndent));
+  ZAssert (pdep->indent < sizeof(szIndent));
   szIndent[pdep->indent] = '\0';
   int i = pdep->indent;
   while (i--)
@@ -2775,22 +2775,22 @@ void LogTrapHack(AGCEventID idEvent, CFSPlayer* pfsPlayer,
   switch (idEvent)
   {
     case EventID_HackLog:
-      assert(pfsPlayer);
-      assert(pszSubject);
-      assert(pcnxnFrom);
+      ZAssert(pfsPlayer);
+      ZAssert(pszSubject);
+      ZAssert(pcnxnFrom);
       retailf("HackLog %s: %s %d\n", pszSubject, pExpr, nLine);
       break;
     case EventID_HackBoot:
-      assert(pfsPlayer);
-      assert(pszSubject);
-      assert(pcnxnFrom);
+      ZAssert(pfsPlayer);
+      ZAssert(pszSubject);
+      ZAssert(pcnxnFrom);
       retailf("HackBoot %s: %s %d\n", pszSubject, pExpr, nLine);
       g.fm.DeleteConnection(*pfsPlayer->GetConnection());
       break;
     case EventID_HackBootNoPlayer:
-      assert(!pfsPlayer);
-      assert(!pszSubject);
-      assert(pcnxnFrom);
+      ZAssert(!pfsPlayer);
+      ZAssert(!pszSubject);
+      ZAssert(pcnxnFrom);
       retailf("HackBootNoPlayer %s %d\n", pExpr, nLine);
       g.fm.DeleteConnection(*pcnxnFrom);
       break;
@@ -2951,7 +2951,7 @@ bool DoCheatCode(CFSShip * pfsShip, const char * szMessage)
   else if (!lstrcmpi(strToken, "ragnarok"))
   {
     // crash the server on debug builds (for testing purposes)
-    assert(false);
+    ZAssert(false);
   }
   else if (!lstrcmpi(strToken, "gimme"))
   {
@@ -3120,7 +3120,7 @@ void HandleCOMChatEvents(const char *szMessage, const char *szDest, ShipID shipi
     if (pfsShipFrom)
     {
       IshipIGC *pShipIGC = pfsShipFrom->GetIGCShip();
-      assert(pShipIGC);
+      ZAssert(pShipIGC);
       szSource = pShipIGC->GetName();
       idSource = -1;
       if (pfsShipFrom->IsPlayer())
@@ -3160,8 +3160,8 @@ void HandleCOMChatEvents(const char *szMessage, const char *szDest, ShipID shipi
   };
 
   // Ensure that addition/deletions to igc's enum ChatTarget are reflected here
-  assert(sizeofArray(s_szChatTypes) == CHAT_MAX);
-  assert(iType >= 0 && iType < sizeofArray(s_szChatTypes));
+  ZAssert(sizeofArray(s_szChatTypes) == CHAT_MAX);
+  ZAssert(iType >= 0 && iType < sizeofArray(s_szChatTypes));
   LPCSTR pszType = s_szChatTypes[iType];
 
   LPCSTR pszContext = pfsMission->GetIGCMission() ?
@@ -3192,7 +3192,7 @@ bool CommandToDrone(CFSMission*         pfsMission,
     bool    bAccepted = false;
 	bool	bBarelyLegal = false; //milfs only 
 	
-	assert (pfsSender);
+	ZAssert (pfsSender);
 
     IsideIGC*   pside = pshipTo->GetSide();
     if ((pcd->commandID != c_cidNone) &&
@@ -3210,7 +3210,7 @@ bool CommandToDrone(CFSMission*         pfsMission,
                     pminerCluster = pfsMission->GetIGCMission()->GetCluster(pdb->clusterID);
                 //Create a buoy for this chat message
                 *ppmodelTarget = (ImodelIGC*)(pfsMission->GetIGCMission()->CreateObject(g.timeNow, OT_buoy, pdb, sizeof(*pdb)));
-                assert(*ppmodelTarget);
+                ZAssert(*ppmodelTarget);
 
                 ((IbuoyIGC*)*ppmodelTarget)->AddConsumer();
             }
@@ -3235,7 +3235,7 @@ bool CommandToDrone(CFSMission*         pfsMission,
 							db.clusterID = pStation->GetCluster()->GetObjectID();
 							db.type = (pStation->GetCluster() == pshipTo->GetCluster()) ? c_buoyWaypoint : c_buoyCluster;
 							*ppmodelTarget = (ImodelIGC*)(pfsMission->GetIGCMission()->CreateObject(g.timeNow, OT_buoy, &db, sizeof(db)));
-							assert (*ppmodelTarget);
+							ZAssert (*ppmodelTarget);
 							((IbuoyIGC*)*ppmodelTarget)->AddConsumer();
 							bBarelyLegal = true; //GGW spring break
 							break;
@@ -3267,7 +3267,7 @@ bool CommandToDrone(CFSMission*         pfsMission,
             if (pcd->commandID == c_cidJoin)
             {
                 //Join the targets wing
-                assert ((*ppmodelTarget)->GetObjectType() == OT_ship);
+                ZAssert ((*ppmodelTarget)->GetObjectType() == OT_ship);
 
                 WingID  wid = ((IshipIGC*)*ppmodelTarget)->GetWingID();
 
@@ -3399,7 +3399,7 @@ void ForwardChatMessage(CFSMission*         pfsMission,
 
         case CHAT_FRIENDLY_SECTOR:  // can happen only after game starts
         {
-            assert (pfsSender); // if no ship, then how can send to sector?
+            ZAssert (pfsSender); // if no ship, then how can send to sector?
 
             IclusterIGC* pcluster = pfsMission->GetIGCMission()->GetCluster(pcd->oidRecipient);
 
@@ -3435,7 +3435,7 @@ void ForwardChatMessage(CFSMission*         pfsMission,
 
         case CHAT_ALL_SECTOR:       // can happen only after game starts
         {
-            assert (pfsSender); // if no ship, then how can send to sector?
+            ZAssert (pfsSender); // if no ship, then how can send to sector?
 
             IclusterIGC* pcluster = pfsMission->GetIGCMission()->GetCluster(pcd->oidRecipient);
 
@@ -3502,7 +3502,7 @@ void ForwardChatMessage(CFSMission*         pfsMission,
             if (pshipSource != pfsSender->GetIGCShip())
             {
                 CFSShip* pfsShipTo = (CFSShip*)(pshipSource->GetPrivateData());
-                assert (pfsShipTo->IsPlayer());
+                ZAssert (pfsShipTo->IsPlayer());
                 g.fm.ForwardMessage(pfsShipTo->GetPlayer()->GetConnection(), pfm, FM_GUARANTEED);
             }
 
@@ -3515,7 +3515,7 @@ void ForwardChatMessage(CFSMission*         pfsMission,
                 {
                     CFSShip* pfsShipTo = (CFSShip*)(pship->GetPrivateData());
 
-                    assert (pfsShipTo->IsPlayer());
+                    ZAssert (pfsShipTo->IsPlayer());
                     g.fm.ForwardMessage(pfsShipTo->GetPlayer()->GetConnection(), pfm, FM_GUARANTEED);
                 }
             }
@@ -3549,7 +3549,7 @@ void ForwardChatMessage(CFSMission*         pfsMission,
             CFSShip * pfsShipTo = CFSShip::GetShipFromID(pcd->oidRecipient);
             if (pfsShipTo) // may have gone away since the client tried to send this
             {
-                assert(pfsShipTo->GetIGCShip());
+                ZAssert(pfsShipTo->GetIGCShip());
                 pszDest = pfsShipTo->GetIGCShip()->GetName();
 
                 if (pfsShipTo->IsPlayer())
@@ -3558,7 +3558,7 @@ void ForwardChatMessage(CFSMission*         pfsMission,
                         (pfsShipTo->GetSide() == pfsSender->GetSide() || pfsShipTo->GetSide()->AlliedSides(pfsShipTo->GetSide(),pfsSender->GetSide()))) //ALLY imago 7/10/09
                     {
                         CFSPlayer *pfsPlayer = pfsShipTo->GetPlayer();
-                        assert(pfsPlayer);
+                        ZAssert(pfsPlayer);
                         g.fm.ForwardMessage(pfsPlayer->GetConnection(), pfm, FM_GUARANTEED);
                     }
                 }
@@ -3582,7 +3582,7 @@ void ForwardChatMessage(CFSMission*         pfsMission,
 
                     if (pdb && pmodel)
                     {
-                        assert (pmodel->GetObjectType() == OT_buoy);
+                        ZAssert (pmodel->GetObjectType() == OT_buoy);
 
                         ((IbuoyIGC*)pmodel)->ReleaseConsumer();
                         pmodel->Release();
@@ -3681,7 +3681,7 @@ void SendShipUpdates(CFSMission * pfsMission)
              psidelink = psidelink->next())
         {
             IsideIGC*   pside = psidelink->data();
-            assert(0 == g.fm.CbUsedSpaceInOutbox());
+            ZAssert(0 == g.fm.CbUsedSpaceInOutbox());
 
             SideID  sid = pside->GetObjectID();
 
@@ -3741,7 +3741,7 @@ void SendShipUpdates(CFSMission * pfsMission)
             //Given our bandwidth constraints & the population of the sector, figure out how many turret, heavy and light updates
             //we would be able to send assuming every ship is sending a ship/turret update every c_dsecUpdateClient
 
-            assert (pshiplist->n() < c_cShipsPerSectorMax);
+            ZAssert (pshiplist->n() < c_cShipsPerSectorMax);
 
             static CFSShip*     rgShips[c_cShipsPerSectorMax];
             static CFSShip*     rgActiveTurrets[c_cShipsPerSectorMax];
@@ -3761,7 +3761,7 @@ void SendShipUpdates(CFSMission * pfsMission)
                 IshipIGC*   pship = pshiplink->data();
                 CFSShip*    pfsShip = (CFSShip *) pship->GetPrivateData();
 
-                assert (!pfsShip->GetHasUpdate());
+                ZAssert (!pfsShip->GetHasUpdate());
 
                 if (pfsShip->IsPlayer())
                 {
@@ -3823,7 +3823,7 @@ void SendShipUpdates(CFSMission * pfsMission)
                     }
                 }
             }
-            assert (cShips > 0);
+            ZAssert (cShips > 0);
 
             if (cShipUpdates + cActiveTurretUpdates + cInactiveTurretUpdates > 0)
             {
@@ -3856,7 +3856,7 @@ void SendShipUpdates(CFSMission * pfsMission)
 
 					/* pkk May 6th: Disabled bandwidth patch
 					   This was disabled */
-                assert (cbAvailable > cHeavyPerInterval  * sizeof(ServerHeavyShipUpdate) +
+                ZAssert (cbAvailable > cHeavyPerInterval  * sizeof(ServerHeavyShipUpdate) +
                                       cLightPerInterval  * sizeof(ServerLightShipUpdate) +
                                       cActivePerInterval * sizeof(ServerActiveTurretUpdate));
 					/*  End */
@@ -4022,7 +4022,7 @@ void SendShipUpdates(CFSMission * pfsMission)
                     //The same inactive messages are sent to all players ... so fill this part of the message in now
                     for (int i = 0; (i < cInactiveTurretUpdates); i++)
                     {
-                        assert (rgInactiveTurrets[i]->IsPlayer());
+                        ZAssert (rgInactiveTurrets[i]->IsPlayer());
 
                         *(pInactive++) = rgInactiveTurrets[i]->GetShipID();
                     }
@@ -4060,8 +4060,8 @@ void SendShipUpdates(CFSMission * pfsMission)
 
                         for (int i = 0; ((pActive < pActiveMax) && (i < cActiveTurretUpdates)); i++)
                         {
-                            assert (i < cActiveTurretUpdates);
-                            assert (rgActiveTurrets[i]->IsPlayer());
+                            ZAssert (i < cActiveTurretUpdates);
+                            ZAssert (rgActiveTurrets[i]->IsPlayer());
                             CFSShip*  pfsShip = rgActiveTurrets[i];
                             if (pfsShip != pfsPlayer)
                             {
@@ -4096,7 +4096,7 @@ void SendShipUpdates(CFSMission * pfsMission)
                                     IshipIGC*   pship = ((IshipIGC*)pmodelTarget)->GetSourceShip();
                                     if (pship != pshipPlayer)
                                     {
-                                        assert (pship->GetParentShip() == NULL);
+                                        ZAssert (pship->GetParentShip() == NULL);
 
                                         pfmHeavy->bpTargetHull = pship->GetFraction();
                                         {
@@ -4148,7 +4148,7 @@ void SendShipUpdates(CFSMission * pfsMission)
 
                         if (pshipTarget)
                         {
-                            assert (cHeavyUpdates > 0);
+                            ZAssert (cHeavyUpdates > 0);
                             AddUpdate(g.timeNow, pfmHeavy->positionReference,
                                       pfsTarget, pHeavy++);
                         }
@@ -4216,7 +4216,7 @@ void SendShipUpdates(CFSMission * pfsMission)
 
                 for (int i = 0; (i < cShipUpdates); i++)
                 {
-                    assert (rgShips[i]->GetHasUpdate());
+                    ZAssert (rgShips[i]->GetHasUpdate());
                     rgShips[i]->ClearHasUpdate();
                 }
             }
@@ -4331,8 +4331,8 @@ bool HandleChangedArtwork(FileChangeInfo* pfci, void* pData)
  */
 ItreasureIGC*  CreateTreasure(Time now, IshipIGC* pship, DataTreasureIGC* pdt, const Vector& position, float dv)
 {
-    assert (pship);
-    assert (dv > 1.0f);
+    ZAssert (pship);
+    ZAssert (dv > 1.0f);
 
     pdt->objectID = pship->GetMission()->GenerateNewTreasureID();
 
@@ -4356,7 +4356,7 @@ ItreasureIGC*  CreateTreasure(Time now, IshipIGC* pship, DataTreasureIGC* pdt, c
 
     //Note: bad form releasing a pointer before we return it but we know it will
     //stick around since it is in a cluster.
-    assert (t);
+    ZAssert (t);
     t->Release();
 
     return t;
@@ -4364,9 +4364,9 @@ ItreasureIGC*  CreateTreasure(Time now, IshipIGC* pship, DataTreasureIGC* pdt, c
 
  ItreasureIGC*  CreateTreasure(Time now, IshipIGC* pship, short amount, IpartTypeIGC* ppt, const Vector& position, float dv, float lifespan = 600.0f)
  {
-    assert (pship);
-    assert (ppt);
-    assert (dv > 1.0f);
+    ZAssert (pship);
+    ZAssert (ppt);
+    ZAssert (dv > 1.0f);
 
     DataTreasureIGC dt;
     dt.treasureCode = c_tcPart;
@@ -4381,7 +4381,7 @@ ItreasureIGC*  CreateTreasure(Time now, IshipIGC* pship, DataTreasureIGC* pdt, c
 
 ItreasureIGC*  CreateTreasure(Time now, IshipIGC* pship, IpartIGC* p, IpartTypeIGC* ppt, const Vector& position, float dv, float lifespan = 600.0f)
 {
-    assert (p);
+    ZAssert (p);
 
     short amount;
     switch (p->GetObjectType())
@@ -4621,7 +4621,7 @@ void FedSrvSiteBase::OnBadCRC(FedMessaging * pthis, CFMConnection & cnxn, BYTE *
 void FedSrvSiteBase::OnMessageSent(FedMessaging * pthis, CFMRecipient * precip, const void * pv, DWORD cb, FMGuaranteed fmg)
 {
   int cConnections = precip->GetCountConnections();
-  assert (cConnections >= 0);
+  ZAssert (cConnections >= 0);
   DWORD dwBytes = cb * cConnections;
   FEDMESSAGE * pfm = (FEDMESSAGE*)pv;
   if (FM_GUARANTEED == fmg)
@@ -4837,7 +4837,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 
   if (pfsPlayer)
   {
-    assert (pfm->fmid != FM_C_LOGONREQ); // shouldn't have a pfsPlayer yet if logging on
+    ZAssert (pfm->fmid != FM_C_LOGONREQ); // shouldn't have a pfsPlayer yet if logging on
     cnxnFrom.ResetAbsentCount();
     pfsMission = pfsPlayer->GetMission();
     if (pfsMission)
@@ -4866,7 +4866,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
             IshipIGC * pship = pfsPlayer->GetIGCShip();
             if (pship->GetCluster() && (pship->GetParentShip() == NULL))
             {
-                assert (pship->GetBaseHullType());
+                ZAssert (pship->GetBaseHullType());
                 pfsPlayer->SetShipUpdate(pfmShipUpdate->shipupdate);
             }
         }
@@ -5450,7 +5450,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
           pfmFireMissile->launcherID = pfsPlayer->GetShipID();
 
           dm.pmissiletype = pmagazine->GetMissileType();
-          assert (dm.pmissiletype);
+          ZAssert (dm.pmissiletype);
 
           int                   iNumMissiles = pfmFireMissile->cbmissileLaunchData / sizeof(MissileLaunchData);
           MissileLaunchData*    pMissileLaunchData = (MissileLaunchData*) (FM_VAR_REF(pfmFireMissile, missileLaunchData));
@@ -5570,7 +5570,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 		  pfsPlayer->SetAutoDonate(pfsDonate, pfmAutoDonate->amount);
   		  pfsPlayerChanged = pfsPlayer;
 	  }
-	  assert(pfsPlayerChanged);
+	  ZAssert(pfsPlayerChanged);
 
       if (pMission->GetMissionStage() == STAGE_STARTED)
       {
@@ -5628,7 +5628,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
       CASTPFM(pfmFireExpendable, C, FIRE_EXPENDABLE, pfm);
 
       IshipIGC*             pShip = pfsPlayer->GetIGCShip();
-      assert (pShip);
+      ZAssert (pShip);
 
       TrapHackBoot(pShip->GetParentShip() == NULL);
 
@@ -5642,7 +5642,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
           IclusterIGC*          pcluster = pShip->GetCluster();
           if (pcluster)
           {
-              assert(0 == g.fm.CbUsedSpaceInOutbox());
+              ZAssert(0 == g.fm.CbUsedSpaceInOutbox());
               {
                   BEGIN_PFM_CREATE(g.fm, pfmSFE, S, FIRE_EXPENDABLE)
                   END_PFM_CREATE
@@ -5682,7 +5682,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
                                                                     OT_chaff,
                                                                     &dataChaff,
                                                                     sizeof(dataChaff)));
-                  assert (c != NULL);
+                  ZAssert (c != NULL);
 
                   //Confuse any missiles lauched at the player's ship
                   for (MissileLinkIGC*  pml = pcluster->GetMissiles()->first();
@@ -5741,7 +5741,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
                       dm.time0 = pShip->GetLastUpdate() + 3.0f; //3 second delay
                       dm.p0 = position;
                       dm.pminetype = (ImineTypeIGC*)pet;
-                      assert (dm.pminetype);
+                      ZAssert (dm.pminetype);
 
                       dm.pcluster = pcluster;
                       dm.exportF = false;
@@ -5754,7 +5754,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
                   }
                   else
                   {
-                      assert (type == OT_probeType);
+                      ZAssert (type == OT_probeType);
 
                       DataProbeIGC dp;
                       dp.pside = pShip->GetSide();
@@ -5768,7 +5768,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 
                       dp.p0 = position;
                       dp.pprobetype = (IprobeTypeIGC*)pet;
-                      assert (dp.pprobetype);
+                      ZAssert (dp.pprobetype);
 
                       dp.pcluster = pcluster;
                       dp.exportF = false;
@@ -5784,7 +5784,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
               }
 
               short   amount = pdispenser->GetAmount() - 1;
-              assert (amount >= 0);
+              ZAssert (amount >= 0);
               pdispenser->SetAmount(amount);
               g.fm.SendMessages(GetGroupSectorFlying(pcluster), FM_GUARANTEED, FM_FLUSH);
           }
@@ -6077,7 +6077,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
           wsprintf(szVerError, "The server you are trying to play on is out-of-date.  The Zone needs to update their game server(s).  Please try again later.");
 #endif
         }
-        assert(lstrlen(szVerError) < sizeof(szVerError));
+        ZAssert(lstrlen(szVerError) < sizeof(szVerError));
         _AGCModule.TriggerEvent(NULL, AllsrvEventID_BadClientVersion, "", -1, -1, -1, 2,
             "ServerVer", VT_I4, MSGVER,
             "ClientVer", VT_I4, pfmLogon->fedsrvVer);
@@ -6115,7 +6115,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 
               ObjectID  oid = pfsPlayer->GetTreasureObjectID();
               IpartTypeIGC* ppt = pMission->GetPartType(oid);
-              assert(ppt);
+              ZAssert(ppt);
               short amount = pfsPlayer->GetTreasureAmount();
 
               if (pfmTA->mountID != c_mountNA)
@@ -6476,7 +6476,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
       {
           CASTPFM(pfmSwapPart, CS, SWAP_PART, pfm);
 
-          assert (pfsPlayer->GetIGCShip()->GetBaseHullType());
+          ZAssert (pfsPlayer->GetIGCShip()->GetBaseHullType());
           TrapHack (pfmSwapPart->mountNew >= -c_maxCargo);
 
           TrapHackBoot ((pfmSwapPart->etOld >= NA) && (pfmSwapPart->etOld < ET_MAX));
@@ -6590,7 +6590,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
                   }
                   else
                   {
-                      assert (packtype == c_packFuel);
+                      ZAssert (packtype == c_packFuel);
                       pfsPlayer->GetIGCShip()->SetFuel(pfsPlayer->GetIGCShip()->GetFuel() + float(amount));
 
                       IpartIGC* pa = pfsPlayer->GetIGCShip()->GetMountedPart(ET_Afterburner, 0);
@@ -6764,7 +6764,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 
 
       IsideIGC* pside = pfsPlayer->GetSide(); // player's side
-      assert (pside);
+      ZAssert (pside);
       SideID    sideID = pside->GetObjectID();
       if (sideID < 0 && sideID != SIDE_TEAMLOBBY && isModerator == false)
           break;
@@ -6839,7 +6839,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 		  || strcmp(pfsPlayer->GetCDKey(), g.szBotAuthenticationGuid) == 0; // BT - WOPR
 
       IsideIGC* pside = pfsPlayer->GetSide(); // player's side
-      assert (pside);
+      ZAssert (pside);
       SideID    sideID = pside->GetObjectID();
       if (sideID < 0 && isModerator == false)
         break;
@@ -7096,7 +7096,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 
                         //Credit the player with the appropriate money
                         Money refund = pfsPlayer->GetIGCShip()->GetValue();
-                        assert(refund >= 0);
+                        ZAssert(refund >= 0);
 
                         if (refund > 0)
                         {
@@ -7161,7 +7161,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
       {
           Money mnySpent = pbucket->AddMoney(pfmBucketDonate->moneyGiven);
 
-          assert(mnySpent <= mnyRefund); // ACTUAL $ spent must be no more than ATTEMPTED $ spent
+          ZAssert(mnySpent <= mnyRefund); // ACTUAL $ spent must be no more than ATTEMPTED $ spent
 
           mnyRefund -= mnySpent;
 
@@ -7206,7 +7206,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 
       if (mnyRefund)
       {
-        assert (mnyRefund > 0);
+        ZAssert (mnyRefund > 0);
         BEGIN_PFM_CREATE(g.fm, pfmMoneyChange, S, MONEY_CHANGE)
         END_PFM_CREATE
         pfmMoneyChange->dMoney = mnyRefund;
@@ -7257,7 +7257,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
             debugf("%s tried to donate money to ship %d, which doesn't exist in mission.\n",
                 pfsPlayer->GetName(), pfmPlayerDonate->shipID);
 
-            assert (pfmPlayerDonate->moneyGiven > 0);
+            ZAssert (pfmPlayerDonate->moneyGiven > 0);
             pfmMoneyChange->sidTo = pfsPlayer->GetShipID();
             pfmMoneyChange->sidFrom = NA;
             prcp = pfsPlayer->GetConnection();
@@ -7277,7 +7277,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
       CASTPFM(pfmOC, CS, ORDER_CHANGE, pfm);
 
       IshipIGC*   pship = pfsPlayer->GetIGCShip();
-      assert (pship);
+      ZAssert (pship);
 
 	  IsideIGC*   pside = pship->GetSide();
 	  if (pside->GetShip(pfmOC->shipID))  //Xynth #48 8/2010 This msg handler is normally used for 
@@ -7566,7 +7566,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
       {
         #if defined(ALLSRV_STANDALONE)
           // for a stand alone server, don't let the client try to change the password
-          // (we can't assert this due to a race condition)
+          // (we can't ZAssert this due to a race condition)
 		  // KGJV #114 - only for bObjectModelCreated games (=DefaultGames)
 		  if (pfmMissionParams->missionparams.bObjectModelCreated)
 		  {
@@ -7826,7 +7826,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 
   // Don't let messages queue up cross incoming message boundaries
   // If you're gonna queue a message, send it--don't make me guess who it goes to or whether it needs to be guaranteed.
-  assert(0 == g.fm.CbUsedSpaceInOutbox());
+  ZAssert(0 == g.fm.CbUsedSpaceInOutbox());
   //g.fm.SetPriority(c_mcpDefault);
 
   timerOnAppMessage.Stop("...for message type %s\n", g_rgszMsgNames[pfm->fmid]);
@@ -8783,7 +8783,7 @@ HRESULT ConnectToLobby(const char * pszLobby_OverrideCFG /* NULL == do not overr
 {
   // Disconnect from current lobby, if any
   DisconnectFromLobby();
-  assert(!g.fmLobby.IsConnected());
+  ZAssert(!g.fmLobby.IsConnected());
 
   // find out what lobby to use and/or autoupdate info
   if (!pszLobby_OverrideCFG){
@@ -9100,7 +9100,7 @@ void StartDefaultGames()
         // copy the new name into the mission parameters
         strncpy(mp.strGameName, strGameName, c_cbGameName);
         mp.strGameName[c_cbGameName - 1] = '\0';
-        assert(!mp.Invalid());
+        ZAssert(!mp.Invalid());
 
 		// -Imago
        	// look for a core/map for Game#
@@ -9313,7 +9313,7 @@ DWORD WINAPI ReceiveThread(LPVOID pThreadParameter)
 #else // !defined(ALLSRV_STANDALONE)
   iStaticCoreVersion = LoadIGCStaticCore (IGC_STATIC_CORE_FILENAME, g.trekCore, false);
 #endif // !defined(ALLSRV_STANDALONE)
-  assert (iStaticCoreVersion != NA);
+  ZAssert (iStaticCoreVersion != NA);
   debugf("iStaticCoreVersion = %d\n",iStaticCoreVersion);
 
   // KGJV #114
@@ -9764,7 +9764,7 @@ void    BuildIGCFiles (char* szArtworkPath, bool bEncrypt = false, bool bMaps = 
             ImissionIGC*    pMission = CreateMission();
             pMission->Initialize(Time::Now(), pSite);
             int   iStaticCoreVersion = LoadIGCStaticCore (bEncrypt ? IGC_ENCRYPT_CORE_FILENAME : IGC_STATIC_CORE_FILENAME, pMission, false,  bEncrypt ? DoDecrypt : NULL);
-            assert (iStaticCoreVersion != NA);
+            ZAssert (iStaticCoreVersion != NA);
 
             SectorInfo_MapID = StationInstance_MapID = Asteroids_MapID = AlephInst_MapID = MineInstance_MapID = ProbeInstance_MapID = TreasureInstance_MapID = pMaps[i].mapID;
 
@@ -10652,7 +10652,7 @@ HRESULT pascal FedSrv_Init()
 
   // Set cur dir = exe dir
   HMODULE hmod = GetModuleHandle(NULL);
-  assert(hmod);
+  ZAssert(hmod);
   char path_buffer[_MAX_PATH];
   GetModuleFileName(hmod, path_buffer, sizeof(path_buffer));
 
@@ -10697,17 +10697,17 @@ HRESULT pascal FedSrv_Init()
   // create event used by fm to signal a message has arrived
   // let's try NOT signaling on this event, since it may signal us too often
   // g.hPlayerEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-  // assert(g.hPlayerEvent);
+  // ZAssert(g.hPlayerEvent);
 
   // create event used to signal that the receive thread should exit
   g.hKillReceiveEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-  assert(g.hKillReceiveEvent);
+  ZAssert(g.hKillReceiveEvent);
 
   g.idReceiveThread   = 0; // id of receive thread
 
   // create thread to receive player messages and start things cranking
   g.hReceiveThread = CreateThread(NULL, 0, ReceiveThread, 0, 0, &g.idReceiveThread);
-  assert(g.hReceiveThread);
+  ZAssert(g.hReceiveThread);
 
   ZVerify (TIMERR_NOERROR == timeBeginPeriod(1));
 
@@ -10736,14 +10736,14 @@ class ThingSiteImpl : public ThingSite
 
         void SetCluster(ImodelIGC* pmodel, IclusterIGC* pcluster)
         {
-            assert (pmodel);
+            ZAssert (pmodel);
             if (m_bSideVisibility)
             {
                 if (!m_bPredictable)
                 {
                     IsideIGC*   psideModel = pmodel->GetSide();
 
-                    assert (psideModel);
+                    ZAssert (psideModel);
                     for (SideLinkIGC*   l = pmodel->GetMission()->GetSides()->first();
                          (l != NULL);
                          l = l->next())
@@ -10775,18 +10775,18 @@ class ThingSiteImpl : public ThingSite
 
         static  bool    ShowObject(IsideIGC*  pside, ImodelIGC*   pmodel)
         {
-            assert (pside);
-            assert (pmodel);
+            ZAssert (pside);
+            ZAssert (pmodel);
             bool    bSent = false;
 
             ObjectType  type = pmodel->GetObjectType();
             if (pmodel->GetAttributes() & c_mtPredictable)
             {
                 CFSMission* pfsMission = (CFSMission *)(pside->GetMission()->GetPrivateData());
-                assert (pfsMission);
+                ZAssert (pfsMission);
 
                 //Ships are never predictable
-                assert (type != OT_ship);
+                ZAssert (type != OT_ship);
 
                 if (pside->GetActiveF() &&
                     ((pfsMission->GetStage() == STAGE_STARTED) ||
@@ -10809,11 +10809,11 @@ class ThingSiteImpl : public ThingSite
                     if (type == OT_warp)
                     {
                         IwarpIGC*   pwarpOther = ((IwarpIGC*)pmodel)->GetDestination();
-                        assert (pwarpOther);
+                        ZAssert (pwarpOther);
                         ExportObj(pwarpOther, OT_warp, NULL);
 
 						if (!pside->GetMission()->GetMissionParams()->bAllowAlliedViz) //ALLY VISIBILITY Imago 7/11/09
-	                        assert (!pwarpOther->SeenBySide(pside));
+	                        ZAssert (!pwarpOther->SeenBySide(pside));
 
 	                        {
 	                            //Force the visibility of this warp wrt the side to true without going through
@@ -10860,7 +10860,7 @@ class ThingSiteImpl : public ThingSite
             else if (type == OT_ship)
             {
                 CFSShip* pfsShip = (CFSShip *)(((IshipIGC*)pmodel)->GetPrivateData());
-                assert (pfsShip);
+                ZAssert (pfsShip);
                 pfsShip->ShipStatusSpotted(pside);
 				if (pside->GetMission()->GetMissionParams()->bAllowAlliedViz) //ALLY VISIBILITY Imago 7/11/09
 				{
@@ -10888,7 +10888,7 @@ class ThingSiteImpl : public ThingSite
             if (pmodel->GetObjectType() == OT_ship)
             {
                 CFSShip*    pfsShip = (CFSShip *)(((IshipIGC*)pmodel)->GetPrivateData());
-                assert (pfsShip);
+                ZAssert (pfsShip);
 
 				//dont hide allies ships, ever, fixed 7/13/09 was && (oops) fixed for real 7/23/09
 				if (pside->GetMission()->GetMissionParams()->bAllowAlliedViz) {
@@ -10904,7 +10904,7 @@ class ThingSiteImpl : public ThingSite
         virtual void    UpdateSideVisibility(ImodelIGC*     pmodel,
                                              IclusterIGC*   pcluster)
         {
-            assert (pmodel == m_pmodel);
+            ZAssert (pmodel == m_pmodel);
 
             //We can only update it if we have one
             if (m_bSideVisibility)
@@ -10918,8 +10918,8 @@ class ThingSiteImpl : public ThingSite
                     IsideIGC*   pside = l->data();
 
                     SideID  sid = pside->GetObjectID();
-                    assert (sid >= 0);
-                    assert (sid < c_cSidesMax);
+                    ZAssert (sid >= 0);
+                    ZAssert (sid < c_cSidesMax);
 
                     SideVisibility& sv = m_rgSideVisibility[sid];
                     bool seenBefore = sv.fVisible();
@@ -10962,7 +10962,7 @@ class ThingSiteImpl : public ThingSite
                                  l = l->next())
                             {
                                 IscannerIGC*   s = l->data();
-                                assert (s->GetCluster() == pcluster);
+                                ZAssert (s->GetCluster() == pcluster);
 
 								// If the thing is in scanner range
 								if (s->InScannerRange(pmodel)) {
@@ -11130,7 +11130,7 @@ class ThingSiteImpl : public ThingSite
                                                         ppso->SpotWarp();
                                                     else
                                                     {
-                                                        assert (otModel == OT_asteroid); 
+                                                        ZAssert (otModel == OT_asteroid); 
                                                         ppso->SpotSpecialAsteroid(); //Review - Changes for visibility of static objects (#135) may now require roid to be checked for abilities! -Imago 8/10
 
                                                     }
@@ -11158,21 +11158,21 @@ class ThingSiteImpl : public ThingSite
 		}
         virtual bool    GetSideVisibility(IsideIGC* pside)
         {
-            assert (pside != NULL);
+            ZAssert (pside != NULL);
             return m_bSideVisibility ? m_rgSideVisibility[pside->GetObjectID()].fVisible() : true;
         }
 
 		//Xynth #225 9/10 GetCurrentEye was not implemented for server side use
 		virtual bool  GetCurrentEye(IsideIGC* pside)
 		{
-			assert (pside != NULL);
+			ZAssert (pside != NULL);
 			return m_bSideVisibility ? m_rgSideVisibility[pside->GetObjectID()].CurrentEyed() : false;
 		}
 
         virtual void    SetSideVisibility(IsideIGC* pside,
                                           bool      fVisible)
         {
-            assert (pside);
+            ZAssert (pside);
             if (m_bSideVisibility)
             {
                 SideID  sid = pside->GetObjectID();
@@ -11213,24 +11213,24 @@ class   ClusterSiteImpl : public ClusterSite
 
         virtual void                    AddScanner(SideID   sid, IscannerIGC* scannerNew)
         {
-            assert (sid >= 0);
-            assert (sid < c_cSidesMax);
-            assert (scannerNew);
+            ZAssert (sid >= 0);
+            ZAssert (sid < c_cSidesMax);
+            ZAssert (scannerNew);
 
             AddIbaseIGC((BaseListIGC*)&(m_scanners[sid]), scannerNew);
         }
         virtual void                    DeleteScanner(SideID   sid, IscannerIGC* scannerOld)
         {
-            assert (sid >= 0);
-            assert (sid < c_cSidesMax);
-            assert (scannerOld);
+            ZAssert (sid >= 0);
+            ZAssert (sid < c_cSidesMax);
+            ZAssert (scannerOld);
 
             DeleteIbaseIGC((BaseListIGC*)&(m_scanners[sid]), scannerOld);
         }
         virtual const ScannerListIGC*      GetScanners(SideID   sid) const
         {
-            assert (sid >= 0);
-            assert (sid < c_cSidesMax);
+            ZAssert (sid >= 0);
+            ZAssert (sid < c_cSidesMax);
 
             return &(m_scanners[sid]);
         }
@@ -11307,7 +11307,7 @@ void FedSrvSiteBase::DevelopmentCompleted(IbucketIGC * pbucket, IdevelopmentIGC 
 
 void FedSrvSiteBase::SideDevelopmentTechChange(IsideIGC*    pside)
 {
-    assert (pside);
+    ZAssert (pside);
 
     if (m_pfsMission->GetStage() == STAGE_STARTED)
     {
@@ -11341,7 +11341,7 @@ void FedSrvSiteBase::SideDevelopmentTechChange(IsideIGC*    pside)
 
 void FedSrvSiteBase::SideGlobalAttributeChange(IsideIGC*    pside)
 {
-    assert (pside);
+    ZAssert (pside);
 
     BEGIN_PFM_CREATE(g.fm, pfmSideAttrChange, S, SIDE_ATTRIBUTE_CHANGE)
     END_PFM_CREATE
@@ -11370,12 +11370,12 @@ void FedSrvSiteBase::StationTypeCompleted(IbucketIGC * pbucket, IstationIGC* pst
 {
     //NYI decide on the correct hack for the placement of space stations
     IsideIGC * pside = pbucket->GetSide();
-    assert (pside);
+    ZAssert (pside);
     if (pside->GetActiveF())
     {
         //Hack alert
         CFSDrone * pfsDrone = CreateStockDrone(pstationtype->GetConstructionDroneType(), pstation->GetSide(), pstationtype);
-        assert (pfsDrone);
+        ZAssert (pfsDrone);
 
         pfsDrone->GetIGCShip()->SetStation(pstation);   // start them at a station just like everyone else
         pfsDrone->GetIGCShip()->PickDefaultOrder(pstation->GetCluster(), pstation->GetPosition(), true);
@@ -11461,7 +11461,7 @@ void FedSrvSiteBase::BuildStation(IasteroidIGC* pasteroid,
  	//
 
     IstationIGC * pstationNew = (IstationIGC *) (pmission->CreateObject(now, OT_station, &ds, sizeof(ds)));
-    assert (pstationNew->SeenBySide(pside)); //Sides always see their own station (which will force the export)
+    ZAssert (pstationNew->SeenBySide(pside)); //Sides always see their own station (which will force the export)
 
 	//#121 Imago 7/10
 	pstationNew->SetRoidID(pasteroid->GetObjectID());
@@ -11546,7 +11546,7 @@ void FedSrvSiteBase::DroneTypeCompleted(IbucketIGC * pbucket, IstationIGC* pstat
   IsideIGC* pside = pstation->GetSide();
   if (pside->GetActiveF())
   {
-      assert (pdronetype->GetPilotType() != c_ptBuilder);
+      ZAssert (pdronetype->GetPilotType() != c_ptBuilder);
       CFSDrone * pfsDrone = CreateStockDrone(pdronetype, pside, (pdronetype->GetPilotType() == c_ptLayer)
                                                                 ? pdronetype->GetLaidExpendable()
                                                                 : NULL);
@@ -11579,12 +11579,12 @@ void FedSrvSiteBase::DroneTypeCompleted(IbucketIGC * pbucket, IstationIGC* pstat
 
 void FedSrvSiteBase::UpgradeShip(IshipIGC* pship, const IstationIGC*  pstation)
 {
-    assert (pship->GetParentShip() == NULL);
-    assert (pship->GetStation() == pstation);
+    ZAssert (pship->GetParentShip() == NULL);
+    ZAssert (pship->GetStation() == pstation);
 
     //See if anything on the ship can be upgraded
     IhullTypeIGC* pht = pship->GetBaseHullType();
-    assert (pht);
+    ZAssert (pht);
     IhullTypeIGC* phtSuccessor = (IhullTypeIGC*)(pstation->GetSuccessor(pht));
 
     if (pht != phtSuccessor)
@@ -11728,7 +11728,7 @@ void FedSrvSiteBase::KillShipEvent(Time timeCollision, IshipIGC* pship, ImodelIG
         if (ammo > 0)
         {
             IpartTypeIGC*  pptAmmo = pmission->GetAmmoPack();
-            assert (pptAmmo);
+            ZAssert (pptAmmo);
 
             if (randomInt(0, 4) == 0)
             {
@@ -11743,7 +11743,7 @@ void FedSrvSiteBase::KillShipEvent(Time timeCollision, IshipIGC* pship, ImodelIG
         if (fuel > 0)
         {
             IpartTypeIGC*  pptFuel = pmission->GetFuelPack();
-            assert (pptFuel);
+            ZAssert (pptFuel);
 
             if (randomInt(0, 4) == 0)
             {
@@ -11877,7 +11877,7 @@ void FedSrvSiteBase::KillShipEvent(Time timeCollision, IshipIGC* pship, ImodelIG
                                     if (pshipParent)
                                     {
                                         IhullTypeIGC* phtParent = pshipParent->GetBaseHullType();
-                                        assert (phtParent);
+                                        ZAssert (phtParent);
                                         float   divisor = 2.0f + float(phtParent->GetMaxWeapons() - phtParent->GetMaxFixedWeapons());
 
                                         CFSShip*  pfsParent = (CFSShip*)(pshipParent->GetPrivateData());
@@ -11946,7 +11946,7 @@ void FedSrvSiteBase::KillShipEvent(Time timeCollision, IshipIGC* pship, ImodelIG
     CFSPlayer* pfsPlayer = pfsShip->GetPlayer();
     pfsPlayer->AddEjection();
 
-    assert (pcluster);
+    ZAssert (pcluster);
 
     for (MissileLinkIGC*  pml = pcluster->GetMissiles()->first();
          (pml != NULL);
@@ -12051,8 +12051,8 @@ void FedSrvSiteBase::KillShipEvent(Time timeCollision, IshipIGC* pship, ImodelIG
       pfsShip->AnnounceExit(NULL, (amount != 0.0f) ? SDR_KILLED : SDR_TERMINATE);
       if (pfsShip->IsPlayer())
       {
-        assert (amount != 0.0f);
-        assert (pcluster);
+        ZAssert (amount != 0.0f);
+        ZAssert (pcluster);
 
         CFSPlayer * pfsPlayer = pfsShip->GetPlayer();
         pfsPlayer->AddDeath();
@@ -12072,7 +12072,7 @@ void FedSrvSiteBase::KillShipEvent(Time timeCollision, IshipIGC* pship, ImodelIG
 
         if (pshipParent)
             pship->SetParentShip(NULL);
-        assert (pfsShip->GetIGCShip()->GetChildShips()->n() == 0);
+        ZAssert (pfsShip->GetIGCShip()->GetChildShips()->n() == 0);
 
         //Put us in the eject pod.
         pship->SetBaseHullType(pht);
@@ -12100,12 +12100,12 @@ void FedSrvSiteBase::KillShipEvent(Time timeCollision, IshipIGC* pship, ImodelIG
         }
         else
         {
-            assert (!pside->GetActiveF() || m_pfsMission->GetSideWon());
+            ZAssert (!pside->GetActiveF() || m_pfsMission->GetSideWon());
         }
       }
       else // drone go bye bye
       {
-        assert (pship->GetParentShip() == NULL);
+        ZAssert (pship->GetParentShip() == NULL);
 
         delete pfsShip->GetDrone();
       }
@@ -12128,7 +12128,7 @@ void FedSrvSiteBase::DamageShipEvent(Time now, IshipIGC* ship, ImodelIGC* launch
                 if ((now - pd->GetLastDamageReport()) > 10.0f)
                 {
                     IsideIGC*   pside = ship->GetSide();
-                    assert (pside);
+                    ZAssert (pside);
 
                     if (pside != psideLauncher) //&& !pside->AlliedSides(pside,psideLauncher))  //ALLY -imago 7/3/09 reverted
 					{
@@ -12568,11 +12568,11 @@ void FedSrvSiteBase::KillMineEvent(ImineIGC* pmine)
 
 void FedSrvSiteBase::WarpBombEvent(IwarpIGC* pwarp, ImissileIGC* pmissile)
 {
-    assert (pwarp);
-    assert (pmissile);
+    ZAssert (pwarp);
+    ZAssert (pmissile);
     ImissileTypeIGC*    pmt = pmissile->GetMissileType();
-    assert (pmt);
-    assert (pmt->GetObjectType() == OT_missileType);
+    ZAssert (pmt);
+    ZAssert (pmt->GetObjectType() == OT_missileType);
 
     Time    timeExplosion = pwarp->GetLastUpdate() + m_pfsMission->GetIGCMission()->GetFloatConstant(c_fcidWarpBombDelay);
     {
@@ -12757,7 +12757,7 @@ void FedSrvSiteBase::AlliedRearm(IshipIGC* pship, bool bLaunch) { //Imago 8/10/0
                         }
 
                         ppart = pship->CreateAndAddPart(pt, -1 - i, SHRT_MAX);
-                        assert (ppart->GetPrice() == 0);
+                        ZAssert (ppart->GetPrice() == 0);
                         break;
                     }
                 }
@@ -12947,7 +12947,7 @@ bool FedSrvSiteBase::LandOnCarrierEvent(IshipIGC* pshipCarrier, IshipIGC* pship,
                             }
 
                             ppart = pship->CreateAndAddPart(pt, -1 - i, SHRT_MAX);
-                            assert(ppart->GetPrice() == 0);
+                            ZAssert(ppart->GetPrice() == 0);
                             break;
                         }
                     }
@@ -13058,7 +13058,7 @@ bool FedSrvSiteBase::LandOnCarrierEvent(IshipIGC* pshipCarrier, IshipIGC* pship,
 
 bool FedSrvSiteBase::RescueShipEvent(IshipIGC* pshipRescued, IshipIGC* pshipRescuer)
 {
-  assert (pshipRescued);
+  ZAssert (pshipRescued);
   if (pshipRescuer)
   {
       CFSShip* pfsShip = (CFSShip*)(pshipRescuer->GetPrivateData());
@@ -13112,7 +13112,7 @@ void FedSrvSiteBase::CaptureStationEvent(IshipIGC* pship, IstationIGC* pstation)
 
 bool FedSrvSiteBase::DockWithStationEvent(IshipIGC* pship, IstationIGC* pstation)
 {
-  assert (pship->GetParentShip() == NULL);
+  ZAssert (pship->GetParentShip() == NULL);
 
   CFSShip* pfsShip = (CFSShip *) pship->GetPrivateData();
 
@@ -13204,7 +13204,7 @@ bool FedSrvSiteBase::DockWithStationEvent(IshipIGC* pship, IstationIGC* pstation
 
 void    FedSrvSiteBase::ChangeStation(IshipIGC* pship, IstationIGC* pstationOld, IstationIGC* pstationNew)
 {
-    assert (pship);
+    ZAssert (pship);
     CFSShip * pfsShip = (CFSShip *) pship->GetPrivateData();
 
     if (pstationNew == NULL)
@@ -13246,7 +13246,7 @@ void    FedSrvSiteBase::ChangeStation(IshipIGC* pship, IstationIGC* pstationOld,
             }
 
             IsideIGC*   pside = pship->GetSide();
-            assert (pside);
+            ZAssert (pside);
 			if (pside->ApplyDevelopmentTechs(ttbm))
 			{
 				pfsShip->GetPlayerScoreObject()->AddTechsRecovered();
@@ -13292,7 +13292,7 @@ void    FedSrvSiteBase::ChangeStation(IshipIGC* pship, IstationIGC* pstationOld,
 		            HullTypeLinkIGC*   phtl = m_pfsMission->GetIGCMission()->GetHullTypes()->last();
 		            while (true)
 		            {
-		                assert (phtl != NULL);
+		                ZAssert (phtl != NULL);
 		                pht = phtl->data();
 		                if ((pht->GetGroupID() >= 0) && pstation->CanBuy(pht) && (pht->GetPrice() <= 0))
 		                {
@@ -13354,7 +13354,7 @@ void FedSrvSiteBase::RequestRipcord(IshipIGC* pship, IclusterIGC* pcluster)
     {
         if (pmodelRipcord != NULL)
         {
-            assert (pclusterShip);
+            ZAssert (pclusterShip);
 
             pship->SetRipcordModel(NULL);
 			pship->SetStateBits(droneRipMaskIGC, 0);  //Xynth #188 7/2010
@@ -13367,7 +13367,7 @@ void FedSrvSiteBase::RequestRipcord(IshipIGC* pship, IclusterIGC* pcluster)
     else if ((pmodelRipcord == NULL) ||
              (pmodelRipcord->GetCluster() != pcluster))
     {
-        assert (pclusterShip);
+        ZAssert (pclusterShip);
 
         ImodelIGC*    pmodelNew = pship->FindRipcordModel(pcluster);
         if (pmodelNew)
@@ -13465,7 +13465,7 @@ bool FedSrvSiteBase::ContinueRipcord(IshipIGC* pship, ImodelIGC* pmodel)
 
 bool FedSrvSiteBase::UseRipcord(IshipIGC* pship, ImodelIGC* pmodel)
 {
-    assert (pmodel);
+    ZAssert (pmodel);
 
     ObjectType  type = pmodel->GetObjectType();
 
@@ -13622,8 +13622,8 @@ bool FedSrvSiteBase::HitTreasureEvent(Time now, IshipIGC* ship, ItreasureIGC* tr
                 pshipDonate = ship;
 
             CFSShip*    pfsDonate = (CFSShip*)(pshipDonate->GetPrivateData());
-            assert (pfsDonate->IsPlayer());
-            assert (amount >= 0);
+            ZAssert (pfsDonate->IsPlayer());
+            ZAssert (amount >= 0);
 
             BEGIN_PFM_CREATE(g.fm, pfmMoney, S, MONEY_CHANGE)
             END_PFM_CREATE
@@ -13760,11 +13760,11 @@ void     FedSrvSiteBase::CreateBuildingEffect(Time           now,
                                               IasteroidIGC*  pasteroid,
                                               IshipIGC*      pshipBuilder)
 {
-    assert (pasteroid);
-    assert (pshipBuilder);
-    assert (pshipBuilder->GetPilotType() == c_ptBuilder);
-    assert (pshipBuilder->GetBaseData());
-    assert (pshipBuilder->GetCluster());
+    ZAssert (pasteroid);
+    ZAssert (pshipBuilder);
+    ZAssert (pshipBuilder->GetPilotType() == c_ptBuilder);
+    ZAssert (pshipBuilder->GetBaseData());
+    ZAssert (pshipBuilder->GetCluster());
 
     IbuildingEffectIGC*    pbe = pshipBuilder->GetCluster()->CreateBuildingEffect(now,
                                                      pasteroid,
@@ -13796,8 +13796,8 @@ void        FedSrvSiteBase::LayExpendable(Time                   now,
                                           IexpendableTypeIGC*    pet,
                                           IshipIGC*              pshipLayer)
 {
-    assert (pet);
-    assert (pshipLayer);
+    ZAssert (pet);
+    ZAssert (pshipLayer);
 
     ObjectType  type = pet->GetObjectType();
 
@@ -13817,20 +13817,20 @@ void        FedSrvSiteBase::LayExpendable(Time                   now,
         dm.time0 = now;
         dm.p0 = position;
         dm.pminetype = (ImineTypeIGC*)pet;
-        assert (dm.pminetype);
+        ZAssert (dm.pminetype);
 
         dm.pcluster = pcluster;
         dm.exportF = false;
 
         ImineIGC * m = (ImineIGC*)(pMission->CreateObject(now, OT_mine, &dm, sizeof(dm)));
 
-        assert (m);
+        ZAssert (m);
 
         m->Release();
     }
     else
     {
-        assert (type == OT_probeType);
+        ZAssert (type == OT_probeType);
 
         DataProbeIGC dp;
         dp.pside = pside;
@@ -13841,14 +13841,14 @@ void        FedSrvSiteBase::LayExpendable(Time                   now,
         dp.time0 = now;
         dp.p0 = position;
         dp.pprobetype = (IprobeTypeIGC*)pet;
-        assert (dp.pprobetype);
+        ZAssert (dp.pprobetype);
 
         dp.pcluster = pcluster;
         dp.exportF = false;
 
         IprobeIGC * p = (IprobeIGC*)(pMission->CreateObject(now, OT_probe, &dp, sizeof(dp)));
 
-        assert (p);
+        ZAssert (p);
         p->Release();
     }
 
@@ -13884,19 +13884,19 @@ void    FedSrvSiteBase::RespawnFlag(SideID  sidFlag, IsideIGC* pcapturersside) /
                 IclusterIGC*   pcluster = pcl->data();
                 if (!pcluster->GetHomeSector())
                 {
-                    assert (nClusters < c_maxClusters);
+                    ZAssert (nClusters < c_maxClusters);
                     pclusters[nClusters++] = pcluster;
                 }
             }
 
-            assert (nClusters != 0);
+            ZAssert (nClusters != 0);
 
             m_pfsMission->GetIGCMission()->GenerateTreasure(g.timeNow, pclusters[randomInt(0, nClusters - 1)], -2);
         }
         else
         {
             IsideIGC*   pside = m_pfsMission->GetIGCMission()->GetSide(sidFlag);
-            assert(pside);
+            ZAssert(pside);
 
             //Legal clusters are any neutral cluster without a flag
             const int       c_maxStations = 10;
@@ -13924,12 +13924,12 @@ void    FedSrvSiteBase::RespawnFlag(SideID  sidFlag, IsideIGC* pcapturersside) /
 
                     if (ptl == NULL)
                     {
-                        assert (nStations < c_maxStations);
+                        ZAssert (nStations < c_maxStations);
                         pstations[nStations++] = pstation;
                     }
                 }
             }
-            // assert (nStations > 0); mmf 11/07 commented this out as this can happen in 'only one side' games
+            // ZAssert (nStations > 0); mmf 11/07 commented this out as this can happen in 'only one side' games
 
 			// mmf 11/07 add if nStations == 0
 			//     If the side that the flag belongs to has no bases AND one of their flags was captured
@@ -13962,7 +13962,7 @@ void    FedSrvSiteBase::RespawnFlag(SideID  sidFlag, IsideIGC* pcapturersside) /
 
 				ItreasureIGC* t = (ItreasureIGC *)m_pfsMission->GetIGCMission()->CreateObject(g.timeNow, OT_treasure,
                                                                                           &dt, sizeof(dt));
-				assert (t);
+				ZAssert (t);
 				t->Release();
 			}
 		}
@@ -14054,7 +14054,7 @@ IshipIGC*   PickNewLeader(const ShipListIGC*    pships,
  * FedSrvApp
  *-------------------------------------------------------------------------
  * Purpose:
- *    This class is called by the assert code when an assert happens
+ *    This class is called by the ZAssert code when an ZAssert happens
  */
 
 // mmf log to file on SRVLOG define as well as _DEBUG

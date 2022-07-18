@@ -4,9 +4,7 @@
 #include "pane.h"
 
 #include <tvector.h>
-
-class IEventSource;
-class IIntegerEventSource;
+#include "event.h"
 
 //////////////////////////////////////////////////////////////////////////////
 //

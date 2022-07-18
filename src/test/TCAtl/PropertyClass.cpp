@@ -183,7 +183,7 @@ HRESULT TCComPropertyClassRoot::TCPersistStreamInit_Load(LPSTREAM pStm,
   // Enter the Loading mode for this scope
   CLoadSaveScope loading(this);
 
-  assert(pMap != NULL);
+  ZAssert(pMap != NULL);
   HRESULT hr = S_OK;
   DWORD dwVer;
   hr = pStm->Read(&dwVer, sizeof(DWORD), NULL);
@@ -281,7 +281,7 @@ HRESULT TCComPropertyClassRoot::TCPersistStreamInit_Save(LPSTREAM pStm,
   // Enter the Saving mode for this scope
   CLoadSaveScope saving(this, false);
 
-  assert(pMap != NULL);
+  ZAssert(pMap != NULL);
   DWORD dw = _ATL_VER;
   HRESULT hr = pStm->Write(&dw, sizeof(DWORD), NULL);
   if (FAILED(hr))
@@ -758,7 +758,7 @@ HRESULT TCComPropertyClassRoot::TCPersistPropertyBag_Save(
 HRESULT TCComPropertyClassRoot::ISpecifyPropertyPages_GetPages(
   CAUUID* pPages, ATL_PROPMAP_ENTRY* pMap)
 {
-  assert(pMap != NULL);
+  ZAssert(pMap != NULL);
   int nCnt = 0;
   // Get count of unique pages
   for(int i = 0; pMap[i].pclsidPropPage != NULL; i++)

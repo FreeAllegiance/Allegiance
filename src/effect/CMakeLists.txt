@@ -1,4 +1,4 @@
-ADD_DEFINITIONS(-D__MODULE__="Effect" -DFixPermedia=1)
+ADD_DEFINITIONS(-DFixPermedia=1)
 
 INCLUDE_DIRECTORIES(../Inc ../zlib ../engine  ../soundengine)
 

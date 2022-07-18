@@ -179,6 +179,8 @@ JsonConfigurationStore::JsonConfigurationStore(std::string path) :
 }
 
 void JsonConfigurationStore::Commit() {
+    ZFile::CreateDirectoryRecursivelyForFilepath(m_path.c_str());
+
     std::ofstream filestream(m_path);
     filestream << m_json.dump(4);
 }

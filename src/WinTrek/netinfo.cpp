@@ -323,7 +323,7 @@ bool CheckDevice(int index, bool& bValid, ZString& strDriverURL)
                 break;
 
             default:
-                assert(0);
+                ZAssert(0);
             }
         }
 

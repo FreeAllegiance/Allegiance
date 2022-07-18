@@ -21,7 +21,7 @@ HRESULT         CstationTypeIGC::Initialize(ImissionIGC* pMission,
                                             const void*  data,
                                             int          dataSize)
 {
-    assert (pMission);
+    ZAssert (pMission);
     m_pMission = pMission;
 
 	ZRetailAssert (data && (dataSize >= sizeof(DataStationTypeIGC)));
@@ -32,9 +32,9 @@ HRESULT         CstationTypeIGC::Initialize(ImissionIGC* pMission,
                                                       : NULL);
 
     m_pdtConstruction = pMission->GetDroneType(m_data.constructionDroneTypeID);
-    assert (m_pdtConstruction);
+    ZAssert (m_pdtConstruction);
     m_pdtConstruction->AddRef();
-    assert (m_pdtConstruction->GetPilotType() == c_ptBuilder);
+    ZAssert (m_pdtConstruction->GetPilotType() == c_ptBuilder);
 
 
     MultiHullBase*  pmhb = HitTest::Load(m_data.modelName);
@@ -42,7 +42,7 @@ HRESULT         CstationTypeIGC::Initialize(ImissionIGC* pMission,
     m_nCapLandSlots = 0;
     m_nLaunchSlots = 0;
 
-    assert (pmhb);
+    ZAssert (pmhb);
     {
         float   scale = (m_data.radius / pmhb->GetOriginalRadius());
 
@@ -57,7 +57,7 @@ HRESULT         CstationTypeIGC::Initialize(ImissionIGC* pMission,
                 const FrameDataUTL* pfd = pmhb->GetFrame(bfrLaunch);
                 if (pfd)
                 {
-                    assert (m_nLaunchSlots < c_maxLaunchSlots);
+                    ZAssert (m_nLaunchSlots < c_maxLaunchSlots);
                     m_positionLaunches[m_nLaunchSlots] = pfd->position * scale;
                     m_directionLaunches[m_nLaunchSlots++] = pfd->forward;
                 }
@@ -80,14 +80,14 @@ HRESULT         CstationTypeIGC::Initialize(ImissionIGC* pMission,
 				// BT - Fixing occosional crash on WinTrek startup.
 				if (pfd && m_nLandSlots < c_maxLandSlots)
                 {
-                    assert (m_nLandSlots < c_maxLandSlots);
+                    ZAssert (m_nLandSlots < c_maxLandSlots);
 
                     int i = 0;
 
 					// BT - Fixing occosional crash on WinTrek startup.
                     while(pfd && i < c_maxLandPlanes)
                     {
-                        assert (i < c_maxLandPlanes);
+                        ZAssert (i < c_maxLandPlanes);
                         m_positionLandPlanes[m_nLandSlots][i] = pfd->position * scale;
                         m_directionLandPlanes[m_nLandSlots][i] = pfd->forward;
 
@@ -121,14 +121,14 @@ HRESULT         CstationTypeIGC::Initialize(ImissionIGC* pMission,
 				// BT - Fixing occosional crash on WinTrek startup.
                 if (pfd && m_nLandSlots < c_maxLandSlots)
                 {
-                    assert (m_nLandSlots < c_maxLandSlots);
+                    ZAssert (m_nLandSlots < c_maxLandSlots);
 
                     int i = 0;
 
 					// BT - Fixing occosional crash on WinTrek startup.
 					while (pfd && i < c_maxLandPlanes)
                     {
-                        assert (i < c_maxLandPlanes);
+                        ZAssert (i < c_maxLandPlanes);
                         m_positionLandPlanes[m_nLandSlots][i] = pfd->position * scale;
                         m_directionLandPlanes[m_nLandSlots][i] = pfd->forward;
 
@@ -152,11 +152,11 @@ HRESULT         CstationTypeIGC::Initialize(ImissionIGC* pMission,
         if (m_data.successorStationTypeID != NA)
         {
             m_pstSuccessor = pMission->GetStationType(m_data.successorStationTypeID);
-            assert (m_pstSuccessor);
+            ZAssert (m_pstSuccessor);
             m_pstSuccessor->AddRef();
         }
         else
-            assert (m_pstSuccessor == NULL);
+            ZAssert (m_pstSuccessor == NULL);
     }
 
     return S_OK;
@@ -170,7 +170,7 @@ void            CstationTypeIGC::Terminate(void)
         m_pstSuccessor = NULL;
     }
 
-    assert (m_pdtConstruction);
+    ZAssert (m_pdtConstruction);
     m_pdtConstruction->Release();
     m_pdtConstruction = NULL;
 

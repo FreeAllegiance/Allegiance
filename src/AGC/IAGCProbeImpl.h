@@ -41,7 +41,7 @@ public:
 
   STDMETHODIMP get_EmissionPoint(IAGCVector** ppEmissionPoint)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
 
     // Create an instance of the AGCVector object
     return GetAGCGlobal()->MakeAGCVector(&GetIGC()->GetEmissionPt(),
@@ -50,28 +50,28 @@ public:
 
   STDMETHODIMP get_Lifespan(float* pfLifespan)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pfLifespan, GetIGC()->GetLifespan());
     return S_OK;
   }
 
   STDMETHODIMP get_DtBurst(float* pfDtBurst)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pfDtBurst, GetIGC()->GetDtBurst());
     return S_OK;
   }
 
   STDMETHODIMP get_Accuracy(float* pfAccuracy)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pfAccuracy, GetIGC()->GetAccuracy());
     return S_OK;
   }
 
   STDMETHODIMP get_IsRipcord(VARIANT_BOOL* pbIsRipcord)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pbIsRipcord, VARBOOL(GetIGC()->GetCanRipcord()));
     return S_OK;
   }

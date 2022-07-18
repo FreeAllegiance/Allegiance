@@ -345,7 +345,7 @@ public:
       m_bSquadEditDescReset(false),
       m_bSquadEditURLReset(false)
     {
-        m_pkeyboardInputOldFocus = GetWindow()->GetFocus();
+        m_pkeyboardInputOldFocus = GetEngineWindow()->GetFocus();
 
         s_column = SSC_SCORE;
         s_pSelectedSquad = NULL;
@@ -492,7 +492,7 @@ public:
         m_cCivs = cNames;
         m_pCivIds = new int[cNames];
         int cInts = FillIntegerArray(pns, m_pCivIds, "CivIDs");
-        assert(cInts == cNames);
+        ZAssert(cInts == cNames);
 
         //
         // Icons
@@ -722,7 +722,7 @@ public:
         m_bLeftScreen = true;
 
         if(m_pkeyboardInputOldFocus)
-            GetWindow()->SetFocus(m_pkeyboardInputOldFocus);
+            GetEngineWindow()->SetFocus(m_pkeyboardInputOldFocus);
     }
 
 
@@ -1012,7 +1012,7 @@ public:
      */
     void DisplaySquadsInRange(bool bShowEvenIfNotFull = false)
     {                        
-        assert(m_nTab == FILTER_ALL);
+        ZAssert(m_nTab == FILTER_ALL);
 
         // clear screen
         m_listSquads[FILTER_ALL].SetEmpty(); // 0 == ALL squads tab
@@ -1132,7 +1132,7 @@ public:
      */
      void UpdateHighLowRanges(TRef<IZoneSquad> psquad, int nRanking, int column)
      {
-         assert(nRanking != -1);
+         ZAssert(nRanking != -1);
 
          if(nRanking < m_nHighestRanking[column])
          {
@@ -1364,7 +1364,7 @@ public:
 
                     RefreshScreen();
                 }
-                else {assert(0);} // received details about a squad that doesn't exist
+                else {ZAssert(0);} // received details about a squad that doesn't exist
             }
             break;
 
@@ -1372,7 +1372,7 @@ public:
             {
                 if (!m_psquadLastDetails)
                 {
-                    assert(0); // client never received a FM_S_SQUAD_DETAILS message
+                    ZAssert(0); // client never received a FM_S_SQUAD_DETAILS message
                     break;
                 }
 
@@ -1381,7 +1381,7 @@ public:
 /*                if (!IMemberBase::IsRankValid(pfmDetails->sqRank) ||
                     !IMemberBase::IsDetailedStatusValid(pfmDetails->detailedstatus))
                 {
-                    assert(0); // data sent from club is invalid
+                    ZAssert(0); // data sent from club is invalid
                     break;
                 }
 */
@@ -1436,7 +1436,7 @@ public:
                     break;
 
                     default:
-                        assert(0); // don't know how to add this member to specified squad
+                        ZAssert(0); // don't know how to add this member to specified squad
                     break;
                 }
 
@@ -1475,7 +1475,7 @@ public:
                 }
                 else 
                 { // received log info about a squad that doesn't exist
-                    assert(0);
+                    ZAssert(0);
                 }
             }
             break;
@@ -1712,7 +1712,7 @@ public:
                 m_peditPaneSquadURL->SetString("");
             }
 
-            GetWindow()->SetFocus(m_peditPaneSquadURL);
+            GetEngineWindow()->SetFocus(m_peditPaneSquadURL);
         }
         else
         if (pevent == m_peventDescEdit)
@@ -1724,7 +1724,7 @@ public:
                 m_pbuttonApply->SetEnabled(true);
             }
 
-            GetWindow()->SetFocus(m_peditPaneSquadName);
+            GetEngineWindow()->SetFocus(m_peditPaneSquadName);
         }
         else
         if (pevent == m_peventURLEdit)
@@ -1735,7 +1735,7 @@ public:
                 m_peditPaneSquadDescription->SetString("");
             }
 
-            GetWindow()->SetFocus(m_peditPaneSquadDescription);
+            GetEngineWindow()->SetFocus(m_peditPaneSquadDescription);
         }
         return true;
     }
@@ -2041,7 +2041,7 @@ public:
         psquad->SetURL("Enter Squad Home Page Here");
         psquad->SetInceptionDate("1/1/00");
 
-        assert(s_pActivePlayer);
+        ZAssert(s_pActivePlayer);
 
         psquad->AddPlayer(*s_pActivePlayer, IZonePlayer::DSTAT_LEADER);
 
@@ -2074,7 +2074,7 @@ public:
 		    m_pbuttonApply->SetHidden(false);
 		    m_pbuttonEditSquad->SetHidden(true);
 
-        GetWindow()->SetFocus(m_peditPaneSquadDescription);
+            GetEngineWindow()->SetFocus(m_peditPaneSquadDescription);
 
         return true;
     }
@@ -2087,7 +2087,7 @@ public:
         m_bSquadEditNameReset = false;
         m_pbuttonApply->SetEnabled(true);
 
-        GetWindow()->SetFocus(m_peditPaneSquadName);
+        GetEngineWindow()->SetFocus(m_peditPaneSquadName);
         return true;
     }
 
@@ -2098,7 +2098,7 @@ public:
 
         m_bSquadEditDescReset = false;
 
-        GetWindow()->SetFocus(m_peditPaneSquadDescription);
+        GetEngineWindow()->SetFocus(m_peditPaneSquadDescription);
         return true;
     }
 
@@ -2109,13 +2109,13 @@ public:
 
         m_bSquadEditURLReset = false;
 
-        GetWindow()->SetFocus(m_peditPaneSquadURL);
+        GetEngineWindow()->SetFocus(m_peditPaneSquadURL);
         return true;
     }
 
     bool OnFindClick() 
     {
-        GetWindow()->SetFocus(m_peditPaneFind);
+        GetEngineWindow()->SetFocus(m_peditPaneFind);
         return true;
     }
 
@@ -2135,9 +2135,9 @@ public:
 
     bool OnButtonApply()
     {
-        TRef<IKeyboardInput> p = GetWindow()->GetFocus();
+        TRef<IKeyboardInput> p = GetEngineWindow()->GetFocus();
         if(p)
-            GetWindow()->RemoveFocus(p);
+            GetEngineWindow()->RemoveFocus(p);
 
         if(s_pSelectedSquad == m_psquadBeingMade // if creating (not editing)
            &&  (m_bSquadEditNameReset ||
@@ -2596,7 +2596,7 @@ public:
 
 /*    static bool ShouldSquadBeShown(ItemID pitem) 
     {
-        assert(g_pSquadScreen);
+        ZAssert(g_pSquadScreen);
         return g_pSquadScreen->m_ShouldSquadBeShown(pitem);
     }
 
@@ -3039,7 +3039,7 @@ public:
                     break;
 
                 default:
-                    assert(1); // User is not associated with the squad so shouldn't be drawn!
+                    ZAssert(1); // User is not associated with the squad so shouldn't be drawn!
                     break;
             }
 */

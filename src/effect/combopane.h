@@ -3,6 +3,7 @@
 
 #include <pane.h>
 #include <value.h>
+#include "event.h"
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -24,8 +25,6 @@ public:
 //
 //////////////////////////////////////////////////////////////////////////////
 class IMenuItem;
-class IIntegerEventSource;
-class IEventSource;
 class ComboPane : public Pane {
 public:
     virtual TRef<IMenuItem>      AddItem(const ZString& str, int id) = 0;

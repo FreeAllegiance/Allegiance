@@ -1,5 +1,5 @@
 #include <iostream>
-#include "assert.h"
+#include "ZAssert.h"
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>

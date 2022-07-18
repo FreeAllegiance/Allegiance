@@ -23,7 +23,7 @@ namespace Training
     m_iTimes (iTimes),
     m_bSticky (bSticky)
     {
-        assert (iTimes > 1);
+        ZAssert (iTimes > 1);
     }
 
     //------------------------------------------------------------------------------

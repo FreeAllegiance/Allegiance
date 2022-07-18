@@ -83,7 +83,7 @@ STDMETHODIMP CAdminUser::get_Ship(/*[out, retval]*/ IAdminShip** ppShip)
 {
   //  CLEAROUT(ppAGCTeam, (IAGCTeam*)NULL);
 
-  assert(m_pPlayer);
+  ZAssert(m_pPlayer);
 
   IshipIGC * pIshipIGC = m_pPlayer->GetIGCShip();
 
@@ -107,7 +107,7 @@ STDMETHODIMP CAdminUser::get_Ship(/*[out, retval]*/ IAdminShip** ppShip)
  */
 STDMETHODIMP CAdminUser::SendMsg(BSTR bstrMessage)
 {
-  assert(m_pPlayer);
+  ZAssert(m_pPlayer);
 
   USES_CONVERSION;
  
@@ -135,7 +135,7 @@ STDMETHODIMP CAdminUser::SendMsg(BSTR bstrMessage)
  */
 STDMETHODIMP CAdminUser :: get_isReady(VARIANT_BOOL* pVal)
 {
-  assert(m_pPlayer);
+  ZAssert(m_pPlayer);
   *pVal = VARBOOL(m_pPlayer->GetReady());
   return S_OK;
 }
@@ -149,7 +149,7 @@ STDMETHODIMP CAdminUser :: get_isReady(VARIANT_BOOL* pVal)
  */
 STDMETHODIMP CAdminUser :: put_isReady(VARIANT_BOOL Val)
 {
-  assert(m_pPlayer);
+  ZAssert(m_pPlayer);
   m_pPlayer->SetReady(!!Val);
   return S_OK;
 }

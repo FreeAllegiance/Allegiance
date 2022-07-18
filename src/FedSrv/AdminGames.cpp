@@ -39,10 +39,10 @@ STDMETHODIMP CAdminGames::Add(IAGCGameParameters* pGameParameters)
     return Error(IDS_E_GAME_SERVER_PAUSED, IID_IAdminGames);
 
   IAGCPrivatePtr spPrivate(pGameParameters);
-  assert(NULL != spPrivate);
+  ZAssert(NULL != spPrivate);
 
   CGameParamData * pMissionParams = (CGameParamData *)spPrivate->GetIGCVoid();
-  assert(pMissionParams);
+  ZAssert(pMissionParams);
 
   #if defined(ALLSRV_STANDALONE)
     // Standalone server only supports a single game

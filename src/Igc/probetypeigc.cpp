@@ -18,14 +18,14 @@
 // CprobeTypeIGC
 HRESULT     CprobeTypeIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
 {
-    assert (pMission);
+    ZAssert (pMission);
     m_pMission = pMission;
 
     ZRetailAssert (data && (dataSize == sizeof(DataProbeTypeIGC)));
     {
         m_data = *((DataProbeTypeIGC*)data);
 
-        assert (iswalpha(m_data.modelName[0]));
+        ZAssert (iswalpha(m_data.modelName[0]));
         pMission->GetIgcSite()->Preload(m_data.modelName, iswalpha(m_data.textureName[0])
                                                           ? m_data.textureName
                                                           : NULL);
@@ -34,7 +34,7 @@ HRESULT     CprobeTypeIGC::Initialize(ImissionIGC* pMission, Time now, const voi
         if (m_data.projectileTypeID != NA)
         {
             m_projectileType = pMission->GetProjectileType(m_data.projectileTypeID);
-            assert (m_projectileType);
+            ZAssert (m_projectileType);
             m_projectileType->AddRef();
 
             if (pmhb)

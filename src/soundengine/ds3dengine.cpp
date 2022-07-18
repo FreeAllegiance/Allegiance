@@ -434,7 +434,11 @@ HRESULT DS3DSoundEngine::Update()
         TempSoundList::iterator iterDead = 
             (listNewSounds.empty()) ? listPrevSounds.begin() :
             std::find_if(listPrevSounds.begin(), listPrevSounds.end(), 
-                std::bind1st(SoundPriorityCompare(), *(listNewSounds.end() - 1)));
+                [&](DSVirtualSoundBuffer* sound) {
+                    //select those where the priority of the last sound in the new list is higher.
+                    return SoundPriorityCompare()(*(listNewSounds.end() - 1), sound);
+                }
+            );
 
         // stop all of the old buffers 
         // REVIEW: should fade out, if we have buffers.

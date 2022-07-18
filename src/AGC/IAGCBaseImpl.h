@@ -47,7 +47,7 @@ public:
    */
   STDMETHODIMP get_ObjectType(AGCObjectType* pObjectType)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
   //  CLEAROUT(pObjectType, );
     *pObjectType = (AGCObjectType) GetIGC()->GetObjectType();
     return S_OK;
@@ -64,7 +64,7 @@ public:
   STDMETHODIMP get_ObjectID(AGCObjectID* pObjectID)
   {
 
-    assert(GetIGC());
+    ZAssert(GetIGC());
   //  CLEAROUT(pObjectID, (AGCObjectID)m_pIGC->GetObjectID());
     *pObjectID = (AGCObjectID)GetIGC()->GetObjectID();
     return S_OK;
@@ -80,7 +80,7 @@ public:
    */
   STDMETHODIMP get_UniqueID(AGCUniqueID* pObjectID)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
 
     #ifdef _DEBUG
       //
@@ -110,8 +110,8 @@ public:
    */
   STDMETHODIMP get_Game(IAGCGame** ppGame)
   {
-    assert(GetIGC());
-    assert(GetIGC()->GetMission());
+    ZAssert(GetIGC());
+    ZAssert(GetIGC()->GetMission());
     return GetAGCGlobal()->GetAGCObject(GetIGC()->GetMission(), IID_IAGCGame,
       (void**)ppGame);
   }

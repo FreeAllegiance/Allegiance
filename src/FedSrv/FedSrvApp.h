@@ -4,7 +4,7 @@
  * FedSrvApp
  *-------------------------------------------------------------------------
  * Purpose:
- *    This class is called by the assert code when an assert happens
+ *    This class is called by the ZAssert code when an ZAssert happens
  */
 #define FED_DEBUG_DEBUGOUT 1
 #define FED_DEBUG_FILE     2
@@ -64,7 +64,7 @@
                 t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
 
         m_hFile = CreateFile(logFileName, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NOT_CONTENT_INDEXED | FILE_FLAG_OVERLAPPED, NULL);
-        assert (m_hFile);
+        ZAssert (m_hFile);
 
         m_overlapped.Offset = 0;
         m_overlapped.OffsetHigh = 0;

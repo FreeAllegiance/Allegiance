@@ -38,20 +38,20 @@ public:
 public:
   STDMETHODIMP get_Count(long* pnCount)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pnCount, (long)GetIGC()->n());
     return S_OK;
   }
 
   STDMETHODIMP get__NewEnum(IUnknown** ppunkEnum)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
 
     // Create a new CComEnum enumerator object
     typedef CComObject<CComEnum<IEnumVARIANT, &IID_IEnumVARIANT, VARIANT,
       _Copy<VARIANT> > > CEnum;
     CEnum* pEnum = new CEnum;
-    assert(NULL != pEnum);
+    ZAssert(NULL != pEnum);
 
     // Get the number of items in the collection
     long cTotal = GetIGC()->n();
@@ -105,7 +105,7 @@ public:
     long iIndex(V_I4(&var));
 
     // Bounds check
-    assert(GetIGC());
+    ZAssert(GetIGC());
     long iMax = GetIGC()->n();
     if (0 > iIndex || iIndex >= iMax)
       return E_INVALIDARG; 

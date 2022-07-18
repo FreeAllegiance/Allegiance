@@ -26,7 +26,7 @@
 // CclusterIGC
 HRESULT CclusterIGC::Initialize(ImissionIGC* pMission, Time   now, const void* data, int dataSize)
 {
-    assert (pMission);
+    ZAssert (pMission);
     m_pMission = pMission;
 
 
@@ -76,18 +76,18 @@ void        CclusterIGC::Terminate(void)
     m_kdrStatic.flush();
     m_kdrMoving.flush();
 
-    assert (m_modelsPickable.n() == 0);
-    assert (m_modelsCastRay.n() == 0);
+    ZAssert (m_modelsPickable.n() == 0);
+    ZAssert (m_modelsCastRay.n() == 0);
 
-    assert (m_stations.n() == 0);
-    assert (m_models.n() == 0);
-    assert (m_probes.n() == 0);
-    assert (m_warps.n() == 0);
-    assert (m_treasures.n() == 0);
-    assert (m_asteroids.n() == 0);
-    assert (m_mines.n() == 0);
+    ZAssert (m_stations.n() == 0);
+    ZAssert (m_models.n() == 0);
+    ZAssert (m_probes.n() == 0);
+    ZAssert (m_warps.n() == 0);
+    ZAssert (m_treasures.n() == 0);
+    ZAssert (m_asteroids.n() == 0);
+    ZAssert (m_mines.n() == 0);
 
-    assert (m_pClusterSite);
+    ZAssert (m_pClusterSite);
     m_pClusterSite->Terminate();
     m_pClusterSite = NULL;
 
@@ -122,8 +122,8 @@ void        CclusterIGC::Update(Time now)
                         if (pship->GetAutopilot() && (pship->GetPilotType() < c_ptPlayer))
                         {
                             //Docked non-players on autopilot never are observers/parents
-                            assert (pship->GetParentShip() == NULL);
-                            assert (pship->GetChildShips()->n() == 0);
+                            ZAssert (pship->GetParentShip() == NULL);
+                            ZAssert (pship->GetChildShips()->n() == 0);
 
 							// mmf/yp 10/07 added this so drones launch when ordered to even if OkToLaunch might be false
 							// intentionally left c_cidMine out of the list otherwise miners would launch with their AI
@@ -183,7 +183,7 @@ void        CclusterIGC::Update(Time now)
                     else
                     {
                         IhullTypeIGC*   pht = s->GetBaseHullType();
-                        assert (pht);
+                        ZAssert (pht);
                         m_fCost += pht->HasCapability(c_habmLifepod)
                                   ? costLifepod
                                   : costPlayer;
@@ -302,10 +302,10 @@ void        CclusterIGC::Update(Time now)
                         Time    timeCollision = m_lastUpdate + (m_tOffset + entry.m_tCollision);
 
                         ImodelIGC*  pModelHitTest1 = (ImodelIGC*)(entry.m_pHitTest1->GetData());
-                        assert (pModelHitTest1);
+                        ZAssert (pModelHitTest1);
 
                         ImodelIGC*  pModelHitTest2 = (ImodelIGC*)(entry.m_pHitTest2->GetData());
-                        assert (pModelHitTest2);
+                        ZAssert (pModelHitTest2);
 
                         //Give each participant in the collision a chance to handle the collision
                         //but give the "1st" model first dibs.
@@ -499,7 +499,7 @@ int        CclusterIGC::Export(void*  data) const
 
 void        CclusterIGC::AddModel(ImodelIGC* modelNew)
 {
-    assert (modelNew);
+    ZAssert (modelNew);
 
     ZVerify(m_models.first(modelNew));
     modelNew->AddRef();
@@ -538,7 +538,7 @@ void        CclusterIGC::AddModel(ImodelIGC* modelNew)
 
 void        CclusterIGC::DeleteModel(ImodelIGC* modelOld)
 {
-    assert (modelOld);
+    ZAssert (modelOld);
 
     {
         //Add the model to the collision set
@@ -574,7 +574,7 @@ void        CclusterIGC::DeleteModel(ImodelIGC* modelOld)
 
 ImodelIGC*  CclusterIGC::GetModel(const char* name) const
 {
-    assert (name);
+    ZAssert (name);
     for (ModelLinkIGC*     l = m_models.first();
          (l != NULL);
          l = l->next())
@@ -594,7 +594,7 @@ void        CclusterIGC::RecalculateCollisions(float        tOffset,
                                                ImodelIGC*   pModel2)
 {
     //Update the stop positions for the hit tests (& update their bounding boxes)
-    assert ((pModel1->GetAttributes() & c_mtStatic) == 0);
+    ZAssert ((pModel1->GetAttributes() & c_mtStatic) == 0);
     HitTest*    pHitTest1 = pModel1->GetHitTest();
     if (pHitTest1)
     {
@@ -728,7 +728,7 @@ IbuildingEffectIGC*      CclusterIGC::CreateBuildingEffect(Time           now,
     dbe.positionStop  = positionStop;
 
     IbuildingEffectIGC*     pbe = (IbuildingEffectIGC*)(m_pMission->CreateObject(now, OT_buildingEffect, &dbe, sizeof(dbe)));
-    assert (pbe);
+    ZAssert (pbe);
     pbe->Release();
 
     return pbe;

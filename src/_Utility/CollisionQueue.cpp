@@ -18,7 +18,7 @@ CollisionQueue::CollisionQueue(void)
     m_fDelete(true)
 {
     m_pCollisions = new CollisionEntry [m_maxCollisions];
-    assert (m_pCollisions);
+    ZAssert (m_pCollisions);
 }
 
 CollisionQueue::CollisionQueue(int              maxCollisions,
@@ -58,8 +58,8 @@ void    CollisionQueue::flush(int       n,
                               HitTest*  pHitTest1,
                               HitTest*  pHitTest2)
 {
-    assert (n > 0);
-    assert (n <= m_nCollisions);
+    ZAssert (n > 0);
+    ZAssert (n <= m_nCollisions);
 
     //Cheat and temporarily mark pHitTest1 & 2 as dead
     bool    oldDead1;
@@ -141,17 +141,17 @@ void    CollisionQueue::addCollision(float          tCollision,
                                      HitTest*       pHitTest2,
                                      HitTestShape   hts2)
 {
-    assert (hts1 <= pHitTest1->GetTrueShape());
-    assert (hts2 <= pHitTest2->GetTrueShape());
+    ZAssert (hts1 <= pHitTest1->GetTrueShape());
+    ZAssert (hts2 <= pHitTest2->GetTrueShape());
 
-    assert (m_nCollisions <= m_maxCollisions);
+    ZAssert (m_nCollisions <= m_maxCollisions);
     if (m_nCollisions == m_maxCollisions)
     {
         m_maxCollisions = (m_maxCollisions << 1);
         debugf("Extending collision queue from %d to %d entries\n", m_nCollisions, m_maxCollisions);
 
         CollisionEntry* p = new CollisionEntry[m_maxCollisions];
-        assert (p);
+        ZAssert (p);
         
         for (int i = 0; (i < m_nCollisions); i++)
         {
@@ -162,10 +162,10 @@ void    CollisionQueue::addCollision(float          tCollision,
         m_pCollisions = p;
     }
 
-    assert (m_nCollisions < m_maxCollisions);
+    ZAssert (m_nCollisions < m_maxCollisions);
 
-    assert (pHitTest1);
-    assert (pHitTest2);
+    ZAssert (pHitTest1);
+    ZAssert (pHitTest2);
 
     pHitTest1->AddRef();
     pHitTest2->AddRef();

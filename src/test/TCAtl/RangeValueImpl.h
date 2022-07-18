@@ -88,7 +88,7 @@ public:
     }
 
     // Ensure that the piid was found in the table
-    assert(m_pEntry);
+    ZAssert(m_pEntry);
   }
 
 // Overrides
@@ -102,7 +102,7 @@ public:
 public:
   STDMETHOD(get_MinValue)(long* pnValue)
   {
-    assert(m_pEntry);
+    ZAssert(m_pEntry);
     T::XRangeValueEntry* pEntry = (T::XRangeValueEntry*)m_pEntry;
     CLEAROUT(pnValue, pEntry->nValueMin);
     return S_OK;
@@ -110,7 +110,7 @@ public:
 
   STDMETHOD(get_MaxValue)(long* pnValue)
   {
-    assert(m_pEntry);
+    ZAssert(m_pEntry);
     T::XRangeValueEntry* pEntry = (T::XRangeValueEntry*)m_pEntry;
     CLEAROUT(pnValue, pEntry->nValueMax);
     return S_OK;
@@ -118,7 +118,7 @@ public:
 
   STDMETHOD(get_DefaultValue)(long* pnValue)
   {
-    assert(m_pEntry);
+    ZAssert(m_pEntry);
     T::XRangeValueEntry* pEntry = (T::XRangeValueEntry*)m_pEntry;
     CLEAROUT(pnValue, pEntry->nValueDefault);
     return S_OK;
@@ -126,7 +126,7 @@ public:
 
   STDMETHOD(get_Granularity)(long* pnGranularity)
   {
-    assert(m_pEntry);
+    ZAssert(m_pEntry);
     T::XRangeValueEntry* pEntry = (T::XRangeValueEntry*)m_pEntry;
     CLEAROUT(pnGranularity, pEntry->nGranularity);
     return S_OK;
@@ -134,7 +134,7 @@ public:
 
   STDMETHOD(get_TickMarks)(long* pnTickMarks)
   {
-    assert(m_pEntry);
+    ZAssert(m_pEntry);
     T::XRangeValueEntry* pEntry = (T::XRangeValueEntry*)m_pEntry;
 
     // Interpret the tick mark count value
@@ -148,7 +148,7 @@ public:
 
   STDMETHOD(put_RangeValue)(long nValue)
   {
-    assert(m_pEntry);
+    ZAssert(m_pEntry);
     T::XRangeValueEntry* pEntry = (T::XRangeValueEntry*)m_pEntry;
 
     // Load the specified value into a variant
@@ -170,7 +170,7 @@ public:
 
   STDMETHOD(get_RangeValue)(long* pnValue)
   {
-    assert(m_pEntry);
+    ZAssert(m_pEntry);
     T::XRangeValueEntry* pEntry = (T::XRangeValueEntry*)m_pEntry;
 
     // Call Invoke to get the current value
@@ -198,7 +198,7 @@ public:
 
   STDMETHOD(put_CurrentValue)(long nValue)
   {
-    assert(m_pEntry);
+    ZAssert(m_pEntry);
     T::XRangeValueEntry* pEntry = (T::XRangeValueEntry*)m_pEntry;
 
     // Validate the specified parameter
@@ -260,7 +260,7 @@ protected:
     // Declare an array of the preferred tick mark counts
     const static long nFreqs[] = {16, 16, 10, 12, 8};
     const static long nFreqCount = sizeofArray(nFreqs);
-    assert(nFreqCount);
+    ZAssert(nFreqCount);
 
     // Use 1 if specified step count <= the largest preferred tick mark count
     if (nSteps <= nFreqs[0])

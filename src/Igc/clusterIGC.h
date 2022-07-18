@@ -152,7 +152,7 @@ class       CclusterIGC : public IclusterIGC
         }
         virtual void                    DeleteShip(IshipIGC* shipOld)
         {
-            assert (shipOld);
+            ZAssert (shipOld);
             DeleteModel(shipOld);
             if (shipOld->GetParentShip() == NULL)
                 m_pClusterSite->DeleteScanner(shipOld->GetSide()->GetObjectID(), shipOld);
@@ -178,7 +178,7 @@ class       CclusterIGC : public IclusterIGC
         }
         virtual void                    DeleteMine(ImineIGC* mineOld)
         {
-            assert (mineOld);
+            ZAssert (mineOld);
             DeleteModel(mineOld);
 
             DeleteIbaseIGC((BaseListIGC*)&m_mines, mineOld);
@@ -199,7 +199,7 @@ class       CclusterIGC : public IclusterIGC
         }
         virtual void                    DeleteMissile(ImissileIGC* missileOld)
         {
-            assert (missileOld);
+            ZAssert (missileOld);
             DeleteModel(missileOld);
 
             DeleteIbaseIGC((BaseListIGC*)&m_missiles, missileOld);
@@ -221,7 +221,7 @@ class       CclusterIGC : public IclusterIGC
         }
         virtual void                    DeleteProbe(IprobeIGC* probeOld)
         {
-            assert (probeOld);
+            ZAssert (probeOld);
             DeleteModel(probeOld);
             m_pClusterSite->DeleteScanner(probeOld->GetSide()->GetObjectID(), probeOld);
             DeleteIbaseIGC((BaseListIGC*)&m_probes, probeOld);
@@ -410,15 +410,15 @@ class       CclusterIGC : public IclusterIGC
 
         virtual void                    MakeModelStatic(ImodelIGC* pmodel)
         {
-            assert (pmodel);
+            ZAssert (pmodel);
 
             HitTest*    ht = pmodel->GetHitTest();
-            assert (ht);
+            ZAssert (ht);
 
-            assert (pmodel->GetCluster() == this);
-            assert (pmodel->GetAttributes() & c_mtHitable);
-            assert (pmodel->GetAttributes() & c_mtStatic);
-            assert ((pmodel->GetAttributes() & c_mtCastRay) == 0);
+            ZAssert (pmodel->GetCluster() == this);
+            ZAssert (pmodel->GetAttributes() & c_mtHitable);
+            ZAssert (pmodel->GetAttributes() & c_mtStatic);
+            ZAssert ((pmodel->GetAttributes() & c_mtCastRay) == 0);
 
             DeleteIbaseIGC((BaseListIGC*)&m_modelsCastRay, pmodel);
 
@@ -427,15 +427,15 @@ class       CclusterIGC : public IclusterIGC
 
         virtual void                    MakeModelUnhitable(ImodelIGC* pmodel)
         {
-            assert (pmodel);
+            ZAssert (pmodel);
 
             HitTest*    ht = pmodel->GetHitTest();
-            assert (ht);
+            ZAssert (ht);
             m_kdrMoving.deleteHitTest(ht);
 
-            assert (pmodel->GetCluster() == this);
-            assert ((pmodel->GetAttributes() & c_mtHitable) == 0);
-            assert ((pmodel->GetAttributes() & c_mtCastRay) == 0);
+            ZAssert (pmodel->GetCluster() == this);
+            ZAssert ((pmodel->GetAttributes() & c_mtHitable) == 0);
+            ZAssert ((pmodel->GetAttributes() & c_mtCastRay) == 0);
 
             DeleteIbaseIGC((BaseListIGC*)&m_modelsCastRay, pmodel);
         }
@@ -444,7 +444,7 @@ class       CclusterIGC : public IclusterIGC
         {
             if (ma & c_mtHitable)
             {
-                assert ((ma & c_mtStatic) == 0);
+                ZAssert ((ma & c_mtStatic) == 0);
                 m_kdrMoving.deleteHitTest(pht);
             }
 

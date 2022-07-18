@@ -20,7 +20,7 @@
 static inline void swap(DataType*   a,
                         DataType*   b)
 {
-    assert (a != b);
+    ZAssert (a != b);
 
     DataType tmp = *a;
     *a = *b;
@@ -42,8 +42,8 @@ static inline int  comp(DataType const * a,
 void CollisionEntry::longSort(DataType* lo,
                               DataType* hi)
 {
-    assert (lo);
-    assert (hi);
+    ZAssert (lo);
+    ZAssert (hi);
     if (lo != hi)
     {
         int         stkptr = 0;     /* stack for saving sub-array to be processed */
@@ -52,7 +52,7 @@ void CollisionEntry::longSort(DataType* lo,
         /* Note: the number of stack entries required is no more than
            1 + log2(size), so 30 is sufficient for any array */
 
-        assert (lo < hi);
+        ZAssert (lo < hi);
 
         /* this entry point is for pseudo-recursion calling: setting
            lo and hi and jumping to here is like recursion, but stkptr is
@@ -195,7 +195,7 @@ void CollisionEntry::longSort(DataType* lo,
 void CollisionEntry::shortSort(DataType* lo,
                                DataType* hi)
 {
-    assert (lo < hi);
+    ZAssert (lo < hi);
 
     //Use a bubble sort since that works well when the list is almost sorted (since the
     //sort will terminate early and most things will not have to bubble far).
@@ -219,8 +219,8 @@ void CollisionEntry::shortSort(DataType* lo,
             DataType    tmp = *next;
             DataType*   bp1 = back + 1;
             DataType*   t = next;
-            assert (t > bp1);
-            assert (bp1 >= lo);
+            ZAssert (t > bp1);
+            ZAssert (bp1 >= lo);
             do
             {
                 //This is a safer way of doing: *t = *(--t);

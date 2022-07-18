@@ -45,7 +45,7 @@ public:
 public:
   AGCEventID GetVariantValue(VARIANT* pvar)
   {
-    assert(VT_I4 == V_VT(pvar));
+    ZAssert(VT_I4 == V_VT(pvar));
     return static_cast<AGCEventID>(V_I4(pvar));
   }
   void GetPrefixString(LPOLESTR pszPrefix)

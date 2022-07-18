@@ -89,8 +89,8 @@ public:
 
     float   operator [](int i) const
     {
-        assert (i >= 0);
-        assert (i <= 2);
+        ZAssert (i >= 0);
+        ZAssert (i <= 2);
         return (&x)[i];
     }
 

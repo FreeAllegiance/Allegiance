@@ -1809,7 +1809,7 @@ public:
     // Gets an interface for tweaking the sound, if supported, nullptr otherwise.
     virtual TRef<ISoundTweakable> GetISoundTweakable()
     {
-        assert(false); // not fully implemented
+        ZAssert(false); // not fully implemented
 
         if (m_pBase)
             return m_pBase->GetISoundTweakable();
@@ -1819,7 +1819,7 @@ public:
 
     virtual TRef<ISoundTweakable3D> GetISoundTweakable3D()
     {
-        assert(false); // not fully implemented
+        ZAssert(false); // not fully implemented
 
         if (m_pBase)
             return m_pBase->GetISoundTweakable3D();

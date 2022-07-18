@@ -5,6 +5,7 @@
 #include <d3d9.h>
 #include <d3dx9tex.h>
 #include <point.h>
+#include "D3DDevice9.h"
 
 class Color;
 
@@ -140,7 +141,7 @@ public:
 								bool		bSystemMemory,
                                 const char *	szTextureName = NULL,
                                 uint32_t		dwUsageFlags = 0,
-								D3DPOOL		texPool = D3DPOOL_MANAGED );
+								D3DPOOL		texPool = ALLEG_D9EX_IF(D3DPOOL_DEFAULT, D3DPOOL_MANAGED));
 
 	////////////////////////////////////////////////////////////////////////////////////////////
 	HRESULT		CreateTextureD3DX(	TEXHANDLE				texHandle,

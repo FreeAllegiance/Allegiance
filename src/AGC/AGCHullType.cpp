@@ -35,77 +35,77 @@ STDMETHODIMP CAGCHullType::InterfaceSupportsErrorInfo(REFIID riid)
 
 STDMETHODIMP CAGCHullType::get_Length(float* pfLength)
 {
-  assert(GetIGC());
+  ZAssert(GetIGC());
   CLEAROUT(pfLength, GetIGC()->GetLength());
   return S_OK;
 }
 
 STDMETHODIMP CAGCHullType::get_MaxSpeed(float* pfMaxSpeed)
 {
-  assert(GetIGC());
+  ZAssert(GetIGC());
   CLEAROUT(pfMaxSpeed, GetIGC()->GetMaxSpeed());
   return S_OK;
 }
 
 STDMETHODIMP CAGCHullType::get_MaxTurnRate(AGCAxis eAxis, float* pfMaxTurnRate)
 {
-  assert(GetIGC());
+  ZAssert(GetIGC());
   CLEAROUT(pfMaxTurnRate, GetIGC()->GetMaxTurnRate(eAxis));
   return S_OK;
 }
 
 STDMETHODIMP CAGCHullType::get_TurnTorque(AGCAxis eAxis, float* pfTurnTorque)
 {
-  assert(GetIGC());
+  ZAssert(GetIGC());
   CLEAROUT(pfTurnTorque, GetIGC()->GetTurnTorque(eAxis));
   return S_OK;
 }
 
 STDMETHODIMP CAGCHullType::get_Thrust(float* pfThrust)
 {
-  assert(GetIGC());
+  ZAssert(GetIGC());
   CLEAROUT(pfThrust, GetIGC()->GetThrust());
   return S_OK;
 }
 
 STDMETHODIMP CAGCHullType::get_SideMultiplier(float* pfSideMultiplier)
 {
-  assert(GetIGC());
+  ZAssert(GetIGC());
   CLEAROUT(pfSideMultiplier, GetIGC()->GetSideMultiplier());
   return S_OK;
 }
 
 STDMETHODIMP CAGCHullType::get_BackMultiplier(float* pfBackMultiplier)
 {
-  assert(GetIGC());
+  ZAssert(GetIGC());
   CLEAROUT(pfBackMultiplier, GetIGC()->GetBackMultiplier());
   return S_OK;
 }
 
 STDMETHODIMP CAGCHullType::get_ScannerRange(float* pfScannerRange)
 {
-  assert(GetIGC());
+  ZAssert(GetIGC());
   CLEAROUT(pfScannerRange, GetIGC()->GetScannerRange());
   return S_OK;
 }
 
 STDMETHODIMP CAGCHullType::get_MaxEnergy(float* pfMaxEnergy)
 {
-  assert(GetIGC());
+  ZAssert(GetIGC());
   CLEAROUT(pfMaxEnergy, GetIGC()->GetMaxEnergy());
   return S_OK;
 }
 
 STDMETHODIMP CAGCHullType::get_RechargeRate(float* pfRechargeRate)
 {
-  assert(GetIGC());
+  ZAssert(GetIGC());
   CLEAROUT(pfRechargeRate, GetIGC()->GetRechargeRate());
   return S_OK;
 }
 
 STDMETHODIMP CAGCHullType::get_HitPoints(AGCHitPoints* pHitPoints)
 {
-  assert(GetIGC());
+  ZAssert(GetIGC());
   CLEAROUT(pHitPoints, (AGCHitPoints)GetIGC()->GetHitPoints());
   return S_OK;
 }
@@ -113,21 +113,21 @@ STDMETHODIMP CAGCHullType::get_HitPoints(AGCHitPoints* pHitPoints)
 STDMETHODIMP CAGCHullType::get_PartMask(AGCEquipmentType et, AGCMount mountID,
   AGCPartMask* pPartMask)
 {
-  assert(GetIGC());
+  ZAssert(GetIGC());
   CLEAROUT(pPartMask, (AGCPartMask)GetIGC()->GetPartMask(et, mountID));
   return S_OK;
 }
 
 STDMETHODIMP CAGCHullType::get_MaxWeapons(AGCMount* pMaxWeapons)
 {
-  assert(GetIGC());
+  ZAssert(GetIGC());
   CLEAROUT(pMaxWeapons, (AGCMount)GetIGC()->GetMaxWeapons());
   return S_OK;
 }
 
 STDMETHODIMP CAGCHullType::get_MaxFixedWeapons(AGCMount* pMaxFixedWeapons)
 {
-  assert(GetIGC());
+  ZAssert(GetIGC());
   CLEAROUT(pMaxFixedWeapons, (AGCMount)GetIGC()->GetMaxFixedWeapons());
   return S_OK;
 }
@@ -135,26 +135,26 @@ STDMETHODIMP CAGCHullType::get_MaxFixedWeapons(AGCMount* pMaxFixedWeapons)
 //  STDMETHODIMP CAGCHullType::get_CanMount(IAGCPartType* pPartType, AGCMount mountID,
 //    VARIANT_BOOL* pbCanMount)
 // {
-//    assert(GetIGC());
+//    ZAssert(GetIGC());
 // }
 
 STDMETHODIMP CAGCHullType::get_Mass(float* pfMass)
 {
-  assert(GetIGC());
+  ZAssert(GetIGC());
   CLEAROUT(pfMass, GetIGC()->GetMass());
   return S_OK;
 }
 
 STDMETHODIMP CAGCHullType::get_Signature(float* pfSignature)
 {
-  assert(GetIGC());
+  ZAssert(GetIGC());
   CLEAROUT(pfSignature, GetIGC()->GetSignature());
   return S_OK;
 }
 
 STDMETHODIMP CAGCHullType::get_Capabilities(AGCHullAbilityBitMask* phabmCapabilities)
 {
-  assert(GetIGC());
+  ZAssert(GetIGC());
   CLEAROUT(phabmCapabilities, GetIGC()->GetCapabilities());
   return S_OK;
 }
@@ -162,21 +162,21 @@ STDMETHODIMP CAGCHullType::get_Capabilities(AGCHullAbilityBitMask* phabmCapabili
 STDMETHODIMP CAGCHullType::get_HasCapability(AGCHullAbilityBitMask habm,
   VARIANT_BOOL* pbHasCapability)
 {
-  assert(GetIGC());
+  ZAssert(GetIGC());
   CLEAROUT(pbHasCapability, VARBOOL(GetIGC()->HasCapability(habm)));
   return S_OK;
 }
 
 STDMETHODIMP CAGCHullType::get_MaxAmmo(short* pnMaxAmmo)
 {
-  assert(GetIGC());
+  ZAssert(GetIGC());
   CLEAROUT(pnMaxAmmo, GetIGC()->GetMaxAmmo());
   return S_OK;
 }
 
 STDMETHODIMP CAGCHullType::get_MaxFuel(float* pfMaxFuel)
 {
-  assert(GetIGC());
+  ZAssert(GetIGC());
   CLEAROUT(pfMaxFuel, GetIGC()->GetMaxFuel());
   return S_OK;
 }

@@ -32,7 +32,7 @@ HRESULT     CcloakIGC::Initialize(ImissionIGC* pMission, Time now, const void* d
     ZRetailAssert (data && (dataSize == sizeof(DataPartIGC)));
     {
         m_partType = ((DataPartIGC*)data)->partType;
-        assert (m_partType);
+        ZAssert (m_partType);
         m_partType->AddRef();
 
         m_typeData = (const DataCloakTypeIGC*)m_partType->GetData();
@@ -58,11 +58,11 @@ void        CcloakIGC::Terminate(void)
 
 void        CcloakIGC::Update(Time now)
 {
-    assert (m_ship);
-    assert (m_mountID == 0);
+    ZAssert (m_ship);
+    ZAssert (m_mountID == 0);
 
     Time    lastUpdate = m_ship->GetLastUpdate();
-    assert (now >= lastUpdate);
+    ZAssert (now >= lastUpdate);
 
     float dt = now - lastUpdate;
     if (m_mountedFraction < 1.0f)
@@ -133,7 +133,7 @@ void        CcloakIGC::SetShip(IshipIGC*       newVal, Mount mount)
         m_ship->DeletePart(this);
         m_ship->Release();
     }
-    assert (m_mountID == c_mountNA);
+    ZAssert (m_mountID == c_mountNA);
 
     m_ship = newVal;
 
@@ -150,7 +150,7 @@ void        CcloakIGC::SetShip(IshipIGC*       newVal, Mount mount)
 
 void    CcloakIGC::SetMountID(Mount newVal)
 {
-    assert (m_ship);
+    ZAssert (m_ship);
 
     if (newVal != m_mountID)
     {

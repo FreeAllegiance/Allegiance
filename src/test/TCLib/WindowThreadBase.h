@@ -481,12 +481,12 @@ inline void TCWindowThreadBase::AddWindow(TCWindowThreadBase::XArgs& args)
 
 inline void TCWindowThreadBase::RemoveWindow(HWND hwnd)
 {
-  assert(hwnd);
+  ZAssert(hwnd);
 
   // Find the item for the specified handle
   CLock lock(this);
   XItems::iterator it = m_windows.find(hwnd);
-  assert(it != m_windows.end());
+  ZAssert(it != m_windows.end());
 
   // Update translation reference counts
   if (it->second.hAccel)
@@ -523,9 +523,9 @@ inline void TCWindowThreadBase::UnsubclassWindow(HWND hwnd)
 
   // Get the previous WindowProc and restore it
   WNDPROC pfnPrev = (WNDPROC)::GetProp(hwnd, MAKEINTATOM(GetWndProcAtom()));
-  assert(pfnPrev);
+  ZAssert(pfnPrev);
   WNDPROC pfn = (WNDPROC)::SetWindowLong(hwnd, GWL_WNDPROC, (LONG)pfnPrev);
-  assert(SubclassWindowProc == pfn);
+  ZAssert(SubclassWindowProc == pfn);
 
   // Remove the window property
   ::RemoveProp(hwnd, MAKEINTATOM(GetWndProcAtom()));
@@ -536,7 +536,7 @@ inline LRESULT CALLBACK TCWindowThreadBase::SubclassWindowProc(HWND hwnd,
 {
   // Get the previous WindowProc
   WNDPROC pfnPrev = (WNDPROC)::GetProp(hwnd, MAKEINTATOM(GetWndProcAtom()));
-  assert(pfnPrev);
+  ZAssert(pfnPrev);
 
   // Check for interesting messages
   if (WM_NCDESTROY == uMsg)
@@ -568,19 +568,19 @@ inline void TCWindowThreadBase::MessageLoop()
       }
     }
   }
-  assert(!m_windows.size());
+  ZAssert(!m_windows.size());
 }
 
 inline bool TCWindowThreadBase::ProcessThreadMessage(MSG& msg)
 {
-  assert(!msg.hwnd);
+  ZAssert(!msg.hwnd);
   switch (msg.message)
   {
     case wm_CreateWindowOnThread:
     {
       // Get the arguments pointer
       XArgs* pArgs = reinterpret_cast<XArgs*>(msg.wParam);
-      assert(pArgs);
+      ZAssert(pArgs);
 
       // Attempt to create the window as specified
       InternalCreateWindow(*pArgs);
@@ -595,7 +595,7 @@ inline bool TCWindowThreadBase::ProcessThreadMessage(MSG& msg)
     {
       // Get the arguments pointer
       XArgs* pArgs = reinterpret_cast<XArgs*>(msg.wParam);
-      assert(pArgs);
+      ZAssert(pArgs);
 
       // Destroy the specified window
       InternalDestroyWindow(*pArgs);
@@ -626,7 +626,7 @@ inline bool TCWindowThreadBase::ProcessThreadMessage(MSG& msg)
 
 inline bool TCWindowThreadBase::TranslateAccelerators(MSG& msg)
 {
-  assert(GetRefsAccel());
+  ZAssert(GetRefsAccel());
 
   // First attempt to find the message's destination window
   CLock lock(this);
@@ -647,7 +647,7 @@ inline bool TCWindowThreadBase::TranslateAccelerators(MSG& msg)
 
 inline bool TCWindowThreadBase::TranslateDialogMessages(MSG& msg)
 {
-  assert(GetRefsDlgXlate());
+  ZAssert(GetRefsDlgXlate());
 
   // First attempt to find the message's destination window
   CLock lock(this);

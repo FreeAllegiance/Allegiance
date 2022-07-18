@@ -13,7 +13,7 @@
 HRESULT FedSrvLobbySite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnFrom, FEDMESSAGE * pfm)
 {
   HRESULT hr = S_OK;
-  assert(&g.fmLobby == pthis);
+  ZAssert(&g.fmLobby == pthis);
 
   static CTempTimer timerOnAppMessage("in FedSrvLobbySite::OnAppMessage", .02f);
   timerOnAppMessage.Start();
@@ -31,7 +31,7 @@ HRESULT FedSrvLobbySite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		lstrcpy(mp.szIGCStaticFile,ZString(FM_VAR_REF(pfmCreateMissionReq, IGCStaticFile)));
         mp.bScoresCount = true; // BT - 9/17 - Scores always count. 
 		mp.iMaxImbalance = 0x7ffe;// added
-        assert(!mp.Invalid());
+        ZAssert(!mp.Invalid());
 #endif
 
 		//Imago - give birth right here, feed it and off it goes...
@@ -315,7 +315,7 @@ HRESULT FedSrvLobbySite::OnSessionLost(FedMessaging * pthis)
 #ifndef NO_MSG_CRC
 void FedSrvLobbySite::OnBadCRC(FedMessaging * pthis, CFMConnection & cnxn, BYTE * pMsg, DWORD cbMsg)
 {
-  assert(0); // we should never get a bad crc from one of our own servers.
+  ZAssert(0); // we should never get a bad crc from one of our own servers.
   // todo: something better for people running their own servers, but sufficient for our servers, 
   // since they communicate on a back channel
 }

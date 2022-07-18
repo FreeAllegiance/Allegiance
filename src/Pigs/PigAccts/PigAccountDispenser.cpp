@@ -48,14 +48,14 @@ void CPigAccountDispenser::AccountReleased(_bstr_t bstrName)
   {
     if (it->m_bstrName == bstrName)
     {
-      assert(!it->m_bAvailable);
+      ZAssert(!it->m_bAvailable);
       it->m_bAvailable = true;
       if (m_Accounts.end() == m_itAvailable)
         m_itAvailable = it;
       return;
     }
   }
-  assert(!"CPigAccountDispenser::AccountRelease: Should never get here!");
+  ZAssert(!"CPigAccountDispenser::AccountRelease: Should never get here!");
 }
 
 
@@ -65,7 +65,7 @@ void CPigAccountDispenser::AccountReleased(_bstr_t bstrName)
 HRESULT CPigAccountDispenser::LoadAccounts()
 {
   XLock lock(this);
-  assert(0 == m_Accounts.size());
+  ZAssert(0 == m_Accounts.size());
 
   // Get the path name of the module
   TCHAR szModule[_MAX_PATH];

@@ -599,7 +599,7 @@ HRESULT CAGCEventLogger::CopyChildNodes(IXMLDOMNode* pNode,
   {
     IXMLDOMNodePtr spChild;
     RETURN_FAILED(spChildren->nextNode(&spChild))
-    assert(NULL != spChild);
+    ZAssert(NULL != spChild);
     nodes[nIndex] = spChild;
   }
 
@@ -793,7 +793,7 @@ STDMETHODIMP CAGCEventLogger::get_EventList(BSTR* pbstrEventListXML)
     // Ensure that the root element tag is <AGCEvents>
     CComBSTR bstrRoot;
     ZSucceeded(spRoot->get_tagName(&bstrRoot));
-    assert(0 == wcscmp(bstrRoot, L"AGCEvents"));
+    ZAssert(0 == wcscmp(bstrRoot, L"AGCEvents"));
   }
   #endif // _DEBUG
 
@@ -823,12 +823,12 @@ STDMETHODIMP CAGCEventLogger::put_NTEventLog(BSTR bstrComputer)
     USES_CONVERSION;
 	// mdvalley: No SetStringValue
     long lr = keyWrite.SetValue(OLE2CT(bstrComputer), TEXT("NTEventLog"));
-    assert(ERROR_SUCCESS == lr);
+    ZAssert(ERROR_SUCCESS == lr);
   }
 
   // Create an event to be signaled when new NT event log is open
   TCHandle hevt = CreateEvent(NULL, false, false, NULL);
-  assert(!hevt.IsNull());
+  ZAssert(!hevt.IsNull());
 
   // Open the new NT event log
   HRESULT hr = S_OK;
@@ -929,14 +929,14 @@ STDMETHODIMP CAGCEventLogger::put_DBEventLog(IAGCDBParams* pDBParams)
     USES_CONVERSION;
 	// mdvalley: SetStringValue
     long lr = keyWrite.SetValue(OLE2CT(bstrConnectionString), TEXT("ConnectionString"));
-    assert(ERROR_SUCCESS == lr);
+    ZAssert(ERROR_SUCCESS == lr);
     lr = keyWrite.SetValue(OLE2CT(bstrTableName), TEXT("TableName"));
-    assert(ERROR_SUCCESS == lr);
+    ZAssert(ERROR_SUCCESS == lr);
   }
 
   // Create an event to be signaled when new DB is open
   TCHandle hevt = CreateEvent(NULL, false, false, NULL);
-  assert(!hevt.IsNull());
+  ZAssert(!hevt.IsNull());
 
   // Establish new connection
   HRESULT hr = S_OK;
@@ -1039,7 +1039,7 @@ STDMETHODIMP CAGCEventLogger::put_EnabledNTEvents(IAGCEventIDRanges* pEvents)
     LPCTSTR pszValue = bstrEventRanges ? OLE2CT(bstrEventRanges) : TEXT("");
 	// mdvalley: SetStringValue
     long lr = keyWrite.SetValue(pszValue, TEXT("EnabledNTEvents"));
-    assert(ERROR_SUCCESS == lr);
+    ZAssert(ERROR_SUCCESS == lr);
   }
 
   // Indicate success
@@ -1095,7 +1095,7 @@ STDMETHODIMP CAGCEventLogger::put_EnabledDBEvents(IAGCEventIDRanges* pEvents)
     LPCTSTR pszValue = bstrEventRanges ? OLE2CT(bstrEventRanges) : TEXT("");
 	// mdvalley: SetStringValue
     long lr = keyWrite.SetValue(pszValue, TEXT("EnabledDBEvents"));
-    assert(ERROR_SUCCESS == lr);
+    ZAssert(ERROR_SUCCESS == lr);
   }
 
   // Indicate success
@@ -1187,8 +1187,8 @@ STDMETHODIMP CAGCEventLogger::get_DefaultEnabledDBEvents(
 STDMETHODIMP CAGCEventLogger::Initialize(BSTR bstrSourceApp, BSTR bstrRegKey)
 {
   // Validate the specified parameters
-  assert(BSTRLen(bstrSourceApp));
-  assert(BSTRLen(bstrRegKey));
+  ZAssert(BSTRLen(bstrSourceApp));
+  ZAssert(BSTRLen(bstrRegKey));
 
   // Interpret the first part of the specified registry key string
   DWORD cchEaten;
@@ -1292,7 +1292,7 @@ STDMETHODIMP CAGCEventLogger::Terminate()
 {
   // Create an event to be signaled when event log is closed
   TCHandle hevt = CreateEvent(NULL, false, false, NULL);
-  assert(!hevt.IsNull());
+  ZAssert(!hevt.IsNull());
 
   // Fire 'event log stopped' event if log is open
   FireDBEventLogStopped();

@@ -35,7 +35,7 @@ public:
 public:
   STDMETHODIMP get_Name(BSTR* pbstrName)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pbstrName, (BSTR)NULL);
     *pbstrName = CComBSTR(GetIGC()->GetName()).Detach();
     return S_OK;
@@ -43,7 +43,7 @@ public:
 
   STDMETHODIMP get_Description(BSTR* pbstrDescription)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pbstrDescription, (BSTR)NULL);
     *pbstrDescription = CComBSTR(GetIGC()->GetDescription()).Detach();
     return S_OK;
@@ -51,7 +51,7 @@ public:
 
   STDMETHODIMP get_ModelName(BSTR* pbstrModelName)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pbstrModelName, (BSTR)NULL);
     *pbstrModelName = CComBSTR(GetIGC()->GetModelName()).Detach();
     return S_OK;
@@ -59,14 +59,14 @@ public:
 
   STDMETHODIMP get_Price(AGCMoney* pmoneyPrice)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pmoneyPrice, (AGCMoney)GetIGC()->GetPrice());
     return S_OK;
   }
 
   STDMETHODIMP get_TimeToBuild(long* pnTimeToBuild)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pnTimeToBuild, (long)GetIGC()->GetTimeToBuild());
     return S_OK;
   }

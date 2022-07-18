@@ -45,8 +45,10 @@ public:
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class MouseInputStream : public InputStream {
+class MouseInputStream : virtual public InputStream {
 public:
+    virtual ~MouseInputStream() {};
+
     virtual void SetClipRect(const Rect& rect)       = 0;
     virtual void SetPosition(const Point& point)     = 0;
     virtual float GetWheelPosition()                 = 0; //Imago 8/12/09
@@ -58,7 +60,9 @@ public:
     virtual bool IsEnabled()                         = 0;
     virtual void SetEnabled(bool bEnabled)           = 0;
 
-    virtual const Point& GetPosition()               = 0;
+    virtual TRef<TStaticValue<Point>> GetPosition()               = 0;
+
+    virtual void Update() = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -95,7 +99,7 @@ public:
 
 };
 
-TRef<InputEngine> CreateInputEngine(HWND hwnd);
+TRef<InputEngine> CreateInputEngine(HWND hwnd, TRef<Boolean> pUseMethodRaw);
 
 //////////////////////////////////////////////////////////////////////////////
 //

@@ -100,7 +100,7 @@ public:
     StringImageCorrected(
         Justification justification,
         FontValue*  pfont,
-        ColorValue*   pcolor,
+        const TRef<ColorValue>&   pcolor,
         Number*       pwidth,
         StringValue*  pstring,
         Number*       pSeparation
@@ -400,31 +400,40 @@ TRef<Image> ImageTransform::ScaleFill(Image* pimage, PointValue* pSizeContainer,
     );
 }
 
-TRef<Image> ImageTransform::Switch(Boolean* pValue, std::map<bool, TRef<Image>> mapOptions) {
-    return new CallbackImage<bool>([mapOptions](bool value) {
+TRef<Image> ImageTransform::Switch(Boolean* pValue, std::map<bool, TRef<Image>> mapOptions, TRef<Image> defaultOption) {
+    if (defaultOption == nullptr) {
+        defaultOption = Image::GetEmpty();
+    }
+    return new CallbackImage<bool>([mapOptions, defaultOption](bool value) {
         auto find = mapOptions.find(value);
         if (find == mapOptions.end()) {
-            return (TRef<Image>)Image::GetEmpty();
+            return defaultOption;
         }
         return find->second;
     }, pValue);
 }
 
-TRef<Image> ImageTransform::Switch(Number* pValue, std::map<int, TRef<Image>> mapOptions) {
-    return new CallbackImage<float>([mapOptions](float value) {
+TRef<Image> ImageTransform::Switch(Number* pValue, std::map<int, TRef<Image>> mapOptions, TRef<Image> defaultOption) {
+    if (defaultOption == nullptr) {
+        defaultOption = Image::GetEmpty();
+    }
+    return new CallbackImage<float>([mapOptions, defaultOption](float value) {
         auto find = mapOptions.find((int)value); //convert to integer
         if (find == mapOptions.end()) {
-            return (TRef<Image>)Image::GetEmpty();
+            return defaultOption;
         }
         return find->second;
     }, pValue);
 }
 
-TRef<Image> ImageTransform::Switch(TStaticValue<ZString>* pValue, std::map<std::string, TRef<Image>> mapOptions) {
-    return new CallbackImage<ZString>([mapOptions](ZString value) {
+TRef<Image> ImageTransform::Switch(TStaticValue<ZString>* pValue, std::map<std::string, TRef<Image>> mapOptions, TRef<Image> defaultOption) {
+    if (defaultOption == nullptr) {
+        defaultOption = Image::GetEmpty();
+    }
+    return new CallbackImage<ZString>([mapOptions, defaultOption](ZString value) {
         auto find = mapOptions.find(std::string(value));
         if (find == mapOptions.end()) {
-            return (TRef<Image>)Image::GetEmpty();
+            return defaultOption;
         }
         return find->second;
     }, pValue);
@@ -487,7 +496,7 @@ TRef<Image> ImageTransform::Lazy(std::function<TRef<Image>()> callback)
     return new LazyImage(callback);
 }
 
-TRef<Image> ImageTransform::String(FontValue * font, ColorValue * color, Number * width, StringValue * string, Justification justification, Number* pLineSeparation)
+TRef<Image> ImageTransform::String(FontValue * font, const TRef<ColorValue>& color, Number * width, StringValue * string, Justification justification, Number* pLineSeparation)
 {
     return new StringImageCorrected(justification, font, color, width, string, pLineSeparation);
 }

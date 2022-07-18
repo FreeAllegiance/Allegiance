@@ -39,8 +39,8 @@ HRESULT CPigBehaviorScript::Init(CPigBehaviorScriptType* pType, CPig* pPig,
   BSTR bstrCommandLine, CPigBehaviorScript* pDerived)
 {
   // Save the specified type and pig references
-  assert(!m_pType);
-  assert(!m_pPig);
+  ZAssert(!m_pType);
+  ZAssert(!m_pPig);
   m_pType            = pType;
   m_pPig             = pPig;
   m_bstrCommandLine  = bstrCommandLine;
@@ -56,13 +56,13 @@ HRESULT CPigBehaviorScript::Init(CPigBehaviorScriptType* pType, CPig* pPig,
     // Get the base behavior type
     CPigBehaviorScriptType* pType =
       GetEngine().GetBehaviorType(CComBSTR(strBaseBehavior.c_str()));
-    assert(pType);
+    ZAssert(pType);
 
     // Create an instance of a behavior object
     CComObject<CPigBehaviorScript>* pBehavior = NULL;
     RETURN_FAILED(pBehavior->CreateInstance(&pBehavior));
     IPigBehaviorPtr spBehavior(pBehavior->GetUnknown());
-    assert(NULL != spBehavior);
+    ZAssert(NULL != spBehavior);
 
     // Initialize the behavior
     RETURN_FAILED(pBehavior->Init(pType, m_pPig, NULL, this));
@@ -74,7 +74,7 @@ HRESULT CPigBehaviorScript::Init(CPigBehaviorScriptType* pType, CPig* pPig,
 
   // Create the scripting engine
   RETURN_FAILED(CreateScriptingEngine());
-  assert(NULL != m_spAsp);
+  ZAssert(NULL != m_spAsp);
 
   // Populate the scripting engine with script text
   long cStrings;
@@ -106,7 +106,7 @@ HRESULT CPigBehaviorScript::Init(CPigBehaviorScriptType* pType, CPig* pPig,
     m_pType));
 
   // Add ourself to the Global Interface Table (GIT)
-  assert(!m_dwGITCookie);
+  ZAssert(!m_dwGITCookie);
   RETURN_FAILED(GetEngine().RegisterInterfaceInGlobal(GetUnknown(),
     IID_IUnknown, &m_dwGITCookie));
 
@@ -138,14 +138,14 @@ void CPigBehaviorScript::Term()
     m_pBehaviorBase->Term();
 
   // Remove our GIT reference from our type object
-  assert(m_pType);
+  ZAssert(m_pType);
   m_pType->RemoveBehavior(m_dwGITCookie);
 
   // Release our type object
   m_pType->Release();
 
   // Remove ourself from the Global Interface Table (GIT)
-  assert(m_dwGITCookie);
+  ZAssert(m_dwGITCookie);
   _SVERIFYE(GetEngine().RevokeInterfaceFromGlobal(m_dwGITCookie));
   m_dwGITCookie = 0;
 
@@ -161,7 +161,7 @@ void CPigBehaviorScript::Term()
 HRESULT CPigBehaviorScript::Eval(const char* pszExpression, VARIANT* pvResult)
 {
   // Do nothing with an empty string
-  assert(pvResult);
+  ZAssert(pvResult);
   if (!pszExpression || '\0' == *pszExpression)
     return S_FALSE;
 
@@ -280,7 +280,7 @@ HRESULT CPigBehaviorScript::CreateScriptingEngine()
   RETURN_FAILED(m_pType->get_ScriptEngineProgID(&bstrProgID));
 
   // Create the scripting engine
-  assert(NULL == m_spAs && NULL == m_spAsp);
+  ZAssert(NULL == m_spAs && NULL == m_spAsp);
   //RETURN_FAILED(m_spAsp.CreateInstance(bstrProgID));
   GUID appid;
   CLSIDFromProgID(bstrProgID,&appid);
@@ -289,7 +289,7 @@ HRESULT CPigBehaviorScript::CreateScriptingEngine()
                  (void **)&m_spAs));
   //m_spAs = m_spAsp;
   m_spAs->QueryInterface(IID_IActiveScriptParse, (void **)&m_spAsp);
-  assert(NULL != m_spAsp);
+  ZAssert(NULL != m_spAsp);
 
   // Set the script site
   RETURN_FAILED(m_spAs->SetScriptSite(this));
@@ -319,8 +319,8 @@ HRESULT CPigBehaviorScript::CreateScriptingEngine()
   RETURN_FAILED(m_spAs->AddTypeLib(LIBID_PigsLib, 1, 0, 0));
 
   // Get the scripting engine's IDispatch
-  assert(NULL == m_spdScript);
-  assert(NULL != m_spAs);
+  ZAssert(NULL == m_spdScript);
+  ZAssert(NULL != m_spAs);
   RETURN_FAILED(m_spAs->GetScriptDispatch(NULL, &m_spdScript));
 
   // Indicate success
@@ -376,7 +376,7 @@ STDMETHODIMP CPigBehaviorScript::get_BehaviorType(IPigBehaviorType** ppType)
   CLEAROUT(ppType, (IPigBehaviorType*)NULL);
 
   // Copy the behavior type object reference
-  assert(m_pType);
+  ZAssert(m_pType);
   if (m_pType)
     (*ppType = m_pType)->AddRef();
 
@@ -446,7 +446,7 @@ STDMETHODIMP CPigBehaviorScript::get_CommandLine(BSTR* pbstrCommandLine)
   if (m_pBehaviorDerived)
   {
     // Base piglets should never have a command line
-    assert(0 == m_bstrCommandLine.Length());
+    ZAssert(0 == m_bstrCommandLine.Length());
 
     // Delegate to the derived piglet
     return m_pBehaviorDerived->get_CommandLine(pbstrCommandLine);
@@ -516,14 +516,14 @@ STDMETHODIMP CPigBehaviorScript::GetItemInfo(LPCOLESTR pstrName,
   {
     IPigPtr spPig;
     RETURN_FAILED(get_Pig(&spPig));
-    assert(NULL != spPig);
+    ZAssert(NULL != spPig);
     spunkItem = spPig;
   }
   else if (0 == _wcsicmp(L"Ship", pstrName))
   {
     IPigPtr spPig;
     RETURN_FAILED(get_Pig(&spPig));
-    assert(NULL != spPig);
+    ZAssert(NULL != spPig);
     IPigShipPtr spShip;
     spPig->get_Ship(&spShip);
     spunkItem = spShip;
@@ -532,7 +532,7 @@ STDMETHODIMP CPigBehaviorScript::GetItemInfo(LPCOLESTR pstrName,
   {
     IPigBehaviorHostPtr spHost;
     RETURN_FAILED(get_Host(&spHost));
-    assert(NULL != spHost);
+    ZAssert(NULL != spHost);
     spunkItem = spHost;
   }
   else if (0 == _wcsicmp(L"BaseBehavior", pstrName))

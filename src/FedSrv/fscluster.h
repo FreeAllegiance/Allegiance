@@ -28,17 +28,17 @@ public:
 
   void                          AddFlyingPlayer(CFSPlayer* p)
   {
-      assert (p);
-      assert (m_playersFlying.find(p) == NULL);
+      ZAssert (p);
+      ZAssert (m_playersFlying.find(p) == NULL);
 
       m_playersFlying.last(p);
   }
 
   void                          RemoveFlyingPlayer(CFSPlayer* p)
   {
-      assert (p);
+      ZAssert (p);
       PlayerLink*   ppl = m_playersFlying.find(p);
-      assert (ppl);
+      ZAssert (ppl);
       delete ppl;
   }
 

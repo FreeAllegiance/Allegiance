@@ -87,19 +87,19 @@ public:
 
     const Vector& GetBackward() const
     {
-        assert (&(((Vector*)&m_r[2][0])->z) == &m_r[2][2]);
+        ZAssert (&(((Vector*)&m_r[2][0])->z) == &m_r[2][2]);
         return *((Vector*)&m_r[2][0]);
     }
 
     const Vector& GetUp() const
     {
-        assert (&(((Vector*)&m_r[1][0])->z) == &m_r[1][2]);
+        ZAssert (&(((Vector*)&m_r[1][0])->z) == &m_r[1][2]);
         return *((Vector*)&m_r[1][0]);
     }
 
     const Vector& GetRight() const
     {
-        assert (&(((Vector*)&m_r[0][0])->z) == &m_r[0][2]);
+        ZAssert (&(((Vector*)&m_r[0][0])->z) == &m_r[0][2]);
         return *((Vector*)&m_r[0][0]);
     }
 

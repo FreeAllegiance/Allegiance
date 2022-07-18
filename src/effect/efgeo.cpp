@@ -449,7 +449,7 @@ public:
                 {
                     // compute the factor that gives us the growth and opacity of the effect
                     float   fEffectScale = 1.0f - fabsf (fTimeUntilExplosion / fEffectDuration);
-                    assert (fEffectScale <= 1.0f);
+                    ZAssert (fEffectScale <= 1.0f);
                     fEffectScale *= fEffectScale;
 
                     // transformations

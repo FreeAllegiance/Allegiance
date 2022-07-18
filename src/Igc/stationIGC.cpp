@@ -41,8 +41,8 @@ HRESULT     CstationIGC::Initialize(ImissionIGC* pMission, Time now, const void*
             pstation->SetShieldFraction(dataStation->bpShield);
 
             //Certain things should not be changed by the export
-            assert (pstation->GetSide()->GetObjectID() == dataStation->sideID);
-            assert (pstation->GetCluster()->GetObjectID() == dataStation->clusterID);
+            ZAssert (pstation->GetSide()->GetObjectID() == dataStation->sideID);
+            ZAssert (pstation->GetCluster()->GetObjectID() == dataStation->clusterID);
 
             //Set the return code so the existing object is not terminated
             rc = E_ABORT;
@@ -52,7 +52,7 @@ HRESULT     CstationIGC::Initialize(ImissionIGC* pMission, Time now, const void*
             m_stationID = dataStation->stationID;
 
             SetBaseStationType(pMission->GetStationType(dataStation->stationTypeID));
-            assert (m_myStationType.GetStationType());
+            ZAssert (m_myStationType.GetStationType());
 
             SetPosition(dataStation->position);
             {
@@ -66,7 +66,7 @@ HRESULT     CstationIGC::Initialize(ImissionIGC* pMission, Time now, const void*
             SetSide(pMission->GetSide(dataStation->sideID));
 
             IclusterIGC*    cluster = pMission->GetCluster(dataStation->clusterID);
-            assert (cluster);
+            ZAssert (cluster);
             SetCluster(cluster);
 
             pMission->AddStation(this);
@@ -102,7 +102,7 @@ int         CstationIGC::Export(void* data) const
         }
         dataStation->rotation = GetRotation();
 
-        assert (GetCluster());
+        ZAssert (GetCluster());
         dataStation->clusterID = GetCluster()->GetObjectID();
         UTL::putName(dataStation->name, GetName());
         dataStation->sideID = GetSide()->GetObjectID();
@@ -136,7 +136,7 @@ DamageResult    CstationIGC::ReceiveDamage(DamageTypeID            type,
 
     float   maxArmor = (float)m_myStationType.GetMaxArmorHitPoints();
     float   dtmArmor = GetMyMission()->GetDamageConstant(type, m_myStationType.GetArmorDefenseType());
-    assert (dtmArmor >= 0.0f);
+    ZAssert (dtmArmor >= 0.0f);
 
     if (amount < 0.0f)
     {
@@ -203,7 +203,7 @@ DamageResult    CstationIGC::ReceiveDamage(DamageTypeID            type,
 
 void                CstationIGC::SetBaseStationType(IstationTypeIGC*    pst)
 {
-    assert (pst);
+    ZAssert (pst);
 
     IclusterIGC*    pclusterOld;
     Vector          positionOld;
@@ -212,7 +212,7 @@ void                CstationIGC::SetBaseStationType(IstationTypeIGC*    pst)
 
     if (m_myStationType.GetStationType())
     {
-        assert (GetSide());
+        ZAssert (GetSide());
 
         pclusterOld = GetCluster();
 
@@ -226,7 +226,7 @@ void                CstationIGC::SetBaseStationType(IstationTypeIGC*    pst)
         FreeThingSite();
     }
     else
-        assert (!GetSide());
+        ZAssert (!GetSide());
 
     m_myStationType.SetStationType(pst);
 
@@ -237,7 +237,7 @@ void                CstationIGC::SetBaseStationType(IstationTypeIGC*    pst)
                           m_myStationType.GetIconName(),
                           c_mtStatic | c_mtDamagable | c_mtHitable | c_mtSeenBySide | c_mtPredictable | c_mtScanner);
 
-        assert (SUCCEEDED(rc));
+        ZAssert (SUCCEEDED(rc));
     }
 
     SetRadius(m_myStationType.GetRadius());
@@ -392,7 +392,7 @@ bool    CstationIGC::InGarage(IshipIGC* pship, const Vector& position)
         HitTestShape        kMin;
         if (kMax > 0)
         {
-            assert (kMax != 0);
+            ZAssert (kMax != 0);
             kMin = 0;
         }
         else
@@ -407,7 +407,7 @@ bool    CstationIGC::InGarage(IshipIGC* pship, const Vector& position)
         do
         {
             int j =  m_myStationType.GetLandPlanes(i) - 1;
-            assert (j >= 0);
+            ZAssert (j >= 0);
             do
             {
                 Vector  direction = m_myStationType.GetLandDirection(i, j) * orientationStation;
@@ -442,7 +442,7 @@ bool    CstationIGC::InGarage(IshipIGC* pship, const Vector& position)
 
 void    CstationIGC::RepairAndRefuel(IshipIGC* pship) const
 {
-    assert ((pship->GetParentShip() == NULL) && (pship->GetBaseHullType() != NULL));
+    ZAssert ((pship->GetParentShip() == NULL) && (pship->GetBaseHullType() != NULL));
 
     //Fully mount all parts
     {
@@ -501,16 +501,16 @@ void    CstationIGC::RepairAndRefuel(IshipIGC* pship) const
 //Ibase
 HRESULT     MyStationType::Initialize(ImissionIGC* pMission, Time now, const void* data, int length)
 {
-    assert (false);
+    ZAssert (false);
     return E_FAIL;
 }
 void                MyStationType::Terminate(void)
 {
-    assert (false);
+    ZAssert (false);
 }
 void                MyStationType::Update(Time   now)
 {
-    assert (false);
+    ZAssert (false);
 }
 
 ObjectType          MyStationType::GetObjectType(void) const

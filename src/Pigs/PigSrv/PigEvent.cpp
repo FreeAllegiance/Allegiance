@@ -21,7 +21,7 @@ HRESULT CPigEvent::Init(CPigEventOwner* pOwner)
   GetEventID();
 
   // Save the specified owner
-  assert(pOwner);
+  ZAssert(pOwner);
   m_pOwner = pOwner;
 
   // Add ourself to our owner's collection

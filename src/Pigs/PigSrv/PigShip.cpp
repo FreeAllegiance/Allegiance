@@ -40,7 +40,7 @@ HRESULT CPigShip::FinalConstruct()
   CComObject<CPigShipDummyEvent>* pDummyEvent = NULL;
   RETURN_FAILED(pDummyEvent->CreateInstance(&pDummyEvent));
   m_spDummyEvent = pDummyEvent;
-  assert(NULL != m_spDummyEvent);
+  ZAssert(NULL != m_spDummyEvent);
 
   // Indicate success
   return S_OK;
@@ -53,8 +53,8 @@ void CPigShip::FinalRelease()
 HRESULT CPigShip::Init(CPig* pPig)
 {
   // Save the specified pig pointer
-  assert(pPig);
-  assert(!m_pPig);
+  ZAssert(pPig);
+  ZAssert(!m_pPig);
   m_pPig = pPig;
 
   // Set the IshipIGC pointer of the object
@@ -323,7 +323,7 @@ STDMETHODIMP CPigShip::BuyHull(IAGCHullType* pHullType)
 
   // Get the IGC pointer of the specified AGCHullType
   IAGCPrivatePtr spPrivate(pHullType);
-  assert(spPrivate->GetIGCVoid());
+  ZAssert(spPrivate->GetIGCVoid());
 
   // Sell all parts
   RETURN_FAILED(SellAllParts());
@@ -336,7 +336,7 @@ STDMETHODIMP CPigShip::BuyHull(IAGCHullType* pHullType)
   IstationIGC* pstation = m_pPig->BaseClient::GetShip()->GetStation();
 
   Money       budget = GetIGC()->GetValue() + m_pPig->BaseClient::GetMoney();
-  assert (pshipNew);
+  ZAssert (pshipNew);
   m_pPig->BaseClient::BuyDefaultLoadout(pshipNew, pstation, pIGC, &budget);
 
   IhullTypeIGC * baseHull = pshipNew->GetBaseHullType();
@@ -381,7 +381,7 @@ STDMETHODIMP CPigShip::BuyDefaultLoadout()
     IshipIGC*   pship = m_pPig->BaseClient::GetShip();
     Money       budget = pship->GetValue() + m_pPig->BaseClient::GetMoney();
 
-    assert (pshipNew);
+    ZAssert (pshipNew);
     m_pPig->BaseClient::BuyDefaultLoadout(pshipNew, pship->GetStation(), 
         pship->GetBaseHullType(), &budget);
 
@@ -806,7 +806,7 @@ STDMETHODIMP CPigShip::AttackShip(IAGCShip* pTargetShip, BSTR* pbstrResponse)
 
 	// Get the IGC pointer of the specified AGCHullType
 	IAGCPrivatePtr spPrivate(pModel);
-	assert(spPrivate->GetIGCVoid());
+	ZAssert(spPrivate->GetIGCVoid());
 
 	// Get the specified hull type's IGC pointer
 	ImodelIGC* pTarget = reinterpret_cast<ImodelIGC*>(spPrivate->GetIGCVoid());
@@ -836,7 +836,7 @@ STDMETHODIMP CPigShip::AttackStation(IAGCStation* pTargetStation, BSTR* pbstrRes
 
 	// Get the IGC pointer of the specified AGCHullType
 	IAGCPrivatePtr spPrivate(pModel);
-	assert(spPrivate->GetIGCVoid());
+	ZAssert(spPrivate->GetIGCVoid());
 
 	// Get the specified hull type's IGC pointer
 	ImodelIGC* pTarget = reinterpret_cast<ImodelIGC*>(spPrivate->GetIGCVoid());

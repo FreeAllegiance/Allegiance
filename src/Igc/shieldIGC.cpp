@@ -32,7 +32,7 @@ HRESULT     CshieldIGC::Initialize(ImissionIGC* pMission, Time now, const void* 
     ZRetailAssert (data && (dataSize == sizeof(DataPartIGC)));
     {
         m_partType = ((DataPartIGC*)data)->partType;
-        assert (m_partType);
+        ZAssert (m_partType);
         m_partType->AddRef();
 
         m_typeData = (const DataShieldTypeIGC*)m_partType->GetData();
@@ -58,18 +58,18 @@ void        CshieldIGC::Terminate(void)
 
 void        CshieldIGC::Update(Time now)
 {
-    assert (m_ship);
-    assert (m_mountID == 0);
+    ZAssert (m_ship);
+    ZAssert (m_mountID == 0);
 
     Time    lastUpdate = m_ship->GetLastUpdate();
-    assert (now >= lastUpdate);
+    ZAssert (now >= lastUpdate);
 
     float dt = now - lastUpdate;
 
 
     if (m_mountedFraction < 1.0f)
     {
-        //We can't assert that the shield fraction is 0 because
+        //We can't ZAssert that the shield fraction is 0 because
         //the shield fraction is directly set via updates from the server
         //and the server times for mounting/dismounting might be different
         //from this client
@@ -105,7 +105,7 @@ void        CshieldIGC::SetShip(IshipIGC*       newVal, Mount mount)
         m_ship->DeletePart(this);
         m_ship->Release();
     }
-    assert (m_mountID == c_mountNA);
+    ZAssert (m_mountID == c_mountNA);
     m_ship = newVal;
 
     if (m_ship)
@@ -120,7 +120,7 @@ void        CshieldIGC::SetShip(IshipIGC*       newVal, Mount mount)
 }
 void    CshieldIGC::SetMountID(Mount newVal)
 {
-    assert (m_ship);
+    ZAssert (m_ship);
 
     if (newVal != m_mountID)
     {
@@ -149,7 +149,7 @@ float   CshieldIGC::ApplyDamage(Time           timeCollision,
 
     if (amount > 0.0)
     {
-        assert (dtm > 0.0f);
+        ZAssert (dtm > 0.0f);
 
         //how much damage will the shield actually stop?
         float   maxStrength = GetMaxStrength();
@@ -165,7 +165,7 @@ float   CshieldIGC::ApplyDamage(Time           timeCollision,
         else
         {
             float   usefulShieldFraction = m_fraction - down;
-            assert (usefulShieldFraction >= 0.0f);
+            ZAssert (usefulShieldFraction >= 0.0f);
 
             if ((type & c_dmgidNoFlare) == 0)
                 m_ship->GetThingSite()->AddFlare(timeCollision, deltaP, 0, m_ship->GetHitTest()->GetEllipseEquation());
@@ -180,7 +180,7 @@ float   CshieldIGC::ApplyDamage(Time           timeCollision,
                 //Abnormal case ... the shield isn't strong enough: so use normal shield behavior on the
                 //portion that can be absorbed and apply the rest as leakage.
                 leakage = (absorbed - usefulShieldFraction) * maxStrength / dtm;
-                assert (leakage >= 0.0f);
+                ZAssert (leakage >= 0.0f);
 
                 m_pMission->GetIgcSite()->PlaySoundEffect(m_typeData->deactivateSound, m_ship);
                 m_pMission->GetIgcSite()->PlayNotificationSound(salShieldsOfflineSound, m_ship);

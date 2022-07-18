@@ -34,7 +34,7 @@ HRESULT     CwarpIGC::Initialize(ImissionIGC* pMission, Time now, const void* da
                                   dataWarp->warpDef.iconName,
                                   c_mtStatic | c_mtHitable | c_mtSeenBySide | c_mtPredictable);
 
-            assert (SUCCEEDED(rc));
+            ZAssert (SUCCEEDED(rc));
             {
                 SetRadius((float)m_warpDef.radius);
 
@@ -120,7 +120,7 @@ int         CwarpIGC::Export(void* data) const
         dataWarp->forward = GetOrientation().GetForward();
         dataWarp->rotation = GetRotation();
 
-        assert (GetCluster());
+        ZAssert (GetCluster());
         dataWarp->clusterID = GetCluster()->GetObjectID();
         UTL::putName(dataWarp->name, GetName());
         dataWarp->signature = GetSignature();

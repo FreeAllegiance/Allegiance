@@ -31,13 +31,13 @@ CweaponIGC::CweaponIGC(void)
 
 HRESULT     CweaponIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
 {
-    assert (pMission);
+    ZAssert (pMission);
     m_pMission = pMission;
 
     ZRetailAssert (data && (dataSize == sizeof(DataPartIGC)));
     {
         m_partType = ((DataPartIGC*)data)->partType;
-        assert (m_partType);
+        ZAssert (m_partType);
         m_partType->AddRef();
 
         m_typeData = (const DataWeaponTypeIGC*)m_partType->GetData();
@@ -86,7 +86,7 @@ void        CweaponIGC::SetShip(IshipIGC*       newVal, Mount mount)
         m_ship->DeletePart(this);
         m_ship->Release();
     }
-    assert (m_mountID == c_mountNA);
+    ZAssert (m_mountID == c_mountNA);
 
     m_ship = newVal;
 
@@ -103,7 +103,7 @@ void        CweaponIGC::SetShip(IshipIGC*       newVal, Mount mount)
 
 void    CweaponIGC::SetMountID(Mount newVal)
 {
-    assert (m_ship);
+    ZAssert (m_ship);
 
     if (newVal != m_mountID)
     {
@@ -118,7 +118,7 @@ void    CweaponIGC::SetMountID(Mount newVal)
             //Get the corresponding hardpoint: we know one exists because the
             //ship allowed the part to be mounted.
             const IhullTypeIGC* pht = m_ship->GetBaseHullType();
-            assert (pht);
+            ZAssert (pht);
 
             m_pposition = &(pht->GetWeaponPosition(newVal));
             m_porientation = &(pht->GetWeaponOrientation(newVal));
@@ -141,8 +141,8 @@ void    CweaponIGC::SetMountID(Mount newVal)
 
 void        CweaponIGC::FireWeapon(Time now)
 {
-    assert (m_mountID >= 0);
-    assert (m_ship);
+    ZAssert (m_mountID >= 0);
+    ZAssert (m_ship);
 
     bool    fFiredShot = false;
 
@@ -175,7 +175,7 @@ void        CweaponIGC::FireWeapon(Time now)
 
                 //Get the stuff that won't change between shots
                 IclusterIGC*    cluster = m_ship->GetCluster();
-                assert (cluster);
+                ZAssert (cluster);
 
                 const Orientation&  shipOrientation = m_ship->GetOrientation();
 

@@ -52,7 +52,6 @@ extern CComModule _Module;
 		_ATL_SIMPLEMAPENTRY},
 #endif 
 
-#define __MODULE__ "AGC"
 #include <TCLib.h>
 #include <TCAtl.h>
 #include <..\TCAtl\ObjectMap.h>

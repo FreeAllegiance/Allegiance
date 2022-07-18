@@ -36,14 +36,14 @@ public:
 public:
   STDMETHODIMP get_Ore(float* pfOre)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pfOre, GetIGC()->GetOre());
     return S_OK;
   }
 
   STDMETHODIMP get_Capabilities(AGCAsteroidAbilityBitMask* paabmCapabilities)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(paabmCapabilities,
       (AGCAsteroidAbilityBitMask)GetIGC()->GetCapabilities());
     return S_OK;
@@ -52,7 +52,7 @@ public:
   STDMETHODIMP get_HasCapability(AGCAsteroidAbilityBitMask aabm,
     VARIANT_BOOL* pbHasCapability)
   {
-    assert(GetIGC());
+    ZAssert(GetIGC());
     CLEAROUT(pbHasCapability,
       VARBOOL(GetIGC()->HasCapability((AsteroidAbilityBitMask)aabm)));
     return S_OK;

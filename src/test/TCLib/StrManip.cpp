@@ -285,7 +285,7 @@ int TCReplaceTextNoCase(LPCTSTR pszSource, LPCTSTR pszFind,
     // Call the non-MFC function overload
     int cchDest2 = TCReplaceText(strSource, strFind, strReplace, pszDest,
       cchDest + 1, pnOccurrences);
-    assert(cchDest2 == cchDest);
+    ZAssert(cchDest2 == cchDest);
 
     // Release the CString buffer
     strDest.ReleaseBuffer(cchDest);
@@ -320,7 +320,7 @@ int TCReplaceTextNoCase(LPCTSTR pszSource, LPCTSTR pszFind,
     // Call the non-MFC function overload
     int cchDest2 = TCReplaceTextNoCase(strSource, strFind, strReplace,
       pszDest, cchDest + 1, pnOccurrences);
-    assert(cchDest2 == cchDest);
+    ZAssert(cchDest2 == cchDest);
 
     // Release the CString buffer
     strDest.ReleaseBuffer(cchDest);

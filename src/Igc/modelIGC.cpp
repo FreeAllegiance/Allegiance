@@ -39,7 +39,7 @@ CmodelIGC::~CmodelIGC(void)
 {
     if (m_pHitTest)
     {
-        assert (!m_cluster);
+        ZAssert (!m_cluster);
         m_pHitTest->Release();
     }
 }
@@ -110,7 +110,7 @@ void   CmodelIGC::LoadCVH(const char*     pszFileName,
     FreeThingSite();
 
     m_pHitTest = HitTest::Create(pszFileName, m_model, ((attributes & c_mtStatic) != 0), htsDefault);
-    assert (m_pHitTest);
+    ZAssert (m_pHitTest);
 
     SetMyAttributes(attributes);
     IIgcSite*   pigc = m_pMission->GetIgcSite();
@@ -180,7 +180,7 @@ void    CmodelIGC::SetRender(unsigned char render)
 
 void    CmodelIGC::SetPosition(const Vector& newVal)
 {
-    assert (newVal * newVal >= 0.0f);
+    ZAssert (newVal * newVal >= 0.0f);
     m_pHitTest->SetPosition(newVal);
     m_pThingSite->SetPosition(newVal);
 }
@@ -196,7 +196,7 @@ void    CmodelIGC::SetOrientation(const Orientation& newVal)
 
 void    CmodelIGC::SetMyAttributes(ModelAttributes newVal)
 {
-    assert (m_pHitTest);
+    ZAssert (m_pHitTest);
 
     //type also defines the hitTest ID
     switch (newVal & (c_mtHitable | c_mtStatic | c_mtCastRay))
@@ -220,8 +220,8 @@ void    CmodelIGC::SetMyAttributes(ModelAttributes newVal)
         {
             //Moving object ... can hit anything with a higher ID (so we don't generate
             //object A collides with object B and B collides with A).
-            assert (this != NULL);
-            assert (this != c_htidStaticObject);
+            ZAssert (this != NULL);
+            ZAssert (this != c_htidStaticObject);
 
             m_pHitTest->SetID((HitTestID)this);
         }
@@ -236,7 +236,7 @@ void    CmodelIGC::SetMyAttributes(ModelAttributes newVal)
 
         default:
         {
-            assert (false);
+            ZAssert (false);
         }
     }
 
@@ -268,7 +268,7 @@ void    CmodelIGC::SetCluster(IclusterIGC* newVal)
 
     if (m_pThingSite)
     {
-        assert (m_pHitTest);
+        ZAssert (m_pHitTest);
         m_pThingSite->SetCluster(m_model, newVal);
     }
 }

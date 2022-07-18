@@ -74,9 +74,9 @@ Quaternion::Quaternion(const Orientation& o)
     }
 	
 	if (!(m_a >= 0.0f)) {
-		debugf("mmf Zlib quaternion.cpp:85 commented out assert(m_a >= 0.0f)");
+		debugf("mmf Zlib quaternion.cpp:85 commented out ZAssert(m_a >= 0.0f)");
 	}
-    //assert (m_a >= 0.0f);
+    //ZAssert (m_a >= 0.0f);
 }
 
 //Quaternion to orientation
@@ -94,7 +94,7 @@ Quaternion::operator Orientation(void) const
     double k2 = 2.0 * z;
 
     double l2 = s*s + x*x + y*y + z*z;
-    assert (l2 > 0.0);
+    ZAssert (l2 > 0.0);
 
     //Fudge factor for a not perfectly normalized quaternion
     //Note everything used to compute the matrix is the product of
@@ -162,7 +162,7 @@ Quaternion Slerp(const Quaternion& q1, const Quaternion& q2, float alpha)
     }
     cTheta /= sqrt(l1 * l2);
 
-    assert (cTheta >= 0.0f);
+    ZAssert (cTheta >= 0.0f);
 
     Quaternion  q;
 	if (cTheta > 0.999)

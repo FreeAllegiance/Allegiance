@@ -7,9 +7,6 @@
 #ifndef _PCH_H_
 #define _PCH_H_
 
-// __MODULE__ is used by ZAssert
-#define __MODULE__ "EngineApp"
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // Disable some warnings

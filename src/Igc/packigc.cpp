@@ -30,13 +30,13 @@ CpackIGC::~CpackIGC(void)
 
 HRESULT     CpackIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
 {
-    assert (pMission);
+    ZAssert (pMission);
     m_pMission = pMission;
 
     ZRetailAssert (data && (dataSize == sizeof(DataPartIGC)));
     {
         m_partType = ((DataPartIGC*)data)->partType;
-        assert (m_partType);
+        ZAssert (m_partType);
         m_partType->AddRef();
 
         m_typeData = (const DataPackTypeIGC*)m_partType->GetData();
@@ -72,7 +72,7 @@ void        CpackIGC::SetShip(IshipIGC*       newVal, Mount mount)
         m_pship->DeletePart(this);
         m_pship->Release();
     }
-    assert (m_mountID == c_mountNA);
+    ZAssert (m_mountID == c_mountNA);
 
     m_pship = newVal;
 
@@ -90,7 +90,7 @@ void        CpackIGC::SetShip(IshipIGC*       newVal, Mount mount)
 
 void    CpackIGC::SetMountID(Mount newVal)
 {
-    assert (m_pship);
+    ZAssert (m_pship);
 
     if (newVal != m_mountID)
     {

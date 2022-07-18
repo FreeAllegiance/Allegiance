@@ -13,8 +13,6 @@
   #define _WIN32_DCOM
 #endif
 
-#define __MODULE__ "PigAccts"
-
 #pragma warning(disable: 4786)
 
 // This next one is an annoying BoundsChecker warning

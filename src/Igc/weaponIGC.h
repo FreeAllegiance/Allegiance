@@ -102,7 +102,7 @@ class CweaponIGC : public IweaponIGC
 
         virtual void             Activate(void)
         {
-            assert (m_ship);
+            ZAssert (m_ship);
 
             if (!m_fActive)
             {
@@ -115,7 +115,7 @@ class CweaponIGC : public IweaponIGC
         }
         virtual void             Deactivate(void)
         {
-            assert (m_ship);
+            ZAssert (m_ship);
 
             if (m_fActive)
             {
@@ -192,13 +192,13 @@ class CweaponIGC : public IweaponIGC
 
             if (pship)
             {
-                assert (m_ship);
-                assert (pship->GetParentShip() == m_ship);
+                ZAssert (m_ship);
+                ZAssert (pship->GetParentShip() == m_ship);
                 pship->AddRef();
 
-                assert (m_mountID >= 0);
-                assert (pship->GetParentShip());
-                assert (pship->GetParentShip()->GetHullType()->GetHardpointData(m_mountID).bFixed == false);
+                ZAssert (m_mountID >= 0);
+                ZAssert (pship->GetParentShip());
+                ZAssert (pship->GetParentShip()->GetHullType()->GetHardpointData(m_mountID).bFixed == false);
             }
         }
 

@@ -163,7 +163,7 @@ IUnknown* CAdminSession::OnGetUnknown()
     if (GetSessionCount() == cSessions)
     {
       XSessionsIt it = std::find(s_vecSessions.begin(), s_vecSessions.end(), pSession);
-      assert(it != s_vecSessions.end());
+      ZAssert(it != s_vecSessions.end());
       s_vecSessions.erase(it);
     }
   }
@@ -227,7 +227,7 @@ STDMETHODIMP CAdminSession::get_IsEventActivated(AGCEventID event, AGCUniqueID u
   if (uniqueID == -1)
     uniqueID = AGC_Any_Objects;
 
-  assert(m_pEventSink);
+  ZAssert(m_pEventSink);
   *pVal = GetAGCGlobal()->IsRegistered(event, uniqueID,
     reinterpret_cast<IAGCEventSink*>(m_pEventSink)); 
   return S_OK;
@@ -246,7 +246,7 @@ STDMETHODIMP CAdminSession::get_Server(IAdminServer** ppAdminServer)
 {
   // Get the CAdminServer instance from the GIT
   HRESULT hr;
-  assert(g.dwServerGITCookie);
+  ZAssert(g.dwServerGITCookie);
   ZSucceeded(hr = GetAGCGlobal()->GetInterfaceFromGlobal(
     g.dwServerGITCookie, IID_IAdminServer, (void**)ppAdminServer));
   return hr;
@@ -269,7 +269,7 @@ STDMETHODIMP CAdminSession::ActivateEvents(AGCEventID event, AGCUniqueID uniqueI
   if (-1 == uniqueID)
     uniqueID = AGC_Any_Objects;
 
-  assert(m_pEventSink);
+  ZAssert(m_pEventSink);
   GetAGCGlobal()->RegisterEvent(event, uniqueID,
     reinterpret_cast<IAGCEventSink*>(m_pEventSink));
   return S_OK;
@@ -297,7 +297,7 @@ STDMETHODIMP CAdminSession::DeactivateEvents(AGCEventID event, AGCUniqueID uniqu
   if (-1 == uniqueID)
     uniqueID = AGC_Any_Objects;
 
-  assert(m_pEventSink);
+  ZAssert(m_pEventSink);
   GetAGCGlobal()->RevokeEvent(event, uniqueID,
     reinterpret_cast<IAGCEventSink*>(m_pEventSink));
   return S_OK;
@@ -313,7 +313,7 @@ STDMETHODIMP CAdminSession::DeactivateEvents(AGCEventID event, AGCUniqueID uniqu
  */
 STDMETHODIMP CAdminSession::ActivateAllEvents()
 {
-  assert(m_pEventSink);
+  ZAssert(m_pEventSink);
   GetAGCGlobal()->RegisterAllEvents(
     reinterpret_cast<IAGCEventSink*>(m_pEventSink));
   return S_OK;
@@ -330,7 +330,7 @@ STDMETHODIMP CAdminSession::ActivateAllEvents()
  */
 STDMETHODIMP CAdminSession::DeactivateAllEvents()
 {
-  assert(m_pEventSink);
+  ZAssert(m_pEventSink);
   GetAGCGlobal()->RevokeAllEvents(
     reinterpret_cast<IAGCEventSink*>(m_pEventSink));
   return S_OK;

@@ -1,4 +1,4 @@
-ADD_DEFINITIONS(-D__MODULE__="igc")
+
 
 INCLUDE_DIRECTORIES(../Inc ../zlib ../engine  ../soundengine ../guids)
 

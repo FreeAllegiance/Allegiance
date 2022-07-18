@@ -387,22 +387,22 @@ public:
             if ((!ssOld.GetUnknown()) && (ssOld.GetSectorID() != NA))
             {
                 IclusterIGC*    pcluster = m_pmission->GetCluster(ssOld.GetSectorID());
-                assert (pcluster);
+                ZAssert (pcluster);
                 if (pcluster)
                     pcluster->GetClusterSite()->MoveShip();
                 else
-                    assert(false);
+                    ZAssert(false);
             }
 
             if ((!ss.GetUnknown()) && (ss.GetSectorID() != NA))
             {
                 IclusterIGC*    pcluster = m_pmission->GetCluster(ss.GetSectorID());
-                assert (pcluster);
+                ZAssert (pcluster);
                 if (pcluster)
                     pcluster->GetClusterSite()->MoveShip();
                 else
                 {
-                    assert(false);
+                    ZAssert(false);
                     m_shipStatus.SetSectorID(NA);
                 }
             }
@@ -547,7 +547,7 @@ public:
     bool            WasObjectModelCreated() { return m_pfmMissionDef->misparms.bObjectModelCreated; }
     bool            AllowDevelopments()     { return m_pfmMissionDef->misparms.bAllowDevelopments; }
     bool            LimitedLives()          { return m_pfmMissionDef->misparms.iLives != 0x7fff; }
-    Time            StartTime()             { assert(InProgress()); return m_pfmMissionDef->misparms.timeStart; }
+    Time            StartTime()             { ZAssert(InProgress()); return m_pfmMissionDef->misparms.timeStart; }
     const MissionParams& GetMissionParams() { return m_pfmMissionDef->misparms; }
     const FMD_S_MISSIONDEF& GetMissionDef() { return *m_pfmMissionDef; }
     void            PurgePlayers();
@@ -583,24 +583,24 @@ public:
 	char			SideAllies(SideID sideID)       { return (sideID == SIDE_TEAMLOBBY) ? NA : m_pfmMissionDef->rgfAllies[sideID]; } // #ALLY
 
     // Team Operations
-	void			SetSideAllies(SideID sideID, char allies) { assert(sideID != SIDE_TEAMLOBBY); m_pfmMissionDef->rgfAllies[sideID] = allies; } // #ALLY
+	void			SetSideAllies(SideID sideID, char allies) { ZAssert(sideID != SIDE_TEAMLOBBY); m_pfmMissionDef->rgfAllies[sideID] = allies; } // #ALLY
     void            SetSideActive(SideID sideID, bool fActive) 
-                    { assert(sideID != SIDE_TEAMLOBBY); m_pfmMissionDef->rgfActive[sideID] = fActive; }
+                    { ZAssert(sideID != SIDE_TEAMLOBBY); m_pfmMissionDef->rgfActive[sideID] = fActive; }
     void            SetSideAutoAccept(SideID sideID, bool fAutoAccept) 
-                    { assert(sideID != SIDE_TEAMLOBBY); m_pfmMissionDef->rgfAutoAccept[sideID] = fAutoAccept; }
+                    { ZAssert(sideID != SIDE_TEAMLOBBY); m_pfmMissionDef->rgfAutoAccept[sideID] = fAutoAccept; }
     void            SetSideReady(SideID sideID, bool fReady) 
-                    { assert(sideID != SIDE_TEAMLOBBY); m_pfmMissionDef->rgfReady[sideID] = fReady; }
+                    { ZAssert(sideID != SIDE_TEAMLOBBY); m_pfmMissionDef->rgfReady[sideID] = fReady; }
     void            SetSideForceReady(SideID sideID, bool fForceReady) 
-                    { assert(sideID != SIDE_TEAMLOBBY); m_pfmMissionDef->rgfForceReady[sideID] = fForceReady; }
+                    { ZAssert(sideID != SIDE_TEAMLOBBY); m_pfmMissionDef->rgfForceReady[sideID] = fForceReady; }
     void            SetSideLeader(PlayerInfo* pPlayerInfo);
     /*void            SetSideCivID(SideID sideID, CivID civID) 
-                    { assert(sideID != SIDE_TEAMLOBBY); m_pfmMissionDef->rgCivID[sideID] = civID; 
+                    { ZAssert(sideID != SIDE_TEAMLOBBY); m_pfmMissionDef->rgCivID[sideID] = civID; 
                         GetSideInfo(sideID)->GetMembers().GetSink()(); m_mapSideInfo.GetSink()(); }*/
     void            SetSideName(SideID sideID, const char* szName)
-                    { assert(sideID != SIDE_TEAMLOBBY); strcpy(m_pfmMissionDef->rgszName[sideID], szName); 
+                    { ZAssert(sideID != SIDE_TEAMLOBBY); strcpy(m_pfmMissionDef->rgszName[sideID], szName); 
                         m_mapSideInfo.GetSink()(); }
     void            SetSideSquadID(SideID sideID, SquadID squadID)
-                    { assert(sideID != SIDE_TEAMLOBBY); squadIDs[sideID] = squadID; m_mapSideInfo.GetSink()(); }
+                    { ZAssert(sideID != SIDE_TEAMLOBBY); squadIDs[sideID] = squadID; m_mapSideInfo.GetSink()(); }
 
     SideInfo*       GetSideInfo(SideID sideID);
     List*           GetSideList();
@@ -993,7 +993,7 @@ public:
 
     inline IshipIGC*    GetShip() const         { return m_ship; }
 
-    inline IclusterIGC* GetCluster() const      {assert (m_ship); return m_viewCluster ? m_viewCluster : (m_ship ? m_ship->GetCluster() : NULL); }
+    inline IclusterIGC* GetCluster() const      {ZAssert (m_ship); return m_viewCluster ? m_viewCluster : (m_ship ? m_ship->GetCluster() : NULL); }
 
     IclusterIGC*        GetChatCluster() const
     {
@@ -1001,22 +1001,22 @@ public:
         if (!pcluster)
         {
             IstationIGC*    pstation = m_ship->GetStation();
-            assert (pstation);
+            ZAssert (pstation);
             if (pstation)
                 pcluster = pstation->GetCluster();
         }
 
-        assert (pcluster);
+        ZAssert (pcluster);
         return pcluster;
     }
 
     void                CreateBuildingEffect(Time now, IasteroidIGC* pasteroid, IshipIGC* pshipBuilder)
     {
-        assert (pasteroid);
-        assert (pshipBuilder);
-        assert (pshipBuilder->GetPilotType() == c_ptBuilder);
-        assert (pshipBuilder->GetBaseData());
-        assert (pshipBuilder->GetCluster());
+        ZAssert (pasteroid);
+        ZAssert (pshipBuilder);
+        ZAssert (pshipBuilder->GetPilotType() == c_ptBuilder);
+        ZAssert (pshipBuilder->GetBaseData());
+        ZAssert (pshipBuilder->GetCluster());
 
         IbuildingEffectIGC*    pbe = pshipBuilder->GetCluster()->CreateBuildingEffect(now,
                                                          pasteroid,
@@ -1117,7 +1117,7 @@ public:
         {
             if (pmodelRipcordOld != NULL)
             {
-                assert(pship->GetCluster());
+                ZAssert(pship->GetCluster());
 
                 pship->SetRipcordModel(NULL);
                 pship->SetStateBits(droneRipMaskIGC, 0);
@@ -1140,13 +1140,13 @@ public:
 
                 if (pclusterRipcord == NULL)
                 {
-                    assert(pmodelRipcordDest->GetObjectType() == OT_ship);
+                    ZAssert(pmodelRipcordDest->GetObjectType() == OT_ship);
 
                     PlayerInfo* ppi = (PlayerInfo*)(((IshipIGC*)pmodelRipcordDest)->GetPrivateData());
 
-                    assert(ppi->StatusIsCurrent());
+                    ZAssert(ppi->StatusIsCurrent());
                     pclusterRipcord = pship->GetMission()->GetCluster(ppi->LastSeenSector());
-                    assert(pclusterRipcord);
+                    ZAssert(pclusterRipcord);
                 }
 
                 if (player)
@@ -1216,7 +1216,7 @@ public:
     PlayerInfo*  FindPlayer(const char* szName);
     PlayerInfo*  FindPlayerByPrefix(const char* szNamePrefix);
     ZString      LookupRankName(RankID rank, CivID civ = -1);
-    const StaticMapInfo& GetStaticMapInfo(int index) { assert(index >= 0 && index < m_cStaticMapInfo); return m_vStaticMapInfo[index]; };
+    const StaticMapInfo& GetStaticMapInfo(int index) { ZAssert(index >= 0 && index < m_cStaticMapInfo); return m_vStaticMapInfo[index]; };
     int          GetNumStaticMaps() { return m_cStaticMapInfo; };
 
     List*        GetMissionList();
@@ -1317,7 +1317,7 @@ public:
                 amount = ppt->GetAmount(pship);
                 if (price * amount > *pbudget)
                 {
-                    assert (price > 0);
+                    ZAssert (price > 0);
                     amount = *pbudget / price;
                 }
 
@@ -1344,10 +1344,10 @@ public:
                                   IhullTypeIGC*          pht,
                                   const PartTypeListIGC* ppartsShip)
     {
-        assert (pship);
-        assert (pstation);
-        assert (*pbudget >= 0);
-        assert (pship->GetBaseHullType() == pht);
+        ZAssert (pship);
+        ZAssert (pstation);
+        ZAssert (*pbudget >= 0);
+        ZAssert (pship->GetBaseHullType() == pht);
 
         for (PartTypeLinkIGC*   ptl = ppartsShip->first();
              (ptl != NULL);
@@ -1357,7 +1357,7 @@ public:
             if (pstation->CanBuy(ppt))
             {
                 ppt = (IpartTypeIGC*)(pstation->GetSuccessor(ppt));
-                assert (pstation->CanBuy(ppt));
+                ZAssert (pstation->CanBuy(ppt));
 
                 //We can buy this part ... try mounting it somewhere
                 EquipmentType   et = ppt->GetEquipmentType();
@@ -1424,7 +1424,7 @@ public:
 	//AaronMoore 1/10
     CachedLoadoutLink*  SaveCustomLoadout(IshipIGC* pship, int num)
     {
-        assert(num >= 0 && num < MAX_CUSTOM_LOADOUTS);
+        ZAssert(num >= 0 && num < MAX_CUSTOM_LOADOUTS);
         return SaveLoadout(pship, m_customLoadouts[num]);
     }
 
@@ -1451,7 +1451,7 @@ public:
             pcll->data().pht = pht;
         }
 
-        assert (pcll);
+        ZAssert (pcll);
         loadoutList.first(pcll);
 
         {
@@ -1482,9 +1482,9 @@ public:
                             IstationIGC*    pstation,
                             Money           budget)
     {
-        assert (pshipSink->GetBaseHullType() == NULL);
-        assert (pshipSink->GetParts()->n() == 0);
-        assert (pshipSink->GetChildShips()->n() == 0);
+        ZAssert (pshipSink->GetBaseHullType() == NULL);
+        ZAssert (pshipSink->GetParts()->n() == 0);
+        ZAssert (pshipSink->GetChildShips()->n() == 0);
 
         CachedLoadoutLink*  pcll = m_loadouts.first();
         IhullTypeIGC*       phtBase = pshipSource->GetBaseHullType();
@@ -1501,7 +1501,7 @@ public:
                                            ? (IhullTypeIGC*)(pstation->GetSuccessor(pht))
                                            : pht;
 
-            assert (pht->GetPrice() == phtSuccessor->GetPrice());
+            ZAssert (pht->GetPrice() == phtSuccessor->GetPrice());
             budget -= phtSuccessor->GetPrice();
             pshipSink->SetBaseHullType(phtSuccessor);
 
@@ -1537,7 +1537,7 @@ public:
                                     {
                                         if (price * amount > budget)
                                         {
-                                            assert (price > 0);
+                                            ZAssert (price > 0);
                                             amount = budget / price;
                                         }
 
@@ -1636,8 +1636,8 @@ public:
     }
 
     void RestoreLoadoutOnCarrier(IshipIGC* pship) {
-        assert(!m_fm.IsConnected());
-        assert(pship);
+        ZAssert(!m_fm.IsConnected());
+        ZAssert(pship);
         debugf("RestoreLoadoutOnCarrier for %s", pship->GetName());
 
         // check all loadouts for an applicable one -- problematic for different tech levels!
@@ -1807,8 +1807,8 @@ public:
                            Money            budget,
                            CachedLoadoutList & loadoutList) //AaronMoore 1/10
     {
-        assert (pship->GetChildShips()->n() == 0);
-        assert (pship->GetParts()->n() == 0);
+        ZAssert (pship->GetChildShips()->n() == 0);
+        ZAssert (pship->GetParts()->n() == 0);
 
         if (pcl == NULL)
             pcl = loadoutList.first() ? &(loadoutList.first()->data()) : NULL; //AaronMoore 1/10
@@ -1818,7 +1818,7 @@ public:
             IhullTypeIGC*   pht = (IhullTypeIGC*)(pstation->GetSuccessor(pcl->pht));
 
             budget -= pht->GetPrice();
-            assert (budget >= 0);
+            ZAssert (budget >= 0);
             pship->SetBaseHullType(pht);
 
             //Clone the previous loadout
@@ -1853,14 +1853,14 @@ public:
             HullTypeLinkIGC*   phtl = m_pCoreIGC->GetHullTypes()->first();
             while (true)
             {
-                assert (phtl != NULL);
+                ZAssert (phtl != NULL);
                 IhullTypeIGC*   pht = phtl->data();
                 if ((pht->GetGroupID() >= 0) && pstation->CanBuy(pht) && (pht->GetPrice() <= budget))
                 {
                     pht = (IhullTypeIGC*)(pstation->GetSuccessor(pht));
 
                     budget -= pht->GetPrice();
-                    assert (budget >= 0);
+                    ZAssert (budget >= 0);
 
                     BuyDefaultLoadout(pship, pstation, pht, &budget);
                     break;
@@ -1876,7 +1876,7 @@ public:
     void    RestoreLoadout(IstationIGC* pstation)
     {
         IshipIGC*   pship = CreateEmptyShip(-3);
-        assert (pship);
+        ZAssert (pship);
         RestoreLoadout(m_ship, pship, pstation, m_ship->GetValue() + GetMoney());
 
         //NYI disable loadout till we get an ack
@@ -1888,7 +1888,7 @@ public:
     void    ReplaceLoadout(IstationIGC* pstation, bool bLaunch = false)
     {
         IshipIGC*   pship = CreateEmptyShip(-3);
-        assert (pship);
+        ZAssert (pship);
         ReplaceLoadout(pship, pstation, (CachedLoadout*)NULL, GetMoney(), m_customLoadouts[0]); //AaronMoore 1/10 //Imago #146
 
         BuyLoadout(pship, bLaunch);
@@ -2034,7 +2034,7 @@ public:
 
     CachedLoadoutList * ImportCachedLoadout(byte * buffer)
     {
-        assert (buffer);
+        ZAssert (buffer);
         int readCount = 0;
         int size, numLists, numShips, numParts;
         ObjectID shipID, partID;
@@ -2109,8 +2109,8 @@ public:
 
     void    BuyDefaultLoadout(IshipIGC* pship, IstationIGC* pstation, IhullTypeIGC* pht, Money* pbudget)
     {
-        assert (pship);
-        assert (pship->GetChildShips()->n() == 0);
+        ZAssert (pship);
+        ZAssert (pship->GetChildShips()->n() == 0);
 
         if (pht)
         {
@@ -2119,9 +2119,9 @@ public:
             while (ppl = pparts->first())       //Intentional =
                 ppl->data()->Terminate();
 
-            assert(pship->GetParts()->n() == 0);
+            ZAssert(pship->GetParts()->n() == 0);
 
-            assert(pht);
+            ZAssert(pht);
             pship->SetBaseHullType(pht);
         }
         else {
@@ -2136,7 +2136,7 @@ public:
             }
         }
 
-        assert (pstation);
+        ZAssert (pstation);
 
         TryToBuyParts(pship, pstation, pbudget, pht, pht->GetPreferredPartTypes());
 
@@ -2147,8 +2147,8 @@ public:
         if (pship->GetMountedPart(ET_Afterburner, 0) != NULL)
         {
             pptFuel = m_pCoreIGC->GetFuelPack();
-            assert (pptFuel);
-            assert (pptFuel->GetGroupID() >= 0);
+            ZAssert (pptFuel);
+            ZAssert (pptFuel->GetGroupID() >= 0);
 
             if (!pstation->CanBuy(pptFuel))
                 pptFuel = NULL;
@@ -2172,8 +2172,8 @@ public:
             if (bCarryAmmo)
             {
                 pptAmmo = m_pCoreIGC->GetAmmoPack();
-                assert (pptAmmo);
-                assert (pptAmmo->GetGroupID() >= 0);
+                ZAssert (pptAmmo);
+                ZAssert (pptAmmo->GetGroupID() >= 0);
 
                 if (!pstation->CanBuy(pptAmmo))
                     pptAmmo = NULL;
@@ -2186,8 +2186,8 @@ public:
         if (pship->GetMountedPart(ET_Magazine, 0) != NULL)
         {
             pptMissile = pship->GetMountedPart(ET_Magazine, 0)->GetPartType();
-            assert(pptMissile);
-            assert(pptMissile->GetGroupID() >= 0);
+            ZAssert(pptMissile);
+            ZAssert(pptMissile->GetGroupID() >= 0);
 
             if (!pstation->CanBuy(pptMissile))
                 pptMissile = NULL;
@@ -2199,8 +2199,8 @@ public:
         if (pship->GetMountedPart(ET_Dispenser, 0) != NULL)
         {
             pptDispenser = pship->GetMountedPart(ET_Dispenser, 0)->GetPartType();
-            assert(pptDispenser);
-            assert(pptDispenser->GetGroupID() >= 0);
+            ZAssert(pptDispenser);
+            ZAssert(pptDispenser->GetGroupID() >= 0);
 
             if (!pstation->CanBuy(pptDispenser) ||
                 pptDispenser->GetPartMask() == c_pbm2) //ignore int pulse probes
@@ -2347,11 +2347,11 @@ public:
 */
     virtual void    DropPart(IpartIGC*  ppart)
     {
-        assert (ppart);
-        assert (m_ship->GetStation() == NULL);
-        assert (m_ship->GetCluster());
+        ZAssert (ppart);
+        ZAssert (m_ship->GetStation() == NULL);
+        ZAssert (m_ship->GetCluster());
 
-        assert (ppart->GetShip() == m_ship);
+        ZAssert (ppart->GetShip() == m_ship);
 
         if (m_fm.IsConnected())
         {
@@ -2370,9 +2370,9 @@ public:
 
     virtual void    SwapPart(IpartIGC*  ppart, Mount mountNew)
     {
-        assert (ppart);
-        assert (mountNew >= -c_maxCargo);
-        assert (ppart->GetShip() == m_ship);
+        ZAssert (ppart);
+        ZAssert (mountNew >= -c_maxCargo);
+        ZAssert (ppart->GetShip() == m_ship);
 
         EquipmentType   et = ppart->GetEquipmentType();
         Mount           mountOld = ppart->GetMountID();
@@ -2455,7 +2455,7 @@ public:
     };
     const ZString& GetLockDownReason()
     {
-        assert(IsLockedDown());
+        ZAssert(IsLockedDown());
         return m_strLockDownReason;
     };
 

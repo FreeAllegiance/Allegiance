@@ -111,7 +111,7 @@ HRESULT CAGCEvent::AddToDictionaryV(long cArgTriplets, va_list argptr)
   {
     // Get the argument name
     LPCSTR pszArgName = va_arg(argptr, LPCSTR);
-    assert(!IsBadStringPtrA(pszArgName, UINT(-1)));
+    ZAssert(!IsBadStringPtrA(pszArgName, UINT(-1)));
 
     // Get the argument variant type and value
     CComVariant var;
@@ -194,7 +194,7 @@ HRESULT CAGCEvent::AddToDictionaryV(long cArgTriplets, va_list argptr)
           break;
         }
         debugf("CAGCEvent::Init(): Specified VARTYPE %hu (0x%04X) is unsupported\n", vt, vt);
-        assert(false);
+        ZAssert(false);
     }
 
     // Add the named value to the property map
@@ -322,7 +322,7 @@ HRESULT CAGCEvent::WriteVariantToStream(IStream* pStm, CComVariant& var)
 
 HRESULT CAGCEvent::ReadStringFromStream(IStream* pStm, BSTR* pbstr, BYTE bIndicator)
 {
-  assert(!*pbstr);
+  ZAssert(!*pbstr);
 
   // Read the size indicator if zero was specified
   if (!bIndicator)
@@ -874,7 +874,7 @@ STDMETHODIMP CAGCEvent::SaveToString(BSTR* pbstr)
   ULARGE_INTEGER uli;
   LARGE_INTEGER liMove = {0, 0};
   ZSucceeded(spStm->Seek(liMove, STREAM_SEEK_CUR, &uli));
-  assert(0 == uli.HighPart);
+  ZAssert(0 == uli.HighPart);
   DWORD cbData = uli.LowPart;
 
   // Get the HGLOBAL from the stream

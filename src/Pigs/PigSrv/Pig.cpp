@@ -200,7 +200,7 @@ HRESULT CPig::FinalConstruct()
   BaseClient::GetClientEventSource()->AddSink(m_ClientEventSink);
 
   // Create the AGC wrapper for the ship object (IGC ship may be NULL)
-  assert(!m_pShip);
+  ZAssert(!m_pShip);
   CComObject<CPigShip>* pShip = NULL;
   ZSucceeded(pShip->CreateInstance(&pShip));
   (m_pShip = pShip)->AddRef();
@@ -276,7 +276,7 @@ HRESULT CPig::Create(CPigBehaviorScriptType* pType, BSTR bstrCommandLine,
   if (WAIT_OBJECT_0 == dwWait)
   {
     // The thread exited, a failure must have occurred
-    assert(FAILED(tp.m_hr));
+    ZAssert(FAILED(tp.m_hr));
 
     // Get the IErrorInfo, if any
     if (NULL != tp.m_spstmError)
@@ -306,7 +306,7 @@ HRESULT CPig::Create(CPigBehaviorScriptType* pType, BSTR bstrCommandLine,
   }
 
   // This should never happen
-  assert(false);
+  ZAssert(false);
   return E_UNEXPECTED;
 }
 
@@ -364,7 +364,7 @@ SoundID CPig::GetOink()
 void CPig::ReceiveSendAndUpdate()
 {
   // Check for recursion (a bad thing)
-  assert(!m_bInReceive);
+  ZAssert(!m_bInReceive);
   m_bInReceive = true;
 
   // Get the current time and last update times
@@ -417,7 +417,7 @@ bool CPig::WaitInTimerLoop(HANDLE hObject, DWORD dwMilliseconds)
   if (hObject)
     m_Handles.push_back(hObject);
   else
-    assert(INFINITE != dwMilliseconds);
+    ZAssert(INFINITE != dwMilliseconds);
   const DWORD cHandles = m_Handles.size();
 
   // If this is the main timer loop, initialize the behavior
@@ -460,7 +460,7 @@ bool CPig::WaitInTimerLoop(HANDLE hObject, DWORD dwMilliseconds)
         // Remove the specified handle from the end of the collection
         if (hObject)
         {
-          assert(cHandles == m_Handles.size());
+          ZAssert(cHandles == m_Handles.size());
           m_Handles.pop_back();
         }
         return true;
@@ -503,7 +503,7 @@ bool CPig::WaitInTimerLoop(HANDLE hObject, DWORD dwMilliseconds)
         // Remove the specified handle from the end of the collection
         if (hObject)
         {
-          assert(cHandles == m_Handles.size());
+          ZAssert(cHandles == m_Handles.size());
           m_Handles.pop_back();
           return true;
         }
@@ -516,7 +516,7 @@ bool CPig::WaitInTimerLoop(HANDLE hObject, DWORD dwMilliseconds)
     else                                           // An object was signaled
     {
       // Remove the specified handle from the end of the collection
-      assert(cHandles == m_Handles.size());
+      ZAssert(cHandles == m_Handles.size());
       m_Handles.pop_back();
 
       // Determine if the specified handle was signaled and return
@@ -551,7 +551,7 @@ HRESULT CPig::Stack_get__NewEnum(IUnknown** ppunkEnum)
   typedef CComObject<CComEnum<IEnumVARIANT, &IID_IEnumVARIANT, VARIANT,
     _Copy<VARIANT> > > CEnum;
   CEnum* pEnum = new CEnum;
-  assert(NULL != pEnum);
+  ZAssert(NULL != pEnum);
 
   // Get the number of items in the collection
   XLock lock(this);
@@ -604,7 +604,7 @@ HRESULT CPig::Stack_Push(BSTR bstrType, BSTR bstrCommandLine,
   CComObject<CPigBehaviorScript>* pBehaviorNew = NULL;
   RETURN_FAILED(pBehaviorNew->CreateInstance(&pBehaviorNew));
   IPigBehaviorPtr spBehaviorNew(pBehaviorNew->GetUnknown());
-  assert(NULL != spBehaviorNew);
+  ZAssert(NULL != spBehaviorNew);
 
   // Initialize the behavior object
   RETURN_FAILED(pBehaviorNew->Init(pType, this, bstrCommandLine));
@@ -779,7 +779,7 @@ HRESULT CPig::ThreadCreatePig(CPig::XThreadParams* ptp, CComObject<CPig>*& pPig)
   IPigPtr spPig(pPig);
   if (FAILED(ptp->m_hr))
     return ptp->m_hr;
-  assert(NULL != spPig);
+  ZAssert(NULL != spPig);
 
   // Set the pig's account and cache the account name
   pPig->m_spAccount = spAccount;
@@ -791,7 +791,7 @@ HRESULT CPig::ThreadCreatePig(CPig::XThreadParams* ptp, CComObject<CPig>*& pPig)
   CComObject<CPigBehaviorScript>* pBehavior = NULL;
   RETURN_FAILED(pBehavior->CreateInstance(&pBehavior));
   IPigBehaviorPtr spBehavior(pBehavior->GetUnknown());
-  assert(NULL != spBehavior);
+  ZAssert(NULL != spBehavior);
 
   // Initialize the behavior
   RETURN_FAILED(pBehavior->Init(ptp->m_pType, pPig, ptp->m_bstrCommandLine));
@@ -867,7 +867,7 @@ bool CPig::HandleThreadMessage(const MSG* pMsg, HANDLE hObject)
     case wm_TerminateBehavior:
     {
       CPigBehaviorScript* pBehavior = (CPigBehaviorScript*)(pMsg->wParam);
-      assert(pBehavior);
+      ZAssert(pBehavior);
       pBehavior->Term();
       pBehavior->Release();
       break;
@@ -928,7 +928,7 @@ bool CPig::HandleThreadMessage(const MSG* pMsg, HANDLE hObject)
           CPig_OnStateTransition(Launching)
           CPig_OnStateTransition(Flying)
           CPig_OnStateTransition(Terminated)
-          default: assert(false);
+          default: ZAssert(false);
         }
       }
       break;
@@ -946,7 +946,7 @@ bool CPig::HandleThreadMessage(const MSG* pMsg, HANDLE hObject)
     {
       // Parse the message parameters
       IPigBehavior* pBehavior = reinterpret_cast<IPigBehavior*>(pMsg->wParam);
-      assert(pBehavior);
+      ZAssert(pBehavior);
 			pBehavior->OnMissionStarted(); //imago 10/14
       pBehavior->Release();
       break;
@@ -956,7 +956,7 @@ bool CPig::HandleThreadMessage(const MSG* pMsg, HANDLE hObject)
       // Parse the message parameters
       XChatCommand* pChat = reinterpret_cast<XChatCommand*>(pMsg->wParam);
       XChatCommand& chat = *pChat;
-      std::auto_ptr<XChatCommand> apChat(pChat);
+      std::unique_ptr<XChatCommand> apChat(pChat);
 
       // Break out the first token
       ZString strMessage(chat.m_strText);
@@ -975,7 +975,7 @@ bool CPig::HandleThreadMessage(const MSG* pMsg, HANDLE hObject)
       for (int i = 0; i < TCLookupTable_SIZE(ChatCommands); ++i)
       {
         ChatCommands_ValueType& entry = ChatCommands[i];
-        assert(entry.m_key.m_szVerb && '\0' != *entry.m_key.m_szVerb);
+        ZAssert(entry.m_key.m_szVerb && '\0' != *entry.m_key.m_szVerb);
         ZString strVerbCompare(entry.m_key.m_szVerb, true);
 
         // Compute the minimum number of significant characters
@@ -1035,7 +1035,7 @@ bool CPig::HandleThreadMessage(const MSG* pMsg, HANDLE hObject)
         if (SUCCEEDED(Stack_Push(bstrType, bstrCommandLine, &spBehavior)))
         {
           // Get the type of the created behavior
-          assert(NULL != spBehavior);
+          ZAssert(NULL != spBehavior);
           IPigBehaviorTypePtr spType;
           _SVERIFYE(spBehavior->get_BehaviorType(&spType));
 
@@ -1074,7 +1074,7 @@ bool CPig::HandleThreadMessage(const MSG* pMsg, HANDLE hObject)
     {
       // Parse the message parameters
       XSectorChange* pParams = reinterpret_cast<XSectorChange*>(pMsg->wParam);
-      std::auto_ptr<XSectorChange> apParams(pParams);
+      std::unique_ptr<XSectorChange> apParams(pParams);
 
       // Notify the active behavior
       HRESULT hr = pParams->m_spBehavior->OnSectorChange(
@@ -1086,7 +1086,7 @@ bool CPig::HandleThreadMessage(const MSG* pMsg, HANDLE hObject)
     {
       // Parse the message parameters
       XShipDamaged* pParams = reinterpret_cast<XShipDamaged*>(pMsg->wParam);
-      std::auto_ptr<XShipDamaged> apParams(pParams);
+      std::unique_ptr<XShipDamaged> apParams(pParams);
 
       // Notify the active behavior
       HRESULT hr = pParams->m_spBehavior->OnShipDamaged(pParams->m_spShip,
@@ -1099,7 +1099,7 @@ bool CPig::HandleThreadMessage(const MSG* pMsg, HANDLE hObject)
     {
       // Parse the message parameters
       XShipKilled* pParams = reinterpret_cast<XShipKilled*>(pMsg->wParam);
-      std::auto_ptr<XShipKilled> apParams(pParams);
+      std::unique_ptr<XShipKilled> apParams(pParams);
       
       // Notify the active behavior
 			HRESULT hr = pParams->m_spBehavior->OnShipKilled(pParams->m_spShip, 
@@ -1111,7 +1111,7 @@ bool CPig::HandleThreadMessage(const MSG* pMsg, HANDLE hObject)
     {
       // Parse the message parameters
       XAlephHit* pParams = reinterpret_cast<XAlephHit*>(pMsg->wParam);
-      std::auto_ptr<XAlephHit> apParams(pParams);
+      std::unique_ptr<XAlephHit> apParams(pParams);
       
       // Notify the active behavior
       HRESULT hr = pParams->m_spBehavior->OnAlephHit(pParams->m_spAleph);
@@ -1212,7 +1212,7 @@ HRESULT CPig::ProcessAppMessage(FEDMESSAGE* pfm)
         ServerHeavyShipUpdate&  hsu = *(phsu++);
 
         //Never get updates for yourself
-        assert (hsu.shipID != BaseClient::GetShip()->GetObjectID());
+        ZAssert (hsu.shipID != BaseClient::GetShip()->GetObjectID());
 
         IshipIGC*   pship = BaseClient::GetCore()->GetShip(hsu.shipID);
         if (pship && (pship->GetParentShip() == NULL) && pship->GetCluster())
@@ -1568,15 +1568,15 @@ void CPig::CreateDummyShip()
   BaseClient::CreateDummyShip();
 
   // Set the IGC pointer of the AGC ship wrapper object
-  assert(m_pShip);
+  ZAssert(m_pShip);
   m_pShip->SetIGC(BaseClient::GetShip());
 }
 
 void CPig::DestroyDummyShip()
 {
   // Remove our previous ship from the IGC/AGC map
-  assert(BaseClient::GetShip());
-  assert(m_pShip);
+  ZAssert(BaseClient::GetShip());
+  ZAssert(m_pShip);
   m_pShip->SetIGC(NULL);
 
   // Perform default processing
@@ -1625,7 +1625,7 @@ void CPig::OnPreCreate(FedMessaging * pthis)
 void CPig::OnLogonAck(bool fValidated, bool bRetry, LPCSTR szFailureReason)
 {
   XLock lock(this);
-  assert(PigState_CreatingMission == GetCurrentState()
+  ZAssert(PigState_CreatingMission == GetCurrentState()
 		|| PigState_JoiningMission == GetCurrentState()
 		|| PigState_WaitingForMission == GetCurrentState()); //imago 10/14
   if (!fValidated)
@@ -1638,7 +1638,7 @@ void CPig::OnLogonAck(bool fValidated, bool bRetry, LPCSTR szFailureReason)
 void CPig::OnLogonLobbyAck(bool fValidated, bool bRetry, LPCSTR szFailureReason)
 {
   XLock lock(this);
-  assert(PigState_LoggingOn == GetCurrentState());
+  ZAssert(PigState_LoggingOn == GetCurrentState());
   m_bLogonAck = fValidated;
   m_evtLogonLobbyAck.Set(szFailureReason);
 }
@@ -1682,7 +1682,7 @@ void CPig::OnAddPlayer(MissionInfo* pMissionDef, SideID sideID,
           break;
         case PigState_CreatingMission: pEvt = &m_evtCreatingMission; break;
       }
-      assert(pEvt);
+      ZAssert(pEvt);
       pEvt->Set();
     }
   }
@@ -1822,11 +1822,11 @@ void CPig::ChangeStation(IshipIGC* pship, IstationIGC* pstationOld,
       BaseClient::SetAutoPilot(false);
 
       // Get the source ship and base hull type
-      assert (pstationOld);
+      ZAssert (pstationOld);
       IshipIGC* pshipSource = BaseClient::GetShip()->GetSourceShip();
-      assert (pshipSource);
+      ZAssert (pshipSource);
       const IhullTypeIGC* pht = pshipSource->GetBaseHullType();
-      assert (pht);
+      ZAssert (pht);
 
       //If no weapon is selected, try to select a weapon
 			if (pshipSource && pshipSource->GetObjectID() == BaseClient::GetShip()->GetObjectID()) //imago 10/14
@@ -2083,7 +2083,7 @@ void CPig::OnAutoUpdateSystemTermination(bool bErrorOccurred, bool bRestarting)
   else
   {
     // This should have been set to false in OnError
-    assert(!m_bLogonAck);
+    ZAssert(!m_bLogonAck);
   }
 
   // Signal the event
@@ -2200,7 +2200,7 @@ STDMETHODIMP CPig::get_Money(AGCMoney* pnMoney)
 STDMETHODIMP CPig::Logon()
 {
   _TRACE1("CPig::Logon(): GetCurrentThreadId = %u\n", GetCurrentThreadId());
-  assert(NULL != m_spAccount);
+  ZAssert(NULL != m_spAccount);
 
   // Validate the current state
   if (PigState_NonExistant != GetCurrentState())
@@ -2286,7 +2286,7 @@ STDMETHODIMP CPig::Logon()
     DWORD cbZoneTicket;
     DWORD cbName = sizeof(ci.szName);
     ZSucceeded(pzac->GetTicket(&ci.pZoneTicket, &cbZoneTicket, ci.szName, &cbName));
-    assert(cbName <= sizeof(ci.szName));
+    ZAssert(cbName <= sizeof(ci.szName));
     ci.cbZoneTicket = cbZoneTicket;
   }
 #endif
@@ -2530,7 +2530,7 @@ STDMETHODIMP CPig::JoinMission(BSTR bstrMissionOrPlayer)
     int nIndex = rand() % vecAvailableMissions.size();
     pMissionInfo = vecAvailableMissions[nIndex];
   }
-  assert(pMissionInfo);
+  ZAssert(pMissionInfo);
 
   // Initialize the acknowledgement event status
   m_evtJoiningMission.Reset();
@@ -2547,7 +2547,7 @@ STDMETHODIMP CPig::JoinMission(BSTR bstrMissionOrPlayer)
 
   // Note: First acknowledement represents having joined the team lobby side.
   //       So, joining the lobby team of a game does not ever fail.
-  assert(m_bTeamAccepted);
+  ZAssert(m_bTeamAccepted);
 
   // Initialize the acknowledgement event status
   m_evtJoiningMission2.Reset();
@@ -2824,7 +2824,7 @@ STDMETHODIMP CPig::Launch()
   }
   if (!m_serverOffsetValidF)
   {
-    assert(!"m_serverOffsetValidF never got set!");
+    ZAssert(!"m_serverOffsetValidF never got set!");
     return E_UNEXPECTED;
   }
 

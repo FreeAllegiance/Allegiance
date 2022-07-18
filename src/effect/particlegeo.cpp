@@ -318,7 +318,7 @@ class ParticleGeoImpl : public ParticleGeo
         {
             // compute how much of the buffer we are going to use
             int iParticleBufferSize = PARTICLE_BUFFER_SIZE * ThingGeo::GetShowSmoke ();
-            assert (iParticleBufferSize <= TOTAL_PARTICLE_BUFFER_SIZE);
+            ZAssert (iParticleBufferSize <= TOTAL_PARTICLE_BUFFER_SIZE);
             
             // increment to the next buffer entry
             m_iIndexCurrentParticle = (m_iIndexCurrentParticle + 1) % iParticleBufferSize;

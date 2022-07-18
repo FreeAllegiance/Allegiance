@@ -211,7 +211,7 @@ STDMETHODIMP CPigSession::get_ProcessID(DWORD* pdwProcessID)
 
 STDMETHODIMP CPigSession::ActivateAllEvents()
 {
-  assert(m_pEventSink); // TODO: Create in lazy fashion
+  ZAssert(m_pEventSink); // TODO: Create in lazy fashion
   GetAGCGlobal()->RegisterAllEvents(
     reinterpret_cast<IAGCEventSink*>(m_pEventSink->GetGITCookie()));
   return S_OK;
@@ -219,7 +219,7 @@ STDMETHODIMP CPigSession::ActivateAllEvents()
 
 STDMETHODIMP CPigSession::DeactivateAllEvents()
 {
-  assert(m_pEventSink); // TODO: Create in lazy fashion
+  ZAssert(m_pEventSink); // TODO: Create in lazy fashion
   GetAGCGlobal()->RevokeAllEvents(
     reinterpret_cast<IAGCEventSink*>(m_pEventSink->GetGITCookie()));
   return S_OK;

@@ -59,8 +59,8 @@ class CwarpIGC : public TmodelIGC<IwarpIGC>
                    (plink->data().timeExplosion <= now))
             {
                 ImissileTypeIGC*    pmt = plink->data().pmt;
-                assert (pmt);
-                assert (pmt->GetObjectType() == OT_missileType);
+                ZAssert (pmt);
+                ZAssert (pmt->GetObjectType() == OT_missileType);
 
                 DamageTypeID    dtid = pmt->GetDamageType();
                 float           p    = pmt->GetPower();

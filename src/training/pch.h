@@ -7,8 +7,6 @@
 #ifndef _PCH_H_
 #define _PCH_H_
 
-#define __MODULE__ "Training"
-
 // BT - STEAM
 #include "steam_api.h"
 
@@ -58,7 +56,7 @@
 #include "Zone.h"
 //#include "zauth.h" KG removed
 #include "igc.h"
-#include "ui.h"
+#include "UiEngine.h"
 
 #include "trekinput.h"
 #include "resource.h"

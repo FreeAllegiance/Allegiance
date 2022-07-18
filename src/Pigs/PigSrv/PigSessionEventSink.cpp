@@ -31,8 +31,8 @@ CPigSessionEventSink::CPigSessionEventSink() :
 void CPigSessionEventSink::Init(CPigSession* pSession)
 {
   // Save the owning session object
-  assert(pSession);
-  assert(!m_pSession);
+  ZAssert(pSession);
+  ZAssert(!m_pSession);
   m_pSession = pSession;
 
   // Add ourself to the GIT
@@ -42,7 +42,7 @@ void CPigSessionEventSink::Init(CPigSession* pSession)
 
 void CPigSessionEventSink::Term()
 {
-  assert(m_dwGITCookie);
+  ZAssert(m_dwGITCookie);
 
   // Revoke all events for which we are registered
   GetAGCGlobal()->RevokeAllEvents(
@@ -59,7 +59,7 @@ void CPigSessionEventSink::Term()
 
 STDMETHODIMP CPigSessionEventSink::OnEventTriggered(IAGCEvent* pEvent)
 {
-  assert(m_pSession);
+  ZAssert(m_pSession);
   #define CPigSessionEventSink_TRACE_OnEventTriggered
   #ifdef CPigSessionEventSink_TRACE_OnEventTriggered
     _TRACE_BEGIN

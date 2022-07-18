@@ -232,7 +232,7 @@ public:                                                                     \
       }                                                                     \
     }                                                                       \
     _TRACE1("Invalid inside property page map ID (%i)\n", iTable);          \
-    assert(FALSE);                                                        \
+    ZAssert(FALSE);                                                        \
     if (ppTable)                                                            \
       *ppTable = NULL;                                                      \
     return 0;                                                               \

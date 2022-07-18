@@ -79,7 +79,7 @@ CshipIGC::CshipIGC(void)
 void    CshipIGC::ReInitialize(DataShipIGC * dataShip, Time now)
 {
     ImissionIGC * pmission = GetMyMission();
-    assert (IMPLIES(!pmission, dataShip->sideID == NA));
+    ZAssert (IMPLIES(!pmission, dataShip->sideID == NA));
 
     //Set texture mask & decals (before setting the hull type since that
     //actually applies the texture)
@@ -107,15 +107,15 @@ void    CshipIGC::ReInitialize(DataShipIGC * dataShip, Time now)
     else if (m_pilotType == c_ptBuilder)
     {
         m_pbaseData = pmission->GetStationType(dataShip->baseObjectID);
-        assert (m_pbaseData);
+        ZAssert (m_pbaseData);
     }
     else if (m_pilotType == c_ptLayer)
     {
         m_pbaseData = pmission->GetExpendableType(dataShip->baseObjectID);
-        assert (m_pbaseData);
+        ZAssert (m_pbaseData);
     }
     else
-        assert (false);
+        ZAssert (false);
 
     m_turnRates[c_axisYaw] = m_turnRates[c_axisPitch] = m_turnRates[c_axisRoll] =
                              m_controls.jsValues[c_axisYaw] = m_controls.jsValues[c_axisPitch] = m_controls.jsValues[c_axisRoll] = 0.0f;
@@ -138,14 +138,14 @@ void    CshipIGC::ReInitialize(DataShipIGC * dataShip, Time now)
     }
     else
     {
-        assert (pside);
+        ZAssert (pside);
 
         SetBaseHullType(GetMyMission()->GetHullType(dataShip->hullID));
-        assert (m_myHullType.GetData());
+        ZAssert (m_myHullType.GetData());
 
         {
             ThingSite* pThingSite = GetThingSite();
-            assert (pThingSite);
+            ZAssert (pThingSite);
             pThingSite->SetTrailColor(pside->GetColor());
         }
 
@@ -158,7 +158,7 @@ void    CshipIGC::ReInitialize(DataShipIGC * dataShip, Time now)
             }
         }
 
-        assert (GetMass() > 0.0f);  //No massless ships
+        ZAssert (GetMass() > 0.0f);  //No massless ships
     }
 }
 
@@ -208,8 +208,8 @@ void        CshipIGC::Terminate(void)
 
     if ((m_pilotType == c_ptBuilder) && ((m_stateM & buildingMaskIGC) != 0))
     {
-        assert (m_commandIDs[c_cmdPlan] != NULL);
-        assert (m_commandTargets[c_cmdPlan]->GetObjectType() == OT_asteroid);
+        ZAssert (m_commandIDs[c_cmdPlan] != NULL);
+        ZAssert (m_commandTargets[c_cmdPlan]->GetObjectType() == OT_asteroid);
         IbuildingEffectIGC* pbe = ((IasteroidIGC*)(ImodelIGC*)m_commandTargets[c_cmdPlan])->GetBuildingEffect();
 
         if (pbe)
@@ -263,7 +263,7 @@ void        CshipIGC::Terminate(void)
 
 void    CshipIGC::Update(Time now)
 {
-    assert (GetCluster() != NULL);
+    ZAssert (GetCluster() != NULL);
 
     //Don't bother doing updates for times before the ship is created.
     Time    lastUpdate = GetMyLastUpdate();
@@ -319,7 +319,7 @@ void    CshipIGC::Update(Time now)
                 IweaponIGC*   w = m_mountedWeapons[(i + selectedWeapon) % maxFixedWeapons];
                 if (w)
                 {
-                    assert (!w->GetGunner());
+                    ZAssert (!w->GetGunner());
                     w->Update(now);
                 }
             }
@@ -388,11 +388,11 @@ void    CshipIGC::Update(Time now)
                 float   d = dt *
                             (r2 - oob) /
                             (50.0f * oob);      //50 == arbitrary constant to adjust damage received
-                assert (d >= 0.0f);
+                ZAssert (d >= 0.0f);
 
                 float   oldFraction = m_fraction;
                 m_fraction -= d;
-                assert (m_fraction <= 1.0f);
+                ZAssert (m_fraction <= 1.0f);
 
                 if (m_fraction > 0.0f)
                     GetMyMission()->GetIgcSite()->DamageShipEvent(now, this, NULL, c_dmgidCollision, d, d, position, position * 2.0f);
@@ -402,7 +402,7 @@ void    CshipIGC::Update(Time now)
                     if (oldFraction > 0.0f)  //Only send the death message once.
                         GetMyMission()->GetIgcSite()->KillShipEvent(now, this, NULL, d, position, position * 2.0f);
                 }
-                assert (m_fraction >= 0.0f);
+                ZAssert (m_fraction >= 0.0f);
             }
 
             if (m_pilotType >= c_ptPlayer)
@@ -461,7 +461,7 @@ int         CshipIGC::Export(void* data) const
             {
                 IpartIGC*   part = l->data();
 
-                assert (part->GetPartType());
+                ZAssert (part->GetPartType());
                 pd->partID = part->GetPartType()->GetObjectID();
                 pd->mountID = part->GetMountID();
 
@@ -594,8 +594,8 @@ static void Separate(const CollisionEntry&  entry,
         //Get the vector from direction to its projection onto -delta
         direction -= delta * (2.0f * (direction * delta) / delta.LengthSquared());
 
-        assert (direction.Length() >= 0.98f);
-        assert (direction.Length() <= 1.02f);
+        ZAssert (direction.Length() >= 0.98f);
+        ZAssert (direction.Length() <= 1.02f);
         */
     }
     while (++attempt < c_maxAttempts);
@@ -668,7 +668,7 @@ void    CshipIGC::HandleCollision(Time                   timeCollision,
 
                     AddRef();
 
-                    assert (normal * velocity1 <= 0.0f);
+                    ZAssert (normal * velocity1 <= 0.0f);
 
                     const float cElasticity = 1.5;      //Coefficient of elasticity (super-duper balls)
                     //Determine the new velocity as some combination of a
@@ -691,7 +691,7 @@ void    CshipIGC::HandleCollision(Time                   timeCollision,
                     Vector  newVelocity1 = vElastic1 * cElasticity;
 
                     //verify the velocities are valid
-                    assert (newVelocity1 * newVelocity1 >= 0.0f);
+                    ZAssert (newVelocity1 * newVelocity1 >= 0.0f);
 
                     //velocity1 is a reference, so calculate the damage before setting the velocity
                     float   damage1 = (velocity1 - newVelocity1).LengthSquared() * c_impactDamageCoefficient;
@@ -778,12 +778,12 @@ void    CshipIGC::HandleCollision(Time                   timeCollision,
 			                Vector  newVelocity1 = vElastic1 * cElasticity;
 
 			                //verify the velocities are valid
-							// mmf replaced assert with log msg
+							// mmf replaced ZAssert with log msg
 					        if (!(newVelocity1 * newVelocity1 >= 0.0f)) {
-							  debugf("mmf Igc shipIGC.cpp ~835 newVelocity1^2 debug build would have called assert and exited, commented out and set to zero for now\n");
+							  debugf("mmf Igc shipIGC.cpp ~835 newVelocity1^2 debug build would have called ZAssert and exited, commented out and set to zero for now\n");
 					          newVelocity1.x = 0.0f; newVelocity1.y = 0.0f; newVelocity1.z = 0.0f;
 							}
-			                // assert (newVelocity1 * newVelocity1 >= 0.0f);
+			                // ZAssert (newVelocity1 * newVelocity1 >= 0.0f);
 
 			                //velocity1 is a reference, so calculate the damage before setting the velocity
 			                float   damage2 = (velocity1 - newVelocity1).LengthSquared() * c_impactDamageCoefficient;
@@ -811,7 +811,7 @@ void    CshipIGC::HandleCollision(Time                   timeCollision,
 			                                            (type == OT_buildingEffect) ? ((IbuildingEffectIGC*)pModel)->GetAsteroid() : pModel);
 			                    }
 
-			                    assert (pModel->GetAttributes() & c_mtDamagable);
+			                    ZAssert (pModel->GetAttributes() & c_mtDamagable);
 			                    if (hp1 > 0.0f)
 			                    {
 			                        dr2 = ((IdamageIGC*)pModel)->ReceiveDamage(c_dmgidCollision,
@@ -874,7 +874,7 @@ void    CshipIGC::HandleCollision(Time                   timeCollision,
             //Ignore any collisions between a drilling builder and an asteroid (could get here by fallthrough from OT_station)
             if (((m_stateM & drillingMaskIGC) != 0) && (type != OT_station))
             {
-                assert (m_pilotType == c_ptBuilder);
+                ZAssert (m_pilotType == c_ptBuilder);
                 if (type == OT_asteroid)
                 {
                     //We're a builder and we've collided with an asteroid
@@ -948,12 +948,12 @@ void    CshipIGC::HandleCollision(Time                   timeCollision,
                 Vector  newVelocity1 = vElastic1 * cElasticity;
 
                 //verify the velocities are valid
-				// mmf replaced assert with log msg
+				// mmf replaced ZAssert with log msg
 		        if (!(newVelocity1 * newVelocity1 >= 0.0f)) {
-				  debugf("mmf Igc shipIGC.cpp ~835 newVelocity1^2 debug build would have called assert and exited, commented out and set to zero for now\n");
+				  debugf("mmf Igc shipIGC.cpp ~835 newVelocity1^2 debug build would have called ZAssert and exited, commented out and set to zero for now\n");
 		          newVelocity1.x = 0.0f; newVelocity1.y = 0.0f; newVelocity1.z = 0.0f;
 				}
-                // assert (newVelocity1 * newVelocity1 >= 0.0f);
+                // ZAssert (newVelocity1 * newVelocity1 >= 0.0f);
 
                 //velocity1 is a reference, so calculate the damage before setting the velocity
                 float   damage2 = (velocity1 - newVelocity1).LengthSquared() * c_impactDamageCoefficient;
@@ -981,7 +981,7 @@ void    CshipIGC::HandleCollision(Time                   timeCollision,
                                             (type == OT_buildingEffect) ? ((IbuildingEffectIGC*)pModel)->GetAsteroid() : pModel);
                     }
 
-                    assert (pModel->GetAttributes() & c_mtDamagable);
+                    ZAssert (pModel->GetAttributes() & c_mtDamagable);
                     if (hp1 > 0.0f)
                     {
                         dr2 = ((IdamageIGC*)pModel)->ReceiveDamage(c_dmgidCollision,
@@ -1093,10 +1093,10 @@ void    CshipIGC::HandleCollision(Time                   timeCollision,
             const float cElasticity = 0.75;      //Coefficient of elasticity
             {
                 float   mass1 = GetMass();
-                assert (mass1 > 0.0f);
+                ZAssert (mass1 > 0.0f);
 
                 float   mass2 = pModel->GetMass();
-                assert (mass2 > 0.0f);
+                ZAssert (mass2 > 0.0f);
 
                 //Inelastic collision: both objects have the same final velocity & momentum is conserved
                 vInelastic = velocity1 * (mass1 / (mass1 + mass2)) +
@@ -1124,18 +1124,18 @@ void    CshipIGC::HandleCollision(Time                   timeCollision,
             Vector  newVelocity2 = vInelastic * (1.0f - cElasticity) + vElastic2 * cElasticity;
 
             //verify the velocities are valid
-			// mmf replaced assert with log msg
+			// mmf replaced ZAssert with log msg
 		    if (!(newVelocity1 * newVelocity1 >= 0.0f)) {
-		      debugf("mmf Igc shipIGC.cpp ~1008 newVelocity1^2 debug build would have called assert and exited, commented out and set to zero for now\n");
+		      debugf("mmf Igc shipIGC.cpp ~1008 newVelocity1^2 debug build would have called ZAssert and exited, commented out and set to zero for now\n");
 		      newVelocity1.x = 0.0f; newVelocity1.y = 0.0f; newVelocity1.z = 0.0f;
 			}
-		    // mmf replaced assert with log msg
+		    // mmf replaced ZAssert with log msg
 		    if (!(newVelocity2 * newVelocity2 >= 0.0f)) {
-			  debugf("mmf Igc shipIGC.cpp ~1013 newVelocity2^2 debug build would have called assert and exited, commented out and set to zero for now\n");
+			  debugf("mmf Igc shipIGC.cpp ~1013 newVelocity2^2 debug build would have called ZAssert and exited, commented out and set to zero for now\n");
 		      newVelocity2.x = 0.0f; newVelocity2.y = 0.0f; newVelocity2.z = 0.0f;
 			}
-            //assert (newVelocity1 * newVelocity1 >= 0.0f);
-            //assert (newVelocity2 * newVelocity2 >= 0.0f);
+            //ZAssert (newVelocity1 * newVelocity1 >= 0.0f);
+            //ZAssert (newVelocity2 * newVelocity2 >= 0.0f);
 
             //velocity1 & 2 are references, so calculate the damge before setting the new velocity
             float   base1 = (velocity1 - newVelocity1).LengthSquared() * c_impactDamageCoefficient;
@@ -1204,7 +1204,7 @@ void    CshipIGC::HandleCollision(Time                   timeCollision,
         default:
         {
             //This should not happen
-            assert (false);
+            ZAssert (false);
         }
     }
 }
@@ -1230,7 +1230,7 @@ DamageResult CshipIGC::ReceiveDamage(DamageTypeID            type,
 
     float   maxHP = m_myHullType.GetHitPoints();
     float   dtmArmor = GetMyMission()->GetDamageConstant(type, m_myHullType.GetDefenseType());
-    assert (dtmArmor >= 0.0f);
+    ZAssert (dtmArmor >= 0.0f);
 
     float leakage;
     if (amount < 0.0f)
@@ -1333,20 +1333,20 @@ DamageResult CshipIGC::ReceiveDamage(DamageTypeID            type,
 #endif
     }
     //Imago 6/10
-    //assert (m_fraction >= 0.0f);
-    //assert (m_fraction <= 1.0f);
+    //ZAssert (m_fraction >= 0.0f);
+    //ZAssert (m_fraction <= 1.0f);
 
     return dr;
 }
 
 void CshipIGC::SetBaseHullType(IhullTypeIGC* newVal)
 {
-    assert (m_pshipParent == NULL);
+    ZAssert (m_pshipParent == NULL);
 
     SetStateM(0);
     ResetDamageTrack();
 
-    assert (newVal);
+    ZAssert (newVal);
     IsideIGC*   pside = GetSide();
 
     //Move the ship to the null cluster before changing the hull type
@@ -1364,7 +1364,7 @@ void CshipIGC::SetBaseHullType(IhullTypeIGC* newVal)
         GetThingSite()->SetCluster(this, NULL);
     }
 
-    assert (m_parts.n() == 0);
+    ZAssert (m_parts.n() == 0);
 
     //Move any gunless gunners to observer status
     if (m_shipsChildren.first())
@@ -1449,12 +1449,12 @@ void CshipIGC::SetBaseHullType(IhullTypeIGC* newVal)
 
 void    CshipIGC::AddPart(IpartIGC* part)
 {
-    assert (part);
+    ZAssert (part);
 
     ZVerify(m_parts.last(part));
     part->AddRef();
 
-    assert (part->GetPartType());
+    ZAssert (part->GetPartType());
     SetMass(GetMass() + part->GetMass());
 
     GetMyMission()->GetIgcSite()->LoadoutChangeEvent(this, part, c_lcAdded);
@@ -1464,12 +1464,12 @@ void    CshipIGC::AddPart(IpartIGC* part)
            GetName(), GetObjectID());
 */
 
-    assert (GetMass() > 0.0f);  //No massless ships
+    ZAssert (GetMass() > 0.0f);  //No massless ships
 }
 
 void    CshipIGC::DeletePart(IpartIGC* part)
 {
-    assert (part);
+    ZAssert (part);
     part->SetMountID(c_mountNA);
 
     int iPart = 0;      //NYI debug
@@ -1500,7 +1500,7 @@ void    CshipIGC::DeletePart(IpartIGC* part)
     GetMyMission()->GetIgcSite()->LoadoutChangeEvent(this, part, c_lcRemoved);
     part->Release();
 
-    assert (GetMass() > 0.0f);  //No massless ships
+    ZAssert (GetMass() > 0.0f);  //No massless ships
 }
 
 IpartIGC* const*   CshipIGC::PartLocation(EquipmentType  type,
@@ -1509,7 +1509,7 @@ IpartIGC* const*   CshipIGC::PartLocation(EquipmentType  type,
     IpartIGC* const*  partLocation;
     if (mountID < 0)
     {
-        assert (mountID >= -c_maxCargo);
+        ZAssert (mountID >= -c_maxCargo);
 
         partLocation = &m_mountedCargos[mountID + c_maxCargo];
     }
@@ -1519,21 +1519,21 @@ IpartIGC* const*   CshipIGC::PartLocation(EquipmentType  type,
         {
             case ET_Weapon:
             {
-                assert (mountID < c_maxMountedWeapons);
+                ZAssert (mountID < c_maxMountedWeapons);
                 partLocation = (IpartIGC* const*)&(m_mountedWeapons[mountID]);
             }
             break;
 
             default:
             {
-                assert (type < ET_MAX);
-                assert (mountID == 0);
+                ZAssert (type < ET_MAX);
+                ZAssert (mountID == 0);
                 partLocation = &m_mountedOthers[type];
             }
             break;
         }
 
-        assert (partLocation);
+        ZAssert (partLocation);
     }
     return partLocation;
 }
@@ -1548,11 +1548,11 @@ void    CshipIGC::MountPart(IpartIGC*    part,
                             Mount        mountNew,
                             Mount*       pmountOld)
 {
-    assert (part);
+    ZAssert (part);
 
     //part must be among in the ship's part list (though this is not verified).
     IpartTypeIGC*   partType = part->GetPartType();
-    assert (partType);
+    ZAssert (partType);
 
     part->SetMountedFraction(0.0f);
 
@@ -1564,16 +1564,16 @@ void    CshipIGC::MountPart(IpartIGC*    part,
     {
         IpartIGC**      plOld = (IpartIGC**)PartLocation(et, *pmountOld);
 
-        assert (*plOld == part);
+        ZAssert (*plOld == part);
         *plOld = NULL;
     }
 
     if (mountNew >= -c_maxCargo)
     {
-        assert (m_myHullType.CanMount(partType, mountNew));
+        ZAssert (m_myHullType.CanMount(partType, mountNew));
 
         IpartIGC**  plNew = (IpartIGC**)PartLocation(et, mountNew);
-        assert (*plNew == NULL);
+        ZAssert (*plNew == NULL);
         *plNew = part;
     }
 
@@ -1639,9 +1639,9 @@ void    CshipIGC::ExecuteTurretMove(Time          timeStart,
     pOrientation->Pitch(-m_turnRates[c_axisPitch] * dT);
     pOrientation->Roll(  m_turnRates[c_axisRoll] * dT);
 
-    assert (m_pshipParent);
-    assert (m_turretID >= m_pshipParent->GetHullType()->GetMaxFixedWeapons());
-    assert (m_turretID < m_pshipParent->GetHullType()->GetMaxWeapons());
+    ZAssert (m_pshipParent);
+    ZAssert (m_turretID >= m_pshipParent->GetHullType()->GetMaxFixedWeapons());
+    ZAssert (m_turretID < m_pshipParent->GetHullType()->GetMaxWeapons());
 
     /*
     const IhullTypeIGC*     pht = m_pshipParent->GetHullType();
@@ -1666,12 +1666,12 @@ void    CshipIGC::ExecuteTurretMove(Time          timeStart,
             m_turnRates[c_axisYaw] = m_turnRates[c_axisPitch] = 0.0f;
 
             float   l2 = backward.x * backward.x + backward.y * backward.y;
-            assert (l2 != 0.0f);
+            ZAssert (l2 != 0.0f);
             float   k = -float(sqrt((1.0f - hd.minDot * hd.minDot) / l2));
 
             Vector  v(k * backward.x, k * backward.y, -hd.minDot);
-            assert (v*v >= 0.98f);
-            assert (v*v <= 1.02f);
+            ZAssert (v*v >= 0.98f);
+            ZAssert (v*v <= 1.02f);
 
             v = v * orientationTurret;
 
@@ -1743,11 +1743,11 @@ void    CshipIGC::PreplotShipMove(Time          timeStop)
                     {
                         if (m_commandIDs[c_cmdAccepted] == c_cidBuild)
                         {
-                            assert ((m_pilotType == c_ptBuilder) || (m_pilotType == c_ptLayer));
+                            ZAssert ((m_pilotType == c_ptBuilder) || (m_pilotType == c_ptLayer));
 
                             //Builders do not run if they are ordered to build & closer to their target than the station
                             //but a station or a target in another cluster is always considered infinitely far away
-                            assert (m_commandTargets[c_cmdAccepted]);
+                            ZAssert (m_commandTargets[c_cmdAccepted]);
                             ImodelIGC*  pmodel = FindTarget(this, c_ttFriendly | c_ttStation | c_ttNearest,
                                                             NULL, NULL, NULL, NULL, c_sabmRepair);
                             if (pmodel)
@@ -1772,14 +1772,14 @@ void    CshipIGC::PreplotShipMove(Time          timeStop)
                 }
                 else
                 {
-                    // assert (m_pilotType == c_ptMiner);
+                    // ZAssert (m_pilotType == c_ptMiner);
 					// we are expecting a miner at this stage
-					// mmf replaced assert with log msg to track down what is triggering it
+					// mmf replaced ZAssert with log msg to track down what is triggering it
 					//     recent logs (07/04/2007) show that the pilot type is 1 and it is a Recon or Rescue ship
 					//     so don't log if it is a 1 now
 					if ( ! (m_pilotType == c_ptMiner) ) {
 						if (m_pilotType != 1) {
-						  debugf ("mmf shipIGC.cpp assert (m_pilotType == c_ptMiner), m_pilotType = %d\n",
+						  debugf ("mmf shipIGC.cpp ZAssert (m_pilotType == c_ptMiner), m_pilotType = %d\n",
 					              m_pilotType);
 						}
 					}
@@ -1916,7 +1916,7 @@ void    CshipIGC::PreplotShipMove(Time          timeStop)
                     else
                         SetCommand(c_cmdPlan, NULL, c_cidNone);
 					// debugf("mmf %-20s stoped running\n", GetName());
-                    assert (m_bRunningAway == false);   //Set by SetCommand
+                    ZAssert (m_bRunningAway == false);   //Set by SetCommand
                     m_timeRanAway = timeStop;
                 }
             }
@@ -1941,8 +1941,8 @@ void    CshipIGC::PreplotShipMove(Time          timeStop)
                 {
                     if (m_commandIDs[c_cmdPlan] == c_cidMine)
                     {
-                        assert (m_commandTargets[c_cmdPlan]->GetObjectType() == OT_asteroid);
-                        assert (((IasteroidIGC*)(ImodelIGC*)m_commandTargets[c_cmdPlan])->HasCapability(m_abmOrders));
+                        ZAssert (m_commandTargets[c_cmdPlan]->GetObjectType() == OT_asteroid);
+                        ZAssert (((IasteroidIGC*)(ImodelIGC*)m_commandTargets[c_cmdPlan])->HasCapability(m_abmOrders));
 
                         //Are we close enough to mine our target asteroid?
                         Vector  dp = m_commandTargets[c_cmdPlan]->GetPosition() - positionMe;
@@ -2120,7 +2120,7 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
                     }
                 }
 
-                assert (nFriendly > 0);
+                ZAssert (nFriendly > 0);
 
                 if (nEnemy == 0)
                 {
@@ -2263,8 +2263,8 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
             }
             else if ((m_stateM & drillingMaskIGC) != 0)
             {
-                assert (m_commandTargets[c_cmdPlan]);
-                assert (m_commandTargets[c_cmdPlan]->GetObjectType() == OT_asteroid);
+                ZAssert (m_commandTargets[c_cmdPlan]);
+                ZAssert (m_commandTargets[c_cmdPlan]->GetObjectType() == OT_asteroid);
 
                 //Are we still in a position to drill?
                 Vector  dp = GetPosition() - m_commandTargets[c_cmdPlan]->GetPosition();
@@ -2288,7 +2288,7 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
                 else
                 {
                     //Off-track ... clear the masks and get back into position
-                    assert (m_commandTargets[c_cmdPlan]->GetObjectType() == OT_asteroid);
+                    ZAssert (m_commandTargets[c_cmdPlan]->GetObjectType() == OT_asteroid);
 
                     SetStateM(0);
                 }
@@ -2801,8 +2801,8 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
                 {
                     if (m_pilotType == c_ptBuilder)
                     {
-                        assert (m_commandTargets[c_cmdPlan]->GetObjectType() == OT_asteroid);
-                        assert (((IasteroidIGC*)((ImodelIGC*)m_commandTargets[c_cmdPlan]))->HasCapability(m_abmOrders));
+                        ZAssert (m_commandTargets[c_cmdPlan]->GetObjectType() == OT_asteroid);
+                        ZAssert (((IasteroidIGC*)((ImodelIGC*)m_commandTargets[c_cmdPlan]))->HasCapability(m_abmOrders));
 
                         SetStateM(drillingMaskIGC);
 
@@ -2813,8 +2813,8 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
                     }
                     else
                     {
-                        assert (m_pilotType == c_ptLayer);
-                        assert (m_commandTargets[c_cmdPlan]->GetObjectType() == OT_buoy);
+                        ZAssert (m_pilotType == c_ptLayer);
+                        ZAssert (m_commandTargets[c_cmdPlan]->GetObjectType() == OT_buoy);
 
                         GetMyMission()->GetIgcSite()->LayExpendable(timeStart, (IexpendableTypeIGC*)(IbaseIGC*)m_pbaseData, this);
                     }
@@ -2848,13 +2848,13 @@ void    CshipIGC::ExecuteShipMove(Time          timeStart,
     {
         //Adjust ship's heading, velocity, etc. based on its control settings.
         float   dT = timeStop - timeStart;
-        assert (dT > 0.0f);
+        ZAssert (dT > 0.0f);
 
         float   thrust = m_myHullType.GetThrust();
         float   thrust2 = thrust * thrust;
 
         //Conversion factor ... Newtons to deltaV
-        assert (GetMass() > 0.0f);
+        ZAssert (GetMass() > 0.0f);
         float   thrustToVelocity = dT / GetMass();
 
 		//No maneuvering if ripcording
@@ -2911,7 +2911,7 @@ void    CshipIGC::ExecuteShipMove(Time          timeStart,
         float   speed = pVelocity->Length();
         float   maxSpeed = m_myHullType.GetMaxSpeed();
 
-        assert (maxSpeed > 0.0f);
+        ZAssert (maxSpeed > 0.0f);
 
         //What would our velocity be if we simply let drag slow us down
         Vector  drag;
@@ -3031,15 +3031,15 @@ void    CshipIGC::ExecuteShipMove(Time          timeStart,
 		}
 
 		// mmf other velocity checks were added for debugging, this one was definitely being tripped
-		// replaced assert with log msg
+		// replaced ZAssert with log msg
 		if (!(*pVelocity * *pVelocity >= 0.0f)) {
 			debugf("mmf pVelocity^2 < 0.0 ship = %s\n",GetName());
 			debugf("pVelocity x=%g y=%g z=%g\n",(*pVelocity).x,(*pVelocity).y,(*pVelocity).z);
-			debugf("Igc shipIGC.cpp debug build would have called assert and exited, commented out for now\n");
+			debugf("Igc shipIGC.cpp debug build would have called ZAssert and exited, commented out for now\n");
 			// cause an exception for debugging
 			// (*(int*)0) = 0;
 		}
-        // assert (*pVelocity * *pVelocity >= 0.0f); // mmf commented out
+        // ZAssert (*pVelocity * *pVelocity >= 0.0f); // mmf commented out
     }
 }
 
@@ -3211,7 +3211,7 @@ ShipUpdateStatus    CshipIGC::ProcessShipUpdate(const ServerSingleShipUpdate& sh
     GetF;
 
     Vector      position = shipupdate.position;
-    assert (LegalPosition(shipupdate.position));
+    ZAssert (LegalPosition(shipupdate.position));
 
     float   deltaT = GetMyLastUpdate() - shipupdate.time;
     if ((deltaT < 1.5f) && (deltaT > -1.5f))
@@ -3233,7 +3233,7 @@ ShipUpdateStatus    CshipIGC::ProcessShipUpdate(const ServerSingleShipUpdate& sh
 
 void    CshipIGC::CalculateShip(Time timeUpdate, float    deltaT, Vector* pPosition, Vector* pVelocity, Orientation* pOrientation)
 {
-    //assert (pPosition->LengthSquared() != 0.0f);
+    //ZAssert (pPosition->LengthSquared() != 0.0f);
 
     //Calculate what the ship's position, orientation & velocity would be at the time of the ship's last update.
     if (deltaT <= 0.0f)
@@ -3418,7 +3418,7 @@ void CshipIGC::SetSide(IsideIGC* pside)  //override the default SetSide method
             m_station->Release();
             m_station = NULL;
         }
-        assert (m_station == NULL);
+        ZAssert (m_station == NULL);
 
         if (psideOld)
             psideOld->DeleteShip(this);
@@ -3477,12 +3477,12 @@ void CshipIGC::SetMission(ImissionIGC* pMission)
             }
         }
 
-        assert (!GetMyMission());
-        assert (GetStation() == NULL);
-        assert (GetCluster() == NULL);
-        assert (GetSide() == NULL);
+        ZAssert (!GetMyMission());
+        ZAssert (GetStation() == NULL);
+        ZAssert (GetCluster() == NULL);
+        ZAssert (GetSide() == NULL);
 
-        assert (m_myHullType.GetHullType() == NULL);
+        ZAssert (m_myHullType.GetHullType() == NULL);
 
         if (pMission)
         {
@@ -3498,7 +3498,7 @@ void CshipIGC::SetMission(ImissionIGC* pMission)
 
 void    CshipIGC::Promote(void)
 {
-    assert (m_pshipParent);
+    ZAssert (m_pshipParent);
 
     IshipIGC*   pshipParent = m_pshipParent;
     Mount       turretid    = m_turretID;
@@ -3560,7 +3560,7 @@ void    CshipIGC::Promote(void)
         IshieldIGC* pshield = (IshieldIGC*)(pshipParent->GetMountedPart(ET_Shield, 0));
         if (pshield)
         {
-            assert (m_mountedOthers[ET_Shield]);
+            ZAssert (m_mountedOthers[ET_Shield]);
             ((IshieldIGC*)(m_mountedOthers[ET_Shield]))->SetFraction(pshield->GetFraction());
         }
     }
@@ -3600,8 +3600,8 @@ void    CshipIGC::SetParentShip(IshipIGC*   pshipParent)
                     psl->data()->SetParentShip(NULL);
                 }
             }
-            assert (m_shipsChildren.n() == 0);
-            assert (pshipParent->GetParentShip() == NULL);
+            ZAssert (m_shipsChildren.n() == 0);
+            ZAssert (pshipParent->GetParentShip() == NULL);
 
             if (pshipOldParent == NULL)
             {
@@ -3631,7 +3631,7 @@ void    CshipIGC::SetParentShip(IshipIGC*   pshipParent)
                     pcluster->GetClusterSite()->DeleteScanner(GetSide()->GetObjectID(), this);
                 }
 
-                assert (m_turretID == NA);
+                ZAssert (m_turretID == NA);
             }
             else
             {
@@ -3662,7 +3662,7 @@ void    CshipIGC::SetParentShip(IshipIGC*   pshipParent)
         {
             debugf("NULL\n");
 
-            assert (pshipOldParent != NULL);
+            ZAssert (pshipOldParent != NULL);
 
             if (m_turretID != NA)
             {
@@ -3787,7 +3787,7 @@ ImodelIGC*    CshipIGC::FindRipcordModel(IclusterIGC*   pcluster)
 
     while (true)
     {
-        assert (pcluster);
+        ZAssert (pcluster);
 
 	ImodelIGC*  pmodelRipcord = NULL;
 	if (pmodelGoal) //TheRock 13-12-2009 Allow ripcording to a probe or ship when a teleport is in the same sector.
@@ -4050,7 +4050,7 @@ void    CshipIGC::ResetWaypoint(void)
                         const Orientation&  orientation = m_commandTargets[c_cmdPlan]->GetOrientation();
 
                         IexpendableTypeIGC* pet = (IexpendableTypeIGC*)(IbaseIGC*)m_pbaseData;
-                        assert (pet);
+                        ZAssert (pet);
                         if (pet->GetObjectType() == OT_mineType)
                         {
                             DataMineTypeIGC*   pdmt = (DataMineTypeIGC*)(pet->GetData());
@@ -4061,7 +4061,7 @@ void    CshipIGC::ResetWaypoint(void)
                         }
                         else
                         {
-                            assert (pet->GetObjectType() == OT_probeType);
+                            ZAssert (pet->GetObjectType() == OT_probeType);
                             IprobeTypeIGC*  ppt = (IprobeTypeIGC*)pet;
 
                             float   rMajor;
@@ -4092,7 +4092,7 @@ void    CshipIGC::ResetWaypoint(void)
                         db.type = c_buoyWaypoint;
 
                         IbuoyIGC*   b = (IbuoyIGC*)(GetMission()->CreateObject(GetMyLastUpdate(), OT_buoy, &db, sizeof(db)));
-                        assert (b);
+                        ZAssert (b);
 
                         //Something of a hack here: change the plan to build at the newly created buoy
                         //without changing the accepted order
@@ -4294,7 +4294,7 @@ bool    CshipIGC::bShouldUseRipcord(IclusterIGC*  pcluster)
 
     while (true)
     {
-        assert (pcluster);
+        ZAssert (pcluster);
         ImodelIGC*  pmodelRipcord = FindTarget(this, c_ttFriendly | c_ttStation,
                                                NULL, pcluster, NULL, NULL,
                                                c_sabmRipcord);
@@ -4359,7 +4359,7 @@ bool    CshipIGC::bShouldUseRipcord(IclusterIGC*  pcluster)
             pwlTwoAway = pwl;
         }
 
-        assert (pwlOneAway->n() > 0);
+        ZAssert (pwlOneAway->n() > 0);
         WarpLinkIGC*    plink = pwlOneAway->first();
         IwarpIGC*       pwarp = plink->data();
 
@@ -4383,7 +4383,7 @@ bool    CshipIGC::InGarage(IshipIGC* pship, float   tCollision) const
         HitTestShape        kMin;
         if (kMax > 0)
         {
-            assert (kMax != 0);
+            ZAssert (kMax != 0);
             kMin = 0;
         }
         else
@@ -4399,7 +4399,7 @@ bool    CshipIGC::InGarage(IshipIGC* pship, float   tCollision) const
         do
         {
             int j =  m_myHullType.GetHullType()->GetLandPlanes(i) - 1;
-            assert (j >= 0);
+            ZAssert (j >= 0);
             do
             {
                 Vector  direction = m_myHullType.GetHullType()->GetLandDirection(i, j) * orientationStation;
@@ -4435,16 +4435,16 @@ bool    CshipIGC::InGarage(IshipIGC* pship, float   tCollision) const
 //Ibase
 HRESULT     MyHullType::Initialize(ImissionIGC* pMission, Time now, const void* data, int length)
 {
-    assert (false);
+    ZAssert (false);
     return E_FAIL;
 }
 void                MyHullType::Terminate(void)
 {
-    assert (false);
+    ZAssert (false);
 }
 void                MyHullType::Update(Time   now)
 {
-    assert (false);
+    ZAssert (false);
 }
 
 ObjectType          MyHullType::GetObjectType(void) const
@@ -4521,14 +4521,14 @@ float                MyHullType::GetMaxSpeed(void) const
 }
 float                MyHullType::GetMaxTurnRate(Axis    axis) const
 {
-    assert (axis >= 0);
-    assert (axis <= 3);
+    ZAssert (axis >= 0);
+    ZAssert (axis <= 3);
     return m_pHullData->maxTurnRates[axis] * m_pship->GetSide()->GetGlobalAttributeSet().GetAttribute(c_gaTurnRate);
 }
 float                MyHullType::GetTurnTorque(Axis    axis) const
 {
-    assert (axis >= 0);
-    assert (axis <= 3);
+    ZAssert (axis >= 0);
+    ZAssert (axis <= 3);
     return m_pHullData->turnTorques[axis]  * m_pship->GetSide()->GetGlobalAttributeSet().GetAttribute(c_gaTurnTorque);
 }
 float                MyHullType::GetThrust(void) const
@@ -4567,12 +4567,12 @@ DefenseTypeID        MyHullType::GetDefenseType(void) const
 }
 PartMask              MyHullType::GetPartMask(EquipmentType et, Mount mountID) const
 {
-    assert (m_pHullType);
+    ZAssert (m_pHullType);
     return m_pHullType->GetPartMask(et, mountID);
 }
 short                 MyHullType::GetCapacity(EquipmentType et) const
 {
-    assert (m_pHullType);
+    ZAssert (m_pHullType);
     return m_pHullType->GetCapacity(et);
 }
 Mount                MyHullType::GetMaxWeapons(void) const
@@ -4585,7 +4585,7 @@ Mount                MyHullType::GetMaxFixedWeapons(void) const
 }
 const HardpointData& MyHullType::GetHardpointData(Mount hardpointID) const
 {
-    assert ((hardpointID >= 0) && (hardpointID < m_pHullData->maxWeapons));
+    ZAssert ((hardpointID >= 0) && (hardpointID < m_pHullData->maxWeapons));
     return ((HardpointData*)(((char*)m_pHullData) + m_pHullData->hardpointOffset))[hardpointID];
 }
 
@@ -4613,25 +4613,25 @@ bool                 MyHullType::HasCapability(HullAbilityBitMask habm) const
 }
 const Vector&        MyHullType::GetCockpit(void) const
 {
-    assert (m_pHullType);
+    ZAssert (m_pHullType);
     return m_pHullType->GetCockpit();
 }
 
 // TurkeyXIII 11/09 #94
 const Vector&        MyHullType::GetChaffPosition(void) const
 {
-    assert (m_pHullType);
+    ZAssert (m_pHullType);
     return m_pHullType->GetChaffPosition();
 }
 
 const Vector&        MyHullType::GetWeaponPosition(Mount mount) const
 {
-    assert (m_pHullType);
+    ZAssert (m_pHullType);
     return m_pHullType->GetWeaponPosition(mount);
 }
 const Orientation&        MyHullType::GetWeaponOrientation(Mount mount) const
 {
-    assert (m_pHullType);
+    ZAssert (m_pHullType);
     return m_pHullType->GetWeaponOrientation(mount);
 }
 
@@ -4666,13 +4666,13 @@ short   MyHullType::GetMaxAmmo(void) const
 }
 bool                 MyHullType::CanMount(IpartTypeIGC* ppt, Mount  mountID) const
 {
-    assert (m_pHullType);
+    ZAssert (m_pHullType);
     return m_pHullType->CanMount(ppt, mountID);
 }
 
 IhullTypeIGC*        MyHullType::GetSuccessorHullType(void) const
 {
-    assert (m_pHullType);
+    ZAssert (m_pHullType);
     return m_pHullType->GetSuccessorHullType();
 }
 

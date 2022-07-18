@@ -10,7 +10,7 @@ const Color c_rgColorNeutral(0.5f, 0.5f, 0.5f);
 
 static void GetClusterOwners(IclusterIGC*    pcluster, SideID& sideOwner, SideID& sideSecondaryOwner)
 {
-    assert (c_cSidesMax == 6);
+    ZAssert (c_cSidesMax == 6);
     int nStations[c_cSidesMax] = {0, 0, 0, 0, 0, 0};
 
     // count the stations by side
@@ -516,7 +516,7 @@ public:
 
             if (m_pClusterMouseOver)
             {
-                assert(m_pClusterMouseOver == m_pClusterSel);
+                ZAssert(m_pClusterMouseOver == m_pClusterSel);
 
                 // draw the cluster warning
                 AssetMask am = m_pClusterMouseOver->GetClusterSite()->GetClusterAssetMask();
@@ -710,7 +710,7 @@ public:
 
             if (bVisible)
             {
-                GetWindow()->GetTimer()->AddSink(m_peventSinkTimer, 0.2f);
+                GetEngineWindow()->GetTimer()->AddSink(m_peventSinkTimer, 0.2f);
 
                 SelectCluster(trekClient.GetChatCluster());
                 m_pSectorInfoPane->SelectMouseOverCluster(NULL);
@@ -721,7 +721,7 @@ public:
                 ZAssert(m_pSectorInfoPane);
                 m_pSectorInfoPane->SelectCluster(NULL);
                 m_pSectorInfoPane->SelectMouseOverCluster(NULL);
-                GetWindow()->GetTimer()->RemoveSink(m_peventSinkTimer);
+                GetEngineWindow()->GetTimer()->RemoveSink(m_peventSinkTimer);
             }
         }
     }
@@ -961,7 +961,7 @@ public:
 				if (trekClient.MyMission()->GetMissionParams().bAllowAlliedViz && pwarpDestination == NULL) {  //ally VISIBILITY 7/11/09 imago
 					continue;
 				} else {
-					assert (pwarpDestination != NULL);
+					ZAssert (pwarpDestination != NULL);
 				}
 
                 if (pWarp->GetObjectID() > pwarpDestination->GetObjectID())
@@ -1557,7 +1557,7 @@ private:
                             db.type = c_buoyCluster;
 
                             IbuoyIGC*   b = (IbuoyIGC*)(trekClient.m_pCoreIGC->CreateObject(trekClient.m_now, OT_buoy, &db, sizeof(db)));
-                            assert (b);
+                            ZAssert (b);
                             b->AddConsumer();
 
                             trekClient.SendChat(trekClient.GetShip(),

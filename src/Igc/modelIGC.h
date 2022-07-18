@@ -42,22 +42,22 @@ class   CmodelIGC
 
         void                SetMyMission(ImissionIGC* pMission)
         {
-            assert (m_side == NULL);
-            assert (m_cluster == NULL);
+            ZAssert (m_side == NULL);
+            ZAssert (m_cluster == NULL);
 
             m_pMission = pMission;
         }
 
         void                MakeStatic(void)
         {
-            assert ((m_attributes & c_mtStatic) == 0);
-            assert ((m_attributes & c_mtHitable) == 0);
-            assert ((m_attributes & c_mtCastRay) != 0);
+            ZAssert ((m_attributes & c_mtStatic) == 0);
+            ZAssert ((m_attributes & c_mtHitable) == 0);
+            ZAssert ((m_attributes & c_mtCastRay) != 0);
 
             m_pHitTest->SetID(c_htidStaticObject);
             m_pHitTest->SetStaticF(true);
 
-            assert (m_cluster);
+            ZAssert (m_cluster);
 
             m_attributes &= ~c_mtCastRay;
             m_attributes |= c_mtStatic | c_mtHitable;
@@ -66,11 +66,11 @@ class   CmodelIGC
         }
         void                MakeUnhitable(void)
         {
-            assert ((m_attributes & c_mtStatic) == 0);
-            assert ((m_attributes & c_mtHitable) != 0);
-            assert ((m_attributes & c_mtCastRay) != 0);
+            ZAssert ((m_attributes & c_mtStatic) == 0);
+            ZAssert ((m_attributes & c_mtHitable) != 0);
+            ZAssert ((m_attributes & c_mtCastRay) != 0);
 
-            assert (m_cluster);
+            ZAssert (m_cluster);
 
             m_attributes &= ~(c_mtCastRay | c_mtHitable);
 
@@ -158,12 +158,12 @@ class   CmodelIGC
                 m_pHitTest->Release();
                 m_pHitTest = NULL;
 
-                assert (m_pThingSite);
+                ZAssert (m_pThingSite);
                 m_pThingSite->Terminate();
                 m_pThingSite = NULL;
             }
             else
-                assert (!m_pThingSite);
+                ZAssert (!m_pThingSite);
         }
 
         const Vector&   GetPosition(void) const
@@ -178,11 +178,11 @@ class   CmodelIGC
         }
         void            SetVelocity(const Vector& newVal)
         {
-			// mmf replaced assert with log msg
+			// mmf replaced ZAssert with log msg
 		    if (!(newVal * newVal >= 0.0f)) {
-				debugf("mmf Igc modelIGC.h SetVelocity: newVal^2 debug build would have called assert and exited, commented out for now\n");
+				debugf("mmf Igc modelIGC.h SetVelocity: newVal^2 debug build would have called ZAssert and exited, commented out for now\n");
 			}
-            // assert (newVal * newVal >= 0.0f);
+            // ZAssert (newVal * newVal >= 0.0f);
             m_pHitTest->SetVelocity(newVal);
         }
 
@@ -206,7 +206,7 @@ class   CmodelIGC
         }
         void                SetRadius(float newVal)
         {
-            assert (newVal != 0.0f);
+            ZAssert (newVal != 0.0f);
             m_pHitTest->SetRadius(newVal);
             m_pThingSite->SetRadius(newVal);
         }
@@ -238,8 +238,8 @@ class   CmodelIGC
                 //till we get the sequence exactly right but we should never change
                 //the side of an object that is in a cluster unless we are changing
                 //from a legal side to a legal side.
-                //assert (newVal);  //Can't do this ... killing a station first sets its side to NULL
-                assert (psideOld);
+                //ZAssert (newVal);  //Can't do this ... killing a station first sets its side to NULL
+                ZAssert (psideOld);
 
                 //Reset the thing site's view of which cluster the model is in
                 //(the cluster did not change but some of the internal state for
@@ -274,7 +274,7 @@ class   CmodelIGC
         }
         void                SetSecondaryName(const char* newVal)
         {
-            assert (strlen(newVal) < c_cbName-1);
+            ZAssert (strlen(newVal) < c_cbName-1);
             m_name[0] = '\0';
 
             strcpy(m_name+1, newVal);
@@ -340,13 +340,13 @@ class   CmodelIGC
         }
         virtual void                     AddDamageBucket(DamageBucket*   pdb)
         {
-            assert (m_pMission);
+            ZAssert (m_pMission);
             m_damageBuckets.last(pdb);
         }
         virtual void                     DeleteDamageBucket(DamageBucket*   pdb)
         {
             DamageBucketLink*   pdbl = m_damageBuckets.find(pdb);
-            assert (pdbl);
+            ZAssert (pdbl);
             delete pdbl;
         }
 
@@ -658,7 +658,7 @@ template<class T> class TmodelIGC : public T
                                                      ImodelIGC* pModel)
         {
             //Should never be called
-            assert (false);
+            ZAssert (false);
         }
 
         virtual IObject*            GetIcon(void) const

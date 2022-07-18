@@ -327,7 +327,9 @@ public:
 			UIVERTEX * pVerts;
 //			CVBIBManager::SVBIBHandle * pDynVB = CVertexGenerator::Get()->GetUITexVertsVB();
 			CVBIBManager::SVBIBHandle * pDynVB = CVertexGenerator::Get()->GetPredefinedDynamicBuffer( CVertexGenerator::ePDBT_UITexVB );
-			CVBIBManager::Get()->LockDynamicVertexBuffer( pDynVB, m_iNumVertsPerButton, (void**)&pVerts );
+			if (CVBIBManager::Get()->LockDynamicVertexBuffer( pDynVB, m_iNumVertsPerButton, (void**)&pVerts ) == false) {
+                return;
+            }
 												
 			// Overlay the focus bitmap on top of the button
 			if (m_bFocus && (m_dwFaces & ButtonFaceFocus)) 
@@ -689,7 +691,7 @@ public:
 			m_button = button;
 			if (bDown) {
                 if (m_pprovider != NULL && button == 0) { //imago 7/10/09
-                    assert(false); // we should not have a timer set before the button is pressed
+                    ZAssert(false); // we should not have a timer set before the button is pressed
                     m_pprovider->GetTimer()->RemoveSink(m_peventSinkDelegate);
                 }
 

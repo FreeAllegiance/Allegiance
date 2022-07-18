@@ -21,7 +21,7 @@ typedef std::basic_string<TCHAR> tstring;
 
 /////////////////////////////////////////////////////////////////////////////
 // ci_less
-struct ci_less : public std::binary_function<tstring, tstring, bool>
+struct ci_less
 {
   bool operator()(const tstring& x, const tstring& y) const
   {
@@ -32,7 +32,7 @@ typedef std::binary_negate<ci_less> ci_greater;
 
 /////////////////////////////////////////////////////////////////////////////
 // ci_less_bstr_t
-struct ci_less_bstr_t : public std::binary_function<_bstr_t, _bstr_t, bool>
+struct ci_less_bstr_t
 {
   bool operator()(const _bstr_t& x, const _bstr_t& y) const
   {

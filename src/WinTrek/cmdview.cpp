@@ -114,14 +114,14 @@ CommandGeo::CommandGeo(float radius, float zGrid, int nSegments)
 void CommandGeo::DrawShips(Context* pcontext)
 {
 
-    assert (m_pcluster);
+    ZAssert (m_pcluster);
 
     int                 index = 0;
     TVector<VertexL>    vertices;
     TVector<WORD>       indices;
     const ModelListIGC* models = m_pcluster->GetPickableModels();
 
-    assert (models);
+    ZAssert (models);
 
     // Draw the ship for every model in the cluster
 

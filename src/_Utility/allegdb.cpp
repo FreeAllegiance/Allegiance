@@ -108,7 +108,7 @@ HRESULT CSQLCore::Init(LPCOLESTR strSQLConfig, DWORD nThreadIDNotify, DWORD cSil
 
   // create event used to signal that ALL sql threads should exit
   m_hKillSQLEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-  assert(m_hKillSQLEvent);
+  ZAssert(m_hKillSQLEvent);
 
   hr = m_connection.OpenFromInitializationString(strSQLConfig);
   if (FAILED(hr))
@@ -121,7 +121,7 @@ HRESULT CSQLCore::Init(LPCOLESTR strSQLConfig, DWORD nThreadIDNotify, DWORD cSil
   m_hQuerySilent = CreateSemaphore(NULL, 0, MAXLONG, NULL);
 
   m_pthdQueue = new CSQLQueueThread(m_hKillSQLEvent, this);
-  assert (m_pthdQueue);
+  ZAssert (m_pthdQueue);
 
   m_pargSilentThreads = (CSQLThread **) new char[sizeof(CSQLThread *) * m_cSilentThreads];
   m_pargNotifyThreads = (CSQLThread **) new char[sizeof(CSQLThread *) * m_cNotifyThreads];
@@ -199,7 +199,7 @@ HRESULT CSQLThread::ServiceQuery(CSQLQuery * pqueryNew)
     if (pqueryT->GetGuid() == guid)
     {
       // make sure we didn't accidentally use the same guid twice for different queries
-      assert(!lstrcmp(pqueryNew->GetStrQuery(), pqueryT->GetStrQuery()));
+      ZAssert(!lstrcmp(pqueryNew->GetStrQuery(), pqueryT->GetStrQuery()));
       pqueryCache = pqueryT;
     }
   }

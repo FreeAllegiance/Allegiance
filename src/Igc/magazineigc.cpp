@@ -32,19 +32,19 @@ CmagazineIGC::~CmagazineIGC(void)
 
 HRESULT     CmagazineIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
 {
-    assert (pMission);
+    ZAssert (pMission);
     m_pMission = pMission;
 
     ZRetailAssert (data && (dataSize == sizeof(DataPartIGC)));
     {
         m_partType = (IlauncherTypeIGC*)(((DataPartIGC*)data)->partType);
-        assert (m_partType);
+        ZAssert (m_partType);
         if (m_partType) //Xynth for good meaure
 			m_partType->AddRef();
 
         m_missileType = (ImissileTypeIGC*)(m_partType->GetExpendableType());
-        assert (m_missileType);
-        assert (m_missileType->GetObjectType() == OT_missileType);
+        ZAssert (m_missileType);
+        ZAssert (m_missileType->GetObjectType() == OT_missileType);
         if (m_missileType) //Xynth Fix for error 8986029
 			m_missileType->AddRef();
         m_amount = 0;
@@ -76,11 +76,11 @@ void        CmagazineIGC::Terminate(void)
 
 void        CmagazineIGC::Update(Time   now)
 {
-    assert (m_ship);
+    ZAssert (m_ship);
 
     Time    lastUpdate = m_ship->GetLastUpdate();
     float   dt = now - lastUpdate;
-    assert (dt >= 0.0f);
+    ZAssert (dt >= 0.0f);
 
     if (m_mountedFraction < 1.0f)
     {
@@ -98,7 +98,7 @@ void        CmagazineIGC::Update(Time   now)
         m_mountedFraction = 1.0f;
     }
 
-    assert (m_ship);
+    ZAssert (m_ship);
     if ((m_timeLoaded < now) && (m_amount > 0))
     {
         if (m_ship->GetRipcordModel() != NULL)
@@ -190,7 +190,7 @@ void        CmagazineIGC::SetShip(IshipIGC*       newVal, Mount mount)
         m_ship->DeletePart(this);
         m_ship->Release();
     }
-    assert (m_mountID == c_mountNA);
+    ZAssert (m_mountID == c_mountNA);
     m_ship = newVal;
 
     if (m_ship)
@@ -207,7 +207,7 @@ void        CmagazineIGC::SetShip(IshipIGC*       newVal, Mount mount)
 }
 void    CmagazineIGC::SetMountID(Mount newVal)
 {
-    assert (m_ship);
+    ZAssert (m_ship);
 
     if (newVal != m_mountID)
     {

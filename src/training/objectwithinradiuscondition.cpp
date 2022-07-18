@@ -70,7 +70,7 @@ namespace Training
             // to avoid unwanted crashes, not to provide any kind of desired behavior.
             // Note that if the objects don't exist, a constraint should have caught
             // the situation and appropriately handled it, so this shouldn't fail.
-            assert (*m_pObject and *m_pTarget);
+            ZAssert (*m_pObject and *m_pTarget);
             if (*m_pObject and *m_pTarget)
             {
                 // Check to see if the objects are closer than the specified distance,

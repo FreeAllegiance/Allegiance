@@ -96,10 +96,10 @@ void    LoadIGCFile (FILE* file, ImissionIGC* pMission, void (*munge)(int size, 
     Time            now = pMission->GetLastUpdate();
     int             iDatasize;
     int             iReadCount = fread (&iDatasize, sizeof(iDatasize), 1, file);
-    assert (iReadCount == 1);
+    ZAssert (iReadCount == 1);
     char*           pData = new char[iDatasize+4];      //leave a little extra space for the encryption (which takes dword chunks)
     iReadCount = fread (pData, sizeof(char), iDatasize, file);
-    assert (iReadCount == iDatasize);
+    ZAssert (iReadCount == iDatasize);
 
     if (munge)
     {
@@ -594,7 +594,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	//Load Constants
 	ZString strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Constants.csv";
 	std::fstream file((PCC)strFile, std::ios::in);
-	assert(file.is_open());
+	ZAssert(file.is_open());
 	csvVector csvData;
 	
 	readCSV(file, csvData);
@@ -650,14 +650,14 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 
 	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Expendables.csv";
 	std::fstream file10((PCC)strFile, std::ios::in);
-	assert(file10.is_open());
+	ZAssert(file10.is_open());
 	csvVector csvData4;
 	readCSV(file10, csvData4);
 
 	// Load projectile types
 	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\TypesOfProjectiles.csv";
 	std::fstream projfile((PCC)strFile, std::ios::in);
-	assert(projfile.is_open());
+	ZAssert(projfile.is_open());
 	csvData.clear();
 	readCSV(projfile, csvData);
 	int iLines = 0; int id = 0;
@@ -725,7 +725,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	// Load missile expendable
 	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\ExpendableMissiles.csv";
 	std::fstream file12((PCC)strFile, std::ios::in);
-	assert(file12.is_open());
+	ZAssert(file12.is_open());
 	csvData.clear();
 	readCSV(file12, csvData);
 	iLines = 0; id = 0;
@@ -885,7 +885,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	// Load probes expendable
 	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\ExpendableProbes.csv";
 	std::fstream file18((PCC)strFile, std::ios::in);
-	assert(file18.is_open());
+	ZAssert(file18.is_open());
 	csvData.clear();
 	readCSV(file18, csvData);
 	iLines = 0; id = 0;
@@ -1023,7 +1023,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	// Load chaff expendable
 	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\ExpendableChaff.csv";
 	std::fstream file9((PCC)strFile, std::ios::in);
-	assert(file9.is_open());
+	ZAssert(file9.is_open());
 	csvData.clear();
 	readCSV(file9, csvData);
 	iLines = 0; id = 0;
@@ -1153,7 +1153,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	// Load mines expendable
 	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\ExpendableMines.csv";
 	std::fstream file17((PCC)strFile, std::ios::in);
-	assert(file17.is_open());
+	ZAssert(file17.is_open());
 	csvData.clear();
 	readCSV(file17, csvData);
 	iLines = 0; id = 0;
@@ -1288,7 +1288,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	// Load afterburner part types
 	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Afterburners.csv";
 	std::fstream file7((PCC)strFile, std::ios::in);
-	assert(file7.is_open());
+	ZAssert(file7.is_open());
 	csvData.clear();
 	readCSV(file7, csvData);
 	iLines = 0;
@@ -1360,7 +1360,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	// Load weapon part types
 	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Weapons.csv";
 	std::fstream file11((PCC)strFile, std::ios::in);
-	assert(file11.is_open());
+	ZAssert(file11.is_open());
 	csvData.clear();
 	readCSV(file11, csvData);
 	iLines = 0;
@@ -1438,7 +1438,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	// Load pack types
 	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Packs.csv";
 	std::fstream packfile((PCC)strFile, std::ios::in);
-	assert(packfile.is_open());
+	ZAssert(packfile.is_open());
 	csvData.clear();
 	readCSV(packfile, csvData);
 	iLines = 0;
@@ -1503,7 +1503,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	// Load shield types
 	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Shields.csv";
 	std::fstream shieldfile((PCC)strFile, std::ios::in);
-	assert(shieldfile.is_open());
+	ZAssert(shieldfile.is_open());
 	csvData.clear();
 	readCSV(shieldfile, csvData);
 	iLines = 0;
@@ -1573,7 +1573,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	// Load cloaks types
 	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Cloaks.csv";
 	std::fstream cloakfile((PCC)strFile, std::ios::in);
-	assert(cloakfile.is_open());
+	ZAssert(cloakfile.is_open());
 	csvData.clear();
 	readCSV(cloakfile, csvData);
 	iLines = 0;
@@ -1685,14 +1685,14 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	// Load hull types & hardpoints
 	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\TypesOfShips.csv";
 	std::fstream file5((PCC)strFile, std::ios::in);
-	assert(file5.is_open());
+	ZAssert(file5.is_open());
 	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Hardpoints.csv";
 	std::fstream file6((PCC)strFile, std::ios::in);
-	assert(file6.is_open());
+	ZAssert(file6.is_open());
 	csvVector csvData2;
 	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\ShipsSFX.csv";
 	std::fstream file8((PCC)strFile, std::ios::in);
-	assert(file8.is_open());
+	ZAssert(file8.is_open());
 	csvVector csvData3;
 
 	csvData.clear();
@@ -1894,14 +1894,14 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	// Load gas
 	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\GlobalAttributes.csv";
 	std::fstream file16((PCC)strFile, std::ios::in);
-	assert(file16.is_open());
+	ZAssert(file16.is_open());
 	csvVector csvData6;
 	readCSV(file16, csvData6);
 
 	//load developments
 	ZString wstr2File = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Developments.csv";
 	std::fstream devfile((PCC)wstr2File, std::ios::in);
-	assert(devfile.is_open());
+	ZAssert(devfile.is_open());
 	csvData.clear();
 	readCSV(devfile, csvData);
 	iLines = 0;
@@ -1978,7 +1978,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	// Load drone types
 	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\TypesOfDrones.csv";
 	std::fstream dronefile((PCC)strFile, std::ios::in);
-	assert(dronefile.is_open());
+	ZAssert(dronefile.is_open());
 	csvData.clear();
 	readCSV(dronefile, csvData);
 	iLines = 0;
@@ -2039,13 +2039,13 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	// Load station types
 	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\TypesOfStations.csv";
 	std::fstream file3((PCC)strFile, std::ios::in);
-	assert(file3.is_open());
+	ZAssert(file3.is_open());
 	csvData.clear();
 	readCSV(file3, csvData);
 
 	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\StationsSFX.csv";
 	std::fstream file15((PCC)strFile, std::ios::in);
-	assert(file15.is_open());
+	ZAssert(file15.is_open());
 	csvVector csvData5;
 	readCSV(file15, csvData5);
 	iLines = 0;
@@ -2174,7 +2174,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	// Load treasure set (max of 64 treasures)
 	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\TypesOfTreasures.csv";
 	std::fstream tresfile((PCC)strFile, std::ios::in);
-	assert(tresfile.is_open());
+	ZAssert(tresfile.is_open());
 	csvData.clear();
 	readCSV(tresfile, csvData);
 	int iTreasures = 0;
@@ -2240,7 +2240,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	//load civs
 	ZString wstrFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Civilizations.csv";
 	std::fstream file2((PCC)wstrFile, std::ios::in);
-	assert(file2.is_open());
+	ZAssert(file2.is_open());
 	csvData.clear();
 	readCSV(file2, csvData);
 	iLines = 0;
@@ -2369,7 +2369,7 @@ bool    DumpIGCStaticCore (const char* name, ImissionIGC* pMission, int64_t iMas
     }
     else
     {
-        assert ("Dump IGC Static Core failed." && false);
+        ZAssert ("Dump IGC Static Core failed." && false);
         return false;
     }
 }
@@ -2413,7 +2413,7 @@ int     LoadIGCStaticCore (const char* name, ImissionIGC* pMission, bool fGetVer
     {
         IGC_FILE_VERSION_TYPE   iStaticCoreVersion;
         int                     iReadCount = fread (&iStaticCoreVersion, sizeof(iStaticCoreVersion), 1, file);
-        assert (iReadCount == 1);
+        ZAssert (iReadCount == 1);
 
         if (!fGetVersionOnly)
         {
@@ -2671,7 +2671,7 @@ int     LoadIGCStaticCore (const char* name, ImissionIGC* pMission, bool fGetVer
 		} else {
 			// mmf added debugf
 			debugf("Load IGC Static Core failed to load %s\n",name);
-			assert ("Load IGC Static Core failed." && false);
+			ZAssert ("Load IGC Static Core failed." && false);
 			return NA;
 		}
     }
@@ -3115,18 +3115,18 @@ void    CmissionIGC::Terminate(void)
         m_sideTeamLobby = NULL;
     };
 
-    assert (m_clusters.n() == 0);
-    assert (m_warps.n() == 0);
-    assert (m_stations.n() == 0);
-    assert (m_asteroids.n() == 0);
-    assert (m_treasures.n() == 0);
-    assert (m_ships.n() == 0);
-    assert (m_sides.n() == 0);
+    ZAssert (m_clusters.n() == 0);
+    ZAssert (m_warps.n() == 0);
+    ZAssert (m_stations.n() == 0);
+    ZAssert (m_asteroids.n() == 0);
+    ZAssert (m_treasures.n() == 0);
+    ZAssert (m_ships.n() == 0);
+    ZAssert (m_sides.n() == 0);
 }
 
 void     CmissionIGC::Update(Time now)
 {
-    assert (now >= m_lastUpdate);
+    ZAssert (now >= m_lastUpdate);
 
     if (now != m_lastUpdate)
     {
@@ -3145,13 +3145,13 @@ void     CmissionIGC::Update(Time now)
 
             m_damageTracks.Update(now);
 
-            assert (now - m_lastUpdate < 600.0f);   //never 10 minutes at a time.
+            ZAssert (now - m_lastUpdate < 600.0f);   //never 10 minutes at a time.
             float   deltaT = now - m_lastUpdate;
 
             //Update the components in chunks of no more than 250ms each
             //if more than one chuck of time is required, evenly divide the
             //total time into nice, even chunks.
-            assert (deltaT > 0.0f);
+            ZAssert (deltaT > 0.0f);
 
             int n = 1 + (int)(deltaT / c_fTimeIncrement);
             //ShouldBe(n == 1);
@@ -3169,7 +3169,7 @@ void     CmissionIGC::Update(Time now)
                          (l != NULL);
                          l = l->next())
                     {
-                        assert (l->data());
+                        ZAssert (l->data());
                         l->data()->Update(timeUpdate);
                     }
                 }
@@ -3181,7 +3181,7 @@ void     CmissionIGC::Update(Time now)
             m_lastUpdate = now;
     }
 
-    assert (m_lastUpdate == now);
+    ZAssert (m_lastUpdate == now);
 }
 
 static int  ExportList(int64_t              maskTypes,
@@ -3286,7 +3286,7 @@ void                CmissionIGC::Import(Time    now,
             {
                 IbaseIGC*   b = CreateObject(now, type, (void*)(pdata + sizeof(int) + sizeof(ObjectType)), size);
 
-                assert (b);
+                ZAssert (b);
                 b->Release();
             }
             pdata += size + sizeof(int) + sizeof(ObjectType);
@@ -3344,9 +3344,9 @@ IbaseIGC*           CmissionIGC::CreateObject(Time now, ObjectType objecttype,
         case OT_partType:
         {
             //Part types and magazine part types get special treatment
-            assert ((dataSize >= sizeof(DataLauncherTypeIGC)) ||
+            ZAssert ((dataSize >= sizeof(DataLauncherTypeIGC)) ||
                     (dataSize >= sizeof(DataPartTypeIGC)));
-            assert (sizeof(DataLauncherTypeIGC) < sizeof(DataPartTypeIGC));
+            ZAssert (sizeof(DataLauncherTypeIGC) < sizeof(DataPartTypeIGC));
 
             pBase = (dataSize == sizeof(DataLauncherTypeIGC))
                     ? (IbaseIGC*)(new ClauncherTypeIGC)
@@ -3445,7 +3445,7 @@ IbaseIGC*  CmissionIGC::GetBase(ObjectType type, ObjectID id) const
             return GetMine(id);
 
         case OT_projectile:  
-            assert(0);
+            ZAssert(0);
             return NULL;//GetProjectile(id);
 
         case OT_side:        
@@ -3749,7 +3749,7 @@ void                        CmissionIGC::UpdateSides(Time now,
     for (sid = GetSides()->n(); sid < pmp->nTeams; sid++)
     {
         IcivilizationIGC*   pcivilization = GetCivilization(pmp->rgCivID[sid]);
-        assert (pcivilization);
+        ZAssert (pcivilization);
 
         DataSideIGC ds;
         ds.sideID = sid;
@@ -3772,7 +3772,7 @@ void                        CmissionIGC::UpdateSides(Time now,
                                      OT_side,
                                      &ds,
                                      sizeof(ds));
-        assert (o);
+        ZAssert (o);
         ((IsideIGC*)o)->SetActiveF(true);
 
         o->Release();
@@ -3784,12 +3784,12 @@ void                        CmissionIGC::UpdateSides(Time now,
         for (SideID sid = GetSides()->n() - 1; sid >= pmp->nTeams; sid--)
         {
             IsideIGC* pside = GetSide(sid);
-            assert(pside->GetShips()->n() == 0); // side should be empty
+            ZAssert(pside->GetShips()->n() == 0); // side should be empty
             pside->Terminate();
         }
     }
 
-    assert (GetSides()->n() == pmp->nTeams);
+    ZAssert (GetSides()->n() == pmp->nTeams);
 }
 // #ALLY
 void		CmissionIGC::UpdateAllies(const char Allies[c_cSidesMax])
@@ -3925,7 +3925,7 @@ void                    CmissionIGC::GenerateMission(Time                   now,
 				{
 					float   nWarps = (float)(pwarps->n());
 					const int c_maxWarps = 10;
-					assert (pwarps->n() <= c_maxWarps);
+					ZAssert (pwarps->n() <= c_maxWarps);
 					float   offset[c_maxWarps] = {0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f};
 					float   displacement;
 					if (pwarps->n() > 1)
@@ -4074,7 +4074,7 @@ void                    CmissionIGC::GenerateMission(Time                   now,
     //Go through and set the territory amounts for each side
     if (pmp->IsTerritoryGame())
     {
-        assert (c_cSidesMax == 6);
+        ZAssert (c_cSidesMax == 6);
         unsigned char nTerritoriesPerSide[c_cSidesMax] = {0, 0, 0, 0, 0, 0};
 
         for (ClusterLinkIGC*    pcl = m_clusters.first(); (pcl != NULL); pcl = pcl->next())
@@ -4202,7 +4202,7 @@ void    CmissionIGC::GenerateTreasure(Time         now,
 
         IObject*    o = CreateObject(now, OT_treasure,
                                      &dt, sizeof(dt));
-        assert (o);
+        ZAssert (o);
         o->Release();
     }
 }

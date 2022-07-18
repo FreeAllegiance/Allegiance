@@ -149,7 +149,7 @@ HRESULT CPigEngine::Construct()
   m_bstrScriptDir = strScriptDir;
 
   // Create the pigs collection object with a ref count
-  assert(!m_pPigs);
+  ZAssert(!m_pPigs);
   CComObject<CPigs>* pPigs = NULL;
   RETURN_FAILED(pPigs->CreateInstance(&pPigs));
   (m_pPigs = pPigs)->AddRef();
@@ -230,7 +230,7 @@ unsigned CALLBACK CPigEngine::ScriptDirThunk(void* pv)
 
 void CPigEngine::ScriptDirMonitor(HANDLE hevtExit)
 {
-  assert(m_hDirChange && INVALID_HANDLE_VALUE != m_hDirChange);
+  ZAssert(m_hDirChange && INVALID_HANDLE_VALUE != m_hDirChange);
 
   // Enter this thread into the MTA
   _SVERIFYE(CoInitializeEx(NULL, COINIT_MULTITHREADED));
@@ -273,7 +273,7 @@ void CPigEngine::ScriptDirMonitor(HANDLE hevtExit)
       {
         if (WM_TIMER == msg.message)
         {
-          assert(msg.wParam == idTimer);
+          ZAssert(msg.wParam == idTimer);
 
           // Kill the timer
           KillTimer(NULL, idTimer);
@@ -328,7 +328,7 @@ HRESULT CPigEngine::EnsureScriptsAreLoaded()
 
   // Remove the whack at the end of the string
   cch = strlen(pszScriptDir);
-  assert('\\' == pszScriptDir[cch - 1]);
+  ZAssert('\\' == pszScriptDir[cch - 1]);
   pszScriptDir[cch - 1] = '\0';
 
   // Ensure that the directory exists
@@ -457,7 +457,7 @@ void CPigEngine::ProcessScriptDirChanges()
         if (setNames.end() == setNames.find(pTypeBase->GetBaseBehaviorName()))
         {
           XScriptMapIt itBase = mapGoodBadUgly.find(pTypeBase->GetBaseBehaviorName());
-          if (mapGoodBadUgly.end() != itBase) // KG- fix debug assert - was : m_mapBehaviors.end() != itBase
+          if (mapGoodBadUgly.end() != itBase) // KG- fix debug ZAssert - was : m_mapBehaviors.end() != itBase
           {
             pTypeBase = itBase->second;
             continue;
@@ -484,7 +484,7 @@ void CPigEngine::ProcessScriptDirChanges()
       while (strBaseBehavior.size() && _tcslen(strBaseBehavior.c_str()))
       {
         XBehaviorMapIt itBase = mapGoodBadUgly.find(strBaseBehavior);
-        assert(mapGoodBadUgly.end() != itBase);
+        ZAssert(mapGoodBadUgly.end() != itBase);
         pType = itBase->second;
         vecBaseTypes.push_back(pType);
         strBaseBehavior = pType->GetBaseBehaviorName();
@@ -586,7 +586,7 @@ void CPigEngine::UnloadScriptFile(tstring strFileName)
 {
   // Find the named item in the map
   XScriptMapIt it = m_mapScripts.find(strFileName);
-  assert(m_mapScripts.end() != it);
+  ZAssert(m_mapScripts.end() != it);
 
   // Unload the item
   UnloadScriptFile(it);
@@ -614,7 +614,7 @@ HRESULT CPigEngine::GetInvokeCommands(CPigBehaviorScriptType* pType,
   // Get the collection of invoke commands for the new object
   ITCStringsPtr spInvokeCommands;
   _SVERIFYE(pType->get_InvokeCommands(&spInvokeCommands));
-  assert(NULL != spInvokeCommands);
+  ZAssert(NULL != spInvokeCommands);
 
   // Iterate through each one and add it to a local map, ignoring duplicates
   long cInvokeCommands = 0;
@@ -668,7 +668,7 @@ void CPigEngine::RemoveInvokeCommands(CPigBehaviorScriptType* pType)
   // Get the collection of invoke commands for the object
   ITCStringsPtr spInvokeCommands;
   _SVERIFYE(pType->get_InvokeCommands(&spInvokeCommands));
-  assert(NULL != spInvokeCommands);
+  ZAssert(NULL != spInvokeCommands);
 
   // Iterate through each one and erase it from the map
   long cInvokeCommands = 0;
@@ -796,7 +796,7 @@ HRESULT CPigEngine::get_Lobbies(IPigLobbies** ppLobbies)
 
 HRESULT CPigEngine::get_Pigs(IPigs** ppPigs)
 {
-  assert(m_pPigs);
+  ZAssert(m_pPigs);
 
   // Initialize the [out] parameter
   CLEAROUT(ppPigs, (IPigs*)NULL);
@@ -854,7 +854,7 @@ HRESULT CPigEngine::CreatePig(BSTR bstrType, BSTR bstrCommandLine, IPig** ppPig)
 
   // Get an apartment-safe pointer to the pig object
   RETURN_FAILED(GetInterfaceFromGlobal(dwGITCookie, IID_IPig, (void**)ppPig));
-  assert(*ppPig);
+  ZAssert(*ppPig);
 
   // Indicate success
   return S_OK;

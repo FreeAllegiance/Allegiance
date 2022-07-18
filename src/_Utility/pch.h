@@ -7,8 +7,6 @@
 #ifndef _PCH_H_
 #define _PCH_H_
 
-#define __MODULE__ "Utility"
-
 //
 // C headers
 //

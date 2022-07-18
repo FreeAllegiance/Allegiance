@@ -501,7 +501,7 @@ public:
 
     void BeginZoneEventsDownload()
     {
-        assert(!m_pSession && !m_bLoadingEventList);
+        ZAssert(!m_pSession && !m_bLoadingEventList);
         if (m_pSession)
             return;
 
@@ -521,7 +521,7 @@ public:
 
     void BeginEventListingDownload(EventListing* peventListing)
     {
-        assert(peventListing);
+        ZAssert(peventListing);
 
         if (m_pSession)
         {

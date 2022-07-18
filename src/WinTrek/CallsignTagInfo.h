@@ -1,35 +1,37 @@
 #pragma once
 
-// BT - STEAM
-class CallsignTagInfo
-{
-private:
-	
-	ZString FixupCallsignTag(ZString callsignTag);
-	void LoadFromRegistry();
-	void SaveToRegistry();
-	void UpdateStringValues(ZString selectedToken);
+#include "WinTrek.H"
+
+class CallsignSquad {
 
 public:
-	ZString m_callsignTag;
-	ZString m_callsignToken;
-	uint64	m_steamGroupID;
-	int		m_index;
-	bool	m_isOfficer;
+    static ZString CleanupSquadTag(ZString tag);
 
-	CallsignTagInfo();
-	CallsignTagInfo(ZString callsignTag, uint64 steamGroupID, int index, bool isOfficer);
+    virtual const std::vector<ZString>& GetAvailableOfficerTokens() = 0;
 
-	ZString GetAvailableTokens();
-	
-	void SetSteamGroupID(uint64 steamGroupID, ZString callsignTag);
-	void SetToken(ZString token);
-
-	ZString Render(ZString callsign);
-
-
-	inline bool operator == (const CallsignTagInfo& compare) const { return m_steamGroupID == compare.m_steamGroupID; }
-	inline  bool operator > (const CallsignTagInfo& compare) const { return m_steamGroupID > compare.m_steamGroupID; }
-
-
+    virtual const ZString GetCleanedTag() = 0;
 };
+
+std::shared_ptr<CallsignSquad> CreateSquadFromSteam(CSteamID squadSteamClanId, CSteamID userSteamId);
+
+class CallsignHandler {
+private:
+    TRef<GameConfigurationWrapper> m_pconfiguration;
+    std::vector<std::shared_ptr<CallsignSquad>> m_squads;
+
+    static ZString CleanupCallsign(ZString callsign);
+
+public:
+    CallsignHandler(const TRef<GameConfigurationWrapper>& pconfiguration, const std::vector<std::shared_ptr<CallsignSquad>>& squads);
+
+    std::vector<std::shared_ptr<CallsignSquad>> GetAvailableSquads();
+
+    std::shared_ptr<CallsignSquad> GetSquadForTag(ZString tag);
+
+    TRef<StringValue> GetCleanedFullCallsign();
+
+    static bool IsValidCallsign(ZString callsign);
+};
+
+std::shared_ptr<CallsignHandler> CreateCallsignHandlerFromSteam(const TRef<GameConfigurationWrapper>& pconfiguration);
+

@@ -153,7 +153,7 @@ public:
         }
         else
         {
-            assert(false);
+            ZAssert(false);
         }
 
         return true;
@@ -181,10 +181,10 @@ public:
     bool OnButtonCommand()
     {
         IstationIGC*    pstation = trekClient.GetShip()->GetStation();
-        assert (pstation);
+        ZAssert (pstation);
 
         IclusterIGC*    pcluster = pstation->GetCluster();
-        assert (pcluster);
+        ZAssert (pcluster);
 
         trekClient.RequestViewCluster(pcluster);
         GetWindow()->SetViewMode(TrekWindow::vmCommand);

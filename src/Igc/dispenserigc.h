@@ -147,7 +147,7 @@ class CdispenserIGC : public IdispenserIGC
         }
         virtual void            ResetTimeLoaded(void)
         {
-            assert (m_ship);
+            ZAssert (m_ship);
             m_timeLoaded = m_ship->GetLastUpdate() + ((1.0f/m_pMission->GetFloatConstant(c_fcidMountRate)) + m_expendableType->GetLoadTime());
         }
 

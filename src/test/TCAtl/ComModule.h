@@ -69,7 +69,7 @@ public:
     DWORD dwClsContext = CLSCTX_LOCAL_SERVER);
   HRESULT RevokeClassObjects();
   HRESULT StartMonitor();
-  LONG Unlock();
+  LONG Unlock() throw();
   HRESULT OpenAppIDRegKey(CRegKey& key, REGSAM samDesired = KEY_ALL_ACCESS);
 
 // Overrides
@@ -157,7 +157,7 @@ UINT TCComModule<T>::GetShutdownEventName(LPTSTR pszEventName, UINT cch,
   bool bGlobalObject)
 {
   #ifdef _WINDLL
-    assert(!"defined(_WINDLL)");
+    ZAssert(!"defined(_WINDLL)");
     return E_UNEXPECTED;
   #endif // _WINDLL
 
@@ -213,7 +213,7 @@ HRESULT TCComModule<T>::ParseCommandLine(LPCTSTR pszCmdLine)
   if (!pszCmdLine || ZT == *pszCmdLine)
   {
     #ifdef _WINDLL
-      assert(pszCmdLine && ZT != *pszCmdLine);
+      ZAssert(pszCmdLine && ZT != *pszCmdLine);
       return E_UNEXPECTED;
     #else // _WINDLL
       pszCmdLine = GetCommandLine();
@@ -249,8 +249,8 @@ HRESULT TCComModule<T>::ParseCommandLine(LPCTSTR pszCmdLine)
 template <class T>
 HRESULT TCComModule<T>::ParseCommandLine(int argc, TCHAR* argv[])
 {
-  assert(argc);
-  assert(argv);
+  ZAssert(argc);
+  ZAssert(argv);
 
   // Decrement to account for the module name
   --argc;
@@ -604,7 +604,7 @@ int TCComModule<T>::EchoV(LPCTSTR pszFmt, va_list argptr)
     {
       m_spszOutputText    = pszOld;
       m_cchOutputTextMax -= cchNeeded;
-      assert(!"CoTaskMemRealloc returned NULL");
+      ZAssert(!"CoTaskMemRealloc returned NULL");
       return -1;
     }
     if (!m_cchOutputText)
@@ -642,7 +642,7 @@ template <class T>
 HRESULT TCComModule<T>::RegisterClassObjects(DWORD dwFlags, DWORD dwClsContext)
 {
   #ifdef _WINDLL
-    assert(!"defined(_WINDLL)");
+    ZAssert(!"defined(_WINDLL)");
     return E_UNEXPECTED;
   #endif // _WINDLL
 
@@ -664,7 +664,7 @@ template <class T>
 HRESULT TCComModule<T>::RevokeClassObjects()
 {
   #ifdef _WINDLL
-    assert(!"defined(_WINDLL)");
+    ZAssert(!"defined(_WINDLL)");
     return E_UNEXPECTED;
   #endif // _WINDLL
 
@@ -682,7 +682,7 @@ template <class T>
 HRESULT TCComModule<T>::StartMonitor()
 {
   #ifdef _WINDLL
-    assert(!"defined(_WINDLL)");
+    ZAssert(!"defined(_WINDLL)");
     return E_UNEXPECTED;
   #endif // _WINDLL
 
@@ -699,7 +699,7 @@ HRESULT TCComModule<T>::StartMonitor()
 }
 
 template <class T>
-LONG TCComModule<T>::Unlock()
+LONG TCComModule<T>::Unlock() throw()
 {
   // Perform default processing
   LONG l = CComModule::Unlock();
@@ -1199,7 +1199,7 @@ template <class T>
 HANDLE TCComModule<T>::CreateShutdownEvent()
 {
   #ifdef _WINDLL
-    assert(!"defined(_WINDLL)");
+    ZAssert(!"defined(_WINDLL)");
     return E_UNEXPECTED;
   #endif // _WINDLL
 

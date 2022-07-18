@@ -28,7 +28,7 @@ public:
   TCWindowImplCreator(CWindowImpl<T>* pwi) :
     m_pwi(pwi)
   {
-    assert(m_pwi);
+    ZAssert(m_pwi);
   }
 
 // Overrides
@@ -55,7 +55,7 @@ public:
   TCContainedWindowCreator(CContainedWindow* pcw) :
     m_pcw(pcw)
   {
-    assert(m_pcw);
+    ZAssert(m_pcw);
   }
 
 // Overrides
@@ -83,7 +83,7 @@ public:
   TCDialogImplCreator(CDialogImpl<T>* pdi) :
     m_pdi(pdi)
   {
-    assert(m_pdi);
+    ZAssert(m_pdi);
   }
 
 // Overrides

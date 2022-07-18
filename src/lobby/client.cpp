@@ -235,7 +235,7 @@ DWORD WINAPI LogonThread(LPVOID param) {
 HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnFrom, FEDMESSAGE * pfm)
 {
   CFLClient * pClient = CFLClient::FromConnection(cnxnFrom);
-  assert(pClient);
+  ZAssert(pClient);
 
   debugf("Client: %s from <%s> at time %u\n", g_rgszMsgNames[pfm->fmid], cnxnFrom.GetName(), Time::Now());
   
@@ -484,7 +484,7 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
         END_PFM_CREATE
         char szServer[64];
         g_pLobbyApp->GetFMServers().GetIPAddress(*pMission->GetServer()->GetConnection(), szServer);
-        assert(lstrlen(szServer) < sizeof(pfmJoinMission->szServer)); // as long as szServer is fixed length
+        ZAssert(lstrlen(szServer) < sizeof(pfmJoinMission->szServer)); // as long as szServer is fixed length
         Strcpy(pfmJoinMission->szServer, szServer);
 		pfmJoinMission->dwPort = pMission->GetServer()->GetServerPort();	// mdvalley: pass the port to the client
         pfmJoinMission->dwCookie = pfmJoinGameReq->dwCookie;

@@ -274,7 +274,7 @@ float ModelData::GetPercentShields()
         }
         else if (type == OT_station)
         {
-            assert (pmodel->GetCluster());
+            ZAssert (pmodel->GetCluster());
             if (trekClient.GetShip()->CanSee(pmodel) &&
                 ((pmodel->GetCluster() == trekClient.GetCluster()) ||
                  (pmodel == trekClient.GetShip()->GetStation())))

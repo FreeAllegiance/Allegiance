@@ -24,7 +24,7 @@ ZVersionInfo::ZVersionInfo(uintptr_t hinstance) :
 	d(new ZVersionInfoPrivate)
 {
   bool hr = Load(hinstance);
-  assert(hr);
+  ZAssert(hr);
 }
 
 ZVersionInfo::ZVersionInfo(bool) :
@@ -36,7 +36,7 @@ ZVersionInfo::ZVersionInfo(LPCTSTR szModule) :
 	d(new ZVersionInfoPrivate)
 {
   bool hr = Load(szModule);
-  assert(hr);
+  ZAssert(hr);
 }
 
 ZVersionInfo::~ZVersionInfo()
@@ -53,9 +53,9 @@ bool ZVersionInfo::Load(LPCTSTR szModule)
 
   // Ensure that there is no previous version information block allocated
   Unload();
-  assert(!d->m_cbVerInfo);
-  assert(!d->m_pVerInfo);
-  assert(!d->m_pFixed);
+  ZAssert(!d->m_cbVerInfo);
+  ZAssert(!d->m_pVerInfo);
+  ZAssert(!d->m_pFixed);
 
   // Get the size of the version information of the specified module
   uint8_t* pVerInfo = nullptr;
@@ -242,7 +242,7 @@ ZString ZVersionInfo::GetStringValue(LPCTSTR pszKey, bool* pbExists) const
 
 ZString ZVersionInfo::GetFileVersionString() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   TCHAR szText[32];
   _stprintf_s(szText, 32, TEXT("%hu.%02hu.%02hu.%04hu"),
     GetFileVersionMSHigh(), GetFileVersionMSLow(),
@@ -252,25 +252,25 @@ ZString ZVersionInfo::GetFileVersionString() const
 
 uint16_t ZVersionInfo::GetFileVersionMSHigh() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return HIWORD(d->m_pFixed->dwFileVersionMS);
 }
 
 uint16_t ZVersionInfo::GetFileVersionMSLow() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return LOWORD(d->m_pFixed->dwFileVersionMS);
 }
 
 uint16_t ZVersionInfo::GetFileVersionLSHigh() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return HIWORD(d->m_pFixed->dwFileVersionLS);
 }
 
 uint16_t ZVersionInfo::GetFileVersionLSLow() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return LOWORD(d->m_pFixed->dwFileVersionLS);
 }
 
@@ -281,7 +281,7 @@ uint16_t ZVersionInfo::GetFileBuildNumber() const
 
 ZString ZVersionInfo::GetProductVersionString() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   TCHAR szText[32];
   _stprintf_s(szText, 32, TEXT("%hd.%02hd.%02hd.%04hd"),
     GetProductVersionMSHigh(), GetProductVersionMSLow(),
@@ -291,25 +291,25 @@ ZString ZVersionInfo::GetProductVersionString() const
 
 uint16_t ZVersionInfo::GetProductVersionMSHigh() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return HIWORD(d->m_pFixed->dwProductVersionMS);
 }
 
 uint16_t ZVersionInfo::GetProductVersionMSLow() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return LOWORD(d->m_pFixed->dwProductVersionMS);
 }
 
 uint16_t ZVersionInfo::GetProductVersionLSHigh() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return HIWORD(d->m_pFixed->dwProductVersionLS);
 }
 
 uint16_t ZVersionInfo::GetProductVersionLSLow() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return LOWORD(d->m_pFixed->dwProductVersionLS);
 }
 
@@ -324,37 +324,37 @@ uint16_t ZVersionInfo::GetProductBuildNumber() const
 
 bool ZVersionInfo::IsDebug() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return !!(VS_FF_DEBUG & d->m_pFixed->dwFileFlagsMask & d->m_pFixed->dwFileFlags);
 }
 
 bool ZVersionInfo::IsInfoInferred() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return !!(VS_FF_INFOINFERRED & d->m_pFixed->dwFileFlagsMask & d->m_pFixed->dwFileFlags);
 }
 
 bool ZVersionInfo::IsPatched() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return !!(VS_FF_PATCHED & d->m_pFixed->dwFileFlagsMask & d->m_pFixed->dwFileFlags);
 }
 
 bool ZVersionInfo::IsPreRelease() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return !!(VS_FF_PRERELEASE & d->m_pFixed->dwFileFlagsMask & d->m_pFixed->dwFileFlags);
 }
 
 bool ZVersionInfo::IsPrivateBuild() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return !!(VS_FF_PRIVATEBUILD & d->m_pFixed->dwFileFlagsMask & d->m_pFixed->dwFileFlags);
 }
 
 bool ZVersionInfo::IsSpecialBuild() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return !!(VS_FF_SPECIALBUILD & d->m_pFixed->dwFileFlagsMask & d->m_pFixed->dwFileFlags);
 }
 
@@ -364,91 +364,91 @@ bool ZVersionInfo::IsSpecialBuild() const
 
 bool ZVersionInfo::IsTargetUnknown() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return VOS_UNKNOWN == d->m_pFixed->dwFileOS;
 }
 
 bool ZVersionInfo::IsTargetDOS() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return HIWORD(VOS_DOS) == HIWORD(d->m_pFixed->dwFileOS);
 }
 
 bool ZVersionInfo::IsTargetOS216() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return HIWORD(VOS_OS216) == HIWORD(d->m_pFixed->dwFileOS);
 }
 
 bool ZVersionInfo::IsTargetOS232() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return HIWORD(VOS_OS232) == HIWORD(d->m_pFixed->dwFileOS);
 }
 
 bool ZVersionInfo::IsTargetNT() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return HIWORD(VOS_NT) == HIWORD(d->m_pFixed->dwFileOS);
 }
 
 bool ZVersionInfo::IsTargetBase() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return VOS__BASE == LOWORD(d->m_pFixed->dwFileOS);
 }
 
 bool ZVersionInfo::IsTargetWin16() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return VOS__WINDOWS16 == LOWORD(d->m_pFixed->dwFileOS);
 }
 
 bool ZVersionInfo::IsTargetPM16() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return VOS__PM16 == LOWORD(d->m_pFixed->dwFileOS);
 }
 
 bool ZVersionInfo::IsTargetPM32() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return VOS__PM32 == LOWORD(d->m_pFixed->dwFileOS);
 }
 
 bool ZVersionInfo::IsTargetWin32() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return VOS__WINDOWS32 == LOWORD(d->m_pFixed->dwFileOS);
 }
 
 bool ZVersionInfo::IsTargetDOSWin16() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return VOS_DOS_WINDOWS16 == d->m_pFixed->dwFileOS;
 }
 
 bool ZVersionInfo::IsTargetDOSWin32() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return VOS_DOS_WINDOWS32 == d->m_pFixed->dwFileOS;
 }
 
 bool ZVersionInfo::IsTargetOS216PM16() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return VOS_OS216_PM16 == d->m_pFixed->dwFileOS;
 }
 
 bool ZVersionInfo::IsTargetOS232PM32() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return VOS_OS232_PM32 == d->m_pFixed->dwFileOS;
 }
 
 bool ZVersionInfo::IsTargetNTWin32() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return VOS_NT_WINDOWS32 == d->m_pFixed->dwFileOS;
 }
 
@@ -458,37 +458,37 @@ bool ZVersionInfo::IsTargetNTWin32() const
 
 bool ZVersionInfo::IsApp() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return VFT_APP == d->m_pFixed->dwFileType;
 }
 
 bool ZVersionInfo::IsDll() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return VFT_DLL == d->m_pFixed->dwFileType;
 }
 
 bool ZVersionInfo::IsDriver() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return VFT_DRV == d->m_pFixed->dwFileType;
 }
 
 bool ZVersionInfo::IsFont() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return VFT_FONT == d->m_pFixed->dwFileType;
 }
 
 bool ZVersionInfo::IsVxd() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return VFT_VXD == d->m_pFixed->dwFileType;
 }
 
 bool ZVersionInfo::IsStaticLib() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return VFT_STATIC_LIB == d->m_pFixed->dwFileType;
 }
 
@@ -498,73 +498,73 @@ bool ZVersionInfo::IsStaticLib() const
 
 bool ZVersionInfo::IsDriverUnknown() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return IsDriver() && VFT2_UNKNOWN == d->m_pFixed->dwFileSubtype;
 }
 
 bool ZVersionInfo::IsDriverPrinter() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return IsDriver() && VFT2_DRV_PRINTER == d->m_pFixed->dwFileSubtype;
 }
 
 bool ZVersionInfo::IsDriverKeyboard() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return IsDriver() && VFT2_DRV_KEYBOARD == d->m_pFixed->dwFileSubtype;
 }
 
 bool ZVersionInfo::IsDriverLanguage() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return IsDriver() && VFT2_DRV_LANGUAGE == d->m_pFixed->dwFileSubtype;
 }
 
 bool ZVersionInfo::IsDriverDisplay() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return IsDriver() && VFT2_DRV_DISPLAY == d->m_pFixed->dwFileSubtype;
 }
 
 bool ZVersionInfo::IsDriverMouse() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return IsDriver() && VFT2_DRV_MOUSE == d->m_pFixed->dwFileSubtype;
 }
 
 bool ZVersionInfo::IsDriverNetwork() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return IsDriver() && VFT2_DRV_NETWORK == d->m_pFixed->dwFileSubtype;
 }
 
 bool ZVersionInfo::IsDriverSystem() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return IsDriver() && VFT2_DRV_SYSTEM == d->m_pFixed->dwFileSubtype;
 }
 
 bool ZVersionInfo::IsDriverInstallable() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return IsDriver() && VFT2_DRV_INSTALLABLE == d->m_pFixed->dwFileSubtype;
 }
 
 bool ZVersionInfo::IsDriverSound() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return IsDriver() && VFT2_DRV_SOUND == d->m_pFixed->dwFileSubtype;
 }
 
 bool ZVersionInfo::IsDriverComm() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return IsDriver() && VFT2_DRV_COMM == d->m_pFixed->dwFileSubtype;
 }
 
 bool ZVersionInfo::IsDriverInputMethod() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return IsDriver() && VFT2_DRV_INPUTMETHOD == d->m_pFixed->dwFileSubtype;
 }
 
@@ -574,19 +574,19 @@ bool ZVersionInfo::IsDriverInputMethod() const
 
 bool ZVersionInfo::IsFontRaster() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return IsFont() && VFT2_FONT_RASTER == d->m_pFixed->dwFileSubtype;
 }
 
 bool ZVersionInfo::IsFontVector() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return IsFont() && VFT2_FONT_VECTOR == d->m_pFixed->dwFileSubtype;
 }
 
 bool ZVersionInfo::IsFontTrueType() const
 {
-  assert(d->m_pFixed);
+  ZAssert(d->m_pFixed);
   return IsFont() && VFT2_FONT_TRUETYPE == d->m_pFixed->dwFileSubtype;
 }
 

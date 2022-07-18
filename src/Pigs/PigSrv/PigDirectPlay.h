@@ -161,7 +161,7 @@ public:
   CPigDirectPlay(IDirectPlayX* pdp) :
     m_pdp(pdp)
   {
-    assert(m_pdp);
+    ZAssert(m_pdp);
   }
 private:
   CPigDirectPlay(const CPigDirectPlay&); // Disable copy constructor

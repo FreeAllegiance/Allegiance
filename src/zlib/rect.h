@@ -51,6 +51,10 @@ public:
 
     static TRect GetZero() { return TRect(0, 0, 0, 0); }
 
+    ZString GetString() const {
+        return "(min=" + RectType::Min().GetString() + ", max=" + RectType::Max().GetString() + ")";
+    }
+
     typename RectType::Number XSize() const { return RectType::XMax() - RectType::XMin(); }
     typename RectType::Number YSize() const { return RectType::YMax() - RectType::YMin(); }
     typename RectType::PointType Size() const { return RectType::Max() - RectType::Min(); }
@@ -95,6 +99,32 @@ public:
 		RectType::SetXMax(std::min(RectType::XMax(), rect.XMax()));
 		RectType::SetYMin(std::max(RectType::YMin(), rect.YMin()));
 		RectType::SetYMax(std::min(RectType::YMax(), rect.YMax()));
+    }
+
+    void Clip(typename RectType::PointType& point)
+    {
+        if (
+            RectType::XMax() < RectType::XMin()
+            && RectType::YMax() < RectType::YMin()
+            ) {
+            return;
+        }
+
+        if (point.X() < RectType::XMin()) {
+            point.SetX(RectType::XMin());
+        }
+
+        if (point.X() > RectType::XMax()) {
+            point.SetX(RectType::XMax());
+        }
+
+        if (point.Y() < RectType::YMin()) {
+            point.SetY(RectType::YMin());
+        }
+
+        if (point.Y() > RectType::YMax()) {
+            point.SetY(RectType::YMax());
+        }
     }
 
     void Accumulate(const TRect& rect)

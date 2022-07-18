@@ -165,7 +165,7 @@ public:
             if (1205 == pssError->lNative ||  // deadlocked transaction
                 7312 == pssError->lNative)   // timeout
             {
-              assert (pfRetry); // they better be prepared to retry
+              ZAssert (pfRetry); // they better be prepared to retry
               *pfRetry = true;
             }
           }
@@ -192,13 +192,13 @@ public:
       
       m_psqlsite->OnOLEDBErrorRecord(L"errorInfo.GetErrorRecords failed, which is bad (and unexpected).", guid, 0, L"", L"");
       Sleep(1000); // give the debug output thread a chance to write the error to the file
-      *(DWORD*)0 = 0; // we can't assert from any thread, so let's just hard break
+      *(DWORD*)0 = 0; // we can't ZAssert from any thread, so let's just hard break
     }
 
     if (!(pfRetry && *pfRetry)) // let's take a look at any database errors we get, since we don't handle them gracefully
     {
       Sleep(1000); // give the debug output thread a chance to write the error to the file
-      *(DWORD*)0 = 0; // we can't assert from any thread, so let's just hard break
+      *(DWORD*)0 = 0; // we can't ZAssert from any thread, so let's just hard break
       debugf("!!DBERR: retry not attempted !!!!\n");
     }
 
@@ -460,7 +460,7 @@ public:
     REFGUID guid1 = pqueryDest->GetGuid();
     REFGUID guid2 = GetGuid();
     
-    assert(guid1 == guid2); // we know it's the right type, so we can upcast
+    ZAssert(guid1 == guid2); // we know it's the right type, so we can upcast
     // and then make a memory copy of just the user contents
     // NOT the size of the whole m_cmd, since we can't stomp on atl data members--atl also doesn't support copying accessors
     CQuery * pqueryDestT = static_cast<CQuery *>(pqueryDest);
@@ -498,7 +498,7 @@ public:
 
   void ClearRows()
   {
-    assert(IFF(m_pargQueryData, m_cRowsAlloc > 0));
+    ZAssert(IFF(m_pargQueryData, m_cRowsAlloc > 0));
     if (m_pargQueryData)
     {
       HeapFree(GetProcessHeap(), 0, m_pargQueryData);

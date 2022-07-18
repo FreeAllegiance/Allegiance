@@ -26,12 +26,12 @@ KDroot::~KDroot(void)
 {
     //everything should be marked dead before the root destructor is called.
     flush();
-    assert (m_nHitTests == 0);
+    ZAssert (m_nHitTests == 0);
 }
 
 void    KDroot::addHitTest(HitTest*   pHitTest)
 {
-    assert (m_nHitTests <= m_maxHitTests);
+    ZAssert (m_nHitTests <= m_maxHitTests);
 
     //Not allowed to add a node that was marked dead but not yet pruned.
     //Danger: we are performing an operation on another KDRoot which,
@@ -42,7 +42,7 @@ void    KDroot::addHitTest(HitTest*   pHitTest)
     if (pHitTest->GetKDRoot() != NULL)
         pHitTest->GetKDRoot()->flush();
 
-    assert (pHitTest->GetKDRoot() == NULL);
+    ZAssert (pHitTest->GetKDRoot() == NULL);
 
     pHitTest->SetKDRoot(this);
     pHitTest->SetDeadF(false);
@@ -52,12 +52,12 @@ void    KDroot::addHitTest(HitTest*   pHitTest)
     {
         //Need more space but, unlike a KDnode, we can't simply nuke the
         //object/endpoint arrays: we need to create, copy and then nuke.
-        assert (m_ppHitTests);
+        ZAssert (m_ppHitTests);
 
         //Double the existing space
         int n = m_maxHitTests << 1;
         void**  v = new void* [n * (1 + 2 * c_nAxes)];
-        assert (v);
+        ZAssert (v);
 
         m_maxHitTests = n;
         for (int i = 0; (i < c_nAxes); i++)
@@ -80,7 +80,7 @@ void    KDroot::addHitTest(HitTest*   pHitTest)
             delete ppOldHitTests;
         }
     }
-    assert (m_nHitTests < m_maxHitTests);
+    ZAssert (m_nHitTests < m_maxHitTests);
 
     if (m_bStatic)
         pHitTest->UpdateStaticBB();
@@ -116,7 +116,7 @@ void    KDroot::deleteHitTest(HitTest*    pHitTest)
     pHitTest->SetDeletedF(true);
 
     //If we are deleting a hit test ... it must preserve the pointer to the old hit test
-    assert (pHitTest->GetKDRoot() == this);
+    ZAssert (pHitTest->GetKDRoot() == this);
 }
 
 void    KDroot::flush(void)
@@ -166,7 +166,7 @@ void    KDroot::flush(void)
 void    KDroot::update(void)
 {
     //Only works from the root
-    assert (!m_parent);
+    ZAssert (!m_parent);
 
     bool    bSort = (!m_bStatic) || (m_nAdded > 0);
 

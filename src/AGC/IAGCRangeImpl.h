@@ -265,7 +265,7 @@ public:
     RETURN_FAILED(pStm->Read(&cbData, sizeof(cbData), NULL));
     if (c_cbPersistentData != cbData)
     {
-      assert(c_cbPersistentData == cbData);
+      ZAssert(c_cbPersistentData == cbData);
       return ERROR_INVALID_DATA;
     }
 
