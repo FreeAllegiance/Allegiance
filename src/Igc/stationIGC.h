@@ -365,12 +365,19 @@ class       CstationIGC : public TmodelIGC<IstationIGC>
         }
         virtual void    SetShieldFraction(float newVal)
         {
-            if (newVal < 0.0f)
+            if (m_myStationType.GetMaxShieldHitPoints() != 0) //Student 8/4/2022 if there is no shield, m_shieldFraction = 0
+            {
+                if (newVal < 0.0f)
                 newVal = 0.0f;
             else if (newVal > 1.0f)
                 newVal = 1.0f;
 
             m_shieldFraction = newVal;
+            }
+            else
+            {
+                m_shieldFraction = 0.0f;
+            }
         }
 
         virtual bool                    CanBuy(const IbuyableIGC* b) const

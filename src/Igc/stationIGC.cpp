@@ -152,7 +152,7 @@ DamageResult    CstationIGC::ReceiveDamage(DamageTypeID            type,
     {
         float   dtmShield = GetMyMission()->GetDamageConstant(type, m_myStationType.GetShieldDefenseType());
 
-        if (dtmShield != 0.0f)
+        if (dtmShield != 0.0f && m_myStationType.GetMaxShieldHitPoints() != 0.0f) //Student 8/4/2022 explicitly not allow shield damage if maxsdhieldhitpoints == 0
         {
             dr = c_drShieldDamage;
 
