@@ -134,6 +134,10 @@ class   CasteroidIGC : public TmodelIGC<IasteroidIGC>
 
             amount *= GetMyMission()->GetDamageConstant(type, c_defidAsteroid);
 
+            //Student 8/3/2022 applying experience modifier (kb) earlier asteroids
+            if (launcher && (launcher->GetObjectType() == OT_ship))
+                amount *= ((IshipIGC*)launcher)->GetExperienceMultiplier();
+
             if (amount < 0.0f)
             {
                 m_fraction -= amount / float(m_asteroidDef.hitpoints);

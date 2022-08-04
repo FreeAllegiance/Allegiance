@@ -94,6 +94,10 @@ class CprobeIGC : public TmodelIGC<IprobeIGC>
             float   maxHP = m_probeType->GetHitPoints();
             amount *= GetMyMission()->GetDamageConstant(type, m_probeType->GetDefenseType());
 
+            //Student 8/3/2022 applying experience modifier (kb) earlier to apply to repairs
+            if (launcher && (launcher->GetObjectType() == OT_ship))
+                    amount *= ((IshipIGC*)launcher)->GetExperienceMultiplier();
+
             if (amount < 0.0f)
             {
                 if (maxHP > 0.0f)
@@ -106,8 +110,8 @@ class CprobeIGC : public TmodelIGC<IprobeIGC>
             }
             else if (amount > 0.0f)
             {
-                if (launcher && (launcher->GetObjectType() == OT_ship))
-                    amount *= ((IshipIGC*)launcher)->GetExperienceMultiplier();
+                //if (launcher && (launcher->GetObjectType() == OT_ship))
+                //    amount *= ((IshipIGC*)launcher)->GetExperienceMultiplier(); //Student 8/3/2022 applying experience modifier (kb) earlier to apply to repairs
 
                 m_fraction = maxHP > 0.0f ? (m_fraction - amount / maxHP) : 0.0f;
                 if (m_fraction <= 0.0f)

@@ -138,6 +138,12 @@ DamageResult    CstationIGC::ReceiveDamage(DamageTypeID            type,
     float   dtmArmor = GetMyMission()->GetDamageConstant(type, m_myStationType.GetArmorDefenseType());
     assert (dtmArmor >= 0.0f);
 
+    //Student 8/3/2022 applying experience modifier (kb) earlier to apply to repairs
+    if (launcher && launcher->GetObjectType() == OT_ship)
+    {
+        amount *= ((IshipIGC*)launcher)->GetExperienceMultiplier();
+    }
+
     if (amount < 0.0f)
     {
         m_hullFraction -= amount * dtmArmor / maxArmor;
@@ -156,8 +162,8 @@ DamageResult    CstationIGC::ReceiveDamage(DamageTypeID            type,
         {
             dr = c_drShieldDamage;
 
-            if (launcher && (launcher->GetObjectType() == OT_ship))
-                amount *= ((IshipIGC*)launcher)->GetExperienceMultiplier();
+            //if (launcher && (launcher->GetObjectType() == OT_ship))
+            //    amount *= ((IshipIGC*)launcher)->GetExperienceMultiplier(); //Student 8/3/2022 applying experience modifier (kb) earlier to apply to repairs
 
             IIgcSite*   pigc = GetMyMission()->GetIgcSite();
             pigc->DamageStationEvent(this, launcher, type, amount);

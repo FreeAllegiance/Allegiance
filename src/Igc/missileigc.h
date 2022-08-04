@@ -98,6 +98,12 @@ class CmissileIGC : public TmodelIGC<ImissileIGC>
             amount *= GetMyMission()->GetDamageConstant(type, m_missileType->GetDefenseType());
 
             float   maxHP = m_missileType->GetHitPoints();
+            
+            //Student 8/3/2022 applying experience modifier (kb) to apply to missiles
+            if (launcher && (launcher->GetObjectType() == OT_ship))
+            {
+                amount *= ((IshipIGC*)launcher)->GetExperienceMultiplier();
+            }
 
             if (amount < 0.0f)
             {
@@ -139,7 +145,7 @@ class CmissileIGC : public TmodelIGC<ImissileIGC>
             return m_fraction * m_missileType->GetHitPoints();
         }
 
-    // ImissileIGC
+    // ImissileIGC //Student NOTE, give possibility of reaquiring target?
         virtual ImissileTypeIGC*    GetMissileType(void) const
         {
             return m_missileType;

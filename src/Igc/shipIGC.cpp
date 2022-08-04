@@ -1234,6 +1234,13 @@ DamageResult CshipIGC::ReceiveDamage(DamageTypeID            type,
     assert (dtmArmor >= 0.0f);
 
     float leakage;
+
+    //Student 8/3/2022 applying experience modifier (kb) earlier to apply to repairs
+    if (launcher && launcher->GetObjectType() == OT_ship)
+    {
+        amount *= ((IshipIGC*)launcher)->GetExperienceMultiplier();
+    }
+            
     if (amount < 0.0f)
     {
         //Repair the target's hull
@@ -1264,8 +1271,8 @@ DamageResult CshipIGC::ReceiveDamage(DamageTypeID            type,
 
         if (launcher)
         {
-            if (launcher->GetObjectType() == OT_ship)
-                amount *= ((IshipIGC*)launcher)->GetExperienceMultiplier(); //Student Note: This is kb multiplier. Also, repairing is not affected by kb
+            //if (launcher->GetObjectType() == OT_ship)
+            //    amount *= ((IshipIGC*)launcher)->GetExperienceMultiplier(); //Student 8/3/2022 applying experience modifier (kb) earlier to apply to repairs
 
             if (m_damageTrack && (launcher->GetMission() == GetMyMission()))
                 m_damageTrack->ApplyDamage(timeCollision, launcher, amount);
