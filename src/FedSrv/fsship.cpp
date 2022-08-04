@@ -580,9 +580,20 @@ void CFSShip::CaptureStation(IstationIGC * pstation)
     //Fudge the hitpoints of the station
     //All those guns inside damage the hull
     pstation->SetFraction(pstation->GetFraction() * 0.5f);
-
+    
+    //Student 8/3/2022, make the heroic engineer boost the shield regen
+    //This means that bases with 0 shield regen don't get shields
+    //Also slightly nerf shield regain from 80% to 70% to allow more variance in shield regen
+     
     //But the heroic engineer's get the shields up.
-    pstation->SetShieldFraction(0.8f); //pstation->GetShieldFraction() + 0.5f);
+    float heroicEngineerShieldBoost = 0.0f; //default, station has no shield regen to get up
+    if (pstation->GetStationType()->GetMaxShieldHitPoints() != 0) //prevent divide by zero
+    {
+        float regenRatio = pstation->GetStationType()->GetShieldRegeneration() / pstation->GetStationType()->GetMaxShieldHitPoints(); //Generally, this will be 0.10f as of ac_07
+        heroicEngineerShieldBoost = regenRatio * 7.0f; //multiply by 7 to get to 0.7f
+    }
+    
+    pstation->SetShieldFraction(heroicEngineerShieldBoost); //pstation->SetShieldFraction(0.8f) //pstation->GetShieldFraction() + 0.5f); 
   }
 
   {
