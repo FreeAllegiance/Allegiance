@@ -1252,7 +1252,7 @@ public:
         bLockLobby                      = false;
         bLockSides                      = false;
         bLockTeamSettings               = false;
-        bAllowDefections                = false; //Student TODO
+        bAllowDefections                = false; //Student TODO - Change default settings to allow defections as default
         bStations                       = true ;
         bScoresCount                    = true;
         bSquadGame                      = false;

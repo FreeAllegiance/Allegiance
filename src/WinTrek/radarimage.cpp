@@ -1311,7 +1311,7 @@ public:
                     offset.SetY(offset.Y() + y * 0.5f);
 
                     if (psurfaceIcon || data.m_bEye || (data.m_ripTime > 0)) { //if we are drawing things to the left of name, hull, shield, do the x and y offsets together
-                        //Student TODO: Fix x centering on ripTime
+                        //Student TODO: Fix x centering on ripTime //Student Note 9/20/2022 I might have fixed this?
                         BlendMode previousBlendMode = pcontext->GetBlendMode(); //blend mode might already be this, but being explicit and allowing other things to exist
                         pcontext->SetBlendMode(BlendModeAdd);
                         
@@ -1369,7 +1369,7 @@ public:
                             {
                                 if (data.m_ripTime < 10) //if ripTime is in single digits, center it (2 digits is fine,
                                 {                        //3 digits is greater than the x length of other icons 
-                                                         //(and also should rarely if ever come up). Also, if only one, don't screw with it.
+                                                         //(and also should rarely if ever come up)). Also, if only one, don't screw with it.
                                     shift = (ripShift - ripShiftConstant) * 0.5f;
                                 }
 

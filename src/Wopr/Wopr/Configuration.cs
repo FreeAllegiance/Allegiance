@@ -31,5 +31,13 @@ namespace Wopr
                 return System.Configuration.ConfigurationManager.AppSettings.Get("ArtPath");
             }
         }
+
+        public static string Core
+        {
+            get
+            {
+                return System.Configuration.ConfigurationManager.AppSettings.Get("Core");
+            }
+        }
     }
 }

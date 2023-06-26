@@ -570,6 +570,7 @@ private:
     TRef<Image>         m_pimage;
 
 	TRef<ButtonPane>	m_pbuttonDiscord;
+    TRef<ButtonPane>    m_pbuttonSteamLeaderboard;
     TRef<ButtonPane>    m_pbuttonPlayLan;
     TRef<ButtonPane>    m_pbuttonPlayInt;
 #ifdef USEAZ
@@ -620,7 +621,8 @@ private:
         hoverQuickstart,
         hoverExit,
         hoverHelp,
-        hoverDiscord
+        hoverDiscord,
+        hoverSteamLeaderboard
     };
 
     TRef<ModifiableNumber>  m_pnumberCurrentHover;
@@ -1131,6 +1133,10 @@ public:
                 IntroScreen::OnButtonDiscord();
                 return true;
             };
+            listeners["open.steam"] = [this]() {
+                IntroScreen::OnButtonSteamLeaderboard(); //Student TODO: change to steam leaderboard 
+                return true;
+            };
             listeners["open.options"] = [this]() {
                 GetWindow()->ShowOptionsMenu();
                 return true;
@@ -1191,6 +1197,7 @@ public:
         pnsIntroScreen->AddMember("hoverExit", new Number(hoverExit));
         pnsIntroScreen->AddMember("hoverHelp", new Number(hoverHelp));
         pnsIntroScreen->AddMember("hoverDiscord", new Number(hoverDiscord));
+        pnsIntroScreen->AddMember("hoverSteamLeaderboard", new Number(hoverSteamLeaderboard)); //Student TODO: implement this
 
         pnsIntroScreen->AddMember("CurrentHover", m_pnumberCurrentHover = new ModifiableNumber(hoverNone));
 
@@ -1205,6 +1212,7 @@ public:
             CastTo(m_pbuttonPlayLan, pns->FindMember("playLanButtonPane"));
             CastTo(m_pbuttonPlayInt, pns->FindMember("playIntButtonPane"));
             CastTo(m_pbuttonDiscord, pns->FindMember("discordButtonPane"));
+            CastTo(m_pbuttonSteamLeaderboard, pns->FindMember("steamLeaderboardButtonPane")); //Student TODO: implement this
 
     #ifdef USEAZ
             CastTo(m_pbuttonZoneClub, pns->FindMember("zoneClubButtonPane"));
@@ -1225,6 +1233,7 @@ public:
 
 
             AddEventTarget(&IntroScreen::OnButtonDiscord, m_pbuttonDiscord->GetEventSource());
+            AddEventTarget(&IntroScreen::OnButtonSteamLeaderboard, m_pbuttonSteamLeaderboard->GetEventSource()); //Student TODO: implement
             AddEventTarget(&IntroScreen::OnButtonTraining, m_pbuttonTrainingBig->GetEventSource());
             AddEventTarget(&IntroScreen::OnButtonExit, m_pbuttonExit->GetEventSource());
             AddEventTarget(&IntroScreen::OnButtonHelp, m_pbuttonHelp->GetEventSource());
@@ -1254,6 +1263,7 @@ public:
             AddEventTarget(&IntroScreen::OnHoverExit, m_pbuttonExit->GetMouseEnterEventSource());
             AddEventTarget(&IntroScreen::OnHoverHelp, m_pbuttonHelp->GetMouseEnterEventSource());
             AddEventTarget(&IntroScreen::OnHoverDiscord, m_pbuttonDiscord->GetMouseEnterEventSource());
+            AddEventTarget(&IntroScreen::OnHoverSteamLeaderboard, m_pbuttonSteamLeaderboard->GetMouseEnterEventSource()); //Student TODO: implement
 
             AddEventTarget(&IntroScreen::OnHoverNone, m_pbuttonPlayLan->GetMouseLeaveEventSource());
             AddEventTarget(&IntroScreen::OnHoverNone, m_pbuttonPlayInt->GetMouseLeaveEventSource());
@@ -1476,6 +1486,13 @@ public:
 		GetWindow()->ShowWebPage("https://discord.gg/WcEJ9VH");
 		return true;
 	}
+
+    bool OnButtonSteamLeaderboard()
+    {
+        //Student TODO: change this to the actual leaderboard
+        GetWindow()->ShowWebPage("https://store.steampowered.com/app/700480/Microsoft_Allegiance/");
+        return true;
+    }
 
 	class OpenWikiSink : public IIntegerEventSink {
 	public:
@@ -1865,6 +1882,13 @@ public:
     bool OnHoverDiscord()
     {
         m_pnumberCurrentHover->SetValue(hoverDiscord);
+        return true;
+    }
+
+    bool OnHoverSteamLeaderboard()
+    {
+        //Student TODO: implement
+        m_pnumberCurrentHover->SetValue(hoverSteamLeaderboard);
         return true;
     }
 

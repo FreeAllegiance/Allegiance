@@ -16,7 +16,7 @@ namespace Wopr.Strategies
         //private const string TargetServer = "LocalTest";
         //private const string TargetServer = "AEast2";
         private const string GameName = "SuperBotMatch9000";
-        private const string CoreName = "PCore016";
+        private readonly string CoreName = Configuration.Core;
         private const int MaxPlayersPerGame = 200;
 
         private bool _isClientConnectedToServer = false;
@@ -162,7 +162,7 @@ namespace Wopr.Strategies
                     // Works!
                     {
                         var warps = ship.GetCluster().GetWarps();
-                        var warp = warps[_random.Next(0, warps.Count)];
+                        var warp = warps[_random.Next(0, warps.Count())];
                         //var warp = ship.GetCluster().GetWarps().First();
                         CommandID command = (CommandID)ship.GetDefaultOrder(warp);
 

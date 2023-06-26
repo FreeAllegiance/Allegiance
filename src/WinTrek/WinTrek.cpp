@@ -4600,7 +4600,7 @@ public:
     void ToggleAA()
     {
         GetEngine()->SetAA(g_DX9Settings.m_dwAA + 1);
-        SavePreference("UseAntialiasing", g_DX9Settings.m_dwAA); //Student TODO: This is never used, make a toggle and loadpreference
+        SavePreference("UseAntialiasing", g_DX9Settings.m_dwAA);
         if (m_pitemAA != NULL) {
             m_pitemAA->SetString(GetAAString());
         }
