@@ -20,11 +20,7 @@ const int c_cPlayersMax   = 500; // max players allowed on a server
 const int c_cDronesMax    = 500; // max drones  allowed on a server
 const int c_cShipsMax     = c_cPlayersMax + c_cDronesMax;
 
-#if defined(ALLSRV_STANDALONE)
-  const short c_cMaxPlayersPerGame = 200; // KGJV-; changed from 64 to 200. KGJV #114 back to AZ size // BT - STEAM
-#else // defined(ALLSRV_STANDALONE)
-  const short c_cMaxPlayersPerGame = 0x7FFF;
-#endif // defined(ALLSRV_STANDALONE)
+const short c_cMaxPlayersPerGame = 200; // KGJV-; changed from 64 to 200. KGJV #114 back to AZ size // BT - STEAM
 
 
 HRESULT pascal FedSrv_Init();
@@ -78,11 +74,7 @@ class MapFileSite : public IMissionSite, public IIgcSite
 class FedSrvSiteBase :
   public IMissionSite,
   public IIgcSite,
-//#ifndef ALLSRV_STANDALONE //Imago 6/10
   public IFedMessagingSite, public ISQLSite, public ISQLSite2
-//#else // !ALLSRV_STANDALONE
-//  public IFedMessagingSite
-//#endif // !ALLSRV_STANDALONE
 {
 public:
   FedSrvSiteBase() :
@@ -275,11 +267,6 @@ struct Global
     strLobbyServer.SetEmpty();
     strAuthServer.SetEmpty();
     strArtPath.SetEmpty();
-//#if !defined(ALLSRV_STANDALONE)
-    
-	// BT - 9/17 - No longer used.
-	//strSQLConfig.Empty();
-//#endif    
 #if defined(SRV_CHILD)  //imago -store command line arguments
 	strArgName.SetEmpty();
 	strArgCore.SetEmpty();
@@ -421,9 +408,7 @@ void RecordSquadGame(const SideListIGC*  psides, IsideIGC* psideWon);
 void GetInvitations(int nInvitationID, MissionID missionID);
 
 //-KGJV - AZ uses StartDefaultGames now
-//#if defined(ALLSRV_STANDALONE)
 void StartDefaultGames();
-//#endif
 
 ItreasureIGC*  CreateTreasure(Time now, IshipIGC* pship, DataTreasureIGC* pdt, const Vector& position, float dv);
 

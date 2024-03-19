@@ -66,8 +66,6 @@ CAdminSession::~CAdminSession()
   if (it != s_vecSessions.end())
     s_vecSessions.erase(it);
   lock.Unlock();
-
-  #if defined(ALLSRV_STANDALONE)
     // Possibly shutdown the standalone server if no more sessions
     if (0 == GetSessionCount())
     {
@@ -88,7 +86,6 @@ CAdminSession::~CAdminSession()
         }
       }
     }
-  #endif // defined(ALLSRV_STANDALONE)
 }
 
 
