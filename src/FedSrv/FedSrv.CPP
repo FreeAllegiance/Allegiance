@@ -4836,12 +4836,6 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 
 		// Wait for a PLAYER_RANK message to come back from the lobby.
 
-
-#if !defined(ALLSRV_STANDALONE)
-        if (fValid)
-          g.sql.PostQuery(pquery);
-        else //pquery->OnDataReady() below is the else of this
-#endif
 		// imago commented below out, "mpr thread" will tell the main when true 7/5/08
 		//pquery->DataReady();
 
