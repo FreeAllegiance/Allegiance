@@ -298,9 +298,6 @@ struct Global
   ZString             strArtPath;
   char                m_szToken[24]; // sizeof(_ZONETICKET_TOKEN.szToken)
   int                 nUpdatesPerSecond;
-#ifdef USEAUTH
-  TRef<IZoneAuthServer> pzas;
-#endif
   // *** Game state stuff ***
   Time                timeNow;             // cached value (for very short duration) of timeGetTime()
 

@@ -282,10 +282,6 @@ HRESULT pascal FedSrv_Terminate(void)
 
   _AGCModule.TriggerEvent(NULL, AllsrvEventID_Terminate, "", -1, -1, -1, 0);
 
-#ifdef USEAUTH
-  g.pzas = NULL;
-#endif
-
   //clean up the pid file we dropped for parent -Imago 6/25/08
 #if defined(SRV_CHILD)
 	char strFilename[10] = "\0";
@@ -490,12 +486,6 @@ if (pfsMission->RequiresInvitation())
               }
           }
       }
-  }
-  else
-  {
-#ifdef USEAUTH
-  pfsMission->RemovePlayerByName(pfsPlayer->GetName(), QSR_DuplicateLocalLogon);
-#endif
   }
 
   const MissionParams*    pmp = pMission->GetMissionParams();
@@ -4687,56 +4677,6 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
         bool fValid = false; // whether we have a valid character
         LPBYTE pZoneTicket = (LPBYTE) FM_VAR_REF(pfmLogon, ZoneTicket);
         //#if !defined(ALLSRV_STANDALONE)
-#ifdef USEAUTH
-        if (pZoneTicket) // it's all in the Zone Ticket
-        {
-            hr = g.pzas->DecryptTicket(pZoneTicket, pfmLogon->cbZoneTicket);
-            // Since they came in through the lobby, their token MUST be valid, but since we're paranoid, let's check again
-            switch (hr)
-            {
-            case ZT_NO_ERROR:
-            {
-                if (lstrcmpi(g.strAuthServer, g.pzas->GetAuthServer())) // you MUST use the auth server that we expect
-                {
-                    szReason = "Your account authentication did not go through the expected server.";
-                    break;
-                }
-                bool fValidNow = false;
-                fValid = g.pzas->HasToken(g.m_szToken, &fValidNow);
-                if (!fValid)
-                    szReason = "Your Allegiance Zone subscription has expired.";
-                else if (!fValidNow)
-                {
-                    fValid = false; // not considered valid anymore
-                    szReason = "This account is not authorized to play on the Allegiance Zone.";
-                    fRetry = true;
-                }
-                break;
-            }
-
-            case ZT_E_BUFFER_TOO_SMALL:
-                _AGCModule.TriggerEvent(NULL, AllsrvEventID_IncreaseTokensMax, "", -1, -1, -1, 0);
-                break;
-
-            case ZT_E_AUTH_INVALID_TICKET:
-                _AGCModule.TriggerEvent(NULL, AllsrvEventID_InvalidZoneTicket, "", -1, -1, -1, 0);
-                szReason = "Could not validate Zone ID.";
-                break;
-
-            default:
-                _AGCModule.TriggerEvent(NULL, AllsrvEventID_DecryptTicketFailed, "", -1, -1, -1, 0);
-            }
-        }
-        else
-        {
-            _AGCModule.TriggerEvent(NULL, AllsrvEventID_NoTicket, "", -1, -1, -1, 0);
-            szReason = "No login credentials found.";
-        }
-
-        lstrcpy(pqd->szCharacterName, g.pzas->GetName());
-        pqd->characterID = g.pzas->GetAccountID();
-
-#else // defined(USEAUTH) -- was !defined(ALLSRV_STANDALONE)
         if (0 < pfmLogon->cbCharacterName && pfmLogon->cbCharacterName <= c_cbName)
         {
           fValid = true;
@@ -4750,7 +4690,6 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
           szReason = "No player name found.";
           lstrcpy(pqd->szCharacterName, "<invalid>");
         }
-#endif // defined(USEAUTH) -- was !defined(ALLSRV_STANDALONE)
 
         lstrcpy(pqd->szReason, szReason);
         pqd->fRetry = fRetry;
@@ -7388,20 +7327,6 @@ bool OnCFGDownloadDone(const char * szConfig) // returns true iff up-to-date
 
     char szFilelistCRC[50];
 
-
-#ifdef USEAUTH
-	// Extract auth server from code and update our auth subsystem to use it.
-	// We share the client's field for this.  Probably not the right thing to do,
-	// but it will help prevent mistakes as all clients/servers sharing a cfg will
-	// then automatically share an auth server.
-
-    char szAuthServer[128]; // Size borrowed from clintlib.cpp
-    GetPrivateProfileString("Allegiance", "ZAuth", "auth.zone.com",
-                            szAuthServer, sizeof(szAuthServer), szConfig);
-
-    g.strAuthServer = szAuthServer;
-#endif
-
     GetPrivateProfileString("AllSrvUI", "FilelistCRC", "0",
                             szFilelistCRC, sizeof(szFilelistCRC), szConfig);
 
@@ -8987,14 +8912,6 @@ HRESULT pascal FedSrv_Init()
                       "0",    // if there are ever multiple servers running, change this
                       sizeof(SERVER_COUNTERS));
   memset(g.pServerCounters, 0x00, sizeof(SERVER_COUNTERS));
-
-#if defined(USEAUTH)//!defined(ALLSRV_STANDALONE)
-    g.pzas = CreateZoneAuthServer();
-    if (!g.pzas)
-    {
-      return E_FAIL;
-    }
-#endif // defined(USEAUTH), formerly !defined(ALLSRV_STANDALONE)
 
 
   // create event used by fm to signal a message has arrived

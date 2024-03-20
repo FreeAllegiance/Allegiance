@@ -103,11 +103,6 @@
 #include "fsmission.h"
 #include "fedsrvsql.h" //KG removed - Imago unremoved 6/10
 
-// KG guard with USEAUTH for consistency 
-#ifdef USEAUTH
-#include "zauth.h" 
-#endif
-
 #include "fedsrv.h"
 extern Global g;
 #include "fsship.h"

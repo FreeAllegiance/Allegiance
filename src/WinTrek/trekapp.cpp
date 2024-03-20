@@ -36,12 +36,8 @@ bool    g_bQuickstart = false;
 bool    g_bReloaded = false;
 int     g_civStart    = -1;
 bool    g_bDownloadNewConfig = true;
-bool    g_bAskForCDKey = 
-//#ifdef USEAUTH // We don't bother with CD keys anymore.
-//  true;
-//#else
-  false;
-//#endif
+// We don't bother with CD keys anymore.
+bool    g_bAskForCDKey = false;
 // wlp 2006 - added askforcallsign - don't ask if passed in on commandline
 bool g_bAskForCallSign = true ; // wlp 2006
 //////////////////////////////////////////////////////////////////////////////

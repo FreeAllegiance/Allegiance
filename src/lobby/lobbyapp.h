@@ -99,13 +99,6 @@ public:
 
   virtual int     OnMessageBox(const char * strText, const char * strCaption, UINT nType);
 
-#ifdef USEAUTH
-  TRef<IZoneAuthServer> GetZoneAuthServer()
-  {
-    return m_pzas;
-  }
-#endif
-
   PER_SERVER_COUNTERS * AllocatePerServerCounters(const char * szServername);
 
   void FreePerServerCounters(PER_SERVER_COUNTERS * pCounters)
@@ -266,10 +259,6 @@ private:
   // *** Perfmon counter stuff ***
   CPerfShare        m_perfshare;
   LOBBY_COUNTERS *  m_pCounters;
-// KG guard with USEAUTH for consistency 
-#ifdef USEAUTH
-  TRef<IZoneAuthServer> m_pzas;
-#endif
   Time              m_timeNow;
 
   // BT - STEAM
