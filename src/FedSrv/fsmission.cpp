@@ -199,14 +199,6 @@ CFSMission::CFSMission(
 
   s_list.last(this);            // add us to the list of missions
 
-  // handle initation list, if any
-  m_nInvitationListID = m_misdef.misparms.nInvitationListID;
-  if (RequiresInvitation())
-  {
-    // Invitations will NOT be added to the right right now, but will be added later, asynchronously after they come back from sql.
-    GetInvitations(m_nInvitationListID, GetMissionID());
-  }
-
   if (paagcParamData)
   {
     TechTreeBitMask ttbmBlank;
@@ -1154,24 +1146,6 @@ void CFSMission::AddInvitation(SideID sid, char * szPlayerName)
      return;
 
    m_pFSSides[sid]->AddInvitation(szPlayerName);
-}
-
-
-
-/*-------------------------------------------------------------------------
- * IsInvited
- *-------------------------------------------------------------------------
- */
-bool CFSMission::IsInvited(CFSPlayer * pPlayer)
-{
-    assert(RequiresInvitation());
-
-    for (std::vector<CFSSide*>::iterator _i(m_pFSSides.begin()); _i != m_pFSSides.end(); ++_i)
-    {
-      if(static_cast<CFSSide*>(*_i)->IsInvited(pPlayer))
-        return true;
-    }
-    return false;
 }
 
 
@@ -3254,14 +3228,6 @@ void CFSMission::ProcessGameOver()
     }
   }
 
-  // if this was a squads game, record the wins and losses for the squads
-  if (m_misdef.misparms.bSquadGame && m_misdef.misparms.bScoresCount && m_psideWon
-      && m_misdef.misparms.nTeams == 2
-      && m_pMission->GetSide(0)->GetSquadID() != m_pMission->GetSide(1)->GetSquadID())
-  {
-    RecordSquadGame(m_pMission->GetSides(), m_psideWon);
-  }
-
   // Record the Game Results
   //if (m_misdef.misparms.bScoresCount) // Only if scores count
   //{
@@ -4434,9 +4400,6 @@ DelPositionReqReason CFSMission::CheckPositionRequest(CFSPlayer * pfsPlayer, Isi
 
     if (pfsPlayer->GetBannedSideMask() & SideMask(sideID))
       return DPR_Banned;
-
-    if (RequiresInvitation() && !CFSSide::FromIGC(pside)->IsInvited(pfsPlayer))
-      return DPR_PrivateGame;
 
     int nNumPlayers = GetCountOfPlayers(pside, false);
     int maxPlayers = pmp->nMaxPlayersPerTeam;

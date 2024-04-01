@@ -406,12 +406,6 @@ public:
 
   void AddInvitation(SideID sid, char * szPlayerName);
 
-  bool                  RequiresInvitation() 
-  { 
-    return m_nInvitationListID != 0; 
-  }
-
-  bool                  IsInvited(CFSPlayer * pPlayer);
   bool                  IsSquadGame()
   {
     return m_misdef.misparms.bSquadGame;

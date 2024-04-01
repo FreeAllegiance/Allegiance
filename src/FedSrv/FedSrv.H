@@ -81,7 +81,6 @@ public:
     m_pfsMission(NULL)
   {}
 // IIgcSite  
-  void ClusterUpdateEvent(IclusterIGC* c);
   TRef<ThingSite>   CreateThingSite(ImodelIGC* pModel);
   TRef<ClusterSite>   CreateClusterSite(IclusterIGC* pCluster);
   void KillAsteroidEvent(IasteroidIGC* pasteroid, bool explodeF);
@@ -130,8 +129,6 @@ public:
   void LoadoutChangeEvent(IshipIGC* pship, IpartIGC* ppart, LoadoutChange lc);
   void CreateSideEvent(IsideIGC * pIsideIGC);
   void DestroySideEvent(IsideIGC * pIsideIGC);
-  void TerminateModelEvent(ImodelIGC* model);
-  void TerminateMissionEvent(ImissionIGC* pMission) {}
   void CommandChangedEvent(Command i, IshipIGC * pship, ImodelIGC* ptarget, CommandID cid);
 
   void        CreateBuildingEffect(Time           now,
@@ -400,9 +397,6 @@ CFMGroup * GetGroupSectorFlying(IclusterIGC * pCluster);
 CFSDrone * CreateStockDrone(IdroneTypeIGC * pdronetype, IsideIGC* pSide, IbaseIGC* pbase = NULL);
 
 void SetCharStats(int characterID, CFSPlayer* pfsPlayer, IsideIGC * pSide, PlayerScoreObject & pso, CFSMission* pfsMission);
-void RecordSquadGame(const SideListIGC*  psides, IsideIGC* psideWon);
-
-void GetInvitations(int nInvitationID, MissionID missionID);
 
 //-KGJV - AZ uses StartDefaultGames now
 void StartDefaultGames();

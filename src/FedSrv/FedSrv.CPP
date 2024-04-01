@@ -50,16 +50,6 @@ TMap<ZString, int> m_CharMap;
 	  return id;
   }
 
-
-//removed mothballed MSRG code - Imago
-//moved tech bit stuff into igc mission
-
-void LoadTechBits()
-{
-
-}
-
-
 void LoadRankInfo()
 {
     //Imago: Changed to load rank_info from <artwork>/ranks.txt
@@ -219,19 +209,6 @@ void SetSessionDetails()
   tt.Stop();
 }
 
-
-/*-------------------------------------------------------------------------
- * UnloadDbCache
- *-------------------------------------------------------------------------
- * Purpose:
- *    Clear out everything we got from database that doesn't change between missions
- */
-void UnloadDbCache()
-{
-
-}
-
-
 /*-------------------------------------------------------------------------
  * FedSrv_Terminate
  *-------------------------------------------------------------------------
@@ -291,25 +268,6 @@ HRESULT pascal FedSrv_Terminate(void)
 
 
   return(S_OK);
-}
-
-
-/*-------------------------------------------------------------------------
- * FetchGlobalAttributeSet
- *-------------------------------------------------------------------------
- * Purpose:
- *    Fetch attributes from database for specified global attribute
- *
- * Parameters:
- *    gaid: global attribute to get
- *    gas:  out parameter of fetched settings
- *
- * Side Effects:
- *    Inner Database query
- */
-void FetchGlobalAttributeSet(GlobalAttributeID gaid, GlobalAttributeSet& gas)
-{
-
 }
 
 bool IsAnotherPlayerUsingThisName(const char * playerName, ImissionIGC * pMission)
@@ -443,24 +401,6 @@ void JoinMission(CFSPlayer * pfsPlayer, DWORD dwCookie, const char * szPW)
 	    pfsMission->RequestPosition(pfsPlayer, psideReq, popi != NULL);
   return;
   }
-
-
-if (pfsMission->RequiresInvitation())
-  {
-    if (!pfsMission->IsInvited(pfsPlayer))
-    {
-      // one of the check to make sure client cannot log into games that it doesn't have access to
-      BEGIN_PFM_CREATE(g.fm, pfmDelPosReq, CS, DELPOSITIONREQ)
-      END_PFM_CREATE
-      pfmDelPosReq->shipID     = pfsPlayer->GetShipID();
-      pfmDelPosReq->iSide      = NA;
-      pfmDelPosReq->reason     = DPR_PrivateGame;
-      g.fm.SendMessages(pfsPlayer->GetConnection(), FM_GUARANTEED, FM_FLUSH);
-      return;
-    }
-  }
-
-  //ImissionIGC * pMission = pfsMission->GetIGCMission();
 
   if (g.fm.GetHostApplicationGuid() == FEDSRV_STANDALONE_PRIVATE_GUID)
   {
@@ -827,50 +767,6 @@ void SetCharStats(int                   characterID,
         (pso.GetTimePlayed() / 60.0f), pso.GetWinner(), pso.GetLoser(), pso.GetCommandWinner(), pso.GetCommandLoser(),
 		pso.GetScore());
 #endif
-}
-
-/*-------------------------------------------------------------------------
- * RecordSquadGame
- *-------------------------------------------------------------------------
-  Purpose:
-      Upload the results of a squad game
-
-  Parameters:
-      List of sides in the game & the winning side
- */
-void RecordSquadGame(const SideListIGC*  psides, IsideIGC* psideWon)
-{
-
-}
-
-
-/*-------------------------------------------------------------------------
- * GetInvitations
- *-------------------------------------------------------------------------
- */
-void GetInvitations(int nInvitationID, MissionID missionID)
-{
-
-}
-
-
-/*-------------------------------------------------------------------------
- * LoadDbCache
- *-------------------------------------------------------------------------
- * Purpose:
- *     Loads everything from database that's (basically) static for duration
- *     Keeps both the igc data, and also snapshots of the messages so that they
- *         can be sent to clients without any processing
- *
- * Returns:
- *     nothing (yet)
- *
- * Side Effects:
- *     lots of memory allocated for cached tables. Freed on cleanup
- */
-void LoadDbCache()
-{
-
 }
 
 CFMGroup * GetGroupSectorDocked(IclusterIGC * pCluster)
@@ -8183,8 +8079,6 @@ DWORD WINAPI ReceiveThread(LPVOID pThreadParameter)
   // KGJV #114
   UnloadStaticCoreInfo();
 #endif
-  // destroy IGC stuff
-  UnloadDbCache();
 
   // Terminate the ATL module
   _Module.Term();
@@ -8433,20 +8327,6 @@ void LoadSettings()
             return false;
     return true;
  }
-
-/*-------------------------------------------------------------------------
- * BuildIGCFiles ()
- *-------------------------------------------------------------------------
- * Purpose:
- *    Build IGC files from the database
- *
- *  Parameters: none
- */
-void    BuildIGCFiles (char* szArtworkPath, bool bEncrypt = false, bool bMaps = true)
-{
-
-}
-
 
 /*-------------------------------------------------------------------------
  * RegisterAllSrv()
@@ -8888,8 +8768,6 @@ HRESULT pascal FedSrv_Init()
   _splitpath(path_buffer, drive, dir, NULL, NULL);
   _makepath(path_buffer, drive, dir, NULL, NULL);
   SetCurrentDirectory(path_buffer);
-
-  LoadTechBits(); // only for the IfYouBuildIt cheat
 
   //bool fSWMRGInit = FSWMRGInitialize(&g.swmrg, "FedSrv"); //Imago removed (again)
   //ZAssert(fSWMRGInit);
@@ -9865,10 +9743,6 @@ void FedSrvSiteBase::UpgradeShip(IshipIGC* pship, const IstationIGC*  pstation)
             }
         }
     }
-}
-
-void FedSrvSiteBase::TerminateModelEvent(ImodelIGC*  pmodel)
-{
 }
 
 void FedSrvSiteBase::KillShipEvent(Time timeCollision, IshipIGC* pship, ImodelIGC* pcredit, float amount, const Vector& p1, const Vector& p2)
@@ -11929,11 +11803,6 @@ void FedSrvSiteBase::SendChat(IshipIGC*     pshipSender,
                        NULL);
 
     PFM_DEALLOC(pfmChatAlloc);
-}
-
-void FedSrvSiteBase::ClusterUpdateEvent(IclusterIGC* c)
-{
-
 }
 
 void FedSrvSiteBase::CommandChangedEvent(Command i, IshipIGC * pship, ImodelIGC* ptarget, CommandID cid)
