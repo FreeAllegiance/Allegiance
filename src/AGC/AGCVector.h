@@ -2,8 +2,7 @@
 // AGCVector.h : Declaration of the CAGCVector
 //
 
-#ifndef __AGCVector_H_
-#define __AGCVector_H_
+#pragma once
 
 #include <AGC.h>
 #include <..\TCLib\ObjectLock.h>
@@ -147,5 +146,3 @@ public:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__AGCVector_H_

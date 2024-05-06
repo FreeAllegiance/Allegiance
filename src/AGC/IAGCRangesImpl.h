@@ -1,5 +1,4 @@
-#ifndef __IAGCRangesImpl_h__
-#define __IAGCRangesImpl_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // IAGCRangesImpl.h : Declaration of the IAGCRangesImpl class template.
@@ -110,11 +109,7 @@ public:
 
     //Imago 8/5/09 Is this code even used?  If so it may be incorrect...
     // see IAGCCollectionImpl.h(81)
-#if _MSC_VER >= 1310
 	RETURN_FAILED(pEnum->Init(&(*vecTemp.begin()), &(*vecTemp.end()), NULL, AtlFlagCopy));
-#else
-	RETURN_FAILED(pEnum->Init(vecTemp.begin(), vecTemp.end(), NULL, AtlFlagCopy));
-#endif
 
     // Copy the new object to the [out] parameter
     RETURN_FAILED(spEnum->QueryInterface(IID_IEnumVARIANT, (void**)ppunkEnum));
@@ -435,5 +430,3 @@ public:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__IAGCRangesImpl_h__

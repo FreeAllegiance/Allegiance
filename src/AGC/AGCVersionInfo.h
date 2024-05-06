@@ -1,9 +1,4 @@
-#ifndef __AGCVersionInfo_h__
-#define __AGCVersionInfo_h__
-
-#if _MSC_VER > 1000
-  #pragma once
-#endif // _MSC_VER > 1000
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // AGCVersionInfo.h: Declaration of the CAGCVersionInfo class.
@@ -55,5 +50,3 @@ public:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__AGCVersionInfo_h__

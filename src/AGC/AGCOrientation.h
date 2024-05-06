@@ -2,8 +2,7 @@
 // AGCOrientation.h : Declaration of the CAGCOrientation
 //
 
-#ifndef __AGCOrientation_H_
-#define __AGCOrientation_H_
+#pragma once
 
 #include <AGC.h>
 #include <..\TCLib\ObjectLock.h>
@@ -115,5 +114,3 @@ public:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__AGCOrientation_H_

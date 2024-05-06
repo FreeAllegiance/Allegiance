@@ -2,8 +2,7 @@
 // AGCCommand.h : Declaration of the CAGCCommand class
 //
 
-#ifndef __AGCCommand_h__
-#define __AGCCommand_h__
+#pragma once
 
 #include <AGC.h>
 #include "resource.h"
@@ -98,5 +97,3 @@ public:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__AGCCommand_h__

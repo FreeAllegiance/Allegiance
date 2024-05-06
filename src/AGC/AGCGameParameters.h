@@ -1,5 +1,4 @@
-#ifndef __AGCGameParameters_h__
-#define __AGCGameParameters_h__
+#pragma once
 
 /*-------------------------------------------------------------------------
  * fedsrv\AGCAGCGameParameters.h
@@ -294,5 +293,3 @@ protected:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__AGCGameParameters_h__

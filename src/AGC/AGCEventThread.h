@@ -1,5 +1,4 @@
-#ifndef __AGCEventThread_h__
-#define __AGCEventThread_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // AGCEventThread : Declaration of the CAGCEventThread class.
@@ -193,5 +192,3 @@ inline void WINAPI CAGCEventThread::ArgumentReleaseProc(UINT idMsg,
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__AGCEventThread_h__

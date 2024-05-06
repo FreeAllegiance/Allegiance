@@ -1,5 +1,4 @@
-#ifndef __IAGCScannerImpl_h__
-#define __IAGCScannerImpl_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // IAGCScannerImpl.h : Declaration of the IAGCScannerImpl class template.
@@ -62,5 +61,3 @@ public:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__IAGCScannerImpl_h__

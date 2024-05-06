@@ -1,5 +1,4 @@
-#ifndef __IAGCCommonImpl_h__
-#define __IAGCCommonImpl_h__
+#pragma once
 
 /*-------------------------------------------------------------------------
  * AGC\AGCCommon.h
@@ -180,5 +179,3 @@ protected:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__IAGCCommonImpl_h__
