@@ -62,10 +62,7 @@ public:
 class CFLMission;
 class CFLServer;
 
-class CLobbyApp: public Win32App
-#ifdef USECLUB
-          , public ISQLSite2
-#endif    
+class CLobbyApp: public Win32App 
 {
 public:
   CLobbyApp(ILobbyAppSite * plas);
@@ -78,11 +75,6 @@ public:
   HRESULT         Init();
   int             Run();
   bool            IsFMServers(FedMessaging * pfm) {return pfm == &m_fmServers;}
-
-#ifdef USECLUB
-  // ISQLSite2
-  virtual void OnSQLErrorRecord(SSERRORINFO * perror, OLECHAR * postrError);
-#endif
 
   ILobbyAppSite * GetSite()
   {
@@ -165,13 +157,6 @@ public:
   CFLMission* FindPlayersMission(const char* szPlayerName);
 
   bool BootPlayersByCDKey(const ZString& strCDKey, const ZString& strNameExclude = "", ZString& strOldPlayer = ZString());
-
-#ifdef USECLUB
-  CSQLCore & GetSQL() 
-  {
-    return m_sql;
-  }
-#endif
 
   bool ProcessMsgPump();
   //KGJV #114 - CoreInfoStuff
@@ -293,14 +278,6 @@ private:
 
   //imago 9/16
   CRITICAL_SECTION  *m_logonCS;
-
-#ifdef USECLUB
-  // SQL Stuff
-  CSQLCore          m_sql;
-  DWORD             m_csqlSilentThreads;
-  DWORD             m_csqlNotifyThreads;
-  CComBSTR          m_strSQLConfig;
-#endif
 };
 
 extern CLobbyApp * g_pLobbyApp;  
