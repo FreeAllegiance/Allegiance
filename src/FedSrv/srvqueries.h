@@ -8,8 +8,7 @@
   Copyright 1986-2000 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
-#ifndef _SRVQUERIES_H_
-#define _SRVQUERIES_H_
+#pragma once
 
 #include "allegdb.h"
 
@@ -492,7 +491,3 @@ END_QUERY(CQLogEvent, false)
 
 
 /*-----------------------------------------------------------------------*/
-
-#endif
-
-

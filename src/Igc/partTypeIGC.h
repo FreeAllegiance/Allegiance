@@ -13,8 +13,8 @@
 */
 // partTypeIGC.h : Declaration of the CpartTypeIGC
 
-#ifndef __PARTTYPEIGC_H_
-#define __PARTTYPEIGC_H_
+#pragma once
+
 #include "igc.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -135,5 +135,3 @@ class   CpartTypeIGC : public IpartTypeIGC
         DataPartTypeIGC*    m_data;
         int                 m_dataSize;
 };
-
-#endif //__PARTTYPEIGC_H_

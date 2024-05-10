@@ -13,8 +13,7 @@
 */
 // cloakIGC.h : Declaration of the CcloakIGC
 
-#ifndef __CLOAKIGC_H_
-#define __CLOAKIGC_H_
+#pragma once
 
 #include "igc.h"
 
@@ -160,5 +159,3 @@ class CcloakIGC : public IcloakIGC
         Mount                       m_mountID;
         bool                        m_fActive;
 };
-
-#endif //__CLOAKIGC_H_

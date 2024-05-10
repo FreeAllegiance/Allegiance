@@ -13,8 +13,8 @@
 */
 // stationTypeIGC.h : Declaration of the CstationTypeIGC
 
-#ifndef __STATIONTYPEIGC_H_
-#define __STATIONTYPEIGC_H_
+#pragma once
+
 #include "igc.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -353,5 +353,3 @@ class       CstationTypeIGC : public IstationTypeIGC
         Vector              m_positionLandPlanes[c_maxLandSlots][c_maxLandPlanes];
         Vector              m_directionLandPlanes[c_maxLandSlots][c_maxLandPlanes];
 };
-
-#endif //__STATIONTYPEIGC_H_

@@ -13,8 +13,8 @@
 */
 // projectileTypeIGC.h : Declaration of the CprojectileTypeIGC
 
-#ifndef __PROJECTILETYPEIGC_H_
-#define __PROJECTILETYPEIGC_H_
+#pragma once
+
 #include "igc.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -108,5 +108,3 @@ class CprojectileTypeIGC : public IprojectileTypeIGC
         ImissionIGC*            m_pMission;
         DataProjectileTypeIGC   m_data;
 };
-
-#endif //__PROJECTILETYPEIGC_H_

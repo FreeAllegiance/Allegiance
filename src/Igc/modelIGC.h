@@ -13,8 +13,8 @@
 */
 // modelIGC.h : Declaration of the CmodelIGC
 
-#ifndef __MODELIGC_H_
-#define __MODELIGC_H_
+#pragma once
+
 #include "igc.h"
 
 template<class T> class TmodelIGC;
@@ -687,5 +687,3 @@ template<class T> class TmodelIGC : public T
     private:
         CmodelIGC   m_model;
 };
-
-#endif //__MODELIGC_H_

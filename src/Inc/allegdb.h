@@ -8,8 +8,7 @@
   Copyright 1986-2000 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
-#ifndef _ALLEGDB_H_
-#define _ALLEGDB_H_
+#pragma once
 
 #include <oledb.h>
 #include <sqloledb.h>
@@ -556,7 +555,3 @@ struct N##Data \
 #define END_QUERY(N, R) \
 }; \
 typedef class CQuery<N##Data, R> N;
-
-  
-
-#endif 

@@ -8,8 +8,7 @@
  * Copyright 1986-1998 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
-#ifndef _FSMISSION_H_
-#define _FSMISSION_H_
+#pragma once
 #include "pch.h"
 
 inline unsigned char   SideMask(SideID sid)
@@ -491,5 +490,3 @@ private:
 
   bool                  m_bDraw;
 };
-
-#endif 

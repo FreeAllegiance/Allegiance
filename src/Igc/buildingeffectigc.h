@@ -13,8 +13,7 @@
 */
 // buildingEffectIGC.cpp : Implementation of buildingEffectIGC
 
-#ifndef __BUILDINGEFFECTIGC_H_
-#define __BUILDINGEFFECTIGC_H_
+#pragma once
 
 const float c_dtShrink   = 10.0f;
 const float c_dtOpaque   = 10.0f;
@@ -369,5 +368,3 @@ class CbuildingEffectIGC : public TmodelIGC<IbuildingEffectIGC>
         float                    m_radiusStation;
         float                    m_radiusMax;
 };
-
-#endif

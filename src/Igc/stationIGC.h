@@ -13,8 +13,8 @@
 */
 // shipIGC.h : Declaration of the CshipIGC
 
-#ifndef __STATIONIGC_H_
-#define __STATIONIGC_H_
+#pragma once
+
 #include "igc.h"
 
 #include "modelIGC.h"
@@ -562,5 +562,3 @@ class       CstationIGC : public TmodelIGC<IstationIGC>
 		AsteroidAbilityBitMask		m_roidAabm;
 		bool						m_roidSides[c_cSidesMax];
 };
-
-#endif //__STATIONIGC_H_

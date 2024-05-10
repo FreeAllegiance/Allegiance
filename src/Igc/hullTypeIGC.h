@@ -13,8 +13,8 @@
 */
 // hullTypeIGC.h : Declaration of the ChullTypeIGC
 
-#ifndef __HULLTYPEIGC_H_
-#define __HULLTYPEIGC_H_
+#pragma once
+
 #include "igc.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -422,5 +422,3 @@ class       ChullTypeIGC : public IhullTypeIGC
         Vector              m_positionLandPlanes[c_maxShipLandSlots][c_maxLandPlanes];
         Vector              m_directionLandPlanes[c_maxShipLandSlots][c_maxLandPlanes];
 };
-
-#endif //__HULLTYPEIGC_H_

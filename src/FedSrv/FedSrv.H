@@ -8,8 +8,7 @@
  * Copyright 1986-1999 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
-#ifndef _FEDSRV_H_
-#define _FEDSRV_H_
+#pragma once
 
 #include "..\AGC\AGCSite.h"
 
@@ -412,5 +411,3 @@ HRESULT ConnectToLobby(const char * pszLobby_OverrideCFG /* NULL == do not overr
 #define TrapHack(x) assert(x)
 
 #define wm_fs_pause WM_APP // wparam/lparam not used
-
-#endif // _FEDSRV_H_

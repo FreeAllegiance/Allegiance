@@ -15,8 +15,7 @@
 		07/06/93 kennt	 YAR (Yet Another Reorg), refactoring code
  ----------------------------------------------------------------------------*/
 
-#ifndef _DBGUTIL_H
-#define _DBGUTIL_H
+#pragma once
 
 //#ifndef _UTILCORE_H
 //#include "utilcore.h"
@@ -310,5 +309,3 @@ DBG_API(BOOL)	        DbgSetTraceBuffer(void *rgbTrace, int cbTrace);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
-#endif // _DBGUTIL_H

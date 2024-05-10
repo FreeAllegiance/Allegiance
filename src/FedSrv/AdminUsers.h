@@ -9,8 +9,7 @@
  * Copyright 1986-1999 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
-#ifndef __USERS_H_
-#define __USERS_H_
+#pragma once
 
 
 class CFSShip;
@@ -65,5 +64,3 @@ private:
 
   const ImissionIGC *           m_pIGCmission; // if NULL, then use all missions
 };
-
-#endif //__USERS_H_

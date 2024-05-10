@@ -11,8 +11,7 @@
 */
 // mapmakerIGC.h : Declaration of CmapMakerIGC
 
-#ifndef __MAPMAKERIGC_H_
-#define __MAPMAKERIGC_H_
+#pragma once
 
 #include "igc.h"
 
@@ -600,7 +599,3 @@ class CmapMakerSplitBaseIGC : public CmapMakerIGC
                                             SectorID sID);
         virtual VOID        LinkClusters(CMapData * pMapData);
 } ;
-
-#endif //__MAPMAKERIGC_H_
-
-

@@ -13,8 +13,7 @@
 */
 // shipIGC.h : Declaration of the CshipIGC
 
-#ifndef __SHIPIGC_H_
-#define __SHIPIGC_H_
+#pragma once
 
 #include "igc.h"
 #include "modelIGC.h"
@@ -2669,5 +2668,3 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 		Time				m_timePreviouslySpotted;
 
 };
-
-#endif //__SHIPIGC_H_

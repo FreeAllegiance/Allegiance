@@ -13,8 +13,8 @@
 */
 // treasureSetIGC.h : Declaration of the CtreasureSetIGC
 
-#ifndef __TREASURESETIGC_H_
-#define __TREASURESETIGC_H_
+#pragma once
+
 #include "igc.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -123,5 +123,3 @@ class CtreasureSetIGC : public ItreasureSetIGC
         short                   m_totalTreasureChance;
         short                   m_maxTreasureData;
 };
-
-#endif //__TREASURESETIGC_H_

@@ -13,8 +13,8 @@
 */
 // sideIGC.h : Declaration of the CsideIGC
 
-#ifndef __SIDEIGC_H_
-#define __SIDEIGC_H_
+#pragma once
+
 #include "igc.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -695,5 +695,3 @@ class       CsideIGC : public IsideIGC
         bool                m_activeF;		
 		bool bRandomCivilization;  //Xynth #170 8/10
 };
-
-#endif //__SIDEIGC_H_

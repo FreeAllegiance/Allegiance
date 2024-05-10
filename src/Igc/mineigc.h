@@ -13,8 +13,7 @@
 */
 // mineIGC.h : Declaration of the CmineIGC
 
-#ifndef __MINEIGC_H_
-#define __MINEIGC_H_
+#pragma once
 
 #include "igc.h"
 #include "modelIGC.h"
@@ -203,5 +202,3 @@ class CmineIGC : public TmodelIGC<ImineIGC>
         MineID              m_mineID;
         bool                m_bCreateNow;
 };
-
-#endif //__MINEIGC_H_

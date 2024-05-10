@@ -13,8 +13,8 @@
 */
 // weaponIGC.h : Declaration of the CweaponIGC
 
-#ifndef __WEAPONIGC_H_
-#define __WEAPONIGC_H_
+#pragma once
+
 #include "igc.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -275,5 +275,3 @@ class CweaponIGC : public IweaponIGC
         bool                        m_fFiringShot;
         bool                        m_fFiringBurst;
 };
-
-#endif //__WEAPONIGC_H_

@@ -13,8 +13,8 @@
 */
 // missileTypeIGC.h : Declaration of the CmissileTypeIGC
 
-#ifndef __MISSILETYPEIGC_H_
-#define __MISSILETYPEIGC_H_
+#pragma once
+
 #include "igc.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -187,5 +187,3 @@ class CmissileTypeIGC : public ImissileTypeIGC
         ImissionIGC*        m_pMission;
         DataMissileTypeIGC  m_data;
 };
-
-#endif //__MISSILETYPEIGC_H_

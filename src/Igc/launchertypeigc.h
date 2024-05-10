@@ -13,8 +13,8 @@
 */
 // launcherTypeIGC.h : Declaration of the CpartTypeIGC
 
-#ifndef __LAUNCHERTYPEIGC_H_
-#define __LAUNCHERTYPEIGC_H_
+#pragma once
+
 #include "igc.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -161,5 +161,3 @@ class   ClauncherTypeIGC : public IlauncherTypeIGC
         const LauncherDef*          m_launcherDef;
         EquipmentType               m_equipmenttype;
 };
-
-#endif //__LAUNCHERTYPEIGC_H_

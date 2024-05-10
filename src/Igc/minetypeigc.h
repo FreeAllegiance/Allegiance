@@ -13,8 +13,8 @@
 */
 // mineTypeIGC.h : Declaration of the CmineTypeIGC
 
-#ifndef __MINETYPEIGC_H_
-#define __MINETYPEIGC_H_
+#pragma once
+
 #include "igc.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -134,5 +134,3 @@ class CmineTypeIGC : public ImineTypeIGC
         ImissionIGC*        m_pMission;
         DataMineTypeIGC     m_data;
 };
-
-#endif //__MINETYPEIGC_H_

@@ -13,8 +13,8 @@
 */
 // shieldIGC.h : Declaration of the CshieldIGC
 
-#ifndef __SHIELDIGC_H_
-#define __SHIELDIGC_H_
+#pragma once
+
 #include "igc.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -162,5 +162,3 @@ class CshieldIGC : public IshieldIGC
 
         Mount                       m_mountID;
 };
-
-#endif //__SHIELDIGC_H_

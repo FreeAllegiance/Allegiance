@@ -13,8 +13,8 @@
 */
 // magazineIGC.h : Declaration of the CmagazineIGC
 
-#ifndef __MAGAZINEIGC_H_
-#define __MAGAZINEIGC_H_
+#pragma once
+
 #include "igc.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -199,5 +199,3 @@ class CmagazineIGC : public ImagazineIGC
 
         Mount                           m_mountID;
 };
-
-#endif //__MAGAZINEIGC_H_

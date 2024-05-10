@@ -7,8 +7,7 @@
  * 
  * Copyright 1986-1998 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
-#ifndef _FSSHIP_H_
-#define _FSSHIP_H_
+#pragma once
 
 
 #define GETFSSHIP(pship) ((CFSShip *) (pship)->GetPrivateData())
@@ -612,5 +611,3 @@ private:
   static int        m_cDrones;
   static int        m_ifsdNext; // next slot to use
 };
-
-#endif // _FSSHIP_H_

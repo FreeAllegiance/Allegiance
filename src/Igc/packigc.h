@@ -13,8 +13,8 @@
 */
 // packIGC.h : Declaration of the CpackIGC
 
-#ifndef __PACKIGC_H_
-#define __PACKIGC_H_
+#pragma once
+
 #include "igc.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -135,5 +135,3 @@ class CpackIGC : public IpackIGC
         short                           m_amount;
         Mount                           m_mountID;
 };
-
-#endif //__PACKIGC_H_

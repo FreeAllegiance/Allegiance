@@ -10,8 +10,7 @@
 **
 **  History:
 */
-#ifndef IGC_H
-#define IGC_H
+#pragma once
 
 #include <Utility.h>
 #include <color.h>
@@ -6184,5 +6183,3 @@ bool    LoadIGCFile (const char* name, ImissionIGC* pMission, void (*munge)(int 
 bool    DumpIGCStaticCore (const char* name, ImissionIGC* pMission, int64_t iMaskExportTypes, void (*munge)(int size, char* data) = NULL);
 int     LoadIGCStaticCore (const char* name, ImissionIGC* pMission, bool fGetVersionOnly, void (*munge)(int size, char* data) = NULL);
 int     CacheIGCStaticCore (const char* name, ImissionIGC* pMission, bool fGetVersionOnly, void (*munge)(int size, char* data) = NULL);
-
-#endif

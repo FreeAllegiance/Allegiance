@@ -9,8 +9,7 @@
  * Copyright 1986-1999 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
-#ifndef __USER_H_
-#define __USER_H_
+#pragma once
 
 
 class CFSPlayer;
@@ -85,5 +84,3 @@ protected:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__USER_H_

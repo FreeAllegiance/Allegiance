@@ -13,8 +13,7 @@
 */
 // chaffIGC.h : Declaration of the CchaffIGC
 
-#ifndef __CHAFFIGC_H_
-#define __CHAFFIGC_H_
+#pragma once
 
 #include "igc.h"
 #include "modelIGC.h"
@@ -73,5 +72,3 @@ class CchaffIGC : public TmodelIGC<IchaffIGC>
         DataChaffTypeIGC*  m_pChaffTypeData;
         Time               m_timeExpire;
 };
-
-#endif //__CHAFFIGC_H_
