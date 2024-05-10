@@ -1,5 +1,4 @@
-#ifndef _ddstruct_h_
-#define _ddstruct_h_
+#pragma once
 
 #include <alloc.h>
 #include <cstring>
@@ -96,6 +95,3 @@ public:
         return Color(r, g, b, a);
     }
 };
-
-
-#endif

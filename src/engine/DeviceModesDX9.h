@@ -1,6 +1,4 @@
-
-#ifndef _DEVICEMODES_H_
-#define _DEVICEMODES_H_
+#pragma once
 
 #include "d3d9.h"
 #include "D3DDevice9.h"
@@ -123,5 +121,3 @@ private:
         WinPoint size,
         int iDeviceIndex);
 };
-
-#endif // _DEVICEMODES_H_

@@ -1,5 +1,4 @@
-#ifndef _frameimage_H_
-#define _frameimage_H_
+#pragma once
 
 #include <tref.h>
 
@@ -52,5 +51,3 @@ TRef<FrameImageButtonPane> CreateFrameImageButtonPane(
     bool              loop,
     bool              finish
 );
-
-#endif

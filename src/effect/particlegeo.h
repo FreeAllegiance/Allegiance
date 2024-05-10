@@ -1,5 +1,4 @@
-#ifndef _particlegeo_H_
-#define _particlegeo_H_
+#pragma once
 
 #include <model.h>
 #include <value.h>
@@ -59,5 +58,3 @@ class ParticleGeo : public Geo
 TRef<ParticleGeo> CreateParticleGeo (Modeler* pModeler, Number* pTime);
 
 //////////////////////////////////////////////////////////////////////////////
-
-#endif

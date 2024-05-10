@@ -1,5 +1,4 @@
-#ifndef _button_H_
-#define _button_H_
+#pragma once
 
 #include "pane.h"
 
@@ -183,5 +182,3 @@ public:
 
 TRef<ButtonBarPane> CreateButtonBarPane(bool bActAsTabs = false, bool bUseColumn = false);
 TRef<ButtonBarPane> CreateButtonBarPane(Surface* psurface, DWORD dwFaces, TVector<int>& vecColumns, bool bActAsTabs);
-
-#endif

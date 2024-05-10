@@ -1,5 +1,4 @@
-#ifndef _efapp_h_
-#define _efapp_h_
+#pragma once
 
 #include <engineapp.h>
 #include <namespace.h>
@@ -51,5 +50,3 @@ public:
     static void Initialize(Modeler* pmodeler);
     static void Terminate();
 };
-
-#endif

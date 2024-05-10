@@ -1,5 +1,4 @@
-#ifndef _VRAMMANAGER_H_
-#define _VRAMMANAGER_H_
+#pragma once
 
 #include <cstdint>
 #include <d3d9.h>
@@ -201,5 +200,3 @@ public:
 	////////////////////////////////////////////////////////////////////////////////////////////
     uint32_t		GetPixelSize( D3DFORMAT pixelFormat );
 };
-
-#endif // _VRAMMANAGER_H_

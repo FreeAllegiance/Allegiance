@@ -1,5 +1,4 @@
-#ifndef _D3DDEVICE9_H_
-#define _D3DDEVICE9_H_
+#pragma once
 
 #include <point.h>
 
@@ -444,6 +443,3 @@ private:
 	void		InitialiseLightCache( SD3D9LightCache * pCache );
 	void		CreateAADepthStencilBuffer( );
 };
-
-
-#endif // _D3DDEVICE9_H_

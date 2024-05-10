@@ -1,5 +1,4 @@
-#ifndef _font_h_
-#define _font_h_
+#pragma once
 
 #include <tref.h>
 #include <point.h>
@@ -51,5 +50,3 @@ void Write(IMDLBinaryFile* pmdlFile, TRef<IEngineFont> pfont);
 ZString GetFunctionName(const TRef<IEngineFont>& value);
 
 typedef TStaticValue<TRef<IEngineFont> > FontValue;
-
-#endif

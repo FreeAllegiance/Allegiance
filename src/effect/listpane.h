@@ -1,5 +1,4 @@
-#ifndef _listpane_h_
-#define _listpane_h_
+#pragma once
 
 #include <event.h>
 #include <genericlist.h>
@@ -133,5 +132,3 @@ TRef<StringListPane> CreateStringListPane(
     const Color&    color,
     const Color&    colorSelected
 );
-
-#endif

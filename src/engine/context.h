@@ -1,5 +1,4 @@
-#ifndef _context_h_
-#define _context_h_
+#pragma once
 
 #include <color.h>
 #include <d3d9.h>
@@ -938,5 +937,3 @@ public:
         virtual void ResetPerformanceCounters() = 0;
     #endif
 };
-
-#endif

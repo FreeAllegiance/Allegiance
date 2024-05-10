@@ -1,5 +1,4 @@
-#ifndef _enginep_h_
-#define _enginep_h_
+#pragma once
 
 #include "context.h"
 #include "ddstruct.h"
@@ -474,5 +473,3 @@ public:
 };
 
 TRef<IPopupContainerPrivate> CreatePopupContainer();
-
-#endif

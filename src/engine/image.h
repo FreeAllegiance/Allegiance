@@ -1,5 +1,4 @@
-#ifndef _Image_h_
-#define _Image_h_
+#pragma once
 
 #include <tref.h>
 
@@ -490,5 +489,3 @@ public:
 };
 
 TRef<PickImage> CreatePickImage(Image* pimage);
-
-#endif

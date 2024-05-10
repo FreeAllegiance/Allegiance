@@ -1,5 +1,4 @@
-#ifndef _pixelformat_h_
-#define _pixelformat_h_
+#pragma once
 
 #include <color.h>
 #include <cstdint>
@@ -103,5 +102,3 @@ public:
 	D3DFORMAT GetD3DFormat() const { return m_d3dFormat; }
 	D3DFORMAT GetEquivalentD3DFormat( );
 };
-
-#endif

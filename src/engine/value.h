@@ -1,5 +1,4 @@
-#ifndef _Value_h_
-#define _Value_h_
+#pragma once
 
 #include <cast.h>
 #include <color.h>
@@ -721,5 +720,3 @@ public:
         }
     }
 };
-
-#endif

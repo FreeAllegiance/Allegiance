@@ -1,5 +1,4 @@
-#ifndef _material_h_
-#define _material_h_
+#pragma once
 
 #include "value.h"
 
@@ -47,5 +46,3 @@ TRef<Material> CreateMaterial(
     ColorValue* pcolorEmissive,
     Number*     ppower
 );
-
-#endif

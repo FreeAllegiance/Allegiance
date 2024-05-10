@@ -1,5 +1,4 @@
-#ifndef _VBIBMANAGER_H_
-#define _VBIBMANAGER_H_
+#pragma once
 
 #include <cstdint>
 #include <d3d9.h>
@@ -187,5 +186,3 @@ private:
 								DWORD dwElementSize,
 								DWORD dwNumElements );
 };
-
-#endif // _VBIBMANAGER_H_

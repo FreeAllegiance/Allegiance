@@ -1,5 +1,4 @@
-#ifndef _VERTEXGENERATOR_H_
-#define _VERTEXGENERATOR_H_
+#pragma once
 
 #include <cstdint>
 #include <color.h>
@@ -95,5 +94,3 @@ public:
 		return &m_sVGState.hPredefinedDynBuffers[eBufferType]; 
 	}
 };
-
-#endif // _VERTEXGENERATOR_H_

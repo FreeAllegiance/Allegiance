@@ -1,5 +1,4 @@
-#ifndef _Model_h_
-#define _Model_h_
+#pragma once
 
 #include <memory>
 
@@ -272,5 +271,3 @@ public:
 	virtual bool			SetUIImageUsageHint( const bool bUIImageUsage ) = 0;
 	virtual bool			GetUIImageUsageHint( ) = 0;
 };
-
-#endif

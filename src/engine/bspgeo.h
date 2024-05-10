@@ -1,5 +1,4 @@
-#ifndef _bspgeo_h_
-#define _bspgeo_h_
+#pragma once
 
 #include <tref.h>
 
@@ -12,5 +11,3 @@ class Geo;
 //////////////////////////////////////////////////////////////////////////////
 
 TRef<Geo> CreateBSPGeo();
-
-#endif

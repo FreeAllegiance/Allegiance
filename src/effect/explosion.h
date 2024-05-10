@@ -1,5 +1,4 @@
-#ifndef _ExplosionGeo_h_
-#define _ExplosionGeo_h_
+#pragma once
 
 #include <image.h>
 #include <model.h>
@@ -34,5 +33,3 @@ public:
 };
 
 TRef<ExplosionGeo> CreateExplosionGeo(Number* ptime);
-
-#endif

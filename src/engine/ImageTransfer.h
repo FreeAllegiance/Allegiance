@@ -1,5 +1,4 @@
-#ifndef _IMAGETRANSFER_H_
-#define _IMAGETRANSFER_H_
+#pragma once
 
 #include <cstdint>
 #include <point.h>
@@ -82,5 +81,3 @@ public:
 										const WinPoint & size,
                                         const uint32_t dwPixelColour );
 };
-
-#endif // _IMAGETRANSFER_H_

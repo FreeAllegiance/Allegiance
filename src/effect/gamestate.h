@@ -1,5 +1,4 @@
-#ifndef _gamestate_H_
-#define _gamestate_H_
+#pragma once
 
 #include <tref.h>
 
@@ -32,5 +31,3 @@ TRef<GameStateContainer> CreateGameStateContainer(
     IEngineFont* pfontTime,
     ButtonPane*  pbutton
 );
-
-#endif

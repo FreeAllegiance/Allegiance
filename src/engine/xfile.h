@@ -1,5 +1,4 @@
-#ifndef _xfile_h_
-#define _xfile_h_
+#pragma once
 
 #include "value.h"
 
@@ -13,5 +12,3 @@ class Modeler;
 //////////////////////////////////////////////////////////////////////////////
 
 TRef<Geo> ImportXFile(Modeler* pmodeler, ZFile* pfile, Number* pnumberFrame, bool& bAnimation);
-
-#endif

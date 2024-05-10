@@ -1,5 +1,4 @@
-#ifndef _caption_h_
-#define _caption_h_
+#pragma once
 
 #include <tref.h>
 
@@ -33,5 +32,3 @@ public:
 };
 
 TRef<ICaption> CreateCaption(Modeler* pmodeler, Pane* ppane, ICaptionSite* psite);
-
-#endif

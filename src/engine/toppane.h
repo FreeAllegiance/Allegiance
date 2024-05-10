@@ -1,5 +1,4 @@
-#ifndef _TopPane_H_
-#define _TopPane_H_
+#pragma once
 
 #include <tref.h>
 #include <point.h>
@@ -102,5 +101,3 @@ public:
         m_ptype->SizeChanged();
     }
 };
-
-#endif

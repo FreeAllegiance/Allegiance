@@ -1,5 +1,4 @@
-#ifndef _StarImage_h_
-#define _StarImage_h_
+#pragma once
 
 #include <image.h>
 
@@ -29,6 +28,3 @@ public:
 
     ZString GetFunctionName() { return "StarImage"; }
 };
-
-
-#endif

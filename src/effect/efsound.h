@@ -1,5 +1,4 @@
-#ifndef _efsound_H_
-#define _efsound_H_
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -13,6 +12,3 @@ void AddSoundFactories(
     INameSpace*      pns,
     Modeler*         pmodeler
 );
-
-
-#endif

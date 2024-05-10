@@ -1,5 +1,4 @@
-#ifndef _Camera_h_
-#define _Camera_h_
+#pragma once
 
 #include <matrix.h>
 
@@ -134,5 +133,3 @@ TRef<OrientationValue> CreateLookAtOrientation(
     VectorValue* pvectorFrom,
     VectorValue* pvectorUp
 );
-
-#endif

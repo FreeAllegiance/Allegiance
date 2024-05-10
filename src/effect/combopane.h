@@ -1,5 +1,4 @@
-#ifndef _combopane_h_
-#define _combopane_h_
+#pragma once
 
 #include <pane.h>
 #include <value.h>
@@ -66,5 +65,3 @@ TRef<ComboPane> CreateComboPane(
     ComboFacePane*   pface,
     ModifiablePointValue* pmousePosition
 );
-
-#endif
