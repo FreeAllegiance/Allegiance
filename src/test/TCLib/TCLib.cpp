@@ -8,9 +8,7 @@
 
 // VS.Net 2003 port: StdComponentCategoriesMgr missing from VS.Net <comdef.h>
 // 1st workaround: add the definition here ... but need to investigate further why it's missing.
-#if _MSC_VER >= 1310
 class __declspec(uuid("0002e005-0000-0000-c000-000000000046")) StdComponentCategoriesMgr;
-#endif
 /////////////////////////////////////////////////////////////////////////////
 // Macro Support Functions
 

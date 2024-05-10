@@ -208,13 +208,7 @@ void TCComEventsCP<T, IV, piid>::FireEvents(TCComEventCall<IV>& call)
 //
 // See Also: TCComEventsCP::FireEvents, TCComDualEventsCP::GetEventSinks
 template <class T, class IV, const IID* piid>
-inline void TCComEventsCP<T, IV, piid>::GetEventSinks(
-// VS.Net 2003 port: use same type as in declaration (see line 92)
-#if _MSC_VER >= 1310
-	vector_vtbl& vec_vtbl)
-#else
-	TCComEventsCP<T, IV, piid>::vector_vtbl& vec_vtbl)
-#endif
+inline void TCComEventsCP<T, IV, piid>::GetEventSinks(vector_vtbl& vec_vtbl)
 {
   // Lock the object (just long enough to copy the event sinks)
   TCObjectLock<T> lock(static_cast<T*>(this));
