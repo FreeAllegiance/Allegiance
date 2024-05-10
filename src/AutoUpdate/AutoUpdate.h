@@ -1,7 +1,6 @@
 // AllSrvUpdate.h : Declaration of the CAutoUpdate
 
-#ifndef __ALLSRVUPDATE_H_
-#define __ALLSRVUPDATE_H_
+#pragma once
 
 #include "resource.h"       // main symbols
 #include <atlhost.h>
@@ -104,5 +103,3 @@ protected:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__ALLSRVUPDATE_H_

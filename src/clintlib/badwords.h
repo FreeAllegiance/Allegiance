@@ -1,5 +1,4 @@
-#ifndef _BADWORDS_H_
-#define _BADWORDS_H_
+#pragma once
 
 //------------------------------------------------------------------------------
 // functions to handle bad words
@@ -10,5 +9,3 @@ void    ToggleCensorDisplay (void);
 bool    CensorDisplay (void);
 
 //------------------------------------------------------------------------------
-
-#endif  //  _BADWORDS_H_

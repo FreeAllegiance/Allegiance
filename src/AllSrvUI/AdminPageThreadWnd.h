@@ -1,10 +1,4 @@
-#ifndef __AdminPageThreadWnd_h__
-#define __AdminPageThreadWnd_h__
-
-#if _MSC_VER > 1000
-  #pragma once
-#endif // _MSC_VER > 1000
-
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // AdminPageThreadWnd.h : header file
@@ -59,6 +53,3 @@ protected:
 };
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__AdminPageThreadWnd_h__
-

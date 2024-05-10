@@ -1,9 +1,4 @@
-#ifndef __GameParamsSheet_h__
-#define __GameParamsSheet_h__
-
-#if _MSC_VER > 1000
-  #pragma once
-#endif // _MSC_VER > 1000
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // GameParamsSheet.h : header file
@@ -55,5 +50,3 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__GameParamsSheet_h__
