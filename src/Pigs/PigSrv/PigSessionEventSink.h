@@ -1,5 +1,4 @@
-#ifndef __PigSessionEventSink_h__
-#define __PigSessionEventSink_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // PigSessionEventSink.h : Declaration of the CPigSessionEventSink
@@ -60,5 +59,3 @@ inline DWORD CPigSessionEventSink::GetGITCookie() const
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__PigSessionEventSink_h__

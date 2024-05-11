@@ -1,5 +1,4 @@
-#ifndef __PigBehaviorScriptType_h__
-#define __PigBehaviorScriptType_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // PigBehaviorScriptType.h : Declaration of the CPigBehaviorScriptType class
@@ -209,5 +208,3 @@ inline CPigEngine& CPigBehaviorScriptType::GetEngine()
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__PigBehaviorScriptType_h__

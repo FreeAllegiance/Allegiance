@@ -2,12 +2,7 @@
 // PigEngine.h: Declaration of the CPigEngine class.
 //
 
-#ifndef __PigEngine_h__
-#define __PigEngine_h__
-
-#if _MSC_VER > 1000
-  #pragma once
-#endif // _MSC_VER > 1000
+#pragma once
 
 #include <..\TCLib\TCThread.h>
 #include <..\TCLib\Lockable.h>
@@ -239,5 +234,3 @@ inline HRESULT CPigEngine::GetInterfaceFromGlobal(DWORD dwCookie,
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__PigEngine_h__

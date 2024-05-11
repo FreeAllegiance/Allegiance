@@ -4,8 +4,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef _PCH_H_
-#define _PCH_H_
+#pragma once
 
 // __MODULE__ is used by ZAssert
 #define __MODULE__ "EngineApp"
@@ -42,5 +41,3 @@
 #include <D3DDevice9.h>
 #include <controls.h>
 #include <paneimage.h>
-
-#endif

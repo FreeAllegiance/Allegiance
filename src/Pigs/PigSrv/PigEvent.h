@@ -1,8 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // PigEvent.h : Declaration of the CPigEvent class
 
-#ifndef __PigEvent_h__
-#define __PigEvent_h__
 #pragma once
 
 #include "resource.h"       // main symbols
@@ -335,5 +333,3 @@ public:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__PigEvent_h__

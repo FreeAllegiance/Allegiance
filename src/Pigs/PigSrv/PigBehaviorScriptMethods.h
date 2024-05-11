@@ -2,9 +2,6 @@
 // PigBehaviorScriptMethods.h : Declaration of the CPigBehaviorScriptMethods
 // class
 
-#ifndef __PigBehaviorScriptMethods_h__
-#define __PigBehaviorScriptMethods_h__
-
 #pragma once
 
 #include <TCLib.h>
@@ -103,6 +100,3 @@ inline DISPID CPigBehaviorScriptMethods::GetMethodID(EMethod eMethod) const
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__PigBehaviorScriptMethods_h__
-

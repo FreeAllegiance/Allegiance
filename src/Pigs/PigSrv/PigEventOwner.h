@@ -1,8 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // PigEventOwner.h : Declaration of the CPigEventOwner class.
 
-#ifndef __PigEventOwner_h__
-#define __PigEventOwner_h__
 #pragma once
 
 #include "PigSrv.h"
@@ -98,5 +96,3 @@ void CPigEventOwnerImpl<T>::UnlockT()
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__PigEventOwner_h__

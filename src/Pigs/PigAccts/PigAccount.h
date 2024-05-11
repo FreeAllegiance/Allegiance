@@ -1,8 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // PigAccount.h : Declaration of the CPigAccount class
 
-#ifndef __PigAccount_h__
-#define __PigAccount_h__
+#pragma once
 
 #include "resource.h"       // main symbols
 #include <..\TCLib\ObjectLock.h>
@@ -72,5 +71,3 @@ protected:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__PigAccount_h__

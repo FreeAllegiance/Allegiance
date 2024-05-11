@@ -1,8 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // PigBehaviorScript.h : Declaration of the CPigBehaviorScript class
 
-#ifndef __PigBehaviorScript_h__
-#define __PigBehaviorScript_h__
+#pragma once
 
 #include "PigSrv.h"
 #include "resource.h"       // main symbols
@@ -214,5 +213,3 @@ inline CPigEngine& CPigBehaviorScript::GetEngine()
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__PigBehaviorScript_h__

@@ -1,5 +1,4 @@
-#ifndef __PigDirectPlay_h__
-#define __PigDirectPlay_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // PigDirectPlay.h : Declaration and implementation of the CPigDirectPlay
@@ -288,5 +287,3 @@ protected:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif __PigDirectPlay_h__

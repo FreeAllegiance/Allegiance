@@ -1,8 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // PigShipEvent.h : Declaration of the CPigShipEvent class
 
-#ifndef __PigShipEvent_h__
-#define __PigShipEvent_h__
+#pragma once
 
 #include "resource.h"       // main symbols
 #include <..\TCLib\AutoHandle.h>
@@ -221,5 +220,3 @@ protected:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__PigShipEvent_h__

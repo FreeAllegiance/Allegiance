@@ -1,5 +1,4 @@
-#ifndef __Pig_h__
-#define __Pig_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // Pig.h : Declaration of the CPig class
@@ -456,5 +455,3 @@ int findMaxThresholdExceeded(const T* pItems, int cItems, const T& value)
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__Pig_h__

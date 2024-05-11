@@ -1,7 +1,6 @@
 // Pigs.h : Declaration of the CPigs class
 
-#ifndef __Pigs_h__
-#define __Pigs_h__
+#pragma once
 
 #include "resource.h"       // main symbols
 #include "PigEngine.h"
@@ -117,5 +116,3 @@ inline CPigEngine& CPigs::GetEngine()
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__Pigs_h__

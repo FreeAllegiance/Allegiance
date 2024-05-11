@@ -1,8 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // PigAccountDispenser.h : Declaration of the CPigAccountDispenser
 
-#ifndef __PigAccountDispenser_h__
-#define __PigAccountDispenser_h__
+#pragma once
 
 #include "PigAccts.h"
 #include <..\TCLib\ObjectLock.h>
@@ -86,5 +85,3 @@ protected:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__PigAccountDispenser_h__

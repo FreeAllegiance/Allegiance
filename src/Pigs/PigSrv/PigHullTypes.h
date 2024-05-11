@@ -1,8 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // PigHullTypes.h : Declaration of the CPigHullTypes class
 
-#ifndef __PigHullTypes_h__
-#define __PigHullTypes_h__
+#pragma once
 
 #include "resource.h"       // main symbols
 #include "PigSrv.h"
@@ -68,5 +67,3 @@ protected:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__PigHullTypes_h__
