@@ -10,12 +10,10 @@
 **
 **  History:
 */
-#ifndef _TRAINING_MISSION_H_
-#define _TRAINING_MISSION_H_
+#pragma once
 
-#ifndef _GOAL_H_
 #include "Goal.h"
-#endif  //_GOAL_H_
+
 #include "CreateDroneAction.h"
 
 namespace Training
@@ -100,5 +98,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_TRAINING_MISSION_H_

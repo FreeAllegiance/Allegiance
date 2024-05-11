@@ -10,9 +10,9 @@
 **  History:
 */
 #include    "pch.h"
-#ifndef _TRAINING_MISSION_H_
+
 #include "TrainingMission.h"
-#endif
+
 #include    "SetDroneNanAction.h"
 
 namespace Training

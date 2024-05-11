@@ -10,16 +10,11 @@
 **
 **  History:
 */
-#ifndef _OBJECT_WITHIN_RADIUS_CONDITION_H_
-#define _OBJECT_WITHIN_RADIUS_CONDITION_H_
+#pragma once
 
-#ifndef _CONDITION_H_
 #include "Condition.h"
-#endif  //_CONDITION_H_
 
-#ifndef _ABSTRACT_TARGET_H_
 #include "AbstractTarget.h"
-#endif  //_ABSTRACT_TARGET_H_
 
 namespace Training
 {
@@ -49,5 +44,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_OBJECT_WITHIN_RADIUS_CONDITION_H_

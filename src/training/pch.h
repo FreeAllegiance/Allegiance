@@ -4,8 +4,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef _PCH_H_
-#define _PCH_H_
+#pragma once
 
 #define __MODULE__ "Training"
 
@@ -89,5 +88,3 @@
 #define bit_and &
 #define bit_or  |
 #define not     !
-
-#endif

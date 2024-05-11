@@ -5,17 +5,11 @@
 **      Header file for the training library "Mission FreeFlight" interface.
 */
 
-#ifndef _MISSION_FREEFLIGHT_H_
-#define _MISSION_FREEFLIGHT_H_
+#pragma once
 
-#ifndef _TRAINING_MISSION_H_
 #include "TrainingMission.h"
-#endif
 
-#ifndef _GOAL_H_
 #include "Goal.h"
-#endif
-
 
 namespace Training
 {
@@ -42,5 +36,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_MISSION_FREEFLIGHT_H_

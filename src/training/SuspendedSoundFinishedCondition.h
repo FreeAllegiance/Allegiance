@@ -10,12 +10,9 @@
 **
 **  History:
 */
-#ifndef _SUSPENDED_SOUND_FINISHED_CONDITION_H_
-#define _SUSPENDED_SOUND_FINISHED_CONDITION_H_
+#pragma once
 
-#ifndef _SOUND_FINISHED_CONDITION_H_
 #include "SoundFinishedCondition.h"
-#endif  //_SOUND_FINISHED_CONDITION_H_
 
 namespace Training
 {
@@ -34,5 +31,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_SUSPENDED_SOUND_FINISHED_CONDITION_H_

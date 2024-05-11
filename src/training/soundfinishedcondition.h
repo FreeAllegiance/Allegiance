@@ -10,16 +10,11 @@
 **
 **  History:
 */
-#ifndef _SOUND_FINISHED_CONDITION_H_
-#define _SOUND_FINISHED_CONDITION_H_
+#pragma once
 
-#ifndef _CONDITION_H_
 #include "Condition.h"
-#endif  //_CONDITION_H_
 
-#ifndef _PLAY_SOUND_ACTION_H_
 #include "PlaySoundAction.h"
-#endif  //_PLAY_SOUND_ACTION_H_
 
 namespace Training
 {
@@ -40,5 +35,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_SOUND_FINISHED_CONDITION_H_

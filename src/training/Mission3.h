@@ -10,12 +10,9 @@
 **
 **  History:
 */
-#ifndef _MISSION_ONE_H_
-#define _MISSION_ONE_H_
+#pragma once
 
-#ifndef _TRAINING_MISSION_H_
 #include "TrainingMission.h"
-#endif  //_TRAINING_MISSION_H_
 
 namespace Training
 {
@@ -62,5 +59,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_MISSION_ONE_H_

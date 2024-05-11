@@ -10,12 +10,9 @@
 **
 **  History:
 */
-#ifndef _TURN_SHIP_ABOUT_CONDITION_H_
-#define _TURN_SHIP_ABOUT_CONDITION_H_
+#pragma once
 
-#ifndef _CONDITION_H_
 #include "Condition.h"
-#endif  //_CONDITION_H_
 
 namespace Training
 {
@@ -37,5 +34,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_TURN_SHIP_ABOUT_CONDITION_H_

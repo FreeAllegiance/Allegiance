@@ -10,12 +10,9 @@
 **
 **  History:
 */
-#ifndef _GOAL_LIST_H_
-#define _GOAL_LIST_H_
+#pragma once
 
-#ifndef _GOAL_H_
 #include "Goal.h"
-#endif  //_GOAL_H_
 
 namespace Training
 {
@@ -39,5 +36,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_GOAL_LIST_H_

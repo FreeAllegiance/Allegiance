@@ -10,8 +10,7 @@
 **
 **  History:
 */
-#ifndef _ACTION_H_
-#define _ACTION_H_
+#pragma once
 
 namespace Training
 {
@@ -28,5 +27,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_ACTION_H_

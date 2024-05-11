@@ -10,12 +10,9 @@
 **
 **  History:
 */
-#ifndef _CREATE_WAYPOINT_ACTION_H_
-#define _CREATE_WAYPOINT_ACTION_H_
+#pragma once
 
-#ifndef _CREATE_OBJECT_ACTION_H_
 #include "CreateObjectAction.h"
-#endif// _CREATE_OBJECT_ACTION_H_
 
 namespace Training
 {
@@ -40,5 +37,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_CREATE_WAYPOINT_ACTION_H_

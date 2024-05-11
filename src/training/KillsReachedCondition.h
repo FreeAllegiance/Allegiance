@@ -1,10 +1,6 @@
+#pragma once
 
-#ifndef _KILLS_REACHED_CONDITION_H_
-#define _KILLS_REACHED_CONDITION_H_
-
-#ifndef _CONDITION_H_
 #include "Condition.h"
-#endif  //_CONDITION_H_
 
 namespace Training
 {
@@ -24,5 +20,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_KILLS_REACHED_CONDITION_H_

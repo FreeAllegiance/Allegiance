@@ -10,8 +10,7 @@
 **
 **  History:
 */
-#ifndef _TRAINING_H_
-#define _TRAINING_H_
+#pragma once
 
 namespace Training
 {
@@ -66,5 +65,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_TRAINING_H_

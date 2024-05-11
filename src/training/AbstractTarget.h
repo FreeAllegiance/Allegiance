@@ -10,8 +10,7 @@
 **
 **  History:
 */
-#ifndef _ABSTRACT_TARGET_H_
-#define _ABSTRACT_TARGET_H_
+#pragma once
 
 namespace Training
 {
@@ -28,5 +27,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_ABSTRACT_TARGET_H_

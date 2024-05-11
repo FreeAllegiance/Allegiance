@@ -1,10 +1,6 @@
+#pragma once
 
-#ifndef _ADD_RESPAWN_ACTION_H_
-#define _ADD_RESPAWN_ACTION_H_
-
-#ifndef _ACTION_H_
 #include "Action.h"
-#endif  //_ACTION_H_
 
 #include"CreateDroneAction.h"
 
@@ -29,5 +25,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_DO_DAMAGE_ACTION_H_
