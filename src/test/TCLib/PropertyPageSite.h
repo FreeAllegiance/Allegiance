@@ -1,9 +1,4 @@
-#ifndef __PropertyPageSite_h__
-#define __PropertyPageSite_h__
-
-#if _MSC_VER >= 1000
-  #pragma once
-#endif // _MSC_VER >= 1000
+#pragma once
 
 #pragma warning(disable: 4786)
 #include <vector>
@@ -312,5 +307,3 @@ inline HRESULT TCPropertyPageSite::Page_Apply()
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__PropertyPageSite_h__

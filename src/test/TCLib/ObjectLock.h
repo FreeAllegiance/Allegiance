@@ -1,5 +1,4 @@
-#ifndef __ObjectLock_h__
-#define __ObjectLock_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // ObjectLock.h | Declaration of the TCObjectLock template class.
@@ -195,5 +194,3 @@ inline void TCObjectLock<T>::Unlock()
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // __ObjectLock_h__

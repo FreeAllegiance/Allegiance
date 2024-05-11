@@ -1,5 +1,4 @@
-#ifndef __UtilityThread_h__
-#define __UtilityThread_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // UtilityThread.h | Declaration of the TCUtilityThread class.
@@ -364,5 +363,3 @@ inline bool TCUtilityThread::IsCurrentThread()
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__UtilityThread_h__

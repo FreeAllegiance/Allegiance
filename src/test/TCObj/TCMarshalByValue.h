@@ -1,5 +1,4 @@
-#ifndef __TCMarshalByValue_h__
-#define __TCMarshalByValue_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // TCMarshalByValue.h | Declaration of the CTCMarshalByValue, which
@@ -85,6 +84,3 @@ inline HRESULT CTCMarshalByValue::GetOuterPersistStream(IPersistStream** pps)
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__TCMarshalByValue_h__
-

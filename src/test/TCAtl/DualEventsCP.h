@@ -1,5 +1,4 @@
-#ifndef __DualEventsCP_h__
-#define __DualEventsCP_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // DualEventsCP.h | Declaration of the TCComDualEventsCP class.
@@ -735,6 +734,3 @@ void TCComDualEventsCP<T, IV, piid, CPD>::RemoveFailedSink(HRESULT hr,
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__DualEventsCP_h__
-

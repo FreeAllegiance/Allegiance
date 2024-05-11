@@ -1,9 +1,4 @@
-#ifndef __WindowThread_h__
-#define __WindowThread_h__
-
-#if _MSC_VER > 1000
-  #pragma once
-#endif // _MSC_VER > 1000
+#pragma once
 
 #include <..\TCLib\WindowThreadImpl.h>
 
@@ -227,5 +222,3 @@ inline HWND TCDialogImpl<T>::CreateOnThread(TCWindowThread& wth,
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__WindowThread_h__

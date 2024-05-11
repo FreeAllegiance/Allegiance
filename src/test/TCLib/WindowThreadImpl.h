@@ -1,9 +1,4 @@
-#ifndef __WindowThreadImpl_h__
-#define __WindowThreadImpl_h__
-
-#if _MSC_VER > 1000
-  #pragma once
-#endif // _MSC_VER > 1000
+#pragma once
 
 #pragma warning(disable: 4786)
 #include <map>
@@ -154,5 +149,3 @@ unsigned CALLBACK TCWindowThreadImpl<T>::ThreadProc(void* pvParam)
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__WindowThreadImpl_h__

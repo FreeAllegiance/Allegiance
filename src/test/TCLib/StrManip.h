@@ -1,5 +1,4 @@
-#ifndef __StrManip_h__
-#define __StrManip_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // StrManip.h : Declaration of some handy string manipulation routines.
@@ -86,5 +85,3 @@ int TCReplaceTextNoCase(LPCTSTR pszSource, LPCTSTR pszFind,
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__StrManip_h__

@@ -1,5 +1,4 @@
-#ifndef __SliderWindow_h__
-#define __SliderWindow_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // SliderWindow.h | Declaration of the TCSliderWindow class.
@@ -334,5 +333,3 @@ inline const TCSliderWindow& TCSliderWindow::operator=(HWND hwnd)
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__SliderWindow_h__

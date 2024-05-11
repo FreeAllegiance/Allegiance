@@ -1,5 +1,4 @@
-#ifndef __RefCountedData_h__
-#define __RefCountedData_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // RefCountedData.h | Declaration of the TCRefCountedData template class.
@@ -97,5 +96,3 @@ inline long TCRefCountedData<T>::Release()
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__RefCountedData_h__

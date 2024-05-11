@@ -1,5 +1,4 @@
-#ifndef __Range_h__
-#define __Range_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // Range.h : Declaration and implementation of the range<T> class template.
@@ -99,5 +98,3 @@ inline range<_Tp> make_range(const _Tp& t1, const _Tp& t2)
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__Range_h__

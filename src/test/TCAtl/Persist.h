@@ -1,6 +1,3 @@
-#ifndef __Persist_h__
-#define __Persist_h__
-
 #pragma once
 
 
@@ -846,5 +843,3 @@ HRESULT TCPersistPropertyBagImpl::IPersistPropertyBag_Save(
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__Persist_h__

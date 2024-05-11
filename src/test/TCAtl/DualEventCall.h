@@ -1,18 +1,12 @@
-#ifndef __DualEventCall_h__
-#define __DualEventCall_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // DualEventsCall.h | Declaration of the classes used in the for_each
 // statements of the connection point sinks.
 
-#ifndef _INC_STDARG
-  #include <stdarg.h>
-#endif // !_INC_STDARG
+#include <stdarg.h>
 
-#ifndef __EventCall_h__
-  #include "EventCall.h"
-#endif // !__EventCall_h__
-
+#include "EventCall.h"
 
 /////////////////////////////////////////////////////////////////////////////  
 // TCComDualEventCall is used internally by the TCComDualEventCP_Fn macros as
@@ -333,5 +327,3 @@ void TCComDualEventCall<If_vtbl>::SetDispParamsV(DISPID dispid, UINT cArgs,
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__DualEventCall_h__

@@ -1,5 +1,4 @@
-#ifndef __DynaLib_h__
-#define __DynaLib_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // DynaLib.h | Declaration of the TCDynaLib class used to wrap the
@@ -1597,6 +1596,3 @@ public:                                                                         
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__DynaLib_h__
-

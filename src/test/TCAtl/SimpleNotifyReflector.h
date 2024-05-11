@@ -1,5 +1,4 @@
-#ifndef __SimpleNotifyReflector_h__
-#define __SimpleNotifyReflector_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // SimpleNotifyReflector.h | Declaration of the TCSimpleNotifyReflector
@@ -89,5 +88,3 @@ protected:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__SimpleNotifyReflector_h__

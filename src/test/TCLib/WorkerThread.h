@@ -1,5 +1,4 @@
-#ifndef __WorkerThread_h__
-#define __WorkerThread_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // WorkerThread.h | Declaration of the TCWorkerThread class.
@@ -403,5 +402,3 @@ inline bool TCWorkerThread::IsCurrentThread()
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__WorkerThread_h__

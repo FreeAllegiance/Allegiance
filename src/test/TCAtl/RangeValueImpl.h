@@ -1,5 +1,4 @@
-#ifndef __RangeValueImpl_h__
-#define __RangeValueImpl_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // RangeValueImpl.h | Declaration of the ITCRangeValueImpl template class.
@@ -309,5 +308,3 @@ protected:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__RangeValueImpl_h__

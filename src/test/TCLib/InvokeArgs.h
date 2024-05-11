@@ -1,5 +1,4 @@
-#ifndef __InvokeArgs_h__
-#define __InvokeArgs_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // InvokeArgs.h | Declaration of the classes used in the for_each
@@ -120,5 +119,3 @@ inline void TCInvokeArgs::Empty()
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__InvokeArgs_h__

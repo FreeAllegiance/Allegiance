@@ -1,5 +1,4 @@
-#ifndef __EventsCP_h__
-#define __EventsCP_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // EventsCP.h | Declaration of the TCComEventsCP class.
@@ -837,5 +836,3 @@ void TCComEventsCP<T, IV, piid>::RemoveFailedSink(HRESULT hr, IV* pIfVtbl)
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__EventsCP_h__
