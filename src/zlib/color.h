@@ -4,8 +4,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef _color_h_
-#define _color_h_
+#pragma once
 
 #include <algorithm>
 #include "zstring.h"
@@ -173,5 +172,3 @@ inline Color MakeColorFromCOLORREF(COLORREF color)
 
 ZString ConvertColorToString (const Color& color);
 // move end
-
-#endif

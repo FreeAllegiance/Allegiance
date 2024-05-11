@@ -1,5 +1,4 @@
-#ifndef _Orientation_h_
-#define _Orientation_h_
+#pragma once
 
 #include "vector.h"
 
@@ -196,5 +195,3 @@ inline Vector  operator * (const Vector& v, const Orientation& o)
             v.x * o.m_r[0][2] + v.y * o.m_r[1][2] + v.z * o.m_r[2][2]
         );
 }
-
-#endif

@@ -4,8 +4,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef _zmath_H_
-#define _zmath_H_
+#pragma once
 
 #include <cmath>
 #include <cstdint>
@@ -299,5 +298,3 @@ extern float g_Inv255;
     {
         return MakeInt(value - 0.5f);
     }
-
-#endif

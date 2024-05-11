@@ -1,5 +1,4 @@
-#ifndef _TList_H_
-#define _TList_H_
+#pragma once
 
 #include "tcompare.h"
 #include "tref.h"
@@ -460,5 +459,3 @@ public:
         return NULL;
     }
 };
-
-#endif

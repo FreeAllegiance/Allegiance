@@ -1,5 +1,4 @@
-#ifndef _message_H_
-#define _message_H_
+#pragma once
 
 #include "tlist.h"
 #include "tref.h"
@@ -342,5 +341,3 @@ public:
         m_lstTargets.PushEnd(new EventTarget((DerivedClass*)this, pfn, psource, when));
     }
 };
-
-#endif

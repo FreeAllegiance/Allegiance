@@ -4,8 +4,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef _HVector_H_
-#define _HVector_H_
+#pragma once
 
 #include "vector.h"
 
@@ -119,5 +118,3 @@ public:
         return hvec1.x != hvec2.x || hvec1.y != hvec2.y || hvec1.z != hvec2.z || hvec1.w != hvec2.w;
     }
 };
-
-#endif

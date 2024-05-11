@@ -1,5 +1,4 @@
-#ifndef _matrix_h_
-#define _matrix_h_
+#pragma once
 
 #include <cstdint>
 
@@ -255,5 +254,3 @@ public:
     void Transform(const TVector<HVector>&, TVector<HVector>&) const;
     void Transform(const TVector<Vector>&, TVector<Vector>&) const;
 };
-
-#endif

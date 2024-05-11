@@ -4,8 +4,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef _PCH_H_
-#define _PCH_H_
+#pragma once
 
 #define __MODULE__ "Utility"
 
@@ -43,6 +42,3 @@
 #include "zlib.h"
 #include "Utility.h"
 //#include "zauth.h" // KG removed
-
-
-#endif

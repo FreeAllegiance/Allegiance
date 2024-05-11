@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef __TlsValue_h__
-#define __TlsValue_h__
-
 #ifndef _M_CEE // BT - WOPR - AllegianceInterop Compatibility
 	#include <mutex>
 #endif
@@ -204,5 +201,3 @@ typedef TlsValue<bool    > tlsBool;
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__TlsValue_h__

@@ -1,5 +1,4 @@
-#ifndef _TCompare_H_
-#define _TCompare_H_
+#pragma once
 
 #include "zassert.h"
 
@@ -47,5 +46,3 @@ public:
         return false;
     }
 };
-
-#endif

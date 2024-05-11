@@ -1,9 +1,4 @@
-#ifndef __FixDelete_h__
-#define __FixDelete_h__
-
-#if _MSC_VER > 1000
-  #pragma once
-#endif
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // This is 'borrowed' from the CRT to ensure that delete is as we expect.  //
@@ -50,5 +45,3 @@
 #endif // _DEBUG                                                           //
                                                                            //
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__FixDelete_h__

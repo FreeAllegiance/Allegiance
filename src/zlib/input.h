@@ -1,5 +1,4 @@
-#ifndef _input_h_
-#define _input_h_
+#pragma once
 
 #include "mask.h"
 #include "point.h"
@@ -109,5 +108,3 @@ public:
     virtual void               SetCursorPos(const Point& point)    = 0;
     virtual void               ShowCursor(bool bShow)              = 0;
 };
-
-#endif

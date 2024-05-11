@@ -4,8 +4,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef _assert_h_
-#define _assert_h_
+#pragma once
 
 #include <memory>
 #include <windows.h>
@@ -117,6 +116,3 @@ extern ILogger* g_pDebugLogger;
     #define ZTrace(str)       
     #define ZStartTrace(str)    
 #endif
-
-#endif
-

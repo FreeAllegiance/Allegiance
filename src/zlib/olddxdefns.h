@@ -1,6 +1,4 @@
-
-#ifndef _OLDDXDEFNS_H_
-#define _OLDDXDEFNS_H_
+#pragma once
 
 #include <cstdint>
 #include <windows.h>
@@ -253,5 +251,3 @@ typedef struct _D3DVERTEX {
                          D3DFVF_SPECULAR | D3DFVF_TEX1 )
 #define D3DFVF_TLVERTEX ( D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | \
                           D3DFVF_TEX1 )
-
-#endif // _OLDDXDEFNS_H_

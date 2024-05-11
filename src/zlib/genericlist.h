@@ -1,5 +1,4 @@
-#ifndef _genericlist_h_
-#define _genericlist_h_
+#pragma once
 
 #include "event.h"
 #include "tref.h"
@@ -35,5 +34,3 @@ public:
     ItemID        GetNext(ItemID pitem)  { return NULL;                     }
     IEventSource* GetChangedEvent()      { return IEventSource::GetNever(); }
 };
-
-#endif

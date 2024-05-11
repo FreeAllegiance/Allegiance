@@ -4,8 +4,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef _alloc_H_
-#define _alloc_H_
+#pragma once
 
 #define _DUMP_LEAKS_
 
@@ -33,5 +32,3 @@ public:
         memset(this, 0, sizeof(Type));
     }
 };
-
-#endif

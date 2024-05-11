@@ -4,8 +4,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef _Vector_h_
-#define _Vector_h_
+#pragma once
 
 #include <cmath>
 #include "zassert.h"
@@ -172,5 +171,3 @@ public:
     static Vector RandomDirection(void);
     static Vector RandomPosition(float radius);
 };
-
-#endif

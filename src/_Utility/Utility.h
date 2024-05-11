@@ -11,8 +11,7 @@
 **
 **  History:
 */
-#ifndef utl_h
-#define utl_h
+#pragma once
 
 #include <matrix.h>
 #include <orientation.h>
@@ -1508,6 +1507,4 @@ private:
 #define CTempTimer CTempTimer_OptimizedOut
 #else
 #define CTempTimer CTimer
-#endif
-
 #endif

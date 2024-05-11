@@ -4,8 +4,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef _Win32App_h_
-#define _Win32App_h_
+#pragma once
 
 #include <windows.h>
 
@@ -46,5 +45,3 @@ public:
 	static int GenerateDump(EXCEPTION_POINTERS* pExceptionPointers);
 	static LONG __stdcall ExceptionHandler( EXCEPTION_POINTERS* pep );
 };
-
-#endif

@@ -4,8 +4,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef _mask_H_
-#define _mask_H_
+#pragma once
 
 #include <algorithm>
 #include <cmath>
@@ -351,5 +350,3 @@ template<int nBits> class TLargeBitMask
         uint8_t    m_bits[((nBits - 1) / 8) + 1];
 
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef _time_h_
-#define _time_h_
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // ztime.h : Declaration and implementation of the Time class.
@@ -190,5 +189,3 @@ public:
 	const char * getTimeString();
 
 };
-
-#endif
