@@ -1,5 +1,4 @@
-#ifndef _mappreview_h_
-#define _mappreview_h_
+#pragma once
 
 #include <controls.h>
 
@@ -51,5 +50,3 @@ public:
     void        MouseLeave(IInputProvider* pprovider);
 	void ComputePreview(const MissionParams& p) {m_pMapPreviewImage->ComputePreview(p);}
 };
-
-#endif

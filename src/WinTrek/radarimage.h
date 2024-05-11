@@ -1,5 +1,4 @@
-#ifndef _RadarImage_h_
-#define _RadarImage_h_
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -67,6 +66,3 @@ public:
 
             ZString     GetFunctionName() { return "RadarImage"; }
 };
-
-
-#endif

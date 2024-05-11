@@ -1,5 +1,4 @@
-#ifndef	SECTORVW_H
-#define	SECTORVW_H
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -20,6 +19,3 @@ public:
     virtual void SetWindowSize(const Point& point) = 0;
 
 };
-
-#endif
-

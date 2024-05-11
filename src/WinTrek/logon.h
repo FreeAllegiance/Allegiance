@@ -1,5 +1,4 @@
-#ifndef _logon_h_
-#define _logon_h_
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -22,5 +21,3 @@ enum LogonType
 
 TRef<IPopup> CreateLogonPopup(Modeler* pmodeler, LogonSite* psite, LogonType lt, 
                               LPCSTR szPrompt, LPCSTR szName, LPCSTR szPW, BOOL fRememberPW);
-
-#endif

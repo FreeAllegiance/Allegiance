@@ -1,5 +1,4 @@
-#ifndef	TREKGEO_H
-#define	TREKGEO_H
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -88,6 +87,3 @@ public:
     static const Color s_colorFeet;
     static const Color s_colorNeutral;
 };
-
-
-#endif

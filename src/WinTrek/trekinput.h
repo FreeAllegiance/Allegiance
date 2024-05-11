@@ -1,5 +1,4 @@
-#ifndef	TREKINPUT_H
-#define	TREKINPUT_H
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -47,5 +46,3 @@ TRef<TrekInput> CreateTrekInput(HINSTANCE hInst, HWND hwnd, InputEngine* pinputE
 
 #define INPUTMAP_FILE         "inputmap1"
 #define DEFAULTINPUTMAP_FILE  "defaultinputmap"
-
-#endif

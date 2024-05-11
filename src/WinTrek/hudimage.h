@@ -1,5 +1,4 @@
-#ifndef _HUDImage_h_
-#define _HUDImage_h_
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -25,6 +24,3 @@ public:
     virtual void SetClusterName(const char* value) = 0;
     virtual void SetWindowSize(const Point& point) = 0;
 };
-
-
-#endif

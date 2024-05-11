@@ -1,5 +1,4 @@
-#ifndef  _VIDEOSCREEN_HEADER_
-#define  _VIDEOSCREEN_HEADER_
+#pragma once
 
 #include <ddraw.h>
 #include "ddstream.h"
@@ -37,5 +36,3 @@ public:
 	VOID DestroyDDVid();
 	BOOL Flip();
 };
-
-#endif

@@ -8,8 +8,7 @@
  *
  ***************************************************************************/
 
-#ifndef _TREKDLGS_H
-#define _TREKDLGS_H
+#pragma once
 
 #include "loadout.h"
 #include "trekctrls.h"
@@ -743,5 +742,3 @@ private:
     TrekImgButton       m_btnBack;
     TrekImgButton       m_btnCreate;
 };
-
-#endif

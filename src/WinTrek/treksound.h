@@ -1,5 +1,4 @@
-#ifndef _treksound_H_
-#define _treksound_H_
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -11,5 +10,3 @@ TRef<INameSpace> CreateSoundNameSpace(
     Modeler*    pmodeler,
     INameSpace* pnsParent
 );
-
-#endif
