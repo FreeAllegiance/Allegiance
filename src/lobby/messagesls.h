@@ -8,8 +8,7 @@
  * Copyright 1986-2000 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
-#ifndef _MESSAGES_LS_H_
-#define _MESSAGES_LS_H_
+#pragma once
 
 #include "MessageCore.h"
 
@@ -158,6 +157,3 @@ DEFINE_FEDMSG(S, LOG_CHAT_MESSAGE, 216) // Send the message up to the lobby so i
 	uint64_t sourceSteamID;
 	uint64_t targetSteamID;
 END_FEDMSG
-
-#endif // _MESSAGES_LS_H_
-

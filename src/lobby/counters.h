@@ -1,5 +1,4 @@
-#ifndef _COUNTERS_H_
-#define _COUNTERS_H_
+#pragma once
 
 typedef struct _LOBBY_COUNTERS
 {
@@ -24,8 +23,3 @@ typedef struct _PER_SERVER_COUNTERS
     DWORD percentLoad; // based on how many players they said they can handle
     DWORD dummy; // 8 byte alignment
 } PER_SERVER_COUNTERS, *PPER_SERVER_COUNTERS;
-
-
-#endif
-
-

@@ -8,8 +8,7 @@
   Copyright 1986-2000 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
-#ifndef _LOBBYEVENTS_H_
-#define _LOBBYEVENTS_H_
+#pragma once
 
 #define LobbyEventBaseID 5000
 
@@ -69,5 +68,3 @@ enum LobbyEvent
 };
 
 extern const char * g_rgszLobbyEvents[];
-
-#endif

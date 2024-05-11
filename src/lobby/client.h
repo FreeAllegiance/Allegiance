@@ -8,8 +8,7 @@
   Copyright 1986-2000 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
-#ifndef _CLIENT_H_
-#define _CLIENT_H_
+#pragma once
 
 // There shld be a one-to-one mapping between connections on the servers session and CFLServer objects, 
 // but there's not, since each connection can (for now) actually support more than one game). 
@@ -53,6 +52,3 @@ private:
 
 // BT - 9/11/2010 - Making this usable by other classes.
 void encodeURL( char * url, char * token);
-
-#endif
-

@@ -8,8 +8,7 @@
  * Copyright 1986-2000 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
-#ifndef _MESSAGES_LC_H_ 
-#define _MESSAGES_LC_H_ 
+#pragma once
 
 #include "messagecore.h"
 
@@ -137,6 +136,3 @@ DEFINE_FEDMSG(L, SERVERS_LIST, 267) // sent by lobby in reply to GET_SERVERS_REQ
   int cCores;
   int cServers;
 END_FEDMSG
-
-#endif // _MESSAGES_LC_H_
-

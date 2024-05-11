@@ -8,8 +8,7 @@
   Copyright 1986-2000 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
-#ifndef _MISSION_H_
-#define _MISSION_H_
+#pragma once
 
 #include "messagesall.h"
 
@@ -85,6 +84,3 @@ private:
 };
 
 typedef TList<CFLMission*> MissionList;
-
-#endif
-

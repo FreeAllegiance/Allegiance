@@ -7,8 +7,8 @@
   
   Copyright 1986-2000 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
-#ifndef _LOBBYAPP_H_ 
-#define _LOBBYAPP_H_ 
+
+#pragma once
 
 // mmf added this include so client.cpp has HKLM_FedSrv defined
 #include "regkey.h"
@@ -281,5 +281,3 @@ private:
 };
 
 extern CLobbyApp * g_pLobbyApp;  
-
-#endif

@@ -8,8 +8,7 @@
   Copyright 1986-2000 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
-#ifndef _SERVER_H_
-#define _SERVER_H_
+#pragma once
 
 // mmf added this to support lobby checking for allowed server ips
 bool IsServerAllowed(const char *ip);
@@ -169,5 +168,3 @@ private:
   char m_szPrivilegedUsers[512]; // Imago 6/10 #2
   char m_szVersion[18]; // Imago 6/10 #62
 };
-
-#endif
