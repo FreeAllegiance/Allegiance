@@ -9,8 +9,7 @@
  * Copyright 1986-1998 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
-#ifndef _ADMINSESSION_H_
-#define _ADMINSESSION_H_
+#pragma once
 
 #include <objsafe.h> // For CATID_SafeForScripting
 #include <..\TCLib\AutoCriticalSection.h>
@@ -162,6 +161,3 @@ inline CAdminSession* CAdminSession::GetWhoStartedServer()
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // _ADMINSESSION_H_
-

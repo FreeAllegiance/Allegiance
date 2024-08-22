@@ -3,8 +3,7 @@
 // classes.
 //
 
-#ifndef __PigStaticSite_h__
-#define __PigStaticSite_h__
+#pragma once
 
 #include <Allegiance.h>
 
@@ -133,8 +132,3 @@ public:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif !__PigStaticSite_h__
-
-
-

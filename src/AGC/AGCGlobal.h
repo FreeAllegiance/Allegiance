@@ -1,5 +1,4 @@
-#ifndef __AGCGlobal_h__
-#define __AGCGlobal_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // AGCGlobal : Declaration of the CAGCGlobal class.
@@ -180,5 +179,3 @@ inline TCINT64 CAGCGlobal::MakeKey(AGCEventID idEvent, AGCUniqueID idUnique)
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__AGCGlobal_h__

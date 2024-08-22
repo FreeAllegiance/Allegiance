@@ -1,5 +1,4 @@
-#ifndef _PaneImage_H_
-#define _PaneImage_H_
+#pragma once
 
 #include <tref.h>
 
@@ -14,5 +13,3 @@ class Pane;
 /////////////////////////////////////////////////////////////////////////////
 
 TRef<Image> CreatePaneImage(Engine* pengine, bool bColorKey, Pane* ppane);
-
-#endif

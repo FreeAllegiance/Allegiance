@@ -13,8 +13,7 @@
 */
 // civilizationIGC.h : Declaration of the CcivilizationIGC
 
-#ifndef __CIVILIZATIONIGC_H_
-#define __CIVILIZATIONIGC_H_
+#pragma once
 
 #include "igc.h"
 
@@ -98,5 +97,3 @@ class       CcivilizationIGC : public IcivilizationIGC
         IhullTypeIGC*       m_phtLifepod;
         IstationTypeIGC*    m_pstInitial;
 };
-
-#endif //__CIVILIZATIONIGC_H_

@@ -4,8 +4,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef _Quaternion_h_
-#define _Quaternion_h_
+#pragma once
 
 #include "vector.h"
 #include "orientation.h"
@@ -64,5 +63,3 @@ public:
     friend bool operator==(const Quaternion& q1, const Quaternion& q2);
     friend bool operator!=(const Quaternion& q1, const Quaternion& q2);
 };
-
-#endif

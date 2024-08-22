@@ -8,8 +8,7 @@
   Copyright 1986-2000 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
-#ifndef _LOBQUERIES_H_
-#define _LOBQUERIES_H_
+#pragma once
 
 #include "allegdb.h"
 
@@ -70,7 +69,3 @@ BEGIN_QUERY(CQLobbyLogon, true,
   END_COLUMN_MAP()
 
 END_QUERY(CQLobbyLogon, true)
-
-
-#endif
-

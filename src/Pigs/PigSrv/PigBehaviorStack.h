@@ -1,5 +1,4 @@
-#ifndef __PigBehaviorStack_h__
-#define __PigBehaviorStack_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // PigBehaviorStack.h : Declaration of the CPigBehaviorStack class.
@@ -91,5 +90,3 @@ inline CPigEngine& CPigBehaviorStack::GetEngine()
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__PigBehaviorStack_h__

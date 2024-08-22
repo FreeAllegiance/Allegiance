@@ -10,12 +10,9 @@
 **
 **  History:
 */
-#ifndef _NO_ACTION_H_
-#define _NO_ACTION_H_
+#pragma once
 
-#ifndef _ACTION_H_
 #include "Action.h"
-#endif  //_ACTION_H_
 
 namespace Training
 {
@@ -31,5 +28,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_NO_ACTION_H_

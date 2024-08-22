@@ -1,5 +1,4 @@
-#ifndef _listwrappers_h_
-#define _listwrappers_h_
+#pragma once
 
 #include <Utility.h>
 #include <event.h>
@@ -698,7 +697,3 @@ public:
         return m_pfnChanged.GetEvent();
     }
 };
-
-
-
-#endif

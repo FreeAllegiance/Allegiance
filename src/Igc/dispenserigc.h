@@ -13,8 +13,7 @@
 */
 // dispenserIGC.h : Declaration of the CdispenserIGC
 
-#ifndef __DISPENSERIGC_H_
-#define __DISPENSERIGC_H_
+#pragma once
 
 #include "igc.h"
 
@@ -189,5 +188,3 @@ class CdispenserIGC : public IdispenserIGC
 
         Mount                           m_mountID;
 };
-
-#endif //__DISPENSERIGC_H_

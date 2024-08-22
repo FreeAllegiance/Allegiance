@@ -1,5 +1,4 @@
-#ifndef _efimage_H_
-#define _efimage_H_
+#pragma once
 
 #include <inputengine.h>
 #include <image.h>
@@ -117,5 +116,3 @@ public:
 };
 
 TRef<LensFlareImage> CreateLensFlareImage(Modeler* pmodeler, Viewport* pviewport);
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef __IAGCCollectionImpl_h__
-#define __IAGCCollectionImpl_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // IAGCCollectionImpl.h : Declaration of the IAGCCollectionImpl class
@@ -122,6 +121,3 @@ public:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__IAGCCollectionImpl_h__
-

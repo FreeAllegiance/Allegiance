@@ -1,9 +1,4 @@
-#ifndef __WindowThreadBase_h__
-#define __WindowThreadBase_h__
-
-#if _MSC_VER > 1000
-  #pragma once
-#endif // _MSC_VER > 1000
+#pragma once
 
 #pragma warning(disable: 4786)
 #include <map>
@@ -668,5 +663,3 @@ inline bool TCWindowThreadBase::TranslateDialogMessages(MSG& msg)
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__WindowThreadBase_h__

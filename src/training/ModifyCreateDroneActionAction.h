@@ -1,10 +1,7 @@
+#pragma once
 
-#ifndef _MCDA_ACTION_H_
-#define _MCDA_ACTION_H_
-
-#ifndef _ACTION_H_
 #include "Action.h"
-#endif// _ACTION_H_
+
 #include "CreateDroneAction.h"
 
 namespace Training
@@ -41,5 +38,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_MCDA_ACTION_H_

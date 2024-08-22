@@ -9,9 +9,8 @@
 **  History:
 */
 // 
+#pragma once
 
-#ifndef __MAPPVMAKER_H_
-#define __MAPPVMAKER_H_
 class CMapPVCluster;
 class ImissionPV;
 
@@ -630,7 +629,3 @@ class CmapPVMakerSplitBase : public CmapPVMaker
                                             SectorID sID);
         virtual VOID        LinkClusters(CMapPVData * pMapData);
 } ;
-
-#endif //__MAPPVMAKER_H_
-
-

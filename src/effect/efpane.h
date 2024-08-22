@@ -1,5 +1,4 @@
-#ifndef _efpane_H_
-#define _efpane_H_
+#pragma once
 
 #include <pane.h>
 #include <tref.h>
@@ -115,5 +114,3 @@ public:
 void ParseIntVector(IObject* pobject, TVector<int>& vec);
 void ParseFloatVector(IObject* pobject, TVector<int>& vec);
 void ParseStringVector(IObject* pobject, TVector<ZString>& vec);
-
-#endif

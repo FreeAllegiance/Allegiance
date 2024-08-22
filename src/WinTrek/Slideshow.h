@@ -1,5 +1,4 @@
-#ifndef slideshow_h_
-#define slideshow_h_
+#pragma once
 
 #include "screen.h"
 
@@ -65,5 +64,3 @@ class Slideshow :
         virtual bool        OnKey (IInputProvider* pprovider, const KeyState& ks, bool& fForceTranslate);
         static  bool        IsInSlideShow (void);
 };
-
-#endif

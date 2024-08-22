@@ -1,5 +1,4 @@
-#ifndef _efgeo_H_
-#define _efgeo_H_
+#pragma once
 
 #include <event.h>
 #include <model.h>
@@ -148,5 +147,3 @@ public:
 };
 
 TRef<BitsGeo> CreateBitsGeo(Modeler* pmodeler, Number* ptime);
-
-#endif

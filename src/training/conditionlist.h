@@ -10,12 +10,9 @@
 **
 **  History:
 */
-#ifndef _CONDITION_LIST_H_
-#define _CONDITION_LIST_H_
+#pragma once
 
-#ifndef _CONDITION_H_
 #include "Condition.h"
-#endif  //_CONDITION_H_
 
 namespace Training
 {
@@ -37,5 +34,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_CONDITION_LIST_H_

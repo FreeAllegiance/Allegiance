@@ -1,6 +1,4 @@
-
-#ifndef _ZString_H_
-#define _ZString_H_
+#pragma once
 
 #include "tref.h"
 
@@ -210,5 +208,3 @@ void ZUnscramble(char* szDest, PCC szSource, PCC szKey);
 
 void ZToUpper(char* szDest, PCC szSource);
 void ZToLower(char* szDest, PCC szSource);
-
-#endif

@@ -3,8 +3,7 @@
 //      are changed infrequently
 //
 
-#if !defined(AFX_STDAFX_H__42522DF4_4621_4DC3_8967_8416F636D54C__INCLUDED_)
-#define AFX_STDAFX_H__42522DF4_4621_4DC3_8967_8416F636D54C__INCLUDED_
+#pragma once
 
 #define _WIN32_WINNT 0x0A00
 
@@ -91,5 +90,3 @@ const int c_cMaxChatsInRegistry = 30;
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !defined(AFX_STDAFX_H__42522DF4_4621_4DC3_8967_8416F636D54C__INCLUDED_)

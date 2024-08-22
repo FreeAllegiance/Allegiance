@@ -1,5 +1,4 @@
-#ifndef __AdminSessionEventSink_h__
-#define __AdminSessionEventSink_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // AdminSessionEventSink.h : Declaration of the CAdminSessionEventSink
@@ -58,5 +57,3 @@ inline DWORD CAdminSessionEventSink::GetGITCookie() const
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__AdminSessionEventSink_h__

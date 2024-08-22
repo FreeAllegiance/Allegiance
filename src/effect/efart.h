@@ -1,6 +1,4 @@
-
-#ifndef _EFFECTS_ARTWORK_H_
-#define _EFFECTS_ARTWORK_H_
+#pragma once
 
 #define AWF_EFFECT_ALEPH_STAR                   "f02bmp"
 
@@ -18,5 +16,3 @@
 #define AWF_EFFECT_BIT                          "utl10"
 
 #define AWF_EFFECT_TRAIL                        "trailbmp"
-
-#endif

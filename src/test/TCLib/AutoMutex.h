@@ -1,9 +1,4 @@
-#if _MSC_VER > 1000
-  #pragma once
-#endif // _MSC_VER > 1000
-
-#ifndef __AutoMutex_h__
-#define __AutoMutex_h__
+#pragma once
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -111,6 +106,3 @@ inline void TCAutoMutex::Unlock()
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__AutoMutex_h__
-

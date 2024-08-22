@@ -1,5 +1,4 @@
-#ifndef _screens_h_
-#define _screens_h_
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -56,5 +55,3 @@ extern char g_szCharName[c_cbName];
 extern char g_szCharPW[c_cbName];
 
 void LaunchFromHangar();
-
-#endif

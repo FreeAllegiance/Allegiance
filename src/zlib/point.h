@@ -4,8 +4,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef _Point_H_
-#define _Point_H_
+#pragma once
 
 #include <cmath>
 #include "zstring.h"
@@ -188,5 +187,3 @@ inline ZString GetString(const Point& point)
 {
     return "(" + ZString(point.X()) + ", " + ZString(point.Y()) + ")";
 }
-
-#endif

@@ -13,8 +13,7 @@
 */
 // buoyIGC.h : Declaration of the CbuoyIGC
 
-#ifndef __BUOYIGC_H_
-#define __BUOYIGC_H_
+#pragma once
 
 #include "igc.h"
 #include "modelIGC.h"
@@ -97,5 +96,3 @@ class CbuoyIGC : public TmodelIGC<IbuoyIGC>
         BuoyType m_type;
         bool     m_visible;
 };
-
-#endif //__BUOYIGC_H_

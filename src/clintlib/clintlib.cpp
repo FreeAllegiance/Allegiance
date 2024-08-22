@@ -1157,9 +1157,6 @@ BaseClient::BaseClient(void)
 
 BaseClient::~BaseClient(void)
 {
-#ifdef USEAUTH
-    FreeZoneAuthClient();
-#endif
     CoUninitialize();
     TMapListWrapper<DWORD, MissionInfo*>::Iterator iterMissions(m_mapMissions);
 

@@ -1,5 +1,4 @@
-#ifndef __AutoCriticalSection_h__
-#define __AutoCriticalSection_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // AutoCriticalSection.h | Declaration of the TCAutoCriticalSection class.
@@ -82,6 +81,3 @@ inline void TCAutoCriticalSection::Unlock()
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__AutoCriticalSection_h__
-

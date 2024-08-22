@@ -1,5 +1,4 @@
-#ifndef __LookupTable_h__
-#define __LookupTable_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // LookupTable.h | Declaration of a simple lookup table.
@@ -354,5 +353,3 @@ bool TCLookupTable_Find(TCLookupTablePair<Key, Value, KeyRef>* ptable,
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__LookupTable_h__

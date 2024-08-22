@@ -1,5 +1,4 @@
-#ifndef _bounds_h_
-#define _bounds_h_
+#pragma once
 
 #include <rect.h>
 
@@ -87,5 +86,3 @@ public:
     void SetVectors(const Vector& vecMin, const Vector& vecMax);
 };
 */
-
-#endif

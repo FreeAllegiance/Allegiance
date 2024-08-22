@@ -1,5 +1,4 @@
-#ifndef __AutoSizer_h__
-#define __AutoSizer_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // AutoSizer.h | Declaration of the CAutoSizer class.
@@ -269,5 +268,3 @@ inline void CAutoSizer::XRule::ResolveIDs(CAutoSizer* pSizer)
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__AutoSizer_h__

@@ -8,8 +8,7 @@
  *
  ***************************************************************************/
 
-#ifndef _LOADOUT_H
-#define _LOADOUT_H
+#pragma once
 
 #include"trekmdl.h"
 
@@ -47,7 +46,3 @@ public:
     static TRef<PurchasesPane> Create(PartInfoPane* pPartInfoPane);
     virtual  void SetPaneWindow(Window* pWindow) = 0;
 };
-
-
-#endif
-

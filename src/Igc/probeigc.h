@@ -13,8 +13,7 @@
 */
 // probeIGC.h : Declaration of the CprobeIGC
 
-#ifndef __PROBEIGC_H_
-#define __PROBEIGC_H_
+#pragma once
 
 #include "igc.h"
 #include "modelIGC.h"
@@ -335,5 +334,3 @@ class CprobeIGC : public TmodelIGC<IprobeIGC>
         bool                m_bCreateNow;		
 		
 };
-
-#endif //__PROBEIGC_H_

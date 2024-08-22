@@ -1,5 +1,4 @@
-#ifndef _UIVERTEXDEFN_H_
-#define _UIVERTEXDEFN_H_
+#pragma once
 
 #include <cstdint>
 
@@ -47,6 +46,3 @@ struct UIFONTVERTEX2
 
 // FVF for the above vertex defn.
 #define D3DFVF_UIFONTVERTEX2 ( D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1 )
-
-
-#endif // _UIVERTEXDEFN_H_

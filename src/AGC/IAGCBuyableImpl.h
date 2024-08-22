@@ -1,5 +1,4 @@
-#ifndef __IAGCBuyableImpl_h__
-#define __IAGCBuyableImpl_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // IAGCBuyableImpl.h : Declaration of the IAGCBuyableImpl class template.
@@ -74,5 +73,3 @@ public:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__IAGCBuyableImpl_h__

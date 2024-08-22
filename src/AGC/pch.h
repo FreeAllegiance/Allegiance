@@ -3,12 +3,7 @@
 //      or project specific include files that are used frequently,
 //      but are changed infrequently
 
-#if !defined(AFX_STDAFX_H__537FEB63_0A41_11D3_8B58_00C04F681633__INCLUDED_)
-#define AFX_STDAFX_H__537FEB63_0A41_11D3_8B58_00C04F681633__INCLUDED_
-
-#if _MSC_VER > 1000
-  #pragma once
-#endif // _MSC_VER > 1000
+#pragma once
 
 #ifndef _ATL_STATIC_REGISTRY
 #define _ATL_STATIC_REGISTRY
@@ -44,13 +39,11 @@ extern CComModule _Module;
 #include <atlcom.h>
 
 // VS.Net 2003 port - COM_INTERFACE_ENTRY2 is more type strict now, revert it to VS6 version
-#if _MSC_VER >= 1310
 #	undef COM_INTERFACE_ENTRY2
 	#define COM_INTERFACE_ENTRY2(x, x2)\
 		{&_ATL_IIDOF(x),\
 		(DWORD)((x*)(x2*)((_ComMapClass*)8))-8,\
 		_ATL_SIMPLEMAPENTRY},
-#endif 
 
 #define __MODULE__ "AGC"
 #include <TCLib.h>
@@ -91,6 +84,3 @@ public:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !defined(AFX_STDAFX_H__537FEB63_0A41_11D3_8B58_00C04F681633__INCLUDED)
-

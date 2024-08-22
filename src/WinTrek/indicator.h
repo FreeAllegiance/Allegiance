@@ -1,5 +1,4 @@
-#ifndef _IndicatorImage_h_
-#define _IndicatorImage_h_
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -44,5 +43,3 @@ enum TrainingOverlay
 void        SetTrainingOverlay(TrainingOverlay overlay);
 inline
 void        ClearTrainingOverlay(void) { SetTrainingOverlay(NoTrainingOverlay); }
-
-#endif

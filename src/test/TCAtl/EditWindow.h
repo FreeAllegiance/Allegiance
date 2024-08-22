@@ -1,5 +1,4 @@
-#ifndef __EditWindow_h__
-#define __EditWindow_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // EditWindow.h | Declaration of the TCEditWindow class.
@@ -1077,5 +1076,3 @@ inline const TCEditWindow& TCEditWindow::operator=(HWND hwnd)
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__EditWindow_h__

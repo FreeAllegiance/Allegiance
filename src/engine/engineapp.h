@@ -1,5 +1,4 @@
-#ifndef _engineapp_h_
-#define _engineapp_h_
+#pragma once
 
 #include "popup.h"
 
@@ -54,5 +53,3 @@ public:
 
 	bool IsBuildDX9(); // KGJV added - see ZLib/Win32App
 };
-
-#endif

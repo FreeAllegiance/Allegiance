@@ -1,5 +1,4 @@
-#ifndef __CommonControls_h__
-#define __CommonControls_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // CommonControls.h | Declaration of the TCCommonControls class.
@@ -119,6 +118,3 @@ inline BOOL TCCommonControls::InitEx(LPINITCOMMONCONTROLSEX pInitCtrls)
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__CommonControls_h__
-

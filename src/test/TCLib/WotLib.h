@@ -1,9 +1,4 @@
-#if _MSC_VER > 1000
-  #pragma once
-#endif // _MSC_VER > 1000
-
-#ifndef __WotLib_h__
-#define __WotLib_h__
+#pragma once
 
 #include <stdarg.h>
 
@@ -1059,5 +1054,3 @@ inline void TCWotLib::SetWnd(HWND hWnd)
   }
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__WotLib_h__

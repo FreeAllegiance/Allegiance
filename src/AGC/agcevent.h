@@ -2,8 +2,7 @@
 // AGCEvent.h : Declaration of the CAGCEvent
 //
 
-#ifndef __AGCEvent_H_
-#define __AGCEvent_H_
+#pragma once
 
 #include <AGC.h>
 #include "resource.h"       // main symbols
@@ -169,5 +168,3 @@ protected:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__AGCEvent_H_

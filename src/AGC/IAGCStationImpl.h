@@ -1,5 +1,4 @@
-#ifndef __IAGCStationImpl_h__
-#define __IAGCStationImpl_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // IAGCStationImpl.h : Declaration of the IAGCStationImpl class template.
@@ -50,5 +49,3 @@ public:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__IAGCStationImpl_h__

@@ -13,8 +13,8 @@
 */
 // probeTypeIGC.h : Declaration of the CprobeTypeIGC
 
-#ifndef __PROBETYPEIGC_H_
-#define __PROBETYPEIGC_H_
+#pragma once
+
 #include "igc.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -195,5 +195,3 @@ class CprobeTypeIGC : public IprobeTypeIGC
         Vector              m_emissionPt;
         IprojectileTypeIGC* m_projectileType;
 };
-
-#endif //__PROBETYPEIGC_H_

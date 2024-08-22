@@ -10,12 +10,9 @@
 **
 **  History:
 */
-#ifndef _SUSPENDED_PLAY_SOUND_ACTION_H_
-#define _SUSPENDED_PLAY_SOUND_ACTION_H_
+#pragma once
 
-#ifndef _PLAY_SOUND_ACTION_H_
 #include    "PlaySoundAction.h"
-#endif// _PLAY_SOUND_ACTION_H_
 
 namespace Training
 {
@@ -35,5 +32,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_SUSPENDED_PLAY_SOUND_ACTION_H_

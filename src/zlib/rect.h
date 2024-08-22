@@ -4,8 +4,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef _rect_h_
-#define _rect_h_
+#pragma once
 
 #include <algorithm>
 
@@ -246,5 +245,3 @@ public:
 };
 
 typedef TRect<RectCore> Rect;
-
-#endif

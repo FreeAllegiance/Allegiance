@@ -10,12 +10,9 @@
 **
 **  History:
 */
-#ifndef _ONE_TIME_ACTION_H_
-#define _ONE_TIME_ACTION_H_
+#pragma once
 
-#ifndef _ACTION_H_
 #include "Action.h"
-#endif// _ACTION_H_
 
 namespace Training
 {
@@ -37,5 +34,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_ONE_TIME_ACTION_H_

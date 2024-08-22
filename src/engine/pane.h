@@ -4,8 +4,7 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#ifndef _Pane_H_
-#define _Pane_H_
+#pragma once
 
 #include <color.h>
 #include <input.h>
@@ -236,5 +235,3 @@ public:
     virtual void        MouseLeave(IInputProvider* pprovider);
     virtual MouseResult Button(IInputProvider* pprovider, const Point& point, int button, bool bCaptured, bool bInside, bool bDown);
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef __CompositeValue_h__
-#define __CompositeValue_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // CompositeValue.h | Declaration of the TCCompositeValue template class.
@@ -270,5 +269,3 @@ inline TCCompositeValue<T>::operator const T&() const
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__CompositeValue_h__

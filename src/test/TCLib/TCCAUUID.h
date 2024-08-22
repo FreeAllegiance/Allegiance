@@ -1,5 +1,4 @@
-#ifndef __TCCAUUID_h__
-#define __TCCAUUID_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // TCCAUUID.h | Declaration and inline implementation of the TCCAUUID
@@ -42,5 +41,3 @@ inline TCCAUUID::~TCCAUUID()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__TCCAUUID_h__

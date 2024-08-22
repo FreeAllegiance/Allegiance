@@ -1,5 +1,4 @@
-#ifndef _enginewindow_h_
-#define _enginewindow_h_
+#pragma once
 
 #include <window.h>
 #include <ztime.h>
@@ -359,5 +358,3 @@ public:
 
     bool IsValid();
 };
-
-#endif

@@ -86,12 +86,7 @@ public:
   XWorkItem::~XWorkItem()
   {
     if (m_pfnRelease)
-// VS.Net 2003 port: see "Breaking Changes in the Standard C++ Library Since Visual C++ 6.0" in documentation
-#if _MSC_VER >= 1310
-	(*m_pfnRelease)(m_idMsg, m_vec.size(), &(*m_vec.begin()));
-#else
-	(*m_pfnRelease)(m_idMsg, m_vec.size(), m_vec.begin());
-#endif
+	    (*m_pfnRelease)(m_idMsg, m_vec.size(), &(*m_vec.begin()));
   }
 
 // Group=Data Members
@@ -522,12 +517,7 @@ void TCUtilityThread::DispatchWorkItem(TCUtilityThread::XWorkItem* pArgs)
 ///  __try
 	try
   {
-// VS.Net 2003 port: see "Breaking Changes in the Standard C++ Library Since Visual C++ 6.0" in documentation
-#if _MSC_VER >= 1310
     OnMessage(pArgs->m_idMsg, pArgs->m_vec.size(), &(*(pArgs->m_vec.begin())));
-#else
-    OnMessage(pArgs->m_idMsg, pArgs->m_vec.size(), pArgs->m_vec.begin());
-#endif
   }
 ///  __except(1)
 	catch(...)

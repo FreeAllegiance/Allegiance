@@ -1,5 +1,4 @@
-#ifndef __PropertyPageImpl_h_
-#define __PropertyPageImpl_h_
+#pragma once
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1311,5 +1310,3 @@ bool TCPropertyPageImpl<T>::GetFieldToggle(DISPID dispid, bool bEnableDisable)
 
   return true;
 }
-
-#endif //__PropertyPageImpl_h_

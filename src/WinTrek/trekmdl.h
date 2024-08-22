@@ -1,5 +1,4 @@
-#ifndef _trekmdl_h_
-#define _trekmdl_h_
+#pragma once
 
 #include <value.h>
 
@@ -93,5 +92,3 @@ class InventoryImageFactory : public IFunction
 public:
     TRef<IObject> Apply(ObjectStack& stack);
 };
-
-#endif

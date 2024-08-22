@@ -4,8 +4,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef _cast_H_
-#define _cast_H_
+#pragma once
 
 #include "tref.h"
 
@@ -120,5 +119,3 @@ void RuntimeCastTo(TRef<DestType>& pdest, TRef<SourceType>& psource)
         Type* p; CastTo(p, pvalue);       \
         return p;                         \
     }
-
-#endif

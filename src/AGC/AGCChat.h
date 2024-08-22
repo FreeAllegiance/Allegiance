@@ -1,5 +1,4 @@
-#ifndef __AGCChat_h__
-#define __AGCChat_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // AGCChat.h : Declaration of things common to chatting from AGC.
@@ -43,5 +42,3 @@ inline HRESULT FindCommandName(const OLECHAR* pszCommand, CommandID* pID,
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__AGCChat_h__

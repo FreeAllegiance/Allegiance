@@ -1,5 +1,4 @@
-#ifndef __RelPath_h__
-#define __RelPath_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // RelPath.h : Declarations of relative pathname functions.
@@ -14,5 +13,3 @@ bool TCMakeRelativePath(LPCTSTR pszPath, LPCTSTR pszFrom, LPTSTR pszDest,
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__RelPath_h__

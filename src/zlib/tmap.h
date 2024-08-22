@@ -1,5 +1,4 @@
-#ifndef _TMap_H_
-#define _TMap_H_
+#pragma once
 
 #include "zmath.h"
 #include "tref.h"
@@ -176,5 +175,3 @@ public:
         return (m_count == 0);
     }
 };
-
-#endif

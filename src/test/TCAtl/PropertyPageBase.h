@@ -1,5 +1,4 @@
-#ifndef __PropertyPageBase_h_
-#define __PropertyPageBase_h_
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // PropertyPageBase.h | Declaration of the TCPropertyPageBase class.
@@ -160,5 +159,3 @@ inline void TCPropertyPageBase::ClearAllAdvises()
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__PropertyPageBase_h_

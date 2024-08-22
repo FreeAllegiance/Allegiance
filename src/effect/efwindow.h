@@ -1,5 +1,4 @@
-#ifndef _efwindow_h_
-#define _efwindow_h_
+#pragma once
 
 #include <enginewindow.h>
 
@@ -23,5 +22,3 @@ public:
               HMENU      hmenu            = NULL
     );
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef _efpopup_H_
-#define _efpopup_H_
+#pragma once
 
 #include <popup.h>
 
@@ -26,5 +25,3 @@ TRef<IMessageBox> CreateMessageBox(
     ButtonPane*        pbuttonCancel,
     float              paintDelay
 );
-
-#endif

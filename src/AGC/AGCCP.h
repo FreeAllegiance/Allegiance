@@ -1,5 +1,4 @@
-#ifndef _AGCCP_H_
-#define _AGCCP_H_
+#pragma once
 
 template <class T>
 class CProxy_IAGCGameEvents : public IConnectionPointImpl<T, &DIID__IAGCGameEvents, CComDynamicUnkArray>
@@ -80,7 +79,3 @@ public:
     delete[] pvars;
   }
 };
-
-
-
-#endif

@@ -13,8 +13,7 @@
 */
 // warpIGC.h : Declaration of the CwarpIGC
 
-#ifndef __WARPIGC_H_
-#define __WARPIGC_H_
+#pragma once
 
 #include "igc.h"
 #include "modelIGC.h"
@@ -185,5 +184,3 @@ class CwarpIGC : public TmodelIGC<IwarpIGC>
 		bool				m_bFixedPosition; // KG - added to prevent randomization
 		double				m_MassLimit; //Andon: Added for aleph mass limts
 };
-
-#endif //__WARPIGC_H_

@@ -1,8 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // PigMissionParams.h : Declaration of the CPigMissionParams class
 
-#ifndef __PigMissionParams_h__
-#define __PigMissionParams_h__
+#pragma once
 
 #include "SrcInc.h"
 #include <AGC.h>
@@ -127,5 +126,3 @@ protected:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__PigMissionParams_h__

@@ -9,8 +9,7 @@
  * Copyright 1986-1999 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
-#ifndef __ADMINGAMES_H_
-#define __ADMINGAMES_H_
+#pragma once
 
 
 #include "..\agc\IAGCCollectionImpl.h"
@@ -67,5 +66,3 @@ public:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__ADMINGAMES_H_

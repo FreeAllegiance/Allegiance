@@ -1,5 +1,5 @@
-#ifndef MessagesCore_h
-#define MessagesCore_h
+#pragma once
+
 #include <dplay8.h>
 
 // removed
@@ -738,6 +738,3 @@ public:
     g_rgszMsgNames[fmid] = szMsgName;
   }
 };
-
-
-#endif

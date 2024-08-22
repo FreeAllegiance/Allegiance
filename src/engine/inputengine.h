@@ -1,5 +1,4 @@
-#ifndef _inputengine_H_
-#define _inputengine_H_
+#pragma once
 
 #include <event.h>
 
@@ -102,5 +101,3 @@ TRef<InputEngine> CreateInputEngine(HWND hwnd);
 //
 //
 //////////////////////////////////////////////////////////////////////////////
-
-#endif

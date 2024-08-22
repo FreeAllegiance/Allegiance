@@ -4,8 +4,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef _base_h_
-#define _base_h_
+#pragma once
 
 #include <memory>
 
@@ -61,5 +60,3 @@ class ZWriteFile : public ZFile {
 public:
     ZWriteFile(const PathString& strPath);
 };
-
-#endif

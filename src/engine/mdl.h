@@ -1,5 +1,4 @@
-#ifndef _mdl_h_
-#define _mdl_h_
+#pragma once
 
 #include <tlist.h>
 #include <tref.h>
@@ -282,5 +281,3 @@ public:
     IObject* GetNth(int index);
     IObject* GetLastNth(int index);
 };
-
-#endif

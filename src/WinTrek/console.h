@@ -1,5 +1,4 @@
-#ifndef _Console_h_
-#define _Console_h_
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -114,5 +113,3 @@ public:
 TRef<IObject> CreateTeamPane(Modeler* pmodeler);
 TRef<IObject> CreateExpandedTeamPane(Modeler* pmodeler, IObject* pNormalTeamPane);
 TRef<IObject> CreateTeleportPane(Modeler* pmodeler);
-
-#endif

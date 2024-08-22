@@ -12,9 +12,7 @@
 **  History:
 */
 // clusterIGC.h : Declaration of the CclusterIGC
-
-#ifndef __CLUSTERIGC_H_
-#define __CLUSTERIGC_H_
+#pragma once
 
 #include "igc.h"
 
@@ -579,5 +577,3 @@ class       CclusterIGC : public IclusterIGC
 
 		bool				m_highlight;  //Xynth #208 Highlight in minimap
 };
-
-#endif //__CLUSTERIGC_H_

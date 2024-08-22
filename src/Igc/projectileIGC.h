@@ -13,8 +13,7 @@
 */
 // projectileIGC.h : Declaration of the CprojectileIGC
 
-#ifndef __PROJECTILEIGC_H_
-#define __PROJECTILEIGC_H_
+#pragma once
 
 #include "igc.h"
 #include "modelIGC.h"
@@ -99,5 +98,3 @@ class CprojectileIGC : public TmodelIGC<IprojectileIGC>
         ExplosionData*      m_pExplosionData;
         Time                m_timeExpire;
 };
-
-#endif //__PROJECTILEIGC_H_

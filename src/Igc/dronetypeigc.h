@@ -13,8 +13,7 @@
 */
 // droneTypeIGC.h : Declaration of the CdroneTypeIGC
 
-#ifndef __DRONETYPEIGC_H_
-#define __DRONETYPEIGC_H_
+#pragma once
 
 #include "igc.h"
 
@@ -130,5 +129,3 @@ class       CdroneTypeIGC : public IdroneTypeIGC
         DataDroneTypeIGC            m_data;
         TRef<IexpendableTypeIGC>    m_petLaid;
 };
-
-#endif //__DRONETYPEIGC_H_

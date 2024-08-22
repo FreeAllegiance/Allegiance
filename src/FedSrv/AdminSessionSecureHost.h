@@ -1,5 +1,4 @@
-#ifndef __AdminSessionSecureHost_h__
-#define __AdminSessionSecureHost_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 #ifndef RETURN_FAILED
@@ -91,5 +90,3 @@ struct AdminSessionSecureHost : public IAdminSessionHost
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__AdminSessionSecureHost_h__

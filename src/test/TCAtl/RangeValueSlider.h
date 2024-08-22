@@ -1,5 +1,4 @@
-#ifndef __RangeValueSlider_h__
-#define __RangeValueSlider_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // RangeValueSlider.h | Declaration of the TCRangeValueSlider class.
@@ -58,5 +57,3 @@ inline const TCRangeValueSlider& TCRangeValueSlider::operator=(HWND hwnd)
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__RangeValueSlider_h__

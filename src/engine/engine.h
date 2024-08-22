@@ -1,5 +1,4 @@
-#ifndef _engine_H_
-#define _engine_H_
+#pragma once
 
 #include <mask.h>
 #include <rect.h>
@@ -165,5 +164,3 @@ class JustifyXCenter       : public Justification { public: JustifyXCenter      
 class JustifyYCenter       : public Justification { public: JustifyYCenter      () : Justification(0x20) {} };
 class JustifyLeftClipRight : public Justification { public: JustifyLeftClipRight() : Justification(0x40) {} };
 class JustifyCenter        : public Justification { public: JustifyCenter       () : Justification(0x30) {} };
-
-#endif

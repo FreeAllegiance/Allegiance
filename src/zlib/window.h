@@ -1,5 +1,4 @@
-#ifndef _Window_h_
-#define _Window_h_
+#pragma once
 
 #include "event.h"
 #include "input.h"
@@ -381,5 +380,3 @@ public:
         ::SendMessage(m_hwnd, WM_SETFONT, (WPARAM)hfont, false);
     }
 };
-
-#endif

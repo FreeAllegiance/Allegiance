@@ -1,9 +1,4 @@
-#ifndef __PageChat_h__
-#define __PageChat_h__
-
-#if _MSC_VER > 1000
-  #pragma once
-#endif // _MSC_VER > 1000
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // PageChat.h : header file
@@ -143,5 +138,3 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__PageChat_h__

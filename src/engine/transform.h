@@ -1,5 +1,4 @@
-#ifndef _Transform_h_
-#define _Transform_h_
+#pragma once
 
 #include <zstring.h>
 
@@ -345,5 +344,3 @@ public:
 
     ZString GetFunctionName() { return "AnimateRotateTransform"; }
 };
-
-#endif

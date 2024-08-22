@@ -1,5 +1,4 @@
-#ifndef __AutoHandle_h__
-#define __AutoHandle_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // AutoHandle.h | Declaration of the TCAutoHandle template class.
@@ -862,6 +861,3 @@ DECLARE_TCPtr(TCCoTaskPtr, TCCoTaskPtrDelete)
 
 
 ///////////////////////////////////////////////////////////////////////////
-
-#endif // !__AutoHandle_h__
-

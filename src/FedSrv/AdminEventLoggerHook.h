@@ -1,6 +1,4 @@
-#ifndef __AdminEventLoggerHook_h__
-#define __AdminEventLoggerHook_h__
-//#if !defined(ALLSRV_STANDALONE) //Imago enabled 6/10
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // AdminEventLoggerHook.h : Declaration of the CAdminEventLoggerHook
@@ -33,6 +31,3 @@ public:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-//#endif // !defined(ALLSRV_STANDALONE)
-#endif //__AdminEventLoggerHook_h__

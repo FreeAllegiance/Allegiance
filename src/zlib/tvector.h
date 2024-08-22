@@ -1,5 +1,4 @@
-#ifndef _TVector_H_
-#define _TVector_H_
+#pragma once
 
 #include "tcompare.h"
 #include "zassert.h"
@@ -401,5 +400,3 @@ public:
         Sort(0, m_count);
     }
 };
-
-#endif

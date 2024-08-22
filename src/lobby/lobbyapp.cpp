@@ -21,16 +21,6 @@ ALLOC_MSG_LIST;
 
 CLobbyApp * g_pLobbyApp = NULL;
 
-#ifdef USECLUB
-void CLobbyApp::OnSQLErrorRecord(SSERRORINFO * perror, OLECHAR * postrError)
-{
-  // don't make the event an error event, because this may or may not be fatal. 
-  // But we certainly want to see them all in any case.
-  m_plas->LogEvent(EVENTLOG_WARNING_TYPE, LE_DatabaseError, perror->pwszMessage,
-    perror->pwszProcedure, perror->lNative, perror->wLineNumber, postrError);
-}
-#endif
-
 /*-------------------------------------------------------------------------
  * CLobbyApp.ProcessMsgPump
  *-------------------------------------------------------------------------
@@ -152,12 +142,6 @@ CLobbyApp::CLobbyApp(ILobbyAppSite * plas) :
   m_cStaticCoreInfo(0),
   m_vStaticCoreInfo(NULL),
   m_dwAuthentication(0)
-#ifdef USECLUB
-  ,
-  m_csqlSilentThreads(0),
-  m_csqlNotifyThreads(0),
-  m_sql(this)
-#endif
 {
 	// BT - STEAM
 	m_lastDrmHashUpdate.dwHighDateTime = 0;
@@ -170,9 +154,6 @@ CLobbyApp::CLobbyApp(ILobbyAppSite * plas) :
   // Imago 9/14 // BT - STEAM
   m_logonCS = new CRITICAL_SECTION;
 
-#ifdef USECLUB
-  m_strSQLConfig.Empty();
-#endif
   // see if we're setup to report to any web servers
   HKEY  hk;
   if (RegCreateKeyEx(HKEY_LOCAL_MACHINE, HKLM_AllLobby, 0, "", REG_OPTION_NON_VOLATILE, KEY_READ, NULL, &hk, NULL) == ERROR_SUCCESS)
@@ -226,35 +207,12 @@ CLobbyApp::CLobbyApp(ILobbyAppSite * plas) :
     m_fProtocol = !!dwProtocol;
 
     DWORD dwFreeLobby;
-    bSuccess = _Module.ReadFromRegistry(hk, false, "fFreeLobby", &dwFreeLobby, (unsigned long) 
-#ifdef USECLUB
-    false
-#else    
-    true
-#endif    
-    );
+    bSuccess = _Module.ReadFromRegistry(hk, false, "fFreeLobby", &dwFreeLobby, (unsigned long) true);
     m_fFreeLobby = !!dwFreeLobby;
 
     DWORD dwCheckKey;
-    bSuccess = _Module.ReadFromRegistry(hk, false, "fCheckCDKey", &dwCheckKey, (unsigned long) 
-#ifdef USECLUB
-      true
-#else      
-      false
-#endif
-    );
+    bSuccess = _Module.ReadFromRegistry(hk, false, "fCheckCDKey", &dwCheckKey, (unsigned long) false);
     m_fCheckCDKey = !!dwCheckKey;
-
-#ifdef USECLUB
-    bSuccess = _Module.ReadFromRegistry(hk, false, "SQLThreadsNotify", &m_csqlNotifyThreads, (unsigned long) 5);
-    bSuccess = _Module.ReadFromRegistry(hk, false, "SQLThreadsSilent", &m_csqlSilentThreads, (unsigned long) 1);
-
-    if (FAILED(LoadRegString(hk, "SQLConfig", m_strSQLConfig)))
-    {
-      m_strSQLConfig.Empty(); 
-      _Module.LogEvent(EVENTLOG_ERROR_TYPE, LE_RegStrMissingNoDef, "SQLConfig");
-    }
-#endif
 
   }
 
@@ -270,20 +228,11 @@ CLobbyApp::CLobbyApp(ILobbyAppSite * plas) :
 	  //initialize structure
 	  SetConstantGameInfo();
   }
-
-  // if zone club lobby
-#ifdef USEAUTH  
-  m_pzas = CreateZoneAuthServer();
-#endif
 }
 
 CLobbyApp::~CLobbyApp()
 {
   m_plas->LogEvent(EVENTLOG_INFORMATION_TYPE, LE_ShuttingDown);
-// KG guard with USEAUTH for consistency 
-#ifdef USEAUTH
-  m_pzas = NULL;
-#endif
   m_perfshare.FreeCounters(m_pCounters);
   ZGameInfoClose();
   FreeStaticCoreInfo(); // KGJV #114
@@ -310,15 +259,6 @@ HRESULT CLobbyApp::Init()
                       "AllLobby", "0",    // if there are ever multiple lobbies running, change this
                       sizeof(LOBBY_COUNTERS));
   ZeroMemory(m_pCounters, sizeof(LOBBY_COUNTERS));
-
-#ifdef USECLUB
-  hr = m_sql.Init(m_strSQLConfig.m_str, GetCurrentThreadId(), m_csqlSilentThreads, m_csqlNotifyThreads);
-  if (FAILED(hr))
-  {
-    m_plas->LogEvent(EVENTLOG_ERROR_TYPE, LE_SQLInitFailed);
-    return hr;
-  }
-#endif
 
   // TODO: Make keep-alives an option
   if (FAILED(hr = m_fmServers.HostSession(m_fFreeLobby ? FEDFREELOBBYSERVERS_GUID : FEDLOBBYSERVERS_GUID, false, 0, m_fProtocol, m_sPort + 1)) ||	// Mdvalley: I don't know what happens if you try to host 2 servers on one port. Let's not find out.
@@ -884,11 +824,6 @@ void CLobbyApp::SetPlayerMission(const char* szPlayerName, const char* szCDKey, 
   ZString strPlayerName = szPlayerName;
   ZString strCDKey = szCDKey;
   ZString strAddress = szAddress;
-
-  // boot any old copies of this player
-#ifdef USECLUB
-  BootPlayersByName(strPlayerName);
-#endif
 
   // BT - STEAM - Check for any bans on this user's SteamID. 
 

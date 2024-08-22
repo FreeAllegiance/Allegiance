@@ -1,5 +1,4 @@
-#ifndef _tref_H_
-#define _tref_H_
+#pragma once
 
 #include "StackTracer.h"
 
@@ -222,5 +221,3 @@ public:
 	inline friend bool operator<=(const TRef& t1, Type* pt) { return t1.m_pt <= pt; };
 	inline friend bool operator>=(const TRef& t1, Type* pt) { return t1.m_pt >= pt; };
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef __PigBehaviorHost_h__
-#define __PigBehaviorHost_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // PigBehaviorHost.h : Declaration of the CPigBehaviorHost class
@@ -94,5 +93,3 @@ inline CPigEngine& CPigBehaviorHost::GetEngine()
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__PigBehaviorHost_h__

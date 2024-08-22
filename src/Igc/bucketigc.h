@@ -13,8 +13,7 @@
 */
 // bucketIGC.h : Declaration of the CbucketIGC
 
-#ifndef __BUCKETIGC_H_
-#define __BUCKETIGC_H_
+#pragma once
 
 #include "igc.h"
 
@@ -320,5 +319,3 @@ class       CbucketIGC : public IbucketIGC
         Money               m_price;
         IbucketIGC*         m_pbucketPredecessor;
 };
-
-#endif //__BUCKETIGC_H_

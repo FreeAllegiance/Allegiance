@@ -10,16 +10,11 @@
 **
 **  History:
 */
-#ifndef _TURN_TO_ACTION_H_
-#define _TURN_TO_ACTION_H_
+#pragma once
 
-#ifndef _ACTION_H_
 #include "Action.h"
-#endif  //_ACTION_H_
 
-#ifndef _ABSTRACT_TARGET_H_
 #include "AbstractTarget.h"
-#endif  //_ABSTRACT_TARGET_H_
 
 namespace Training
 {
@@ -42,5 +37,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_TURN_TO_ACTION_H_

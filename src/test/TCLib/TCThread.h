@@ -1,5 +1,4 @@
-#ifndef __TCThread_h__
-#define __TCThread_h__
+#pragma once
 
 #include <zassert.h>
 #include "AutoHandle.h"
@@ -251,5 +250,3 @@ inline TCThread::operator HANDLE() const
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // __TCThread_h__

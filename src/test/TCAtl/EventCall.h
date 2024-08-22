@@ -1,5 +1,4 @@
-#ifndef __EventCall_h__
-#define __EventCall_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // EventsCall.h | Declaration of the classes used in the for_each statements
@@ -232,5 +231,3 @@ inline void TCComEventCall<If_vtbl>::ResetErrorInfo()
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__EventCall_h__

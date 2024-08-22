@@ -2,8 +2,7 @@
 // AGCDBParams.h : Declaration of the CAGCDBParams class
 //
 
-#ifndef __AGCDBParams_h__
-#define __AGCDBParams_h__
+#pragma once
 
 #include <AGC.h>
 #include "resource.h"
@@ -93,5 +92,3 @@ public:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__AGCDBParams_h__

@@ -1,5 +1,4 @@
-#ifndef __AdviseHolder_h__
-#define __AdviseHolder_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // AdviseHolder.h | Declaration of the TCAdviseHolder class.
@@ -420,5 +419,3 @@ inline HRESULT TCAdviseHolder::XData::Unadvise()
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__AdviseHolder_h__

@@ -1,5 +1,4 @@
-#ifndef __PageEntry_h__
-#define __PageEntry_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // PageEntry.h | Declaration of the XInsidePageEntry and XInsidePage classes
@@ -400,5 +399,3 @@ public:                                                                     \
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__PageEntry_h__

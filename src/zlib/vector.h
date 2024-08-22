@@ -4,8 +4,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef _Vector_h_
-#define _Vector_h_
+#pragma once
 
 #include <cmath>
 #include "zassert.h"
@@ -166,24 +165,9 @@ public:
         return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
     }
 
-	friend Vector CrossProduct(const Vector& v1, const Vector& v2)
-// VS.Net 2003 port: friend definiton must be out of class to work with argument dep lookup
-#if _MSC_VER < 1310
-    {
-        return
-            Vector(
-                (v1.y * v2.z) - (v2.y * v1.z),
-                (v1.z * v2.x) - (v2.z * v1.x),
-                (v1.x * v2.y) - (v2.x * v1.y)
-            );
-    }
-#else
-	;
-#endif    
+	friend Vector CrossProduct(const Vector& v1, const Vector& v2); 
     Vector GetOrthogonalVector() const;
 
     static Vector RandomDirection(void);
     static Vector RandomPosition(float radius);
 };
-
-#endif

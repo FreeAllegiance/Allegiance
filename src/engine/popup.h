@@ -4,8 +4,7 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#ifndef _Popup_H_
-#define _Popup_H_
+#pragma once
 
 #include <input.h>
 #include <rect.h>
@@ -63,5 +62,3 @@ public:
     virtual bool   IsEmpty()                                                                                                                  = 0;
     virtual Image* GetImage()                                                                                                                 = 0;
 };
-
-#endif

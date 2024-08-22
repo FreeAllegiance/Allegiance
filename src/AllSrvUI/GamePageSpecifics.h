@@ -1,9 +1,4 @@
-#ifndef __GamePageSpecifics_h__
-#define __GamePageSpecifics_h__
-
-#if _MSC_VER > 1000
-    #pragma once
-#endif // _MSC_VER > 1000
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // GamePageSpecifics.h : header file
@@ -68,5 +63,3 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__GamePageSpecifics_h__

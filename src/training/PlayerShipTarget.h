@@ -10,12 +10,9 @@
 **
 **  History:
 */
-#ifndef _PLAYER_SHIP_TARGET_H_
-#define _PLAYER_SHIP_TARGET_H_
+#pragma once
 
-#ifndef _ABSTRACT_TARGET_H_
 #include "AbstractTarget.h"
-#endif  //_ABSTRACT_TARGET_H_
 
 namespace Training
 {
@@ -31,5 +28,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_PLAYER_SHIP_TARGET_H_

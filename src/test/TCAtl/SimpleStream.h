@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef __SimpleStream_h__
-#define __SimpleStream_h__
-
 /////////////////////////////////////////////////////////////////////////////
 // SimpleStream.h : Declaration of the CTCSimpleStreamImpl class.
 
@@ -335,6 +332,3 @@ typedef CComObjectGlobal<CTCSimpleStreamImpl> TCSimpleStream;
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__SimpleStream_h__
-

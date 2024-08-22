@@ -1,5 +1,4 @@
-#ifndef __AGCModule_h__
-#define __AGCModule_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // AGCModule : Declaration of the CAGCModule class.
@@ -444,5 +443,3 @@ inline HRESULT CAGCModule::MakeAGCEvent(AGCEventID idEvent,
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__AGCModule_h__

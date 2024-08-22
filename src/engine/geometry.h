@@ -1,5 +1,4 @@
-#ifndef _Geometry_h_
-#define _Geometry_h_
+#pragma once
 
 #include <event.h>
 #include <matrix.h>
@@ -551,5 +550,3 @@ public:
 //////////////////////////////////////////////////////////////////////////////
 
 TRef<Geo> CreateBlendGeo(Geo* pgeo, BlendMode blendMode);
-
-#endif

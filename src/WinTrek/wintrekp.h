@@ -1,5 +1,4 @@
-#ifndef _WinTrekP_H__
-#define _WinTrekP_H__
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -18,5 +17,3 @@ public:
     }
     virtual TRef<ISoundPositionSource> GetSoundSource(void) = 0;
 };
-
-#endif

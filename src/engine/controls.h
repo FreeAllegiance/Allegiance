@@ -4,8 +4,7 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#ifndef _Controls_H_
-#define _Controls_H_
+#pragma once
 
 #include <rect.h>
 #include <event.h>
@@ -360,5 +359,3 @@ TRef<Pane> CreateScrollPane(const WinPoint& point,
     TRef<ScrollPane> &pscrollPane,
     TRef<IIntegerEventSource> &pevent
 );
-
-#endif

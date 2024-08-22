@@ -1,5 +1,4 @@
-#ifndef _Viewport_h_
-#define _Viewport_h_
+#pragma once
 
 #include "camera.h"
 
@@ -30,5 +29,3 @@ public:
           WinPoint TransformNDCToScreen(const Point& point);
           WinPoint TransformImageToScreen(const Point& point);
 };
-
-#endif

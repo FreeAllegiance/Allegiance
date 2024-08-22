@@ -10,16 +10,11 @@
 **
 **  History:
 */
-#ifndef _RESET_ACTION_H_
-#define _RESET_ACTION_H_
+#pragma once
 
-#ifndef _ACTION_H_
 #include "Action.h"
-#endif  //_ACTION_H_
 
-#ifndef _GOAL_H_
 #include "Goal.h"
-#endif  //_GOAL_H_
 
 namespace Training
 {
@@ -53,5 +48,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_RESET_ACTION_H_

@@ -13,8 +13,8 @@
 */
 // chaffTypeIGC.h : Declaration of the CchaffTypeIGC
 
-#ifndef __CHAFFTYPEIGC_H_
-#define __CHAFFTYPEIGC_H_
+#pragma once
+
 #include "igc.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -129,5 +129,3 @@ class CchaffTypeIGC : public IchaffTypeIGC
         ImissionIGC*        m_pMission;
         DataChaffTypeIGC    m_data;
 };
-
-#endif //__CHAFFTYPEIGC_H_

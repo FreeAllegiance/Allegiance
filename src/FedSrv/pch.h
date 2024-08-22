@@ -42,11 +42,7 @@
 #include <mmsystem.h> 
 
 // ZLib Includes
-#if !defined(ALLSRV_STANDALONE)
-  #define __MODULE__ "AllSrv"
-#else // !defined(ALLSRV_STANDALONE)
-  #define __MODULE__ "AllSrv"
-#endif // !defined(ALLSRV_STANDALONE)
+#define __MODULE__ "AllSrv"
 #include <guids.h>
 #include <zlib.h>
 
@@ -106,11 +102,6 @@
 #include "fscluster.h"
 #include "fsmission.h"
 #include "fedsrvsql.h" //KG removed - Imago unremoved 6/10
-
-// KG guard with USEAUTH for consistency 
-#ifdef USEAUTH
-#include "zauth.h" 
-#endif
 
 #include "fedsrv.h"
 extern Global g;

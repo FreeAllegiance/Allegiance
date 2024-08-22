@@ -1,5 +1,4 @@
-#ifndef __DRAWVIDEO__H__
-#define __DRAWVIDEO__H__
+#pragma once
 
 #include <ddraw.h>   
 #include <mmstream.h> 
@@ -83,5 +82,3 @@ class CDShow
 
 						
 };
-
-#endif

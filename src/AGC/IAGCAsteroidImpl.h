@@ -1,5 +1,4 @@
-#ifndef __IAGCAsteroidImpl_h__
-#define __IAGCAsteroidImpl_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // IAGCAsteroidImpl.h : Declaration of the IAGCAsteroidImpl class template.
@@ -61,5 +60,3 @@ public:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__IAGCAsteroidImpl_h__

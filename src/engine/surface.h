@@ -1,5 +1,4 @@
-#ifndef _surface_h_
-#define _surface_h_
+#pragma once
 
 #include <mask.h>
 #include <point.h>
@@ -140,5 +139,3 @@ public:
         const ZString& str
     ) = 0;
 };
-
-#endif

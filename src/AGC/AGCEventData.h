@@ -1,5 +1,4 @@
-#ifndef __AGCEventData_h__
-#define __AGCEventData_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // AGCEventData.h : Declaration of the CAGCEventData class.
@@ -169,5 +168,3 @@ inline long CAGCEventData::GetArgCount() const
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__AGCEventData_h__

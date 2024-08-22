@@ -13,8 +13,8 @@
 */
 // missionIGC.h : Declaration of the CmissionIGC
 
-#ifndef __MISSIONIGC_H_
-#define __MISSIONIGC_H_
+#pragma once
+
 #include "igc.h"
 
 
@@ -975,5 +975,3 @@ class   CmissionIGC : public ImissionIGC
 #include <sstream>
 #include <vector>
 void readCSV(std::istream &input, std::vector< std::vector<std::string> > &output);
-
-#endif //__MISSIONIGC_H_

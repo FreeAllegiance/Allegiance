@@ -1,5 +1,4 @@
-#ifndef _token_h_
-#define _token_h_
+#pragma once
 
 #include "tmap.h"
 #include "zstring.h"
@@ -106,5 +105,3 @@ public:
     bool IsNumber(float& number);
     void Skip();
 };
-
-#endif

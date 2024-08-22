@@ -1,5 +1,4 @@
-#ifndef _help_H_
-#define _help_H_
+#pragma once
 
 #include <event.h>
 #include <pane.h>
@@ -75,5 +74,3 @@ public:
 TRef<HelpPane> CreateHelpPane(Modeler* pmodeler, const ZString& strTopic, PagePaneIncluder* ppagePaneIncluder);
 class IPopup;
 TRef<IPopup>   CreateMMLPopup(Modeler* pmodeler, const ZString& strTopic, bool bText);
-
-#endif

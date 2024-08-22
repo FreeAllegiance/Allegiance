@@ -13,8 +13,7 @@
 */
 // missileIGC.h : Declaration of the CmissileIGC
 
-#ifndef __MISSILEIGC_H_
-#define __MISSILEIGC_H_
+#pragma once
 
 #include "igc.h"
 #include "modelIGC.h"
@@ -195,5 +194,3 @@ class CmissileIGC : public TmodelIGC<ImissileIGC>
         Vector              m_explodePosition;
         bool                m_bDisarmed;
 };
-
-#endif //__MISSILEIGC_H_

@@ -9,12 +9,9 @@
 **  History:
 */
 
-#ifndef _DO_DAMAGE_ADJUSTABLE_ACTION_H_
-#define _DO_DAMAGE_ADJUSTABLE_ACTION_H_
+#pragma once
 
-#ifndef _ACTION_H_
 #include "Action.h"
-#endif  //_ACTION_H_
 
 namespace Training
 {
@@ -30,5 +27,3 @@ namespace Training
 					float				m_amount;
     };
 }
-
-#endif  //_DO_DAMAGE_ADJUSTABLE_ACTION_H_

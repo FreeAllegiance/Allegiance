@@ -1,5 +1,4 @@
-#ifndef __ADMINGAME_H_
-#define __ADMINGAME_H_
+#pragma once
 
 /*-------------------------------------------------------------------------
  * fedsrv\AdminGame.H
@@ -50,7 +49,6 @@ public:
 public:
   CAdminGame();
   void Init(ImissionIGC* pIGC);
-  void FinalRelease();
 
 // IAGCGame Interface Methods
 public:
@@ -81,5 +79,3 @@ protected:
 
 
 /////////////////////////////////////////////////////////////////////////////
-      
-#endif //__ADMINGAME_H_

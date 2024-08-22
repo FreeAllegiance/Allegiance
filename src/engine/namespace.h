@@ -1,5 +1,4 @@
-#ifndef _namespace_h_
-#define _namespace_h_
+#pragma once
 
 #include <tref.h>
 
@@ -110,5 +109,3 @@ public:
 };
 
 typedef TList<TRef<INameSpace> > INameSpaceList;
-
-#endif

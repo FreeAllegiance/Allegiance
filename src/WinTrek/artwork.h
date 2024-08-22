@@ -3,8 +3,7 @@
 // This file contains #defines for all the artwork files in wintrek.
 //
 
-#ifndef _ARTWORK_H_
-#define _ARTWORK_H_
+#pragma once
 
 //
 // Control bitmaps
@@ -284,4 +283,3 @@
 #define SNDF_FLIGHTMUSIC                        "flightmusic"
 #define SNDF_STATIONMUSIC                       "stationmusic"
 */
-#endif

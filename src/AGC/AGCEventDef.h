@@ -1,5 +1,4 @@
-#ifndef __AGCEventDef_H_
-#define __AGCEventDef_H_
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // AGCEventDef.h : Declaration of the CAGCEventDef class.
@@ -142,5 +141,3 @@ inline bool CAGCEventDef::IDFromName(LPCOLESTR pszEventName, AGCEventID& id)
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__AGCEventDef_H_

@@ -13,8 +13,7 @@
 */
 // asteroidIGC.h : Declaration of the CasteroidIGC
 
-#ifndef __ASTEROIDIGC_H_
-#define __ASTEROIDIGC_H_
+#pragma once
 
 #include "igc.h"
 #include "modelIGC.h"
@@ -324,5 +323,3 @@ class   CasteroidIGC : public TmodelIGC<IasteroidIGC>
 		bool                        m_inhibitUpdate; //Xynth #225 bookkeeping variables to prevent illegal or update		
 		Time					    m_inhibitCounter; //upon entering cluster		
 };
-
-#endif //__ASTEROIDIGC_H_

@@ -1,5 +1,4 @@
-#ifndef __ErrorFormatter_h__
-#define __ErrorFormatter_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // ErrorFormatter.h : Declaration of the TCErrorFormatter class template and
@@ -113,5 +112,3 @@ public:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__ErrorFormatter_h__

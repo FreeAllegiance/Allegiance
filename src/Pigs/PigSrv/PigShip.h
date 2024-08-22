@@ -1,5 +1,4 @@
-#ifndef __PigShip_h__
-#define __PigShip_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // PigShip.h : Declaration of the CPigShip class
@@ -226,5 +225,3 @@ inline void CPigShip::SetAxis(Axis eAxis, float fNewValue)
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__PigShip_h__

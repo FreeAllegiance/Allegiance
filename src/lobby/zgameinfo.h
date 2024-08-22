@@ -1,5 +1,4 @@
-#ifndef __GAMEINFO_H
-#define __GAMEINFO_H
+#pragma once
 
 // BT - STEAM
 // Changing types to match what's defined in steamtypes.h to prevent compiler error.
@@ -323,5 +322,3 @@ void ZGameInstanceInfoMsgZ5Endian(ZGameInstanceInfoMsgZ5* msg);
 #ifdef __cplusplus
 }
 #endif
-
-#endif //__GAMEINFO_H

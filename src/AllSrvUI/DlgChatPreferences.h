@@ -1,9 +1,4 @@
-#ifndef __DlgChatPreferences_h__
-#define __DlgChatPreferences_h__
-
-#if _MSC_VER > 1000
-  #pragma once
-#endif // _MSC_VER > 1000
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgChatPreferences.h : header file
@@ -103,5 +98,3 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__DlgChatPreferences_h__

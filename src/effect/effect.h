@@ -1,5 +1,4 @@
-#ifndef _effect_H_
-#define _effect_H_
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -37,5 +36,3 @@
 
 #include "efapp.h"
 #include "efwindow.h"
-
-#endif

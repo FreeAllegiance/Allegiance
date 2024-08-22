@@ -1,5 +1,4 @@
-#ifndef __PropertyClass_h__
-#define __PropertyClass_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // PropertyClass.h | Declaration of the TCComPropertyClass template class.
@@ -1100,5 +1099,3 @@ inline HRESULT TCComPropertyAssign<BSTR, CComBSTR>(BSTR& dest, CComBSTR& src)
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // __MMACAtl_h__

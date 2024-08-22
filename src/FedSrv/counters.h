@@ -1,5 +1,4 @@
-#ifndef _COUNTERS_H_
-#define _COUNTERS_H_
+#pragma once
 
 typedef struct _SERVER_COUNTERS
 {
@@ -33,6 +32,3 @@ typedef struct _SERVER_COUNTERS
     DWORD timeMsgPump;
     DWORD timeCycleTarget;
 } SERVER_COUNTERS, *PSERVER_COUNTERS;
-
-#endif
-

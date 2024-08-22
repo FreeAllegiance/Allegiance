@@ -1,5 +1,4 @@
-#ifndef _keyframe_h_
-#define _keyframe_h_
+#pragma once
 
 #include <tref.h>
 
@@ -49,5 +48,3 @@ public:
 TRef<KeyFramedTranslateTransform> CreateKeyFramedTranslateTransform(Number* pframe);
 TRef<KeyFramedScaleTransform>     CreateKeyFramedScaleTransform(Number* pframe);
 TRef<KeyFramedRotateTransform>    CreateKeyFramedRotateTransform(Number* pframe);
-
-#endif

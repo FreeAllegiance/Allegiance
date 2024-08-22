@@ -1,12 +1,7 @@
 // AllSrvUI.h : main header file for the ALLSRVUI application
 //
 
-#if !defined(AFX_ALLSRVUI_H__191BFD86_7E7C_47C9_8A03_2D7ADF80AEE8__INCLUDED_)
-#define AFX_ALLSRVUI_H__191BFD86_7E7C_47C9_8A03_2D7ADF80AEE8__INCLUDED_
-
-#if _MSC_VER > 1000
-  #pragma once
-#endif // _MSC_VER > 1000
+#pragma once
 
 #ifndef __AFXWIN_H__
   #error include 'stdafx.h' before including this file for PCH
@@ -79,5 +74,3 @@ protected:
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_ALLSRVUI_H__191BFD86_7E7C_47C9_8A03_2D7ADF80AEE8__INCLUDED_)

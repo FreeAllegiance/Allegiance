@@ -1,5 +1,4 @@
-#ifndef _TStack_H_
-#define _TStack_H_
+#pragma once
 
 #include <zassert.h>
 
@@ -91,5 +90,3 @@ public:
 template<class ValueType>
 class TStackObject : public IObject, public TStack<ValueType> {
 };
-
-#endif

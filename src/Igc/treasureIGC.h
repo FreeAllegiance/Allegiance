@@ -13,8 +13,7 @@
 */
 // treasureIGC.h : Declaration of the CtreasureIGC
 
-#ifndef __TRESUREIGC_H_
-#define __TRESUREIGC_H_
+#pragma once
 
 #include "igc.h"
 #include "modelIGC.h"
@@ -147,5 +146,3 @@ class CtreasureIGC : public TmodelIGC<ItreasureIGC>
 
         bool                m_stationaryF;
 };
-
-#endif //__TRESUREIGC_H_

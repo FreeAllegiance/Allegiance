@@ -2,12 +2,7 @@
 //      or project specific include files that are used frequently,
 //      but are changed infrequently
 
-#if !defined(AFX_pch_H__1F7E7E81_C6F0_11D2_85C9_00C04F68DEB0__INCLUDED_)
-#define AFX_pch_H__1F7E7E81_C6F0_11D2_85C9_00C04F68DEB0__INCLUDED_
-
-#if _MSC_VER > 1000
-  #pragma once
-#endif // _MSC_VER > 1000
+#pragma once
 
 #ifndef _WIN32_WINNT
   #define _WIN32_WINNT 0x0A00
@@ -85,5 +80,3 @@ extern CExeModule _Module;
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_pch_H__1F7E7E81_C6F0_11D2_85C9_00C04F68DEB0__INCLUDED)

@@ -1,5 +1,4 @@
-#ifndef __ExternalConnectionImpl_h__
-#define __ExternalConnectionImpl_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // ExternalConnectionImpl.h | Declaration of the IExternalConnectionImpl
@@ -270,5 +269,3 @@ STDMETHODIMP_(DWORD) IExternalConnectionImpl<T>::ReleaseConnection(
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__ExternalConnectionImpl_h__

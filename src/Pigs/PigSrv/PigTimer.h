@@ -1,8 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // PigTimer.h : Declaration of the CPigTimer class
 
-#ifndef __PigTimer_h__
-#define __PigTimer_h__
+#pragma once
 
 #include "resource.h"       // main symbols
 #include <..\TCLib\ObjectLock.h>
@@ -80,5 +79,3 @@ protected:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif //__PigTimer_h__

@@ -4,8 +4,7 @@
 // Menu
 //
 /////////////////////////////////////////////////////////////////////////////
-#ifndef _Menu_H_
-#define _Menu_H_
+#pragma once
 
 #include <tref.h>
 
@@ -86,5 +85,3 @@ TRef<IMenu> CreateMenu(
     IEngineFont* pfont,
     IMenuCommandSink* psink
 );
-
-#endif

@@ -10,12 +10,9 @@
 **
 **  History:
 */
-#ifndef _GET_AUTOPILOT_CONDITION_H_
-#define _GET_AUTOPILOT_CONDITION_H_
+#pragma once
 
-#ifndef _CONDITION_H_
 #include "Condition.h"
-#endif  //_CONDITION_H_
 
 namespace Training
 {
@@ -35,5 +32,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_GET_AUTOPILOT_CONDITION_H_

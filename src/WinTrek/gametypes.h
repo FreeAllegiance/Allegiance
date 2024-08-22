@@ -1,5 +1,4 @@
-#ifndef	GAMETYPES_H
-#define	GAMETYPES_H
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -16,5 +15,3 @@ public:
     static TRef<GameType> FindType(const MissionParams& misparams);
     static TList<TRef<GameType> >& GetGameTypes();
 };
-
-#endif GAMETYPES_H

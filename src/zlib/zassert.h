@@ -119,4 +119,3 @@ extern ILogger* g_pDebugLogger;
 #endif
 
 #endif
-

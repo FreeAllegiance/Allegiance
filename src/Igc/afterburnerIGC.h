@@ -14,8 +14,7 @@
 
 // afterburnerIGC.h : Declaration of the CafterburnerIGC
 
-#ifndef __AFTERBURNERIGC_H_
-#define __AFTERBURNERIGC_H_
+#pragma once
 
 #include "igc.h"
 
@@ -180,5 +179,3 @@ class CafterburnerIGC : public IafterburnerIGC
         Mount                           m_mountID;
         bool                            m_fActive;
 };
-
-#endif //__AFTERBURNERIGC_H_

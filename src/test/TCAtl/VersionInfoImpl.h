@@ -1,9 +1,4 @@
-#ifndef __VersionInfoImpl_h__
-#define __VersionInfoImpl_h__
-
-#if _MSC_VER > 1000
-  #pragma once
-#endif // _MSC_VER > 1000
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // VersionInfoImpl.h: Declaration of the TCVersionInfoImpl class.template.
@@ -557,5 +552,3 @@ const DWORD TCVersionInfoImpl<T, I, pTLB>::m_dwEndianInverted = 0x009966FF;
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__VersionInfoImpl_h__

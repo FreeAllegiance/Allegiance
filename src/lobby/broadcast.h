@@ -1,5 +1,4 @@
-#ifndef __BROADCAST_H
-#define __BROADCAST_H
+#pragma once
 
 #include <winsock.h>
 
@@ -63,8 +62,3 @@ public:
 };
 
 #endif
-
-#endif //__BROADCAST_H
-
-
-

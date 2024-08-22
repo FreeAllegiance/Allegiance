@@ -13,8 +13,7 @@
 */
 // developmentIGC.h : Declaration of the CdevelopmentIGC
 
-#ifndef __DEVELOPMENTIGC_H_
-#define __DEVELOPMENTIGC_H_
+#pragma once
 
 #include "igc.h"
 
@@ -122,5 +121,3 @@ class       CdevelopmentIGC : public IdevelopmentIGC
         DataDevelopmentIGC  m_data;
         bool                m_techOnly;
 };
-
-#endif //__DEVELOPMENTIGC_H_

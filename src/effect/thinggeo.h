@@ -4,8 +4,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef __ThingGeo_H_
-#define __ThingGeo_H_
+#pragma once
 
 #include <tref.h>
 #include <value.h>
@@ -103,5 +102,3 @@ public:
 
     virtual void    SetBoundsGeo(Geo* pgeo) = 0;
 };
-
-#endif

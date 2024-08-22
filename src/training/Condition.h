@@ -10,8 +10,7 @@
 **
 **  History:
 */
-#ifndef _CONDITION_H_
-#define _CONDITION_H_
+#pragma once
 
 namespace Training
 {
@@ -29,5 +28,3 @@ namespace Training
 
     //------------------------------------------------------------------------------
 }
-
-#endif  //_CONDITION_H_

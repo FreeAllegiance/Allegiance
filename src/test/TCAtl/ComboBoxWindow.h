@@ -1,5 +1,4 @@
-#ifndef __ComboBoxWindow_h__
-#define __ComboBoxWindow_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // ComboBoxWindow.h | Declaration of the TCComboBoxWindow class.
@@ -2070,5 +2069,3 @@ inline LRESULT TCSelfDrawComboBox<T, I>::OnDeleteItem(UINT, WPARAM,
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__ComboBoxWindow_h__

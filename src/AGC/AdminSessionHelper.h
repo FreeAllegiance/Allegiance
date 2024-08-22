@@ -1,5 +1,4 @@
-#ifndef __AdminSessionHelper_h__
-#define __AdminSessionHelper_h__
+#pragma once
 
 /////////////////////////////////////////////////////////////////////////////
 // AdminSessionHelper.h | Declaration of the CAdminSessionHelper class, which implements the
@@ -49,6 +48,3 @@ public:
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-#endif // !__AdminSessionHelper_h__
-
