@@ -7,7 +7,7 @@ Download and install the lastest "Visual Studio Community Edition" : https://www
 
 Download and install the latest Microsoft DirectX SDK (jun 2010): https://www.microsoft.com/en-us/download/details.aspx?id=6812 (if you don't want to install it, just extract the DirectX `include` and `lib` folders somewhere and set the environment variable `DXSDK_DIR` to their parent directory)
 
-Launch Visual Studio and open the main solution `src\VS2017\Allegiance.sln`
+Launch Visual Studio and open the main solution `src\VS2022\Allegiance.sln`
 
 # Main projects
 
