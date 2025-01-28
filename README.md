@@ -9,6 +9,19 @@ Download and install the latest Microsoft DirectX SDK (jun 2010): https://www.mi
 
 Launch Visual Studio and open the main solution `src\VS2022\Allegiance.sln`
 
+There should be a prompt in the solution view to install required tools. If this is not the case, the installation will need to be modified.
+This can be accessed from the installer, or from the Tab `Tools` -> `Get Tools And Features`.
+
+## Required Tools
+### Workloads
+#### Desktop & Mobile
+* .NET desktop development
+* Desktop development with C++
+
+### Individual Components
+#### SDK's, libraries, and frameworks
+* C++ MFC for latest v143 build tools (x86 & x64)
+
 # Main projects
 
 * Allegiance (`WinTrek` folder) : the main client program
