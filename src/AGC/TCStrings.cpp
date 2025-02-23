@@ -59,11 +59,7 @@ STDMETHODIMP CTCStrings::get__NewEnum(IUnknown** ppunkEnum)
 
    //Imago 8/5/09 Is this code even used?  If so it may be incorrect...
    // see IAGCCollectionImpl.h(81)
-#if _MSC_VER >= 1310
   HRESULT hr = pEnum->Init(&(*vecTemp.begin()), &(*vecTemp.end()), NULL, AtlFlagCopy);
-#else
-  HRESULT hr = pEnum->Init(vecTemp.begin(), vecTemp.end(), NULL, AtlFlagCopy);
-#endif
   if (SUCCEEDED(hr))
     hr = pEnum->QueryInterface(IID_IEnumVARIANT, (void**)ppunkEnum);
   if (FAILED(hr))
