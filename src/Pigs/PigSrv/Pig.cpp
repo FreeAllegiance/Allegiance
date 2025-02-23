@@ -568,13 +568,8 @@ HRESULT CPig::Stack_get__NewEnum(IUnknown** ppunkEnum)
     vecTemp[V_I4(&i)] = (IDispatch*)spItem;
   }
 
-  // Initialize enumerator object with the temporary CComVariant vector
-  // VS.Net 2003 port - accomodate change in iterators under VC.Net 200x (see 'breaking changes' in vsnet doc)
-#if _MSC_VER >= 1310
   HRESULT hr = pEnum->Init(&(*vecTemp.begin()), &(*vecTemp.end()), NULL, AtlFlagCopy);
-#else
-  HRESULT hr = pEnum->Init(vecTemp.begin(), vecTemp.end(), NULL, AtlFlagCopy);
-#endif
+
   if (SUCCEEDED(hr))
     hr = pEnum->QueryInterface(IID_IEnumVARIANT, (void**)ppunkEnum);
   if (FAILED(hr))
@@ -2244,52 +2239,6 @@ STDMETHODIMP CPig::Logon()
 	RETURN_FAILED(m_spAccount->get_Password(&bstrPW));
 	LPSTR pszPW = bstrPW.Length() ? OLE2A(bstrPW) : "";
 	Strcpy(ci.szPW,pszPW);*/
-  
-#ifdef USEAUTH
-  // Authenticate the account on the Zone authentication server, if any
-  TRef<IZoneAuthClient> pzac;
-  if (BSTRLen(GetEngine().GetZoneAuthServer()))
-  {
-    // Get the account's password
-    CComBSTR bstrPW;
-    RETURN_FAILED(m_spAccount->get_Password(&bstrPW));
-    LPSTR pszPW = bstrPW.Length() ? OLE2A(bstrPW) : "";
-
-    // Get the authentication client object
-    //pzac = BaseClient::CreateZoneAuthClient();
-
-    // Set the authentication server of the client object
-    LPCSTR pszZoneAuthServer = OLE2CT(GetEngine().GetZoneAuthServer());
-    pzac->SetAuthServer(pszZoneAuthServer);
-
-    // Authenticate the user name and password
-    HRESULT hr = pzac->Authenticate(ci.szName, pszPW, true, false,
-      GetEngine().GetZoneAuthTimeout());
-    if (FAILED(hr))
-    {
-      // Format the HRESULT
-      char szHRESULT[16];
-      sprintf(szHRESULT, "0x%08X", hr);
-
-      // Trigger an event
-      _AGCModule.TriggerEvent(NULL, PigEventID_ZoneAuthFailed, m_bstrName,
-        -1, -1, -1, 3,
-        "ZoneAuthServer", VT_LPSTR, pszZoneAuthServer,
-        "HRESULT"       , VT_I4   , hr,
-        "0xHRESULT"     , VT_LPSTR, szHRESULT);
-
-      // Return an error
-      return Error(IDS_E_ZONEAUTH_FAILED, IID_IPig);
-    }
-
-    // Get the authentication ticket
-    DWORD cbZoneTicket;
-    DWORD cbName = sizeof(ci.szName);
-    ZSucceeded(pzac->GetTicket(&ci.pZoneTicket, &cbZoneTicket, ci.szName, &cbName));
-    assert(cbName <= sizeof(ci.szName));
-    ci.cbZoneTicket = cbZoneTicket;
-  }
-#endif
 
   // Logon to the lobby server
   HRESULT hr;
@@ -2300,15 +2249,6 @@ STDMETHODIMP CPig::Logon()
     SystemTimeToFileTime(&st, &ci.ftLastArtUpdate);
     hr = BaseClient::ConnectToLobby(&ci);
   }
-
-#ifdef USEAUTH
-  // Free the authentication client object, if any
-  if (pzac != NULL)
-  {
-    //BaseClient::FreeZoneAuthClient();
-    pzac = NULL;
-  }
-#endif
 
   // Check for success of the lobby connection
   if (FAILED(hr))

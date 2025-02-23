@@ -26,9 +26,6 @@
 
 #include "AllegianceSecurity.h" // BT - STEAM
 
-#ifdef USEAUTH
-#include "zauth.h"
-#endif
 #include "clintlib.h"
 
 // removed engine dep since color codes are in zlib now

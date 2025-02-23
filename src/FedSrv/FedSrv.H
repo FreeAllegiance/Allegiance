@@ -20,11 +20,7 @@ const int c_cPlayersMax   = 500; // max players allowed on a server
 const int c_cDronesMax    = 500; // max drones  allowed on a server
 const int c_cShipsMax     = c_cPlayersMax + c_cDronesMax;
 
-#if defined(ALLSRV_STANDALONE)
-  const short c_cMaxPlayersPerGame = 200; // KGJV-; changed from 64 to 200. KGJV #114 back to AZ size // BT - STEAM
-#else // defined(ALLSRV_STANDALONE)
-  const short c_cMaxPlayersPerGame = 0x7FFF;
-#endif // defined(ALLSRV_STANDALONE)
+const short c_cMaxPlayersPerGame = 200; // KGJV-; changed from 64 to 200. KGJV #114 back to AZ size // BT - STEAM
 
 
 HRESULT pascal FedSrv_Init();
@@ -78,18 +74,13 @@ class MapFileSite : public IMissionSite, public IIgcSite
 class FedSrvSiteBase :
   public IMissionSite,
   public IIgcSite,
-//#ifndef ALLSRV_STANDALONE //Imago 6/10
   public IFedMessagingSite, public ISQLSite, public ISQLSite2
-//#else // !ALLSRV_STANDALONE
-//  public IFedMessagingSite
-//#endif // !ALLSRV_STANDALONE
 {
 public:
   FedSrvSiteBase() :
     m_pfsMission(NULL)
   {}
 // IIgcSite  
-  void ClusterUpdateEvent(IclusterIGC* c);
   TRef<ThingSite>   CreateThingSite(ImodelIGC* pModel);
   TRef<ClusterSite>   CreateClusterSite(IclusterIGC* pCluster);
   void KillAsteroidEvent(IasteroidIGC* pasteroid, bool explodeF);
@@ -138,8 +129,6 @@ public:
   void LoadoutChangeEvent(IshipIGC* pship, IpartIGC* ppart, LoadoutChange lc);
   void CreateSideEvent(IsideIGC * pIsideIGC);
   void DestroySideEvent(IsideIGC * pIsideIGC);
-  void TerminateModelEvent(ImodelIGC* model);
-  void TerminateMissionEvent(ImissionIGC* pMission) {}
   void CommandChangedEvent(Command i, IshipIGC * pship, ImodelIGC* ptarget, CommandID cid);
 
   void        CreateBuildingEffect(Time           now,
@@ -275,11 +264,6 @@ struct Global
     strLobbyServer.SetEmpty();
     strAuthServer.SetEmpty();
     strArtPath.SetEmpty();
-//#if !defined(ALLSRV_STANDALONE)
-    
-	// BT - 9/17 - No longer used.
-	//strSQLConfig.Empty();
-//#endif    
 #if defined(SRV_CHILD)  //imago -store command line arguments
 	strArgName.SetEmpty();
 	strArgCore.SetEmpty();
@@ -311,9 +295,6 @@ struct Global
   ZString             strArtPath;
   char                m_szToken[24]; // sizeof(_ZONETICKET_TOKEN.szToken)
   int                 nUpdatesPerSecond;
-#ifdef USEAUTH
-  TRef<IZoneAuthServer> pzas;
-#endif
   // *** Game state stuff ***
   Time                timeNow;             // cached value (for very short duration) of timeGetTime()
 
@@ -416,14 +397,9 @@ CFMGroup * GetGroupSectorFlying(IclusterIGC * pCluster);
 CFSDrone * CreateStockDrone(IdroneTypeIGC * pdronetype, IsideIGC* pSide, IbaseIGC* pbase = NULL);
 
 void SetCharStats(int characterID, CFSPlayer* pfsPlayer, IsideIGC * pSide, PlayerScoreObject & pso, CFSMission* pfsMission);
-void RecordSquadGame(const SideListIGC*  psides, IsideIGC* psideWon);
-
-void GetInvitations(int nInvitationID, MissionID missionID);
 
 //-KGJV - AZ uses StartDefaultGames now
-//#if defined(ALLSRV_STANDALONE)
 void StartDefaultGames();
-//#endif
 
 ItreasureIGC*  CreateTreasure(Time now, IshipIGC* pship, DataTreasureIGC* pdt, const Vector& position, float dv);
 

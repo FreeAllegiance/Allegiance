@@ -830,10 +830,6 @@ public: //todo: make protected
 	bool							m_deleteShipInfoOnDockMessage = true; // BT - WOPR - Ensure that ship info is not removed when FM_S_DOCKED is received from the server. Bots don't use the command view, so they can't rebuild cluster info.
 	bool							m_allowClientToReceiveClusterUpdatesForAllClusters = false; // BT - WOPR - Enable bot clients to receive updates for clusters they are not currently in. This allows bots to track asteroids and warps that they have already seen.
 
-#ifdef USEAUTH
-    TRef<IZoneAuthClient>           m_pzac;
-#endif
-
     TList<TRef<LANServerInfo> >*    m_plistFindServerResults;
 
 public:
@@ -942,21 +938,7 @@ public:
     {
       m_fIsLobbied = fzc;
     }
-#ifdef USEAUTH
-    TRef<IZoneAuthClient> GetZoneAuthClient()
-    {
-      return m_pzac;
-    }
-    TRef<IZoneAuthClient> CreateZoneAuthClient()
-    {
-      m_pzac = ::CreateZoneAuthClient();
-      return m_pzac;
-    }
-    void                FreeZoneAuthClient()
-    {
-      m_pzac = NULL;
-    }
-#endif    
+
     //HRESULT     HandleShipUpdate(Time timeUpdate, const LightShipUpdate& shipupdate);
     //HRESULT     HandleShipUpdate(Time timeUpdate, const HeavyShipUpdate& shipupdate);
 

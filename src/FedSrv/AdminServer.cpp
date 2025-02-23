@@ -334,9 +334,7 @@ STDMETHODIMP CAdminServer::get_MachineName(BSTR * pbstrMachine)
 //
 STDMETHODIMP CAdminServer::put_LobbyServer(BSTR bstrLobbyServer)
 {
-#if defined(ALLSRV_STANDALONE)
   return Error("This method is not intended for standalone servers");
-#endif
 
   // Connect to the specified lobby, if any
   if (BSTRLen(bstrLobbyServer))
@@ -355,24 +353,9 @@ STDMETHODIMP CAdminServer::put_LobbyServer(BSTR bstrLobbyServer)
     HRESULT hr = ConnectToLobby(NULL);
     if (FAILED(hr))
     {
-      #if !defined(ALLSRV_STANDALONE)
         _AGCModule.TriggerEvent(NULL, AllsrvEventID_ConnectError, "", -1, -1, -1, 0);
-      #endif // !defined(ALLSRV_STANDALONE)
       return Error(IDS_E_CONNECT_LOBBY, IID_IAdminServer);
     }
-
-    // Save the new LobbyServer value to the registry
-    #if !defined(ALLSRV_STANDALONE)
-      CRegKey key;
-      LONG lr = key.Open(HKEY_LOCAL_MACHINE, HKLM_FedSrv);
-      if (ERROR_SUCCESS != lr)
-      {
-        g.fmLobby.Shutdown();
-        _AGCModule.TriggerEvent(NULL, AllsrvEventID_ConnectError, "", -1, -1, -1, 0);
-        return HRESULT_FROM_WIN32(lr);
-      }
-      key.SetValue(pszLobbyServer, "LobbyServer");
-    #endif // !defined(ALLSRV_STANDALONE)
     
   }
   else
@@ -410,7 +393,6 @@ STDMETHODIMP CAdminServer::get_LobbyServer(BSTR* pbstrLobbyServer)
 //
 STDMETHODIMP CAdminServer::CreateDefaultGames()
 {
-  #if defined(ALLSRV_STANDALONE)
     // Don't create new games if any games are already there.  This is to 
     // prevent starting two copies of the default games.
     const ListFSMission * plistMission = CFSMission::GetMissions();
@@ -419,9 +401,6 @@ STDMETHODIMP CAdminServer::CreateDefaultGames()
 
     StartDefaultGames();
     return S_OK;
-  #else
-    return E_NOTIMPL;
-  #endif
 }
 
 
@@ -459,58 +438,34 @@ STDMETHODIMP CAdminServer::put_PublicLobby(VARIANT_BOOL bPublic)
         g.fm.Shutdown();
 
       printf("Preparing public session for clients ... ");
-      #if !defined(ALLSRV_STANDALONE)
-      _AGCModule.TriggerEvent(NULL, AllsrvEventID_HostSession, "", -1, -1, -1, 0);
-      #endif
 
       HRESULT hr = g.fm.HostSession(FEDSRV_GUID, false, 0 /*g.hPlayerEvent*/, g.fProtocol
-          #if defined(MONOLITHIC_DPLAY) && defined(ALLSRV_STANDALONE)
+          #if defined(MONOLITHIC_DPLAY)
             , false
           #endif
           );
 
       if (FAILED(hr))
       {
-        #if !defined(ALLSRV_STANDALONE)
-        _AGCModule.TriggerEvent(NULL, AllsrvEventID_CantHostSession, "", -1, -1, -1, 0);
-        #endif
         printf("failed.\n");
         return E_FAIL;
       }
       printf("succeeded.\n");
     }
 
-    bool bSupposedToConnectToLobby;
-
-    #if defined(ALLSRV_STANDALONE)
-    bSupposedToConnectToLobby = true;
-    #else
-    bSupposedToConnectToLobby = !g.strLobbyServer.IsEmpty();
-    #endif
+    bool bSupposedToConnectToLobby = true;
 
     if (bSupposedToConnectToLobby)
     {
       HRESULT hr = ConnectToLobby(NULL);
       if (FAILED(hr))
       {
-        #if !defined(ALLSRV_STANDALONE)
-          _AGCModule.TriggerEvent(NULL, AllsrvEventID_ConnectError, "", -1, -1, -1, 0);
-        #endif // !defined(ALLSRV_STANDALONE)
         return Error(IDS_E_CONNECT_LOBBY, IID_IAdminServer);
       }
-    }
-    else
-    {
-      #if !defined(ALLSRV_STANDALONE)
-      _AGCModule.TriggerEvent(NULL, AllsrvEventID_NoLobby, "", -1, -1, -1, 0);
-      #endif
     }
   }
   else
   {
-    #if !defined(ALLSRV_STANDALONE)
-    return Error("Only standalone servers can have private games"); 
-    #endif
     //
     // Setup the private session for standalone server
     //
@@ -521,20 +476,14 @@ STDMETHODIMP CAdminServer::put_PublicLobby(VARIANT_BOOL bPublic)
         g.fm.Shutdown();
 
       printf("Preparing LAN session for clients ... ");
-      #if !defined(ALLSRV_STANDALONE)
-      _AGCModule.TriggerEvent(NULL, AllsrvEventID_HostSession, "", -1, -1, -1, 0);
-      #endif
 
       HRESULT hr = g.fm.HostSession(FEDSRV_STANDALONE_PRIVATE_GUID, false, 0 /*g.hPlayerEvent*/, g.fProtocol
-          #if defined(MONOLITHIC_DPLAY) && defined(ALLSRV_STANDALONE)
+          #if defined(MONOLITHIC_DPLAY)
             , false
           #endif
           );
       if (FAILED(hr))
       {
-        #if !defined(ALLSRV_STANDALONE)
-        _AGCModule.TriggerEvent(NULL, AllsrvEventID_CantHostSession, "", -1, -1, -1, 0);
-        #endif
        printf("failed.\n");
         return E_FAIL;
       }
