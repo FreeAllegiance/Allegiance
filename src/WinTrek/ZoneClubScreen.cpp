@@ -14,12 +14,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-bool g_fZoneAuth = 
-#ifdef USEAUTH
-  true;
-#else
-  false;
-#endif
+bool g_fZoneAuth = false;
 extern bool    g_bDownloadZoneMessage;
 extern bool    g_bDownloadNewConfig;
 extern bool    g_bDisableZoneClub;
@@ -149,14 +144,8 @@ public:
     {
         ZString strPrompt;
 
-#ifdef USEAUTH
-        if (trekClient.GetCfgInfo().bUsePassport)
-            strPrompt = "Sign in to Microsoft Passport";
-        else
-            strPrompt = "Sign in to the Microsoft Gaming Zone";
-#else
         strPrompt = "Enter a call sign (player name) to use for this game.";
-#endif
+
         ConnectToZone(bConnectLobby, screenid, strPrompt);
     }
 
@@ -213,98 +202,35 @@ public:
 
         assert (!trekClient.LoggedOn() && !trekClient.m_fm.IsConnected());
         HRESULT hr = E_FAIL;
-#ifdef USEAUTH
-        TRef<IZoneAuthClient> pzac;
-
-        if (g_fZoneAuth)
-        {
-            pzac = trekClient.GetZoneAuthClient();
-            if (!pzac)
-                pzac = trekClient.CreateZoneAuthClient();
-            
-            if (trekClient.GetCfgInfo().bUsePassport 
-                && !pzac->HasInterface(trekClient.GetCfgInfo().guidZoneAuth))
-            {
-                // take them to the web page...
-                GetWindow()->ShowWebPage(trekClient.GetCfgInfo().strPassportUpdateURL);
-
-                // shut down the client
-                GetWindow()->PostMessage(WM_CLOSE);
-
-                return;
-            }
-
-            if (s_bWasAuthenticated)
-            {
-                hr = S_OK;
-            }
-            else
-            {
-                pzac->SetAuthServer(trekClient.GetCfgInfo().strZAuth);
-                
-                if (!m_bTriedCurrentLogin)
-                    hr = pzac->IsAuthenticated(5000);
-            }
-        }
-
-        if (SUCCEEDED(hr)) // must be false if !g_fZoneAuth
-        {
-            BaseClient::ConnectInfo ci;
-            DWORD cbZoneTicket;
-            DWORD cbName = sizeof(ci.szName);
-            ZSucceeded(pzac->GetTicket(&ci.pZoneTicket, &cbZoneTicket, ci.szName, &cbName));
-            assert(cbName <= sizeof(ci.szName));
-            ci.cbZoneTicket = cbZoneTicket;
-
-            if(m_bConnectLobby)
-                trekClient.ConnectToLobby(&ci);
-            else
-                trekClient.ConnectToClub(&ci);
-
-            m_bTriedCurrentLogin = true;
-        }
-        else
-#endif
         {
             m_szName[0] = '\0';
             m_szPWOrig[0] = '\0';
-#ifdef USEAUTH
-            if (g_fZoneAuth)
-            pzac->GetDefaultLogonInfo(m_szName, m_szPWOrig, &m_fRememberPW);
-#else
             lstrcpy(m_szName, trekClient.GetSavedCharacterName());
 
 			// BT - Steam - User is logged into steam, and has a steam profile name
 			// The steam reviewer was somehow launching the game with steam authorization but no persona name. If 
-			// there is an player name, then the server rejects the user as a hacker with a DPlay error. 
-			bool isUserLoggedIntoSteamWithValidPlayerName = SteamUser() != nullptr && strlen(m_szName) > 0;
+		    // there is an player name, then the server rejects the user as a hacker with a DPlay error. 
+		    bool isUserLoggedIntoSteamWithValidPlayerName = SteamUser() != nullptr && strlen(m_szName) > 0;
 
-#endif
-		  // wlp - don't ask for callsign if it was on the command line
-          if (!g_bAskForCallSign || isUserLoggedIntoSteamWithValidPlayerName == true) // BT - STEAM
-		  {
-			  // BT - STEAM - Add players callsign and token.
-			  CallsignTagInfo callSignTagInfo;
+		    // wlp - don't ask for callsign if it was on the command line
+            if (!g_bAskForCallSign || isUserLoggedIntoSteamWithValidPlayerName == true) // BT - STEAM
+		    {
+		     // BT - STEAM - Add players callsign and token.
+		     CallsignTagInfo callSignTagInfo;
 
-			  ZString characterName = callSignTagInfo.Render(m_szName);
+		     ZString characterName = callSignTagInfo.Render(m_szName);
 
-			  this->OnLogon(characterName, "", false);
-	      } // wlp - end of dont ask for callsign 
-		  else
-		  {
-            TRef<IPopup> plogonPopup = CreateLogonPopup(m_pmodeler, this, 
-                (trekClient.GetIsZoneClub() ? 
-                  LogonAllegianceZone :
-#ifdef USEAUTH
-                  LogonFreeZone
-#else
-                  LogonLAN
-#endif
-                ), strPrompt, m_szName, m_szPWOrig, m_fRememberPW);
-            Point point(c_PopupX, c_PopupY);
-            Rect rect(point, point);
-            GetWindow()->GetPopupContainer()->OpenPopup(plogonPopup, rect, false);
-		    }// wlp = end of else ask for callsign
+		     this->OnLogon(characterName, "", false);
+	        } // wlp - end of dont ask for callsign 
+		    else
+		    {
+              TRef<IPopup> plogonPopup = CreateLogonPopup(m_pmodeler, this, 
+                  (trekClient.GetIsZoneClub() ? 
+                    LogonAllegianceZone : LogonLAN), strPrompt, m_szName, m_szPWOrig, m_fRememberPW);
+              Point point(c_PopupX, c_PopupY);
+              Rect rect(point, point);
+             GetWindow()->GetPopupContainer()->OpenPopup(plogonPopup, rect, false);
+            }// wlp = end of else ask for callsign
         }
     }
 
@@ -778,11 +704,7 @@ public:
     {
         lstrcpy(m_szName, strName);
         lstrcpy(m_szPW, strPassword);
-        m_fRememberPW = fRememberPW;
-//#ifdef USEAUTH        
-//#else
-//        trekClient.SaveCharacterName(strName);
-//#endif        
+        m_fRememberPW = fRememberPW;  
         GetWindow()->SetWaitCursor();
         TRef<IMessageBox> pmsgBox = CreateMessageBox("Connecting...", NULL, false);
         GetWindow()->GetPopupContainer()->OpenPopup(pmsgBox, false);
@@ -794,70 +716,21 @@ public:
     bool OnUsernameAndPassword()
     {
         HRESULT hr  = E_FAIL;
-#ifdef USEAUTH
-        TRef<IZoneAuthClient> pzac;
-        if (g_fZoneAuth)
-        {
-            pzac = trekClient.GetZoneAuthClient();
-            hr = pzac->Authenticate(m_szName, m_szPW, 
-                    !!lstrcmp(m_szPW, m_szPWOrig), m_fRememberPW, 5000);
-        }
-
-        if (g_fZoneAuth && FAILED(hr))
-        {
-            bool bRetry;
-            ZString strReason;
-
-            if (ZT_E_AUTH_DENIED == hr)
-            {
-                if (trekClient.GetCfgInfo().bUsePassport)
-                    strReason = "Either the username or the password you supplied was incorrect.  Be sure to sign in with your Microsoft Passport name (not your Zone ID).";
-                else
-                    strReason = "Either the username or the password you supplied was incorrect.  Please try again.";
-                bRetry = true;
-            }
-            else
-            {
-                strReason = "Unable to contact the authentication server.  Please check your network connection.";
-                bRetry = false;
-            }
-
-            // if the logon fails, close the connecting dialog box.
-            GetWindow()->GetPopupContainer()->ClosePopup(m_pmsgBox);
-            GetWindow()->RestoreCursor();
-
-            if (m_bConnectLobby)
-                OnLogonLobbyFailed(bRetry, strReason);
-            else
-                OnLogonClubFailed(bRetry, strReason);
-        }
+        
+        s_bWasAuthenticated = true;
+        
+        BaseClient::ConnectInfo ci;
+        DWORD cbZoneTicket = 0;
+        ci.pZoneTicket = NULL;
+        DWORD cbName = sizeof(ci.szName);
+        lstrcpy(ci.szName, m_szName);
+        
+        ZeroMemory(&ci.ftLastArtUpdate, sizeof(ci.ftLastArtUpdate));
+        
+        if (m_bConnectLobby)
+            trekClient.ConnectToLobby(&ci);
         else
-#endif
-        {
-            s_bWasAuthenticated = true;
-            
-            BaseClient::ConnectInfo ci;
-            DWORD cbZoneTicket = 0;
-            ci.pZoneTicket = NULL;
-            DWORD cbName = sizeof(ci.szName);
-#ifdef USEAUTH
-            if (g_fZoneAuth)
-            {
-                ZSucceeded(pzac->GetTicket(&ci.pZoneTicket, &cbZoneTicket, ci.szName, &cbName));
-                assert(cbName <= sizeof(ci.szName));
-                ci.cbZoneTicket = cbZoneTicket;
-            }
-            else
-#endif
-            lstrcpy(ci.szName, m_szName);
-            
-            ZeroMemory(&ci.ftLastArtUpdate, sizeof(ci.ftLastArtUpdate));
-            
-            if (m_bConnectLobby)
-                trekClient.ConnectToLobby(&ci);
-            else
-                trekClient.ConnectToClub(&ci);
-        }
+            trekClient.ConnectToClub(&ci);
 
         return false;
     }

@@ -294,14 +294,7 @@ void CAGCEventLogger::LogEvent(IAGCEvent* pEvent, bool bSynchronous)
 
         // Report the event to the NT Event log
         ReportEventW(m_shEventLog, wSeverity, 0, dwEventID, NULL,
-          vecParamStrings.size(), 0,
-// VS.Net 2003 port
-#if _MSC_VER >= 1310
-        lpStrings, NULL);
-//		(LPCWSTR*)(&(*vecParamStrings.begin())), NULL);
-#else
-		(LPCWSTR*)(vecParamStrings.begin()), NULL);
-#endif
+          vecParamStrings.size(), 0, lpStrings, NULL);
 
         // Free the replacement parameters BSTR's
         for (CAGCEventDef::XParamStrings::iterator it = vecParamStrings.begin();

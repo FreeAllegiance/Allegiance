@@ -149,12 +149,11 @@ IDR_USER                REGISTRY                "AdminUser.rgs"
 IDR_USERS               REGISTRY                "AdminUsers.rgs"
 IDR_ADMINSHIP           REGISTRY                "AdminShip.rgs"
 IDR_DPMONO              REGISTRY                "DPMono.rgs"
-#if defined(APSTUDIO_INVOKED) || defined(ALLSRV_STANDALONE)
+
 #if defined(APSTUDIO_INVOKED)
 IDR_ALLSRV$(ALLSRV_STANDALONE) REGISTRY                "AllSrv.rgs"
 #else
 IDR_ALLSRV              REGISTRY                "AllSrv.rgs"
-#endif
 #endif
 
 /////////////////////////////////////////////////////////////////////////////

@@ -50,7 +50,6 @@ public:
 public:
   CAdminGame();
   void Init(ImissionIGC* pIGC);
-  void FinalRelease();
 
 // IAGCGame Interface Methods
 public:

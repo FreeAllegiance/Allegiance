@@ -123,12 +123,7 @@ public:
     #endif // defined(XWorkItem_TRACE)
 
     if (m_pfnRelease)
-// VS.Net 2003 port: see "Breaking Changes in the Standard C++ Library Since Visual C++ 6.0" in documentation
-#if _MSC_VER >= 1310
-	(*m_pfnRelease)(m_idMsg, m_vec.size(), &(*m_vec.begin()));
-#else
-	(*m_pfnRelease)(m_idMsg, m_vec.size(), m_vec.begin());
-#endif
+	    (*m_pfnRelease)(m_idMsg, m_vec.size(), &(*m_vec.begin()));
   }
 
 // Group=Data Members
@@ -560,12 +555,7 @@ void TCWorkerThread::DispatchWorkItem(TCWorkerThread::XWorkItem* pItem)
     GetDebugOutput()->WriteLen(60,
       "XWorkItem\t%08X\tTCWorkerThread::DispatchWorkItem\n", pItem);
   #endif // defined(XWorkItem_TRACE)
-// VS.Net 2003 port: see "Breaking Changes in the Standard C++ Library Since Visual C++ 6.0" in documentation
-#if _MSC_VER >= 1310
   OnMessage(pItem->m_idMsg, pItem->m_vec.size(), &(*(pItem->m_vec.begin())));
-#else
-  OnMessage(pItem->m_idMsg, pItem->m_vec.size(), pItem->m_vec.begin());
-#endif
   DestroyWorkItem(pItem);
 }
 

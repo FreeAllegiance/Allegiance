@@ -32,10 +32,6 @@ void CAdminGame::Init(ImissionIGC* pIGC)
   IAGCCommonImplBase::Init(pIGC);
 }
 
-void CAdminGame::FinalRelease()
-{
-}
-
 /////////////////////////////////////////////////////////////////////////////
 // IAGCGame Interface Methods
 

@@ -44,7 +44,6 @@ STDMETHODIMP CAdminGames::Add(IAGCGameParameters* pGameParameters)
   CGameParamData * pMissionParams = (CGameParamData *)spPrivate->GetIGCVoid();
   assert(pMissionParams);
 
-  #if defined(ALLSRV_STANDALONE)
     // Standalone server only supports a single game
     const ListFSMission * plistMission = CFSMission::GetMissions();
     if (plistMission->n())
@@ -63,13 +62,6 @@ STDMETHODIMP CAdminGames::Add(IAGCGameParameters* pGameParameters)
         pMissionParams->nMaxPlayersPerTeam = 1;
     else
         pMissionParams->nMaxPlayersPerTeam = pMissionParams->nTotalMaxPlayersPerGame / pMissionParams->nTeams;
-  #else
-    // The maximum players per side must be no more than max per game / nTeams
-    if (pMissionParams->nMaxPlayersPerTeam > pMissionParams->nTotalMaxPlayersPerGame / pMissionParams->nTeams)
-      pMissionParams->nMaxPlayersPerTeam = pMissionParams->nTotalMaxPlayersPerGame / pMissionParams->nTeams;
-    if (pMissionParams->nMinPlayersPerTeam > pMissionParams->nMaxPlayersPerTeam)
-      pMissionParams->nMinPlayersPerTeam = pMissionParams->nMaxPlayersPerTeam;
-  #endif // defined(ALLSRV_STANDALONE)
 
   // make sure params are valid, if not tell user why
   const char * szInvalid = pMissionParams->Invalid();

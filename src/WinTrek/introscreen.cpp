@@ -572,9 +572,7 @@ private:
 	TRef<ButtonPane>	m_pbuttonDiscord;
     TRef<ButtonPane>    m_pbuttonPlayLan;
     TRef<ButtonPane>    m_pbuttonPlayInt;
-#ifdef USEAZ
-    TRef<ButtonPane>    m_pbuttonZoneClub;
-#endif
+
     //TRef<ButtonPane> m_pbuttonTraining;
     TRef<ButtonPane>    m_pbuttonTrainingBig;
     TRef<ButtonPane>    m_pbuttonZoneWeb;
@@ -609,9 +607,7 @@ private:
         hoverNone,
         hoverPlayLan,
         hoverPlayInt,
-#ifdef USEAZ
-        hoverZoneClub,
-#endif        
+    
         hoverTrain,
         hoverZoneWeb,
         hoverOptions,
@@ -1179,9 +1175,7 @@ public:
         pnsIntroScreen->AddMember("hoverNone", new Number(hoverNone));
         pnsIntroScreen->AddMember("hoverPlayLan", new Number(hoverPlayLan));
         pnsIntroScreen->AddMember("hoverPlayInt", new Number(hoverPlayInt));
-#ifdef USEAZ
-        pnsIntroScreen->AddMember("hoverZoneClub", new Number(hoverZoneClub));
-#endif
+
         pnsIntroScreen->AddMember("hoverZoneWeb", new Number(hoverZoneWeb));
         pnsIntroScreen->AddMember("hoverTrain", new Number(hoverTrain));
         pnsIntroScreen->AddMember("hoverOptions", new Number(hoverOptions));
@@ -1206,9 +1200,6 @@ public:
             CastTo(m_pbuttonPlayInt, pns->FindMember("playIntButtonPane"));
             CastTo(m_pbuttonDiscord, pns->FindMember("discordButtonPane"));
 
-    #ifdef USEAZ
-            CastTo(m_pbuttonZoneClub, pns->FindMember("zoneClubButtonPane"));
-    #endif
             //CastTo(m_pbuttonTraining,   pns->FindMember("trainButtonPane"));
             CastTo(m_pbuttonTrainingBig, pns->FindMember("trainBigButtonPane"));
             CastTo(m_pbuttonZoneWeb, pns->FindMember("zoneWebButtonPane"));
@@ -1228,9 +1219,7 @@ public:
             AddEventTarget(&IntroScreen::OnButtonTraining, m_pbuttonTrainingBig->GetEventSource());
             AddEventTarget(&IntroScreen::OnButtonExit, m_pbuttonExit->GetEventSource());
             AddEventTarget(&IntroScreen::OnButtonHelp, m_pbuttonHelp->GetEventSource());
-    #ifdef USEAZ
-            AddEventTarget(OnButtonZoneClub, m_pbuttonZoneClub->GetEventSource());
-    #endif
+
             AddEventTarget(&IntroScreen::OnButtonInternet, m_pbuttonPlayInt->GetEventSource());
             AddEventTarget(&IntroScreen::OnButtonLAN, m_pbuttonPlayLan->GetEventSource());
             AddEventTarget(&IntroScreen::OnButtonZoneWeb, m_pbuttonZoneWeb->GetEventSource());
@@ -1241,9 +1230,7 @@ public:
 
             AddEventTarget(&IntroScreen::OnHoverPlayLan, m_pbuttonPlayLan->GetMouseEnterEventSource());
             AddEventTarget(&IntroScreen::OnHoverPlayInt, m_pbuttonPlayInt->GetMouseEnterEventSource());
-    #ifdef USEAZ
-            AddEventTarget(OnHoverZoneClub, m_pbuttonZoneClub->GetMouseEnterEventSource());
-    #endif
+
             //AddEventTarget(OnHoverTrain,        m_pbuttonTraining->GetMouseEnterEventSource());
             AddEventTarget(&IntroScreen::OnHoverTrain, m_pbuttonTrainingBig->GetMouseEnterEventSource());
             AddEventTarget(&IntroScreen::OnHoverZoneWeb, m_pbuttonZoneWeb->GetMouseEnterEventSource());
@@ -1257,9 +1244,7 @@ public:
 
             AddEventTarget(&IntroScreen::OnHoverNone, m_pbuttonPlayLan->GetMouseLeaveEventSource());
             AddEventTarget(&IntroScreen::OnHoverNone, m_pbuttonPlayInt->GetMouseLeaveEventSource());
-    #ifdef USEAZ
-            AddEventTarget(OnHoverNone, m_pbuttonZoneClub->GetMouseLeaveEventSource());
-    #endif
+
             //AddEventTarget(OnHoverNone,     m_pbuttonTraining->GetMouseLeaveEventSource());
             AddEventTarget(&IntroScreen::OnHoverNone, m_pbuttonTrainingBig->GetMouseLeaveEventSource());
             AddEventTarget(&IntroScreen::OnHoverNone, m_pbuttonZoneWeb->GetMouseLeaveEventSource());
@@ -1364,11 +1349,7 @@ public:
 
     bool OnQuickstart()
     {
-#ifdef USEAZ //Imago 7/4/09 #78
-        OnButtonZoneClub();
-#else
 		OnButtonInternet();
-#endif
         return false;
     }
 
@@ -1811,14 +1792,6 @@ public:
         m_pnumberCurrentHover->SetValue(hoverPlayInt);
         return true;
     }
-
-#ifdef USEAZ
-    bool OnHoverZoneClub()
-    {
-        m_pnumberCurrentHover->SetValue(hoverZoneClub);
-        return true;
-    }
-#endif
 
     bool OnHoverTrain()
     {

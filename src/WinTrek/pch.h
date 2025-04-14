@@ -72,9 +72,6 @@
 #include "resource.h"
 #include "Zone.h"
 #include "ui.h"
-#ifdef USEAUTH
-#include "zauth.h"
-#endif
 #include "messagesAll.h"
 #include "messages.h"
 #include "messagesLC.h"

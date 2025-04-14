@@ -132,12 +132,7 @@ HRESULT TCPropertyPageSite::Page_Attach(IPropertyPage* pPage)
     std::vector<IUnknown*> vecUnk;
     vecUnk.resize(m_vecObjects.size());
     std::copy(m_vecObjects.begin(), m_vecObjects.end(), vecUnk.begin());
-// VS.Net 2003 port: see "Breaking Changes in the Standard C++ Library Since Visual C++ 6.0" in documentation
-#if _MSC_VER >= 1310
     hr = pPage->SetObjects(vecUnk.size(), &(*(vecUnk.begin())));
-#else
-    hr = pPage->SetObjects(vecUnk.size(), vecUnk.begin());
-#endif
     if (FAILED(hr))
       return hr;
   }

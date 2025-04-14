@@ -62,10 +62,7 @@ public:
 class CFLMission;
 class CFLServer;
 
-class CLobbyApp: public Win32App
-#ifdef USECLUB
-          , public ISQLSite2
-#endif    
+class CLobbyApp: public Win32App 
 {
 public:
   CLobbyApp(ILobbyAppSite * plas);
@@ -78,11 +75,6 @@ public:
   HRESULT         Init();
   int             Run();
   bool            IsFMServers(FedMessaging * pfm) {return pfm == &m_fmServers;}
-
-#ifdef USECLUB
-  // ISQLSite2
-  virtual void OnSQLErrorRecord(SSERRORINFO * perror, OLECHAR * postrError);
-#endif
 
   ILobbyAppSite * GetSite()
   {
@@ -98,13 +90,6 @@ public:
   }
 
   virtual int     OnMessageBox(const char * strText, const char * strCaption, UINT nType);
-
-#ifdef USEAUTH
-  TRef<IZoneAuthServer> GetZoneAuthServer()
-  {
-    return m_pzas;
-  }
-#endif
 
   PER_SERVER_COUNTERS * AllocatePerServerCounters(const char * szServername);
 
@@ -172,13 +157,6 @@ public:
   CFLMission* FindPlayersMission(const char* szPlayerName);
 
   bool BootPlayersByCDKey(const ZString& strCDKey, const ZString& strNameExclude = "", ZString& strOldPlayer = ZString());
-
-#ifdef USECLUB
-  CSQLCore & GetSQL() 
-  {
-    return m_sql;
-  }
-#endif
 
   bool ProcessMsgPump();
   //KGJV #114 - CoreInfoStuff
@@ -266,10 +244,6 @@ private:
   // *** Perfmon counter stuff ***
   CPerfShare        m_perfshare;
   LOBBY_COUNTERS *  m_pCounters;
-// KG guard with USEAUTH for consistency 
-#ifdef USEAUTH
-  TRef<IZoneAuthServer> m_pzas;
-#endif
   Time              m_timeNow;
 
   // BT - STEAM
@@ -304,14 +278,6 @@ private:
 
   //imago 9/16
   CRITICAL_SECTION  *m_logonCS;
-
-#ifdef USECLUB
-  // SQL Stuff
-  CSQLCore          m_sql;
-  DWORD             m_csqlSilentThreads;
-  DWORD             m_csqlNotifyThreads;
-  CComBSTR          m_strSQLConfig;
-#endif
 };
 
 extern CLobbyApp * g_pLobbyApp;  

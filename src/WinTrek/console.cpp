@@ -3377,12 +3377,7 @@ public:
         // back button
 
         CastTo(m_pbuttonBack, pnsDisplays->FindMember("backButtonPane"));
-// VS.Net 2003 port: error C2465 here.
-#if _MSC_VER >= 1310
 		m_pconsoleData->AddEventTarget(&ConsoleDataImpl::OnBackButton, m_pbuttonBack->GetEventSource());
-#else
-        m_pconsoleData->AddEventTarget(m_pconsoleData->OnBackButton, m_pbuttonBack->GetEventSource());
-#endif
         
         //
         // Add all of the loaded displays
