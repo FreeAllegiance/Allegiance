@@ -10,6 +10,8 @@
 
 #include "pch.h"
 
+using json = nlohmann::json;
+
 //CFSMission statics
 ListFSMission CFSMission::s_list;
 int           CFSMission::s_iMissionID = 1; // just for igc--this too wil go away when we have single exe
@@ -2730,6 +2732,21 @@ void CFSMission::MakeOverrideTechBits()
     }
 }
 
+// Loran - make a POST request with JSON data to export game data
+void POSTGameStats(std::string& url, std::string& postData)
+{
+    try {
+        std::string host = url.substr(0, url.find_first_of("/", 8));
+        std::string path = url.substr(url.find_first_of("/", 8));
+        httplib::Client client(host);
+
+        httplib::Result result = client.Post(path, postData, "application/json");
+        int response = result->status;
+        debugf("Game Stats Update(%ld): %s\n", response, url);
+    } catch(...) {
+        debugf("Game Stats Update Exception, check if url is valid (e.g. begins with http://)");
+    }
+}
 
 /*-------------------------------------------------------------------------
  * RecordGameResults
@@ -2774,17 +2791,32 @@ void CFSMission::RecordGameResults()
 
 #endif // !defined(ALLSRV_STANDALONE)
 
+    json jGame;
+    ImissionIGC* pMission = GetIGCMission();
+    jGame["gameInfo"] = {
+        {"time", std::time(0)},
+        {"server", m_misdef.szServerName},
+        {"core", pMission->GetMissionParams()->szIGCStaticFile},
+        {"gameOverReason", m_pszReason}
+    };
+    jGame["teams"] = json::array();
+    jGame["playersScore"] = json::array();
 	// BT - STEAM - Making this run for all game over scenarios.
 
     // Iterate through each team of the game
-    const SideListIGC* pSides = GetIGCMission()->GetSides();
+    const SideListIGC* pSides = pMission->GetSides();
     for (SideLinkIGC* itSide = pSides->first(); itSide; itSide = itSide->next())
     {
       IsideIGC* pside = itSide->data();
       assert(pside);
-
+      
       // Record the team results
-      RecordTeamResults(pside);
+      RecordTeamResults(pside, &jGame);
+    }
+
+    if (strlen(g.szGameStatsUpdateUrl) > 0) { //check if registry was set
+        std::thread UpdateGameStatsThread(POSTGameStats, std::string(g.szGameStatsUpdateUrl), jGame.dump());
+        UpdateGameStatsThread.detach();
     }
 
 	// BT - STEAM - players who are not currently connected to the mission do not have initialized CSteamAchievement objects
@@ -2810,7 +2842,7 @@ void CFSMission::RecordGameResults()
    Purpose:
      Records the results of the team to the database.
  */
-void CFSMission::RecordTeamResults(IsideIGC* pside)
+void CFSMission::RecordTeamResults(IsideIGC* pside, json* jGame)
 {
   #if !defined(ALLSRV_STANDALONE)
 
@@ -2851,9 +2883,17 @@ void CFSMission::RecordTeamResults(IsideIGC* pside)
     g.sql.PostQuery(pquery);
 
 #endif // !defined(ALLSRV_STANDALONE)
-
+    //store team data as json
+    if (jGame != nullptr)
+    {
+        jGame->at("teams") += {
+            { "teamNumber", pside->GetObjectID() },
+            { "name", pside->GetName() },
+            { "faction", pside->GetCivilization()->GetName() }
+        };
+    }
 	// BT - STEAM - Making this run for all game over scenarios.
-
+    
     // Iterate through each player of the team
     const ShipListIGC* pShips = pside->GetShips();
     for (ShipLinkIGC* itShip = pShips->first(); itShip; itShip = itShip->next())
@@ -2869,7 +2909,7 @@ void CFSMission::RecordTeamResults(IsideIGC* pside)
         PlayerScoreObject* ppso = pfsPlayer->GetPlayerScoreObject();
 
         // Record the player results
-        RecordPlayerResults(pship, pfsPlayer, pside->GetObjectID());
+        RecordPlayerResults(pship, pfsPlayer, pside->GetObjectID(), jGame);
       }
     }
 }
@@ -2881,7 +2921,7 @@ void CFSMission::RecordTeamResults(IsideIGC* pside)
    Purpose:
      Records the results of the player to the database.
  */
-void CFSMission::RecordPlayerResults(IshipIGC* pship, CFSPlayer *player, SideID sid)
+void CFSMission::RecordPlayerResults(IshipIGC* pship, CFSPlayer *player, SideID sid, json* jGame)
 {
 	PlayerScoreObject*  ppso = player->GetPlayerScoreObject();
 	//Xynth I didn't need this change today but I don't think it hurts and will likely be needed down the road
@@ -2952,6 +2992,46 @@ void CFSMission::RecordPlayerResults(IshipIGC* pship, CFSPlayer *player, SideID 
     g.sql.PostQuery(pquery);
 
 #else
+    
+    if (jGame != nullptr)
+    {
+        jGame->at("playersScore") += {
+            { "name", player->GetName() },
+            { "teamNumber", sid },
+            { "isCommander", ppso->Commanding()},
+            { "rank", ppso->GetPersist().GetRank() },
+            { "assists", ppso->GetAssists() },
+            { "artifacts", ppso->GetArtifacts() },
+            { "asteroidsSpotted", ppso->GetAsteroidsSpotted() },
+            { "baseCaptures", ppso->GetBaseCaptures() },
+            { "baseKills", ppso->GetBaseKills() },
+            { "constructorKills", ppso->GetBuilderKills() },
+            { "carriersSpotted", ppso->GetCarrierKills() },
+            { "combatRating", ppso->GetCombatRating() },
+            { "commandCredit", ppso->GetCommandCredit() },
+            { "commandLoser", ppso->GetCommandLoser() },
+            { "commandWinner", ppso->GetCommandWinner() },
+            { "deaths", ppso->GetDeaths() },
+            { "ejects", ppso->GetEjections() },
+            { "flags", ppso->GetFlags() },
+            { "kills", ppso->GetKills() },
+            { "layerKills", ppso->GetLayerKills() },
+            { "loser", ppso->GetLoser() },
+            { "minerKills", ppso->GetMinerKills() },
+            { "pilotBaseCaptures", ppso->GetPilotBaseCaptures() },
+            { "pilotBaseKills", ppso->GetPilotBaseKills() },
+            { "playerKills", ppso->GetPlayerKills() },
+            { "repair", ppso->GetRepair() },
+            { "rescues", ppso->GetRescues() },
+            { "score", ppso->GetScore() },
+            { "targetsSpotted", ppso->GetTargetsSpotted() },
+            { "techsRecovered", ppso->GetTechsRecovered() },
+            { "commandTime", ppso->GetTimeCommanded() },
+            { "playtime", ppso->GetTimePlayed() },
+            { "warpsSpotted", ppso->GetWarpsSpotted() },
+            { "winner", ppso->GetWinner() },
+        };
+    }
 
 	// BT - STEAM
 	CSteamAchievements *pSteamAchievements = player->GetSteamAchievements();
@@ -2962,7 +3042,6 @@ void CFSMission::RecordPlayerResults(IshipIGC* pship, CFSPlayer *player, SideID 
 	pSteamAchievements->AddUserStats(ppso, pIship);	
 
 	pSteamAchievements->SaveStats();
-
 
   #endif // !defined(ALLSRV_STANDALONE)
 }

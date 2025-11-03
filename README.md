@@ -3,11 +3,27 @@
 
 # Installation
 
-Download and install the lastest "Visual Studio Community Edition" : https://www.visualstudio.com/downloads/
+Download and install the latest "Visual Studio Community Edition" : https://www.visualstudio.com/downloads/
 
 Download and install the latest Microsoft DirectX SDK (jun 2010): https://www.microsoft.com/en-us/download/details.aspx?id=6812 (if you don't want to install it, just extract the DirectX `include` and `lib` folders somewhere and set the environment variable `DXSDK_DIR` to their parent directory)
 
-Launch Visual Studio and open the main solution `src\VS2017\Allegiance.sln`
+Launch Visual Studio and open the main solution `src\VS2022\Allegiance.sln`
+
+There should be a prompt in the solution view to install required tools. If this is not the case, the installation will need to be modified.
+This can be accessed from the installer, or from the Tab `Tools` -> `Get Tools And Features`.
+
+## Required Tools
+### Workloads
+#### Desktop & Mobile
+* .NET desktop development
+* Desktop development with C++
+
+### Individual Components
+#### SDK's, libraries, and frameworks
+* C++ MFC for latest v143 build tools (x86 & x64)
+
+# Build
+Once the solution, there is a button at the top to build. The configuration might need to change from `Debug` to `FZDebug`, `FZRelease`, or `Release`, if `Debug` does not build correctly.
 
 # Main projects
 

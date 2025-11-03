@@ -87,7 +87,7 @@
       <PreprocessorDefinitions>FLAVOR=\"$(ConfigurationName)\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>..\src\Lib\Steam\steam_api.lib;dbghelp.lib;$(OutDir)..\_utility\Utility.lib;$(OutDir)..\zlib\zlib.lib;$(OutDir)..\test\TCLib\TCLib.lib;$(OutDir)..\sharemem\sharemem.lib;$(OutDir)..\Guids\Guids.lib;Winmm.lib;urlmon.lib;..\src\Lib\DirectPlay\dxguid.lib;..\src\Lib\appweb\appweb.lib;comctl32.lib;version.lib;ws2_32.lib;delayimp.lib;wininet.lib;lz32.lib;netapi32.lib;comsupp.lib;oledb.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\src\Lib\Steam\steam_api.lib;dbghelp.lib;$(OutDir)..\_utility\Utility.lib;$(OutDir)..\zlib\zlib.lib;$(OutDir)..\test\TCLib\TCLib.lib;$(OutDir)..\sharemem\sharemem.lib;$(OutDir)..\Guids\Guids.lib;Winmm.lib;urlmon.lib;..\src\Lib\DirectPlay\dxguid.lib;comctl32.lib;version.lib;ws2_32.lib;delayimp.lib;wininet.lib;lz32.lib;netapi32.lib;comsupp.lib;oledb.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\src\Inc\appWeb;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
@@ -128,8 +128,8 @@ xcopy $(ProjectDir)..\src\Inc\steam_appid.txt $(OutDir) /s /d /y
       <PreprocessorDefinitions>FLAVOR=\"$(ConfigurationName)\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>..\src\Lib\Steam\steam_api.lib;dbghelp.lib;$(OutDir)..\_utility\Utility.lib;$(OutDir)..\zlib\zlib.lib;$(OutDir)..\test\TCLib\TCLib.lib;$(OutDir)..\sharemem\sharemem.lib;$(OutDir)..\Guids\Guids.lib;Winmm.lib;urlmon.lib;..\src\Lib\DirectPlay\dxguid.lib;..\src\Lib\appweb\appweb.lib;comctl32.lib;version.lib;ws2_32.lib;delayimp.lib;wininet.lib;lz32.lib;netapi32.lib;comsupp.lib;oledb.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\src\Inc\appWeb;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>..\src\Lib\Steam\steam_api.lib;dbghelp.lib;$(OutDir)..\_utility\Utility.lib;$(OutDir)..\zlib\zlib.lib;$(OutDir)..\test\TCLib\TCLib.lib;$(OutDir)..\sharemem\sharemem.lib;$(OutDir)..\Guids\Guids.lib;Winmm.lib;urlmon.lib;..\src\Lib\DirectPlay\dxguid.lib;comctl32.lib;version.lib;ws2_32.lib;delayimp.lib;wininet.lib;lz32.lib;netapi32.lib;comsupp.lib;oledb.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>LIBCMT.lib;MSVCRTD.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>

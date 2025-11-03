@@ -361,18 +361,6 @@ HRESULT CLobbyApp::Init()
     }
     RegCloseKey(hk);
 
-    //Orion ACSS : 2009 - Retrieve url of auth server from registry
-	if (m_dwAuthentication)
-	{
-		HKEY  hk;
-		if (RegCreateKeyEx(HKEY_LOCAL_MACHINE, HKLM_AllLobby, 0, "", 
-		  REG_OPTION_NON_VOLATILE, KEY_READ, NULL, &hk, NULL) == ERROR_SUCCESS)
-		{
-			_Module.ReadFromRegistry(hk, true, "AUTH_ADDRESS", m_szAuthenticationLocation, NULL);
-		}
-		RegCloseKey(hk);
-	}
-
 	//Load Pig KEY
 	if (m_dwAuthentication)
 	{
@@ -730,79 +718,6 @@ bool CLobbyApp::BootPlayersByCDKey(const ZString& strCDKey, const ZString& strNa
   return bBootedSomeone;
 }
 
-// BT - 12/21/2010 - CSS - Get all rank details from the lobby web service
-bool CLobbyApp::GetRankForCallsign(const char* szPlayerName, int *rank, double *sigma, double *mu, int *commandRank, double *commandSigma, double *commandMu, char *rankName, int rankNameLen)
-{
-	char resultMessage[1024];
-	int contentLen = 0; 
-    char *content;
-    char szResponse[MAX_PATH];    
-	char szURL[MPR_HTTP_MAX_URL]; 
-	char szName[c_cbName];
-
-	// the player callsign has to be urlencoded, because it may contain '+', '?', etc.
-	char callsign[128];
-	char playername[128];
-	Strcpy(playername, szPlayerName);
-	strcpy(callsign, "");
-	encodeURL(callsign, playername);
-
-	char* baseUrl = g_pLobbyApp->RetrieveAuthAddress();
-	sprintf(szURL, "%s?Action=GetRank&Callsign=%s", baseUrl, callsign);
-
-	MaUrl maUrl;
-	maUrl.parse(szURL);
-
-	// First make sure we can write to a socket
-    MprSocket* socket = new MprSocket();
-	socket->openClient(maUrl.host, maUrl.port, 0);
-    int iwrite = socket->_write("GET /\r\n");
-    delete socket;
-
-    MaClient* client = new MaClient();
-    client->setTimeout(3000);
-    client->setRetries(1);
-    client->setKeepAlive(0);
-
-	strcpy(resultMessage, "Rank Retrieve Failed.\n\nPlease contact system admin.");
-
-	// make sure we wrote 7 bytes
-    if (iwrite == 7) 
-	{ 
-		debugf("retrieving rank: %s\r\n", szURL);
-
-        client->getRequest(szURL);
-        if (client->getResponseCode() == 200) // check for HTTP OK 8/3/08
-	        content = client->getResponseContent(&contentLen);
-		else
-		{
-			char msg[1024];
-			sprintf(resultMessage, "Lobby GetRank Service Failed (%i)", client->getResponseCode());
-		}
-    }
-
-	debugf("GetRankForCallsign(): contentLen = %ld, content = %s\r\n", contentLen, content);
-	
-	int resultCode = -1;
-
-	char localRankName[50];
-	if(sscanf(content, "%ld|%ld|%s|%f|%f|%ld|%f|%f", &resultCode, rank, localRankName, sigma, mu, commandRank, commandSigma, commandMu) == EOF)
-		resultCode = -1;
-
-	strncpy(rankName, localRankName, rankNameLen);
-
-	// Delete this only after you are done with the content that came back from client->getResponseContent, or that 
-	// pointer will get fried.
-	delete client;
-
-	if(resultCode == 0)
-		strcpy(resultMessage, "Rank retrieved.");
-
-	debugf(resultMessage);
-
-	return resultCode == 0;
-}
-
 // BT - 9/11/2010 - CD Key check will call back to the lobby service to ensure the authentication token is valid.
 bool CLobbyApp::CDKeyIsValid(const char* szPlayerName, const char* szCDKey, const char* szAddress, char *resultMessage, int resultMessageLength, char * playerIdentifier)
 {
@@ -975,29 +890,28 @@ void CLobbyApp::SetPlayerMission(const char* szPlayerName, const char* szCDKey, 
   BootPlayersByName(strPlayerName);
 #endif
 
-  // BT - STEAM - Check with the AWeb service for any bans on this user's SteamID. 
-  MaClient client;
+  // BT - STEAM - Check for any bans on this user's SteamID. 
 
-  ZString url = ZString(g_pLobbyApp->GetBanCheckUrl()) + "?apiKey=" + ZString(g_pLobbyApp->GetApiKey()) + "&steamID=" + ZString(szCDKey);
+  std::string cdKey = std::string("");
+  if (szCDKey != NULL)
+	  cdKey = std::string(szCDKey);
 
-  int result = client.getRequest((char*) (PCC) url);
-  int responseCode = client.getResponseCode();
+  std::string url = std::string(g_pLobbyApp->GetBanCheckUrl()) + "?apiKey=" + g_pLobbyApp->GetApiKey() + "&steamID=" + cdKey;
+  std::string host = url.substr(0, url.find_first_of("/", 8));
+  std::string path = url.substr(url.find_first_of("/", 8));
+  httplib::Client client(host);
+
+  httplib::Result result = client.Get(path);
+  int responseCode = result.value().status;
+  std::string response = result.value().body;
 
   if (responseCode == 200)
   {
-	  char buffer[2064];
-	  int bufferLen = sizeof(buffer);
-	  strncpy(buffer, client.getResponseContent(&bufferLen), sizeof(buffer));
-	  if (bufferLen > sizeof(buffer) - 1)
-		  buffer[sizeof(buffer) - 1] = '\0';
-	  else
-		  buffer[bufferLen] = '\0';
-
-	  if (strlen(buffer) > 0)
+	  if (response.length() > 0)
 	  {
 		  BEGIN_PFM_CREATE(m_fmServers, pfmRemovePlayer, L, REMOVE_PLAYER)
 			  FM_VAR_PARM(szPlayerName, CB_ZTS)
-			  FM_VAR_PARM(buffer, CB_ZTS)
+			  FM_VAR_PARM(response.c_str(), CB_ZTS)
 			  END_PFM_CREATE
 			  pfmRemovePlayer->dwMissionCookie = pMission->GetCookie();
 		  pfmRemovePlayer->reason = RPR_bannedBySteam;

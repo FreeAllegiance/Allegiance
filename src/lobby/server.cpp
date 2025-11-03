@@ -12,7 +12,6 @@
 #include <string.h> // mmf added for strncmp used below
 #include "client.h" // BT - 9/11/2010 - Included to use URL functions.
 #include <regex> // BT - 1/27/2012 - using regex to parse rank from callsign when auth is turned off.
-#include "appWeb.h" // BT - STEAM
 #include <inttypes.h> // BT - STEAM
 
 const DWORD        CFLServer::c_dwID        = 19680815;
@@ -291,43 +290,25 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		int commandRank = 0;
 		double commandSigma = 0;
 		double commandMu = 0;
-		bool rankRetrieved = false;
 
-		if(g_pLobbyApp->EnforceAuthentication() == true)
+		// BT - 1/27/2012 - Enables lobby to return ranks when ACSS is disabled using old callsign(rank) format.
+		std::tr1::regex rgx("(\\W+)?((?:\\w|@)+)(\\((\\d+)\\))?");
+		std::tr1::smatch result;
+		std::string charName(szCharacterName);
+
+		if(std::tr1::regex_search(charName, result, rgx) == true)
 		{
-			rankRetrieved = g_pLobbyApp->GetRankForCallsign(
-				szCharacterName, 
-				&rank,
-				&sigma,
-				&mu,
-				&commandRank, 
-				&commandSigma,
-				&commandMu,
-				szRankName,
-				rankNameLen);
-		}
-		else
-		{
-			// BT - 1/27/2012 - Enables lobby to return ranks when ACSS is disabled using old callsign(rank) format.
-			rankRetrieved = true;
-
-			std::tr1::regex rgx("(\\W+)?((?:\\w|@)+)(\\((\\d+)\\))?");
-			std::tr1::smatch result;
-			std::string charName(szCharacterName);
-
-			if(std::tr1::regex_search(charName, result, rgx) == true)
+			if(result.size() > 2)
+				sprintf((char *) szCharacterName, "%s%s", result[1].str().c_str(), result[2].str().c_str());
+			
+			if(result.size() > 4)
 			{
-				if(result.size() > 2)
-					sprintf((char *) szCharacterName, "%s%s", result[1].str().c_str(), result[2].str().c_str());
-				
-				if(result.size() > 4)
-				{
-					char rankString[50];
-					sprintf(rankString, "%s", result[4].str().c_str());
-					rank = atoi(rankString);
-				}
+				char rankString[50];
+				sprintf(rankString, "%s", result[4].str().c_str());
+				rank = atoi(rankString);
 			}
 		}
+		
 
 		BEGIN_PFM_CREATE(*pthis, pfmPlayerRankResponse, LS, PLAYER_RANK)
 			FM_VAR_PARM(PCC(szCharacterName), CB_ZTS) 
@@ -349,10 +330,6 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		pfmPlayerRankResponse->commandRank = commandRank;
 		pfmPlayerRankResponse->commandSigma = commandSigma;
 		pfmPlayerRankResponse->commandMu = commandMu;
-
-		// Set the rank to be invalid to play on any server if there was any error retrieving the rank.
-		if(rankRetrieved == false)
-			pfmPlayerRankResponse->rank = -2;
 		
 		debugf("Client: %s from <%s> at time %u. Rank: %ld\n", g_rgszMsgNames[pfm->fmid], cnxnFrom.GetName(), Time::Now(), pfmPlayerRankResponse->rank);
 
@@ -366,40 +343,38 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 	{
 		CASTPFM(pfmLogChatMessage, S, LOG_CHAT_MESSAGE, pfm);
 
-		ZString missionName = FM_VAR_REF(pfmLogChatMessage, MissionName);
-		ZString sourceName = FM_VAR_REF(pfmLogChatMessage, SourceName);
-		ZString targetName = FM_VAR_REF(pfmLogChatMessage, TargetName);
-		ZString message = FM_VAR_REF(pfmLogChatMessage, Message);
-		ZString sourceIP = FM_VAR_REF(pfmLogChatMessage, SourceIP);
+		std::string missionName = FM_VAR_REF_STDSTRING(pfmLogChatMessage, MissionName);
+		std::string sourceName = FM_VAR_REF_STDSTRING(pfmLogChatMessage, SourceName);
+		std::string targetName = FM_VAR_REF_STDSTRING(pfmLogChatMessage, TargetName);
+		std::string message = FM_VAR_REF_STDSTRING(pfmLogChatMessage, Message);
+		std::string sourceIP = FM_VAR_REF_STDSTRING(pfmLogChatMessage, SourceIP);
 
-		debugf("%s %s->%s: %s\n", (PCC) missionName, (PCC)sourceName, (PCC)targetName, (PCC)message);
+		debugf("%s %s->%s: %s\n", missionName.c_str(), sourceName.c_str(), targetName.c_str(), message.c_str());
 
-		MaClient client;
+		std::string url = g_pLobbyApp->GetChatLogUploadUrl();
+		std::string host = url.substr(0, url.find_first_of("/", 8));
+		std::string path = url.substr(url.find_first_of("/", 8));
+		httplib::Client client(host);
 		
-		char steamID[100];
-		char buffer[2064];
-		ZString postData = "apiKey=" + ZString(g_pLobbyApp->GetApiKey());
+		std::string postData = "apiKey=" + std::string(g_pLobbyApp->GetApiKey());
 		
-		maUrlEncode(buffer, sizeof(buffer), (char *)(PCC) missionName, true);
-		postData += "&missionName=" + ZString(buffer);
-		maUrlEncode(buffer, sizeof(buffer), (char *)(PCC)sourceName, true);
-		postData += "&sourceName=" + ZString(buffer);
-		maUrlEncode(buffer, sizeof(buffer), (char *)(PCC)targetName, true);
-		postData += "&targetName=" + ZString(buffer);
+		postData += "&missionName=" + missionName;
+		postData += "&sourceName=" + sourceName;
+		postData += "&targetName=" + sourceName;
 
 		postData += "&sourceIP=" + sourceIP;
 
+		char steamID[256];
 		sprintf(steamID, "%" PRIu64, pfmLogChatMessage->sourceSteamID);
-		postData += "&sourceSteamID=" + ZString(steamID);
-		
+		postData += "&sourceSteamID=" + std::string(steamID);
+
 		sprintf(steamID, "%" PRIu64, pfmLogChatMessage->targetSteamID);
-		postData += "&targetSteamID=" + ZString(steamID);
+		postData += "&targetSteamID=" + std::string(steamID);
 
-		maUrlEncode(buffer, sizeof(buffer), (char *)(PCC)message, true);
-		postData += "&message=" + ZString(buffer);
+		postData += "&message=" + message;
 
-		int result = client.postRequest(g_pLobbyApp->GetChatLogUploadUrl(), (char *) (PCC)postData, postData.GetLength());
-		int response = client.getResponseCode();
+		httplib::Result result = client.Post(path, postData, "application/x-www-form-urlencoded");
+		int response = result->status;
 
 
 		break;

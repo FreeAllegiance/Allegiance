@@ -2,8 +2,8 @@ Get SteamCMD from: https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip
 Unzip it to C:\Steam
 run c:\Steam\SteamCMD
 Run these steamCMDs from inside SteamCMD:
-    login anonymous
     force_install_dir c:\Allegiance\Server
+    login anonymous
     app_update 730810
     
 Go to C:\Allegiance\Server
@@ -11,3 +11,16 @@ Follow instructions in the readme.
 
     
 The batch files are looking for files in these paths, so it would be easiest not to modify them...
+
+
+For the lobby, the following command lines can be used: 
+
+// Register as Local Server
+-RegServer  
+
+// Register as Service (you can chose to register as a local windows account for better security).
+-Service [Local Windows Account] [Password]
+
+// Register as Service (will run as local system)
+-Service
+

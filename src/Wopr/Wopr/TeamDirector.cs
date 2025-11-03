@@ -56,8 +56,9 @@ namespace Wopr
             //    _gameInfos.Add(gameInfo);
             //}
 
+            Log("", "Getting BotAuthenticationGuid from registry...");
 
-            using (var view32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine,
+			using (var view32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine,
                                                 RegistryView.Registry32))
             {
                 using (var key = view32.OpenSubKey(@"SOFTWARE\Microsoft\Microsoft Games\Allegiance\1.4\Server"))
@@ -65,6 +66,10 @@ namespace Wopr
                     _botAuthenticationGuid = (string)key.GetValue("BotAuthenticationGuid");
                 }
             }
+
+            if (String.IsNullOrEmpty(_botAuthenticationGuid) == true)
+                throw new Exception("Couldn't read SOFTWARE\\Microsoft\\Microsoft Games\\Allegiance\\1.4\\Server\\BotAuthenticationGuid !! Ensure this value is set.");
+			
 
             //LoadStrategies();
 

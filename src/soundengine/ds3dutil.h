@@ -6,9 +6,12 @@
 //
 #include <dsound.h>
 
-#ifndef _M_CEE // BT - WOPR - AllegianceInterop Compatibility
-	#include <mutex>
-#endif
+#include <base.h>
+
+// BT - mutex rollback 9/24
+//#ifndef _M_CEE // BT - WOPR - AllegianceInterop Compatibility
+//	#include <mutex>
+//#endif
 
 #include <set>
 #include <vector.h>
@@ -105,7 +108,9 @@ private:
     TaskList m_listTasks;
 
     // a critical section controling access to the list of tasks.
-    std::mutex m_csTaskList;
+    // BT - mutex rollback 9/24
+    // std::mutex m_csTaskList;
+    CriticalSection m_csTaskList;
     
     // performs a single pass through the task list
     virtual bool ThreadIteration();

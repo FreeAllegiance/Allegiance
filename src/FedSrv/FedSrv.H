@@ -352,6 +352,8 @@ struct Global
   char				szLeaderboardUpdateUrl[INTERNET_MAX_PATH_LENGTH]; 
   char				szApiKey[MAX_PATH];
   char				szBotAuthenticationGuid[MAX_PATH];
+  // Loran - Game statistics logging
+  char              szGameStatsUpdateUrl[INTERNET_MAX_PATH_LENGTH];
 
 
   /* pkk May 6th: Disabled bandwidth patch

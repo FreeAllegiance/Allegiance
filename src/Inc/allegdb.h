@@ -16,10 +16,11 @@
 #include <atldbcli.h>
 #include <../test/TCLib/TCThread.h>
 
+// BT - mutex rollback 9/24
  // BT - WOPR - Compatibility with AllegianceInterop
-#ifndef _M_CEE
-	#include <mutex>
-#endif
+//#ifndef _M_CEE
+//	#include <mutex>
+//#endif
 
 #include "Utility.h"
 
@@ -125,7 +126,9 @@ public:
 
   void DumpErrorInfo(IUnknown * punk, IID iid, bool * pfRetry)
   {
-    std::lock_guard<std::mutex> lock(m_cs);
+    // BT - mutex rollback 9/24
+    //std::lock_guard<std::mutex> lock(m_cs);
+    m_cs.Lock(); // don't think this is thread safe, and since it's only called on errors, it doesn't affect performance
 
 	CDBErrorInfo errorInfo;
     ULONG        cRecords;
@@ -225,7 +228,9 @@ private:
   MListQueries  m_listQueriesNotify; // queries that need a reply
   MListQueries  m_listQueriesSilent; // queries that are send and forget
   DWORD         m_nThreadIDNotify; // thread to send completion notification to
-  std::mutex m_cs;
+  // BT - mutex rollback 9/24
+  ZAutoCriticalSection m_cs;
+  //std::mutex m_cs;
   TRef<ISQLSite2> m_psqlsite;
 };
 

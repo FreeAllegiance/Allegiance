@@ -62,4 +62,88 @@ public:
     ZWriteFile(const PathString& strPath);
 };
 
+// BT - mutex rollback 9/24
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// Critical Section
+//
+///////////////////////////////////////////////////////////////////////////////
+
+class CriticalSection {
+protected:
+    CRITICAL_SECTION m_crit;
+
+public:
+    CriticalSection()
+    {
+        InitializeCriticalSection(&m_crit);
+    }
+    ~CriticalSection()
+    {
+        DeleteCriticalSection(&m_crit);
+    }
+
+    void Enter() { EnterCriticalSection(&m_crit); }
+    void Leave() { LeaveCriticalSection(&m_crit); }
+};
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// Single Enter Critical Section
+//
+///////////////////////////////////////////////////////////////////////////////
+
+class SingleEnterCriticalSection {
+protected:
+    CriticalSection& m_crit;
+    bool m_bInCS;
+
+public:
+    SingleEnterCriticalSection(CriticalSection& crit) :
+        m_crit(crit),
+        m_bInCS(false)
+    {
+    }
+
+    void Enter()
+    {
+        if (!m_bInCS) {
+            m_crit.Enter();
+            m_bInCS = true;
+        }
+    }
+
+    void Leave()
+    {
+        if (m_bInCS) {
+            m_bInCS = false;
+            m_crit.Leave();
+        }
+    }
+};
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// Critical Section Lock
+//
+///////////////////////////////////////////////////////////////////////////////
+
+class CriticalSectionLock {
+protected:
+    CriticalSection& m_crit;
+
+public:
+    CriticalSectionLock(CriticalSection& crit) :
+        m_crit(crit)
+    {
+        m_crit.Enter();
+    }
+
+    ~CriticalSectionLock()
+    {
+        m_crit.Leave();
+    }
+};
+
 #endif

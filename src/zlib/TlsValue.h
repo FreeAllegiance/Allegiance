@@ -3,13 +3,18 @@
 #ifndef __TlsValue_h__
 #define __TlsValue_h__
 
-#ifndef _M_CEE // BT - WOPR - AllegianceInterop Compatibility
-	#include <mutex>
-#endif
+// BT - mutex rollback 9/24
+//#ifndef _M_CEE // BT - WOPR - AllegianceInterop Compatibility
+//	#include <mutex>
+//#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // TlsValue.h : Declaration of the TlsValue template class.
 //
+
+#include "AutoCriticalSection.h"
+
+
 /////////////////////////////////////////////////////////////////////////////
 // TlsValue
 
@@ -154,12 +159,13 @@ public:
 // Implementation
 protected:
 
+    // BT - mutex rollback 9/24
 #ifndef _M_CEE // BT - WOPR - AllegianceInterop Compatibility
-  static std::mutex &GetSyncObject()
+  static ZAutoCriticalSection &GetSyncObject()
   {
     // Shared by all instances, which is not a big deal since this is only
     // used when first allocating the TLS slot.
-    static std::mutex s_cs;
+    static ZAutoCriticalSection s_cs;
     return s_cs;
   }
 #endif 
@@ -169,9 +175,11 @@ protected:
     if (m_dwSlot)                // Check for initialized slot
       return m_dwSlot;
 
-#ifndef _M_CEE // BT - WOPR - AllegianceInterop Compatibility
-	std::lock_guard<std::mutex> lock(GetSyncObject());
-#endif
+    // BT - mutex rollback 9/24
+//#ifndef _M_CEE // BT - WOPR - AllegianceInterop Compatibility
+//	std::lock_guard<std::mutex> lock(GetSyncObject());
+//#endif
+    GetSyncObject().Lock();      // Lock the sync object
 
     if (!m_dwSlot)               // Check (again) for uninitialized slot
     {
@@ -182,6 +190,7 @@ protected:
         TlsFree(0);              // Free the zero index
       }
     }
+    GetSyncObject().Unlock();    // Unlock the sync object
     return m_dwSlot;             // Return the (non-zero) slot
   }
 

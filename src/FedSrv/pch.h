@@ -10,12 +10,12 @@
 #ifndef _FEDSRV_PCH_
 #define _FEDSRV_PCH_
 
+#define WIN32_LEAN_AND_MEAN
+
 //KG- fix VS2015 issues
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0A00
 #endif
-
-#include "appWeb\appWeb.h" //Imago - updated to 2.4.2-2 XP
 
 #define _ATL_STATIC_REGISTRY
 
@@ -35,6 +35,7 @@
 
 // Windows Includes
 #include <windows.h>
+#include <ShellAPI.h>
 #include <commctrl.h>
 #include <sqlext.h>
 //#include <dplobby.h>
@@ -48,7 +49,11 @@
 #endif // !defined(ALLSRV_STANDALONE)
 #include <guids.h>
 #include <zlib.h>
-         
+
+#include "cpp-httplib/httplib.h"
+
+#include "json.hpp"
+
 #include "resource.h"
 #include <utility.h>
 #include <igc.h>
