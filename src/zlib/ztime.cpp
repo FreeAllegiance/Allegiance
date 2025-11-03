@@ -1,5 +1,6 @@
 #include "ztime.h"
 #include "zassert.h"
+#include <time.h>
 
 tlsUINT32 Time::s_dwPauseStart;
 tlsUINT32 Time::s_dwNegativeOffset;

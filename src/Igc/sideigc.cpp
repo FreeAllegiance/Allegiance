@@ -398,9 +398,12 @@ void CsideIGC::HandleNewEnemyCluster(IclusterIGC* pcluster) {
                 else if (acceptedBad) {
                     CommandID tempCid = s->GetCommandID(c_cmdPlan);
                     ImodelIGC* tempModel = s->GetCommandTarget(c_cmdPlan);
-                    tempModel->AddRef();
+                    
 					if (tempModel != nullptr)
 					{
+                        // BT - Crash Fix 6/25/2023
+                        tempModel->AddRef();
+
 						if (tempModel->GetObjectType() == OT_buoy)
 							((IbuoyIGC*)tempModel)->AddConsumer();
 						s->SetCommand(c_cmdAccepted, NULL, c_cidNone); //Also sets current & plan

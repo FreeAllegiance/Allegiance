@@ -283,8 +283,8 @@ public:
     return m_misdef.misparms.nTeams;
   }
   void                  RecordGameResults();
-  void                  RecordTeamResults(IsideIGC* pside);
-  void                  RecordPlayerResults(IshipIGC* pship, CFSPlayer *player, SideID sid); // BT - STEAM - Enable the CSteamAchievements object that is attached to the player to be sent to the stats recording functions.
+  void                  RecordTeamResults(IsideIGC* pside, nlohmann::json* jGame = nullptr);
+  void                  RecordPlayerResults(IshipIGC* pship, CFSPlayer *player, SideID sid, nlohmann::json* jGame = nullptr); // BT - STEAM - Enable the CSteamAchievements object that is attached to the player to be sent to the stats recording functions.
   void                  QueueGameoverMessage();
 
   IsideIGC*             CheckForVictoryByStationBuild(IsideIGC* pside);

@@ -15,6 +15,7 @@
 
 #include <stdexcept>
 #include <fstream>
+#include <chrono>
 
 std::string UiEngine::m_stringLogPath = "";
 

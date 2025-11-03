@@ -7,12 +7,6 @@
 
 #include "pch.h"
 
-//appweb -Imago
-static Mpr *mpr;
-#ifdef _DEBUG
-static MprLogModule *tMod;
-#endif
-
 CServiceModule _Module;
 
 BEGIN_OBJECT_MAP(ObjectMap)
@@ -521,21 +515,6 @@ void CServiceModule::Run()
 //
 int __cdecl main(int argc, char *argv[])
 { 
-	// start the appweb service thread w/log Imago 7/3/08
-#ifdef _DEBUG
-    MprLogToFile *logger;
-#endif
-	char *programName = mprGetBaseName(argv[0]);
-	mpr = new Mpr(programName);
-#ifdef _DEBUG
-	tMod = new MprLogModule(programName);
-	logger = new MprLogToFile();
-	mpr->addListener(logger);
-	mpr->setLogSpec("alllobby_appweb.log:9");
-#endif
-	mpr->setMaxPoolThreads(4);    //NYI make the 4 a constant becasue it ended up getting reused
-	mpr->start(MPR_SERVICE_THREAD);
-
     HINSTANCE hInstance = GetModuleHandle(NULL);
 
     LPSTR lpCmdLine = GetCommandLine(); //this line necessary for _ATL_MIN_CRT
@@ -590,14 +569,6 @@ int __cdecl main(int argc, char *argv[])
         _Module.m_bService = TRUE;
 
     _Module.Start();
-
-	//appweb
-	mpr->stop(0);
-#ifdef _DEBUG
-	delete tMod;
-	delete logger;
-#endif
-	mprMemClose();
 
     // When we get here, the service has been stopped
     return _Module.m_status.dwWin32ExitCode;

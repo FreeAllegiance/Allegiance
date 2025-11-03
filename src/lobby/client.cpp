@@ -21,9 +21,6 @@ const DWORD CFLClient::c_dwID = 19680815;
 bool g_fLogonCRC = true; 
 #endif
 
-//appweb
-static MprMutex* mutex = new MprMutex();
-
 void encodeURL( char * url,char * token) // url = output, token gets append to url
 {
     // wlp - we will do brute force URL encoding - it's normal alphaNumeric or it's URL encoded
@@ -121,7 +118,8 @@ void QueueMissions(FedMessaging * pfm)
         {
           FMD_LS_LOBBYMISSIONINFO * plmi = iterMissions.Value()->GetMissionInfo();
 		  //imago 7/1/09 removed old checks
-          if (plmi)// && (fIsFreeLobby || plmi->nNumPlayers > 0 || plmi->fMSArena
+          // BT - 3/11/2024 only return missions with at least one player.
+          if (plmi && (plmi->nNumPlayers > 0 || plmi->fMSArena == true))// && (fIsFreeLobby || plmi->nNumPlayers > 0 || plmi->fMSArena
 			  //|| (!fIsFreeLobby && strcmp(FM_VAR_REF(plmi,szIGCStaticFile),"zone_core")))) //-KGJV: advertize custom core game 
             pfm->QueueExistingMsg(plmi);
           iterMissions.Next();

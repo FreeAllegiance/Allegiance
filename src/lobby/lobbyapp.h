@@ -145,17 +145,10 @@ public:
       return (m_dwAuthentication) ? true : false;
   }
 
-  char* RetrieveAuthAddress()
-  {
-	  return m_szAuthenticationLocation;
-  }
-
   char* RetrieveAuthBypassCDKey()
   {
 	  return m_szAuthBypassCDKey;
   }
-
-
 
   // -KGJV: added
   bool IsFreeLobby()
@@ -164,7 +157,7 @@ public:
   }
 
   // BT - 12/21/2010 - ACSS integration
-  bool CLobbyApp::GetRankForCallsign(const char* szPlayerName, int *rank, double *sigma, double *mu, int *commandRank, double *commandSigma, double *commandMu, char *rankName, int rankNameLen);
+  //bool CLobbyApp::GetRankForCallsign(const char* szPlayerName, int *rank, double *sigma, double *mu, int *commandRank, double *commandSigma, double *commandMu, char *rankName, int rankNameLen);
   //bool CDKeyIsValid(const char* szPlayerName, const char* szCDKey, const char* szAddress, char *resultMessage, int resultMessageLength);
 
   // BT - STEAM
@@ -297,7 +290,6 @@ private:
   bool              m_fCheckCDKey;
   char              m_szToken[24]; // sizeof(_ZONETICKET_TOKEN.szToken)
   DWORD             m_dwAuthentication;
-  char				m_szAuthenticationLocation[261];
   char              m_szAuthBypassCDKey[MAX_PATH];
 
   // Player list stuff

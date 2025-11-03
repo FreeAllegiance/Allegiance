@@ -11,7 +11,7 @@
 #ifndef _LOBBY_PCH_
 #define _LOBBY_PCH_
 
-#include "appweb/appweb.h" //Imago 7/5/08 uses version 2.4.2-2 xp
+#define WIN32_LEAN_AND_MEAN
 
 #include <windows.h>
 #include <stdlib.h>
@@ -39,6 +39,7 @@
 #include <zlib.h>
 #include <utility.h>
 
+#include "cpp-httplib/httplib.h"
 
 #include <TCLib.h>
 #include <TCAtl.h>

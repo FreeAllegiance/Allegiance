@@ -691,8 +691,12 @@ private:
 
 // Only use this to create variable length fields. NO fixed-size members can precede this
 #define FM_VAR_ITEM(NAME) IB ib##NAME; CB cb##NAME
+
 // Use this to actually reference existing var-length props
 #define FM_VAR_REF(PFM, NAME) ((PFM)->cb##NAME ? (char*)(PFM) + (PFM)->ib##NAME : NULL)
+
+// Use this to handle nulls when using std::string.
+#define FM_VAR_REF_STDSTRING(PFM, NAME) ((PFM)->cb##NAME ? std::string((char*)(PFM) + (PFM)->ib##NAME) : std::string(""))
 
 /* For each message structure, the variable length items MUST go first, then the 
    fixed length items

@@ -461,16 +461,34 @@ void CSteamAchievements::UpdateCommanderStats(int opponentELO, bool win)
 
 static DWORD WINAPI UpdateLeaderboardThread(LPVOID pThreadParameter)
 {
-	char *pUrl = (char *)pThreadParameter;
+	std::string url = std::string((char *)pThreadParameter);
 
-	MaClient client;
+	std::string host = url.substr(0, url.find_first_of("/", 8));
+	std::string path = url.substr(url.find_first_of("/", 8));
+	httplib::Client client(host);
 
-	int result = client.getRequest(pUrl);
-	int response = client.getResponseCode();
+#ifndef _DEBUG // catch exceptions in FZRetail, in debug builds use the debugger
+	try {
+#endif
+		httplib::Result result = client.Get(path);
 
-	debugf("Leaderboard Update(%ld): %s\n", response, pUrl);
+		if (result)
+		{
+			int response = result->status;
+
+			debugf("Leaderboard Update(%ld): %s\n", response, url);
+		}
+		else
+		{
+			debugf("UpdateLeaderboardThread failed to send request: %s\n", url);
+		}
+#ifndef _DEBUG
+	}
+	catch (...) {
+		debugf("UpdateLeaderboardThread failed to send request: %s\n", url);
+	}
+#endif
 	SteamGameServer_ReleaseCurrentThreadMemory();
-	delete pUrl;
 
 	return 0;
 }

@@ -74,7 +74,8 @@ void CFLMission::SetLobbyInfo(FMD_LS_LOBBYMISSIONINFO * plmi)
 	}
 
 	// never advertize paused games - imago 7/1/09 removed old checks
-    if (!pServer->GetPaused()) //&& 
+    // BT - 3/11/2024 only return missions with at least one player.
+    if (!pServer->GetPaused() && (m_plmi->nNumPlayers > 0 || m_plmi->fMSArena)) //&& 
         //(g_pLobbyApp->EnforceCDKey() || m_plmi->nNumPlayers > 0 || m_plmi->fMSArena ||
 		//(!g_pLobbyApp->IsFreeLobby() && strcmp(FM_VAR_REF(m_plmi,szIGCStaticFile),"zone_core"))  // -KGJV - advertise custom core game on FAZ
 		//))

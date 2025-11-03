@@ -161,5 +161,3 @@ public:
 	void OnUserStatsReceived(GSStatsReceived_t *pCallback, bool bIOFailure);
 	
 };
-
-
