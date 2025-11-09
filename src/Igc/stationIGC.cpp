@@ -603,7 +603,7 @@ DefenseTypeID        MyStationType::GetArmorDefenseType(void) const
 
 HitPoints            MyStationType::GetMaxShieldHitPoints(void) const
 { 
-    if (m_pstation->GetSide() == NULL) return 1; //Student Note 11/8/2025 if side is null, this object is being destroyed. Because this is now being checked in set shield fraction it caused a NPE
+    if (m_pstation->GetSide() == NULL) return 0; //Student Note 11/8/2025 if side is null, this object is being destroyed. Because this is now being checked in set shield fraction it caused a NPE
     return m_pStationData->maxShieldHitPoints * m_pstation->GetSide()->GetGlobalAttributeSet().GetAttribute(c_gaMaxShieldStation);
 }
 
