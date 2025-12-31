@@ -134,7 +134,7 @@ void CommandGeo::DrawShips(Context* pcontext)
                   trekClient.GetShip()->GetCommandTarget(c_cmdQueued)
                 };
 
-    for (ModelLinkIGC* l = models->first(); (l != NULL); l = l->next()) 
+    for (ModelLinkIGC* l = models->first(); (l != NULL); l = l->next())
     {
         ImodelIGC* pmodel = l->data();
 
@@ -193,7 +193,7 @@ void CommandGeo::DrawShips(Context* pcontext)
 
                     // add some feet
                     static int sizeFeet = 15;
-                
+
                     indices.PushEnd(index);
                     vertices.PushEnd(VertexL(
                                 vecPosition.X()+sizeFeet,
@@ -252,14 +252,98 @@ void CommandGeo::DrawShips(Context* pcontext)
                 }
             }
         }
+
+        // draw the drop lines
+        if (index)
+            pcontext->DrawLines(vertices, indices);
+
+        // After existing per-ship draw work, add waypoint line drawing for selected allied player ships on autopilot.
+
+        if (pmodel->GetObjectType() == OT_ship)
+        {
+            IshipIGC* pship = static_cast<IshipIGC*>(pmodel);
+
+            // Only draw for ships that are selected, allied, and on autopilot
+            IsideIGC* psideMine = trekClient.GetShip()->GetSide();
+            IsideIGC* pside = pship->GetSide();
+
+            const ShipListIGC* pselected = GetWindow()->GetConsoleImage()->GetSubjects();
+
+            bool bSelected = (pselected && pselected->find(pship));
+            bool bAllied = (pside == psideMine) || IsideIGC::AlliedSides(pside, psideMine);
+
+            if (bSelected && bAllied)
+            {
+                // Determine an ImodelIGC destination: prefer on-cluster waypoint buoy, otherwise use path warp or the target model.
+                ImodelIGC* ptarget = pship->GetCommandTarget(c_cmdAccepted);
+                if (!ptarget) ptarget = pship->GetCommandTarget(c_cmdPlan);
+                
+                ImodelIGC* pmodelDest = nullptr;
+
+                if (ptarget)
+                {
+                    if (ptarget->GetObjectType() == OT_buoy)
+                    {
+                        // buoy itself has position; use the buoy model
+                        IbuoyIGC* pbuoy = static_cast<IbuoyIGC*>(ptarget);
+                        if (pbuoy && (pbuoy->GetBuoyType() == c_buoyWaypoint))
+                            pmodelDest = pbuoy;
+                    }
+
+                    if (!pmodelDest)
+                    {
+                        IclusterIGC* pclusterTarget = ptarget->GetCluster();
+                        if ((pclusterTarget == NULL) || (pclusterTarget != m_pcluster))
+                        {
+                            // If target is off-cluster and ship isn't ripcording, get the local warp (aleph) path
+                            if (!pship->fRipcordActive())
+                            {
+                                ImodelIGC* ppath = FindPath(pship, ptarget, false);
+                                if (ppath)
+                                    pmodelDest = ppath;
+                            }
+                        }
+                        else
+                        {
+                            // target is on this cluster; draw to the model directly
+                            pmodelDest = ptarget;
+                        }
+                    }
+                }
+
+                // Draw line between ship position and destination model position (if available)
+                if (pmodelDest)
+                {
+                    Vector vShipPos = pship->GetPosition();
+                    Vector vDestPos = pmodelDest->GetPosition();
+
+                    
+                    Vector vShipGrid(vShipPos.X(), vShipPos.Y(), vShipPos.Z());
+                    Vector vDestGrid(vDestPos.X(), vDestPos.Y(), vDestPos.Z());
+
+                    TVector<VertexL> lineVerts(2);
+                    TVector<WORD> lineInds(2);
+
+                    Color lineColor = pside ? pside->GetColor() : Color::White();
+
+                    lineVerts.Set(0, VertexL(vShipGrid, lineColor));
+                    lineVerts.Set(1, VertexL(vDestGrid, lineColor));
+                    lineInds.Set(0, 0);
+                    lineInds.Set(1, 1);
+
+                    pcontext->PushState();
+                    pcontext->SetBlendMode(BlendModeAdd);
+                    pcontext->SetLineWidth(2.0f, true);
+                    pcontext->DrawLines(lineVerts, lineInds);
+                    pcontext->SetLineWidth(1.0f, true);
+                    pcontext->PopState();
+                }
+            }
+        }
     }
 
-    // draw the drop lines
-    if (index)
-        pcontext->DrawLines(vertices, indices);
 }
 
-//Student 7/18/2022 - indicate the original top of the sector, so it can be rotated and there still be a point of reference to discuss with teammates.
 void CommandGeo::DrawTop(Context* pcontext)
 {
     TRef<IEngineFont> pfont = TrekResources::HugeBoldFont();

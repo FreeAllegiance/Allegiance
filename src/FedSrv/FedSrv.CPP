@@ -13702,10 +13702,14 @@ void FedSrvSiteBase::CommandChangedEvent(Command i, IshipIGC * pship, ImodelIGC*
     IclusterIGC*    pcluster;
 
     if ((i == c_cmdAccepted) ||
-        ((i == c_cmdCurrent) &&
-         (pship->GetPilotType() >= c_ptPlayer) &&
-         (pcluster = pship->GetCluster()) && //intentional =
-         (pship->IsUsingAreaOfEffectWeapon())))
+        (i == c_cmdPlan) ||
+        (
+            (i == c_cmdCurrent) &&
+             (pship->GetPilotType() >= c_ptPlayer) &&
+             (pcluster = pship->GetCluster()) && //intentional =
+             (pship->IsUsingAreaOfEffectWeapon())
+            )
+        )
     {
         BEGIN_PFM_CREATE(g.fm, pfmOC, CS, ORDER_CHANGE)
         END_PFM_CREATE

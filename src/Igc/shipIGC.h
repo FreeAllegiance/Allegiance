@@ -783,7 +783,8 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                     pmodelOld->Release();
                 }
 
-                if ((i == c_cmdAccepted || i == c_cmdCurrent) && 
+                //Student todo make sure c_cmdPlan is being sent to client on miner update
+                if ((i == c_cmdAccepted || i == c_cmdCurrent || i == c_cmdPlan) && 
                     (cidOld != cid || pmodelOld != target))
                     GetMyMission()->GetIgcSite()->CommandChangedEvent(i, this, target, cid);
             }
