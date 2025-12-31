@@ -74,6 +74,7 @@ public:
 
 	virtual void			SetScrollbarHidden(bool isHidden) = 0;
     virtual void            SetListSize(WinPoint size) = 0;
+    virtual void            SetItemHeight(int nItemHeight, const WinPoint size) = 0;
     virtual void            InsertItem(int iItem, ListItem* pListItem) = 0;
     virtual int             AppendItem(ListItem* pListItem) = 0;
     virtual void            RemoveItem(ListItem* pListItem) = 0;

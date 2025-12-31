@@ -1181,6 +1181,13 @@ public:
 	TRef<ModifiableNumber>		m_pnumberChatLines;
 	TRef<WrapNumber>			m_pwrapNumberChatLines;
 
+    TRef<ModifiableNumber>        m_pchatSize;
+    TRef<WrapNumber>              m_pwrapChatSize;
+
+    TRef<ModifiableNumber>        m_pchatWidth;
+    TRef<WrapNumber>              m_pwrapChatWidth;
+
+
     //
     // exports
     //
@@ -1378,6 +1385,8 @@ public:
     TRef<IMenuItem>            m_pitemFilterLobbyChats;
 	TRef<IMenuItem>			   m_pitemIncreaseChatLines;	// #294 - Turkey
 	TRef<IMenuItem>			   m_pitemReduceChatLines;		// #294 - Turkey
+    TRef<IMenuItem>            m_pitemCycleChatSize;
+    TRef<IMenuItem>            m_pitemReduceChatFontSize;
     TRef<IMenuItem>            m_pitemSoundQuality;
     TRef<IMenuItem>            m_pitemToggleSoundHardware;
     TRef<IMenuItem>            m_pitemToggleDSound8Usage;
@@ -2899,6 +2908,11 @@ public:
 		// #294 - Turkey 
 		m_pnumberChatLinesDesired = new ModifiableNumber(0);
 		pnsGamePanes->AddMember("NumChatLines", m_pwrapNumberChatLines = new WrapNumber(m_pnumberChatLines = new ModifiableNumber(0)));
+       
+        pnsGamePanes->AddMember("ChatFontSize", m_pwrapChatSize = new WrapNumber(m_pchatSize = new ModifiableNumber(LoadPreference("ChatFontSize", 2))));
+
+        //Student 12/30/25 unmodified chat width, only used for display chat width
+        pnsGamePanes->AddMember("ChatWidth", m_pwrapChatWidth = new WrapNumber(m_pchatWidth = new ModifiableNumber((float) LoadPreference("ChatWidth", 355))));
 
         pnsGamePanes->AddMember("Flash", m_pnumberFlash = new ModifiableNumber(0));
         pnsGamePanes->AddMember("TeamPaneCollapsed", m_pnumberTeamPaneCollapsed = new ModifiableNumber(0));
@@ -3300,7 +3314,9 @@ public:
 		ToggleFilterLobbyChats(LoadPreference("FilterLobbyChats", 0)); //TheBored 25-JUN-07: Mute lobby chat patch // mmf 04/08 default this to 0
 
 		// #294 - Turkey
-		SetChatLines(LoadPreference("ChatLines", 10));
+		SetChatLines(LoadPreference("ChatLines", 7));
+
+        SetChatFontSize(LoadPreference("ChatSize", 2));
 
 		/* pkk May 6th: Disabled bandwidth patch
 		ToggleBandwidth(LoadPreference("Bandwidth",32)); // w0dk4 June 2007: Bandwith Patch - Increase default to max Imago 8/10*/
@@ -3942,6 +3958,7 @@ public:
 	#define idmIncreaseChatLines		 638 // #294 - Turkey
 	#define idmReduceChatLines			 639 // #294 - Turkey
 	#define idmCycleTimestamp			 640 // #294 - Turkey
+    #define idmCycleChatSize      642 //Student - Add adjustable chat size
 
     #define idmResetSound           701
     #define idmSoundQuality         702
@@ -4511,7 +4528,7 @@ public:
 				break;
 
             case idmGameOptions:
-                m_pitemMuteFilter		           = pmenu->AddMenuItem(idmMuteFilterOptions,					"Mute/Filter",						'M', m_psubmenuEventSink); //TheBored 30-JUL-07: Filter Unknown Chat patch
+                m_pitemMuteFilter		           = pmenu->AddMenuItem(idmMuteFilterOptions,					"Chat/Mute/Filter",						'M', m_psubmenuEventSink); //TheBored 30-JUL-07: Filter Unknown Chat patch
                 m_pitemToggleStickyChase           = pmenu->AddMenuItem(idmToggleStickyChase,           GetStickyChaseMenuString (),        'K');
                 m_pitemToggleLinearControls        = pmenu->AddMenuItem(idmToggleLinearControls,        GetLinearControlsMenuString(),      'L');
                 m_pitemToggleLargeDeadZone         = pmenu->AddMenuItem(idmToggleLargeDeadZone,         GetDeadzoneMenuString(),       'Z'); //imago updated 7/8/09
@@ -4560,7 +4577,13 @@ public:
 				// #294 - Turkey
 				m_pitemIncreaseChatLines		   = pmenu->AddMenuItem(idmIncreaseChatLines,			GetIncreaseChatLinesMenuString(),	'I');
 				m_pitemReduceChatLines			   = pmenu->AddMenuItem(idmReduceChatLines,				GetReduceChatLinesMenuString(),		'R');
-				break;
+			
+                pmenu->AddMenuItem(0, "Changing chat text size might require");
+                pmenu->AddMenuItem(0, "Changing the number of chat lines");
+
+                m_pitemCycleChatSize               = pmenu->AddMenuItem(idmCycleChatSize,               GetChangeChatSizeMenuString(),      'Z');
+
+                break;
 			//End TB 30-JUL-07
 			//imago 6/30/09: new graphics options dx9, removed vsync 7/10
 			case idmDeviceOptions:
@@ -4815,6 +4838,23 @@ public:
 
 
 	// end #294
+
+
+    void CycleChatSize()
+    {
+        SetChatFontSize(m_pchatSize->GetValue() + 1);
+        m_pitemCycleChatSize->SetString(GetChangeChatSizeMenuString());
+
+        if (m_pchatListPane)
+        {
+            if (GetViewMode() <= vmOverride)
+            {
+                m_pchatListPane->SetChatTextSize(m_pchatSize->GetValue());
+            }
+                 
+        }
+        SavePreference("ChatSize", (DWORD)m_pchatSize->GetValue());
+    }
 
 
 	//End TB 25-JUN-07
@@ -5241,6 +5281,18 @@ public:
 		return bInRange;
 	}
 
+    void SetChatFontSize(DWORD value)
+    {
+        if (value < 1) {
+            m_pchatSize->SetValue(3.0f);
+            return;
+        }
+        if (value > 3) {
+            m_pchatSize->SetValue(1.0f);
+            return;
+        }
+        m_pchatSize->SetValue(int(value));
+    }
 
     void ToggleFlipY()
     {
@@ -5658,6 +5710,25 @@ public:
 		if (m_pnumberChatLinesDesired->GetValue() < 1.1f) return "Chat Lines At Minimum";
 		return "Reduce To " + ZString((int)m_pnumberChatLinesDesired->GetValue() - 1) + " Chat Lines";
 	}
+
+    ZString GetChangeChatSizeMenuString()
+    {
+        if (m_pchatSize->GetValue() == 1.0f)
+        {
+            return "Chat Size: Small";
+        }
+        else if (m_pchatSize->GetValue() == 2.0f)
+        {
+            return "Chat Size: Large";
+        }
+        else if (m_pchatSize->GetValue() == 3.0f)
+        {
+            return "Set Chat: Size Huge";
+        }
+                
+        return "Invalid Chat size";
+
+    }
 
     ZString GetLinearControlsMenuString()
     {
@@ -6198,6 +6269,10 @@ public:
 			case idmReduceChatLines:
 				ReduceChatLines();
 				break;
+
+            case idmCycleChatSize:
+                CycleChatSize();
+                break;
 
             case idmToggleLinearControls:
                 ToggleLinearControls ();
@@ -11282,3 +11357,4 @@ void WinTrekClient::ForwardLeaderBoardMessage(FEDMESSAGE * pLeaderBoardMessage)
 {
     ::ForwardLeaderBoardMessage(pLeaderBoardMessage);
 }
+

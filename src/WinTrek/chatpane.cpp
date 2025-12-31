@@ -17,18 +17,22 @@ private:
     ChatInfo*           m_pchatInfo;
     TVector<ZString>    m_vMsgLines;
     WinPoint            m_ptLineSize;
+    int       m_pFontSize;
     
 public:
 
-    ChatListItem(ChatInfo* pchatInfo, const WinPoint& ptLineSize) :
+    ChatListItem(ChatInfo* pchatInfo, const WinPoint& ptLineSize, int fontSize) :
         m_lData((long)pchatInfo),
         m_pchatInfo(pchatInfo),
-        m_ptLineSize(ptLineSize)
+        m_ptLineSize(ptLineSize),
+        m_pFontSize(fontSize)
     {
         ZString strMsg = CensorBadWords (m_pchatInfo->GetMessage());
-		IEngineFont* pfont = pchatInfo->IsFromLeader() ? TrekResources::SmallBoldFont() : TrekResources::SmallFont();
         int nStrLenLeft = strMsg.GetLength();
         int nStrLenLine;
+
+        IEngineFont* pfont = TrekResources::GetFont(m_pFontSize, m_pchatInfo->IsFromLeader());
+
         while ((nStrLenLine = pfont->GetMaxTextLength(strMsg, ptLineSize.X(), true))
                 < nStrLenLeft)
         {
@@ -86,7 +90,7 @@ public:
 
     void DrawItem(Surface* pSurface, const WinRect& rect, bool fSelected, int iFirstSlot)
     {
-        IEngineFont* pfont = m_pchatInfo->IsFromLeader() ? TrekResources::SmallBoldFont() : TrekResources::SmallFont();
+        IEngineFont* pfont = TrekResources::GetFont(m_pFontSize, m_pchatInfo->IsFromLeader());
         WinPoint pt(rect.Min() + WinPoint(3,3));
         for (
             int i = iFirstSlot; 
@@ -114,7 +118,9 @@ class ChatListPaneImpl :    public ChatListPane,
 private:
     TRef<ListPaneOld>      m_pListPane;
     WinPoint               m_ptItemSize;
-	WinPoint			   m_ptSize;		// #294 - Turkey
+	WinPoint			   m_ptSize;// #294 - Turkey
+    int                    m_pnumLines = 6;
+    int                    m_pfontSize;
     TList<ChatTarget>      m_listChannels;
     TRef<IKeyboardInput>   m_keyboardDelegate;
     TRef<IAllegEventTarget>     m_targetAutoscrollOn;
@@ -125,13 +131,25 @@ private:
 public:
 
 
-    ChatListPaneImpl(const WinPoint& ptSize):
-        m_ptItemSize(ptSize.X(), 12), m_bAutoscroll(true), m_bIgnoreScrollingEvents(false), m_ptSize(ptSize) // #294 - Turkey
+    ChatListPaneImpl(const int width, const int height, const int fontSize, const bool hideScrollWheel):
+        m_ptItemSize(width, TrekResources::GetFont(fontSize, true)->GetHeight()),
+        m_pfontSize(fontSize),
+        m_bAutoscroll(true),
+        m_bIgnoreScrollingEvents(false),
+        m_ptSize(WinPoint(
+            width,
+            height
+        )
+       )
+       
     {
         m_bPlayerChatsOnly = true;
-        m_pListPane = ListPaneOld::Create(m_ptSize, 12, true, NULL), // #294 - Turkey
+
+        m_pListPane = ListPaneOld::Create(m_ptSize, m_ptItemSize.Y(), true, NULL); // #294 - Turkey
         InsertAtBottom(m_pListPane);
-		//mdvalley: I hate C3867.
+
+        SetScrollbarHidden(hideScrollWheel);
+        //mdvalley: I hate C3867.
         AddEventTarget(&ChatListPaneImpl::OnListSelect, m_pListPane->GetEventSource());
         AddEventTarget(&ChatListPaneImpl::OnScroll, m_pListPane->GetScrollEvent());
         UpdateContents();
@@ -308,7 +326,7 @@ public:
         if (ChatPassesFilter(pchatInfo))
         {
             m_bIgnoreScrollingEvents = true;
-            int idx = m_pListPane->AppendItem(new ChatListItem(pchatInfo, m_ptItemSize));
+            int idx = m_pListPane->AppendItem(new ChatListItem(pchatInfo, m_ptItemSize, m_pfontSize));
             
             if (m_bAutoscroll)
             {
@@ -345,30 +363,48 @@ public:
 	// #294 - Turkey
 	void SetChatLines(int lines)
 	{
-		m_ptSize.SetY(lines * m_ptItemSize.Y() + 8);
-		m_pListPane->SetListSize(m_ptSize);
-		UpdateContents();
+        m_pnumLines = lines;
+		UpdateSize();
 	}
+
+    void SetChatTextSize(int size)
+    {
+        m_pfontSize = size;
+        UpdateSize();
+    }
+
+    void UpdateSize()
+    {
+        m_ptItemSize.SetY(TrekResources::GetFont(m_pfontSize, true)->GetHeight());
+        m_ptSize.SetY(m_pnumLines * m_ptItemSize.Y() + 8);
+        m_pListPane->SetItemHeight(m_ptItemSize.Y(), m_ptSize);
+        UpdateContents();
+    }
 
 };
 
 
+//ChatListPane(const int width, const int fontSize, const int numLines, const bool showScrollWheel)
 TRef<IObject> ChatListPaneFactory::Apply(ObjectStack& stack)
 {
-    TRef<PointValue>  ppointSize; CastTo(ppointSize, stack.Pop());
+    TRef<Number>  width;
+    TRef<Number>  heigth;
+    TRef<Number>  fontSize;
+
+    CastTo(width, stack.Pop());
+    CastTo(heigth, stack.Pop());
+    CastTo(fontSize, stack.Pop());
 
 	TRef<Boolean> showChatPaneScrollbar = new Boolean(true);
-	if(stack.GetCount() > 0)
-		CastTo(showChatPaneScrollbar, stack.Pop());
 
-	ChatListPaneImpl *chatPane = new ChatListPaneImpl(
-                WinPoint(
-                    (int)ppointSize->GetValue().X(),
-                    (int)ppointSize->GetValue().Y()
-                    )
-                );    
-	
-	chatPane->SetScrollbarHidden(showChatPaneScrollbar->GetValue() == false);
+	CastTo(showChatPaneScrollbar, stack.Pop());
+
+    ChatListPaneImpl* chatPane = new ChatListPaneImpl(
+        width->GetValue(),
+        heigth->GetValue(),
+        fontSize->GetValue(),
+        !showChatPaneScrollbar->GetValue()
+    );
 
 	return (Pane*) chatPane;
 }

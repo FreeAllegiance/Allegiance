@@ -333,6 +333,32 @@ public:
         m_pBlankPane->SetSize(size);
     }
 
+    // Update per-item height and reflow the list
+    void SetItemHeight(int nItemHeight, WinPoint size)
+    {
+        if (nItemHeight <= 0)
+            return;
+
+        // update height and recompute visible count
+        m_nItemHeight = nItemHeight;
+
+        // Reuse SetListSize logic 
+        SetListSize(size);
+
+        // Clamp top item so it remains valid
+        if (m_iTopItem > std::max(0, m_vItems.GetCount() - m_cVisibleItems))
+            m_iTopItem = std::max(0, m_vItems.GetCount() - m_cVisibleItems);
+
+        if (m_pScrollPane) {
+            m_pScrollPane->SetPos(m_iTopItem);
+            // ensure scroll pane knows the total size
+            m_pScrollPane->SetSize(m_vItems.GetCount());
+        }
+
+        NeedLayout();
+        NeedPaint();
+    }
+
     void FillTestItems(int nItems)
     {
         for (int i=0; i<nItems; i++) {
