@@ -66,6 +66,11 @@ HRESULT CbuoyIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, 
 
     SetMass(0.0f);
 
+    //Student todo - would this cause problems on the server side?
+    IbuoyIGC *existing = pMission->GetBuoy(m_buoyID);
+    if (existing) {
+        pMission->DeleteBuoy(existing);
+    }
     pMission->AddBuoy(this);
 
     SetCluster(pcluster);
@@ -92,6 +97,8 @@ int     CbuoyIGC::Export(void*    data) const
         dataBuoy->position = GetPosition();
         dataBuoy->clusterID = GetCluster()->GetObjectID();
         dataBuoy->type = m_type;
+        dataBuoy->buoyID = m_buoyID;
+        //dataBuoy->visible = m_visible;
     }
 
     return sizeof(DataBuoyIGC);

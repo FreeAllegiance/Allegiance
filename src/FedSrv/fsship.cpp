@@ -526,16 +526,20 @@ void CFSShip::SetCluster(IclusterIGC * pcluster, bool   bViewOnly)
             m_pShip->ExportShipUpdate(&(pfmSSU->shipupdate));
 
             {
-                ImodelIGC*  pmodelTarget = m_pShip->GetCommandTarget(c_cmdCurrent);
+                ImodelIGC*  pmodelTarget = m_pShip->GetCommandTarget(c_cmdAccepted);
                 if (pmodelTarget)
                 {
                     pfmSSU->otTarget = pmodelTarget->GetObjectType();
                     pfmSSU->oidTarget = pmodelTarget->GetObjectID();
+                    debugf("CFSShip::SetCluster - Broadcasting ship %s (ID:%d) command target: type=%d, id=%d\n",
+                        m_pShip->GetName(), m_pShip->GetObjectID(), pfmSSU->otTarget, pfmSSU->oidTarget);
                 }
                 else
                 {
                     pfmSSU->otTarget = NA;
                     pfmSSU->oidTarget = NA;
+                    debugf("CFSShip::SetCluster - Ship %s (ID:%d) has no command target\n",
+                        m_pShip->GetName(), m_pShip->GetObjectID());
                 }                    
             }
 
@@ -565,6 +569,55 @@ void CFSShip::SetCluster(IclusterIGC * pcluster, bool   bViewOnly)
             }
         }
     }
+    else if (!bViewOnly)
+    {
+        // Ship is leaving the sector - release consumer references on all buoys
+        IclusterIGC* pclusterOld = m_pShip->GetCluster();
+        if (pclusterOld)
+        {
+            // Release consumer references on all command targets that are buoys
+            for (Command i = 0; i < c_cmdMax; i++)
+            {
+                ImodelIGC* ptarget = m_pShip->GetCommandTarget(i);
+                if (ptarget && ptarget->GetObjectType() == OT_buoy)
+                {
+                    // SetCommand will handle the ReleaseConsumer call
+                    m_pShip->SetCommand(i, NULL, c_cidNone);
+                }
+            }
+
+            // Buoys are managed at the mission level, not the cluster level
+            // So we need to iterate through the mission's buoys and filter by cluster
+            ImissionIGC* pMission = GetIGCShip()->GetMission();
+            if (pMission)
+            {
+                const BuoyListIGC * pboylist = pMission->GetBuoys();
+                for (BuoyLinkIGC* pboylink = pboylist->first(); pboylink; pboylink = pboylink->next())
+                {
+                    IbuoyIGC * pbuoy = pboylink->data();
+                    
+                    // Only process buoys in this cluster
+                    if (pbuoy->GetCluster() == pclusterOld)
+                    {
+                        // Release consumer reference - buoy may self-terminate if no more consumers
+                        // Only if this ship hasn't already released via SetCommand above
+                        bool bIsCommandTarget = false;
+                        for (Command i = 0; i < c_cmdMax; i++)
+                        {
+                            if (m_pShip->GetCommandTarget(i) == (ImodelIGC*)pbuoy)
+                            {
+                                bIsCommandTarget = true;
+                                break;
+                            }
+                        }
+                        
+                        // If this buoy is not currently a command target for this ship, 
+                        // it doesn't have a consumer reference from this ship
+                    }
+                }
+            }
+        }
+    }
 }
 
 
@@ -574,7 +627,7 @@ void CFSShip::SetCluster(IclusterIGC * pcluster, bool   bViewOnly)
  * Purpose:
  *    Handle a station being captured by a ship
  */
-void CFSShip::CaptureStation(IstationIGC * pstation)
+void CFSShip::CaptureStation(IstationIGC* pstation)
 {
   {
     //Fudge the hitpoints of the station
@@ -768,6 +821,42 @@ void CFSPlayer::SetCluster(IclusterIGC* pcluster, bool bViewOnly)
         }
 
         {
+            // Let's build up a list of station updates so we can batch 'em down
+            IsideIGC* pside = GetIGCShip()->GetSide();
+
+            // CRITICAL FIX: Send all buoys in the sector to the player FIRST, BEFORE sending ship updates
+            // that might reference them as command targets. This must happen BEFORE we send any
+            // SINGLE_SHIP_UPDATE messages that might have buoy command references.
+            {
+                ImissionIGC* pMission = GetIGCShip()->GetMission();
+                if (pMission)
+                {
+                    const BuoyListIGC * pboylist = pMission->GetBuoys();
+                    for (BuoyLinkIGC* pboylink = pboylist->first(); pboylink; pboylink = pboylink->next())
+                    {
+                        IbuoyIGC * pbuoy = pboylink->data();
+                        
+                        // Only process buoys in this cluster that have consumers (are being used as command targets)
+                        if (pbuoy->GetCluster() == pcluster && pbuoy->GetVisibleF())
+                        {
+                            // Send this buoy to the client
+                            int cbExport = pbuoy->Export(NULL);
+                            BEGIN_PFM_CREATE(g.fm, pfmExport, S, EXPORT)
+                                FM_VAR_PARM(NULL, cbExport)
+                            END_PFM_CREATE
+                            pfmExport->objecttype = OT_buoy;
+                            pbuoy->Export(FM_VAR_REF(pfmExport, exportData));
+                            
+                            g.fm.SendMessages(GetConnection(), FM_GUARANTEED, FM_DONT_FLUSH);
+                            
+                            // NOTE: Do NOT increment consumer here - SetCommand will do it when
+                            // the ship's command is updated to reference this buoy
+                        }
+                    }
+                }
+            }
+
+            // NOW send existing ships with their command targets (buoys are already on client)
             for (ShipLinkIGC*   pshiplink = pcluster->GetShips()->first(); pshiplink; pshiplink = pshiplink->next())
             {
                 IshipIGC * pshipExist = pshiplink->data();
@@ -792,27 +881,26 @@ void CFSPlayer::SetCluster(IclusterIGC* pcluster, bool bViewOnly)
                     pshipExist->ExportShipUpdate(&(pfmSSU->shipupdate));
 
                     {
-                        ImodelIGC*  pmodelTarget = pshipExist->GetCommandTarget(c_cmdCurrent);
+                        ImodelIGC*  pmodelTarget = pshipExist->GetCommandTarget(c_cmdAccepted);
                         if (pmodelTarget)
                         {
                             pfmSSU->otTarget = pmodelTarget->GetObjectType();
                             pfmSSU->oidTarget = pmodelTarget->GetObjectID();
+                            debugf("CFSPlayer::SetCluster - Sending ship %s (ID:%d) command target to joining player: type=%d, id=%d\n",
+                                pshipExist->GetName(), pshipExist->GetObjectID(), pfmSSU->otTarget, pfmSSU->oidTarget);
                         }
                         else
                         {
                             pfmSSU->otTarget = NA;
                             pfmSSU->oidTarget = NA;
+                            debugf("CFSPlayer::SetCluster - Ship %s (ID:%d) has no command target for joining player\n",
+                                pshipExist->GetName(), pshipExist->GetObjectID());
                         }                    
                     }
                     pfmSSU->bIsRipcording = pshipExist->fRipcordActive();
                   }
                 }
             }
-        }
-
-        {
-            // Let's build up a list of station updates so we can batch 'em down
-            IsideIGC* pside = GetIGCShip()->GetSide();
 
             {
                 const StationListIGC * pstnlist = pcluster->GetStations();
@@ -1137,7 +1225,7 @@ void CFSPlayer::SetSide(CFSMission * pfsMission, IsideIGC * pside)
 
     if (psideOld ) // if leaving a side
     {
-      LPCSTR pszContext = GetIGCShip()->GetMission() ? GetIGCShip()->GetMission()->GetContextName() : NULL;
+      LPCSTR pszContext = GetIGCShip() ? GetIGCShip()->GetMission()->GetContextName() : NULL;
 	  // TE Modify LeaveTeam AGCEvent to include MissionID, and change UniqueID to ObjectID
       _AGCModule.TriggerContextEvent(NULL, EventID_LeaveTeam, pszContext,
         GetName(), idShip, psideOld->GetUniqueID(), -1, 3, // Changed UniqueID to ObjectID. Modified ParamCount to 3
@@ -1458,6 +1546,4 @@ void CFSDrone::Dock(IstationIGC * pstation)
     //Drones always instantly undock
     //CFSShip::Dock(pstation);
 }
-
-
 

@@ -13705,15 +13705,27 @@ void FedSrvSiteBase::CommandChangedEvent(Command i, IshipIGC * pship, ImodelIGC*
         (i == c_cmdPlan) ||
         (
             (i == c_cmdCurrent) &&
-             (pship->GetPilotType() >= c_ptPlayer) &&
-             (pcluster = pship->GetCluster()) && //intentional =
-             (pship->IsUsingAreaOfEffectWeapon())
+            (pship->GetPilotType() >= c_ptPlayer) &&
+            (pcluster = pship->GetCluster()) && //intentional =
+            (pship->IsUsingAreaOfEffectWeapon())
             )
         )
     {
+        // If target is a buoy, export it to clients first
+        if (ptarget && (ptarget->GetObjectType() == OT_buoy))
+        {
+            CFMRecipient* precipBuoy = (i == c_cmdCurrent)
+                ? GetGroupSectorFlying(pcluster)
+                : CFSSide::FromIGC(pship->GetSide())->GetGroup();
+
+            g.fm.SetDefaultRecipient(precipBuoy, FM_GUARANTEED);
+            ExportObj(ptarget, OT_buoy, NULL);
+            g.fm.SendMessages(precipBuoy, FM_GUARANTEED, FM_FLUSH);
+        }
+
         BEGIN_PFM_CREATE(g.fm, pfmOC, CS, ORDER_CHANGE)
-        END_PFM_CREATE
-        pfmOC->command = i;
+            END_PFM_CREATE
+            pfmOC->command = i;
         pfmOC->shipID = pship->GetObjectID();
         pfmOC->commandID = cid;
         if (ptarget)
@@ -13729,9 +13741,9 @@ void FedSrvSiteBase::CommandChangedEvent(Command i, IshipIGC * pship, ImodelIGC*
 
         bool fCurrentTarget = (i == c_cmdCurrent);
         g.fm.SendMessages(fCurrentTarget
-                              ? GetGroupSectorFlying(pcluster)
-                              : CFSSide::FromIGC(pship->GetSide())->GetGroup(),
-                          fCurrentTarget ? FM_NOT_GUARANTEED : FM_GUARANTEED, FM_FLUSH);
+            ? GetGroupSectorFlying(pcluster)
+            : CFSSide::FromIGC(pship->GetSide())->GetGroup(),
+            fCurrentTarget ? FM_NOT_GUARANTEED : FM_GUARANTEED, FM_FLUSH);
     }
 }
 void     FedSrvSiteBase::CreateBuildingEffect(Time           now,
