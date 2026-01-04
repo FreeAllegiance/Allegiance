@@ -93,7 +93,8 @@
             "default": "Win32",
             "options": [
                 "Win32",
-                "x64"
+                "x64",
+                "Any CPU"
             ]
         }
     ]

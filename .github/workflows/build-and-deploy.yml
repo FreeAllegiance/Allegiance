@@ -13,7 +13,7 @@ jobs:
       SolutionPath: VS2022\Allegiance.sln
       SecurityRepoPath: AllegianceSecurity
       # Configuration matching the batch file (Batch uses Release for Tools, FZRetail for Game)
-      BuildPlatform: Win32
+      BuildPlatform: Any CPU
       BuildConfiguration: FZRetail
 
     steps:
@@ -102,7 +102,7 @@ jobs:
         xcopy "$ObjDir\Wintrek\Allegiance.pdb" "$StagingDir\Allegiance.pdb*" /Y /d
 
     - name: Setup SteamCMD
-      uses: cyberandmii/setup-steamcmd@v1
+      uses: CyberAndrii/setup-steamcmd@v1
 
     - name: Deploy to Steam
       # Batch provides: +login ZapHopBuilder ... +run_app_build_http ...
