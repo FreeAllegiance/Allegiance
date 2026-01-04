@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug WinTrek",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/objsv143/${input:configuration}/WinTrek/Allegiance.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/objsv143/${input:configuration}/WinTrek",
+            "environment": [],
+            "console": "internalConsole",
+            "preLaunchTask": "Build Solution"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "configuration",
+            "type": "pickString",
+            "description": "Select configuration",
+            "default": "FZDebug",
+            "options": [
+                "FZDebug",
+                "FZRetail"
+            ]
+        }
+    ]
+}

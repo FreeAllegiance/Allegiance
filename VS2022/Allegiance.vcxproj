@@ -100,7 +100,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
-      <IgnoreSpecificDefaultLibraries>MSVCRT</IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>MSVCRT;LIBCMT;LIBCMTD</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
       <Command>xcopy ..\src\lib\steam\steam_api.dll $(OutDir)..\..\ /s /d /y
@@ -141,7 +141,7 @@ xcopy $(ProjectDir)..\src\Inc\steam_appid.txt $(OutDir)..\..\ /s /d /y</Command>
     <Link>
       <AdditionalDependencies>..\src\Lib\AllegianceSecurity\AllegianceSecurity.lib;..\src\Lib\Steam\steam_api.lib;..\src\Lib\lua\lua53.lib;dbghelp.lib;d3d9.lib;d3dx9.lib;dsound.lib;dinput8.lib;$(OutDir)..\zlib\zlib.lib;$(OutDir)..\soundengine\soundengine.lib;$(OutDir)..\_utility\Utility.lib;$(OutDir)..\engine\Engine.lib;$(OutDir)..\ui\Ui.lib;$(OutDir)..\effect\Effect.lib;$(OutDir)..\igc\igc.lib;$(OutDir)..\clintlib\clintlib.lib;$(OutDir)..\Guids\AGCGuid.lib;$(OutDir)..\Guids\guids.lib;$(OutDir)..\training\training.lib;urlmon.lib;winmm.lib;comctl32.lib;version.lib;ws2_32.lib;delayimp.lib;wininet.lib;lz32.lib;netapi32.lib;comsupp.lib;oledb.lib;..\src\Lib\DirectPlay\dxguid.lib;..\src\Lib\OggVorbis\vorbis_nonsse2.lib;..\src\Lib\OggVorbis\ogg_nonsse2.lib;..\src\Lib\OggVorbis\file_nonsse2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>LIBCMT;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <StripPrivateSymbols>
