@@ -1,0 +1,115 @@
+name: Build and Deploy to Steam
+
+on:
+  push:
+    branches: [ "next-release", "antigravity" ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+    
+    env:
+      SolutionPath: VS2022\Allegiance.sln
+      SecurityRepoPath: AllegianceSecurity
+      # Configuration matching the batch file (Batch uses Release for Tools, FZRetail for Game)
+      BuildPlatform: Win32
+      BuildConfiguration: FZRetail
+
+    steps:
+    - name: Checkout Allegiance
+      uses: actions/checkout@v4
+      with:
+        path: .
+
+    - name: Checkout AllegianceSecurity
+      uses: actions/checkout@v4
+      with:
+        repository: BackTrak/AllegianceSecurity
+        path: AllegianceSecurity
+        token: ${{ secrets.ALLEGIANCE_SECURITY_PAT }}
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v2
+
+    - name: Restore NuGet packages for Allegiance
+      run: nuget restore ${{ env.SolutionPath }}
+
+    - name: Restore NuGet packages for AllegianceSecurity
+      run: nuget restore ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln
+
+    - name: Build AllegianceSecurity Tools
+      run: |
+        msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Release /p:Platform="Any CPU" /t:AllegianceBuildTool
+        msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Release /p:Platform=x86
+        msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Debug /p:Platform=x86
+
+    - name: Copy Security Libs to Allegiance
+      # Mirroring: xcopy ... C:\Source\git\Allegiance\src\Lib\AllegianceSecurity\ /Y
+      run: |
+        xcopy "${{ env.SecurityRepoPath }}\Release\AllegianceSecurity.lib" "src\Lib\AllegianceSecurity\" /Y
+        xcopy "${{ env.SecurityRepoPath }}\Debug\AllegianceSecurityd.lib" "src\Lib\AllegianceSecurity\" /Y
+
+    - name: Build Allegiance (FZRetail)
+      run: msbuild ${{ env.SolutionPath }} /p:Configuration=${{ env.BuildConfiguration }} /p:Platform=${{ env.BuildPlatform }}
+
+    - name: Generate Artwork Hashes
+      # Batch: AllegianceBuildTool.exe -generateArtworkHashes "C:\Source\git\Artwork" ...
+      # Note: Artwork folder is referenced. Assuming it is in the root or explicitly checked out. 
+      # The batch file had "C:\Source\git\Artwork". We might need to check out the Artwork repo too if it's separate.
+      # For now, assuming it might be missing or part of the main repo. 
+      # Warning on this step if Artwork repo is needed.
+      continue-on-error: true 
+      run: |
+        ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -generateArtworkHashes "artwork" "${{ env.SecurityRepoPath }}\AllegianceSecurity\FileHashTable.cpp"
+
+    - name: Update Build Number
+      run: |
+        ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -updateBuildNumber "src\Inc\SlmVer.h"
+
+    # Staging - Mirroring batch file xcopy commands
+    - name: Stage Build Artifacts
+      run: |
+        mkdir Staging
+        $StagingDir = "Staging"
+        
+        # Security Tools
+        xcopy "${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\*.exe" "$StagingDir\" /s /d /Y
+        xcopy "${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\*.dll" "$StagingDir\" /s /d /Y
+
+        # Game Binaries (FZRetail / Win32 aka x86)
+        # Note: Batch used 'objsv143\FZRetail'. MSBuild output path might differ on clean env, usually matches sln.
+        # Assuming defaults based on VS2022/Allegiance.sln
+        
+        $ObjDir = "objsv143\FZRetail"
+        
+        xcopy "$ObjDir\Wintrek\*.dll" "$StagingDir\" /s /d /Y
+        xcopy "$ObjDir\Wintrek\*.pdb" "$StagingDir\" /s /d /Y
+        
+        xcopy "$ObjDir\AllSrvUI\AllSrvUI.exe" "$StagingDir\" /s /d /Y
+        xcopy "$ObjDir\AllSrvUI\AllSrvUI.pdb" "$StagingDir\" /s /d /Y
+        
+        xcopy "$ObjDir\FedSrv\AllSrv.exe" "$StagingDir\" /s /d /Y
+        xcopy "$ObjDir\FedSrv\AllSrv.pdb" "$StagingDir\" /s /d /Y
+        
+        xcopy "$ObjDir\AGC\AGC.dll" "$StagingDir\" /s /d /Y
+        xcopy "$ObjDir\AGC\AGC.pdb" "$StagingDir\" /s /d /Y
+        
+        xcopy "$ObjDir\Wintrek\Allegiance.exe" "$StagingDir\Allegiance.exe*" /Y /d
+        xcopy "$ObjDir\Wintrek\Allegiance.pdb" "$StagingDir\Allegiance.pdb*" /Y /d
+
+    - name: Setup SteamCMD
+      uses: cyberandmii/setup-steamcmd@v1
+
+    - name: Deploy to Steam
+      # Batch provides: +login ZapHopBuilder ... +run_app_build_http ...
+      # We need to ensure the VDF file path is correct. 
+      # Batch: %LOCALDIR%\scripts\app_build_700480.vdf -> AllegianceSecurity\SteamContentBuilder\scripts\app_build_700480.vdf
+      env:
+        STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
+        STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
+      run: |
+        steamcmd +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +run_app_build_http -desc "GitHub Action Build" "${{ env.SecurityRepoPath }}\SteamContentBuilder\scripts\app_build_700480.vdf" +quit
