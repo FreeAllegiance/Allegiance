@@ -328,3 +328,5 @@ $RECYCLE.BIN/
 # Allow boost library
 !src/Lib/boost/boost/preprocessor/debug
 /src/Pigs/Piglets/Junk
+
+src/Pigs/**/AGCLib.dll

@@ -1,0 +1,9 @@
+*.bin
+*.dll
+
+AGCEventsCPP.h
+AGCEventsMC.h
+AGCEventsMC.mc
+AGCEventsMC.rc
+AGCEventsRC2.rc2
+AGCEventsRCH.h
