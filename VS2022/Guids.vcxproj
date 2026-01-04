@@ -91,10 +91,14 @@
       <AdditionalIncludeDirectories>$(Outdir)..\Guids;..\src\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DllDataFileName>%(Filename)_dlldata.c</DllDataFileName>
       <TypeLibraryName>$(IntDir)$(ProjectName)_%(Filename).tlb</TypeLibraryName>
+      <GenerateTypeLibrary>true</GenerateTypeLibrary>
     </Midl>
     <PreLinkEvent>
       <Command>lib /out:$(OutDir)AGCGuid.lib $(OutDir)AGCGuid.obj</Command>
     </PreLinkEvent>
+    <PostBuildEvent>
+      <Command>tlbimp $(OutDir)AGC.tlb /out:$(OutDir)AGCLib.dll</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='FZDebug-NoYellowComm|Win32'">
     <ClCompile>
@@ -115,6 +119,7 @@
       <AdditionalIncludeDirectories>$(Outdir)..\Guids;..\src\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DllDataFileName>%(Filename)_dlldata.c</DllDataFileName>
       <TypeLibraryName>$(IntDir)$(ProjectName)_%(Filename).tlb</TypeLibraryName>
+      <GenerateTypeLibrary>true</GenerateTypeLibrary>
     </Midl>
     <PreLinkEvent>
       <Command>lib /out:$(OutDir)AGCGuid.lib $(OutDir)AGCGuid.obj</Command>

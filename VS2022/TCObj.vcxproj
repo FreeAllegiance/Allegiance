@@ -83,7 +83,8 @@
     </ResourceCompile>
     <PostBuildEvent>
       <Command>xcopy ..\src\lib\steam\steam_api.dll $(OutDir) /s /d /y
-xcopy $(ProjectDir)..\src\Inc\steam_appid.txt $(OutDir) /s /d /y</Command>
+xcopy $(ProjectDir)..\src\Inc\steam_appid.txt $(OutDir) /s /d /y
+tlbimp $(OutDir)TCObj.tlb /out:$(OutDir)TCObjLib.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='FZRetail|Win32'">

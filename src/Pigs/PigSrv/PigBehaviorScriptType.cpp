@@ -43,6 +43,15 @@ void CPigBehaviorScriptType::FinalRelease()
 {
 }
 
+HRESULT CPigBehaviorScriptType::Reload(const WIN32_FIND_DATA* pffd, tstring strFileName)
+{
+    // Unload the current script
+    Unload();
+
+    // Reload the script file
+    return Load(pffd, strFileName);
+}
+
 HRESULT CPigBehaviorScriptType::Load(const WIN32_FIND_DATA* pffd,
   tstring strFileName)
 {

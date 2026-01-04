@@ -103,7 +103,13 @@
     </Link>
     <PostBuildEvent>
       <Command>xcopy ..\src\lib\steam\steam_api.dll $(OutDir) /s /d /y
-xcopy $(ProjectDir)..\src\Inc\steam_appid.txt $(OutDir) /s /d /y</Command>
+xcopy $(ProjectDir)..\src\Inc\steam_appid.txt $(OutDir) /s /d /y
+
+copy $(OutDir)..\..\Guids\AGC.tlb .
+
+copy $(OutDir)..\..\Test\TCObj\TCObj.tlb .
+
+tlbimp $(OutDir)PigsLib.tlb /out:$(OutDir)PigsLib.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='FZRetail|Win32'">
@@ -163,9 +169,13 @@ xcopy $(ProjectDir)..\src\Inc\steam_appid.txt $(OutDir) /s /d /y</Command>
     <None Include="..\src\Pigs\PigsLib\PigsLib.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="..\src\Inc\PigsIDL.idl" />
+    <Midl Include="..\src\Inc\PigsIDL.idl">
+      <GenerateTypeLibrary Condition="'$(Configuration)|$(Platform)'=='FZDebug|Win32'">false</GenerateTypeLibrary>
+    </Midl>
     <Midl Include="..\src\Pigs\PigsLib\PigsLib.idl" />
-    <Midl Include="..\src\Inc\ScrRun.idl" />
+    <Midl Include="..\src\Inc\ScrRun.idl">
+      <GenerateTypeLibrary Condition="'$(Configuration)|$(Platform)'=='FZDebug|Win32'">false</GenerateTypeLibrary>
+    </Midl>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\src\Pigs\PigsLib\PigsLib.rc" />
