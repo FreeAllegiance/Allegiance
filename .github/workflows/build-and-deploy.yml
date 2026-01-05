@@ -22,16 +22,20 @@ jobs:
     - name: Setup SteamCMD
       uses: CyberAndrii/setup-steamcmd@v1
 
-    # - name: Steam Test
-    #   # Batch provides: +login ZapHopBuilder ... +run_app_build_http ...
-    #   # We need to ensure the VDF file path is correct. 
-    #   # Batch: %LOCALDIR%\scripts\app_build_700480.vdf -> AllegianceSecurity\SteamContentBuilder\scripts\app_build_700480.vdf
-    #   env:
-    #     STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
-    #     STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
-    #     STEAM_GUARD_CODE: ${{ secrets.STEAM_GUARD_CODE }}
-    #   run: |
-    #     steamcmd +set_steam_guard_code $env:STEAM_GUARD_CODE +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +quit
+    - name: Steam Test
+      shell: bash
+      # Batch provides: +login ZapHopBuilder ... +run_app_build_http ...
+      # We need to ensure the VDF file path is correct. 
+      # Batch: %LOCALDIR%\scripts\app_build_700480.vdf -> AllegianceSecurity\SteamContentBuilder\scripts\app_build_700480.vdf
+      env:
+        STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
+        STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
+        STEAM_GUARD_CODE: ${{ secrets.STEAM_GUARD_CODE }}
+      run: |
+        echo "${{ secrets.STEAM_CONFIG_VDF }}" | base64 -d > /hostedtoolcache/windows/steamcmd/latest/i386/config/config.vdf
+        ls -la /hostedtoolcache/windows/steamcmd/latest/i386
+        ls -la /hostedtoolcache/windows/steamcmd/latest/i386/config
+        steamcmd +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +quit
 
 
     - name: Checkout Allegiance
@@ -181,6 +185,7 @@ jobs:
 
 
     - name: Deploy to Steam
+      shell: bash
       # If the account times out, you can update the steam guard code in the action secrets (see repo settings),
       # then add this to the steamcmd command: +set_steam_guard_code $env:STEAM_GUARD_CODE
       env:
@@ -188,4 +193,7 @@ jobs:
         STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
         STEAM_GUARD_CODE: ${{ secrets.STEAM_GUARD_CODE }}
       run: |
-        steamcmd +set_steam_guard_code $env:STEAM_GUARD_CODE +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +run_app_build_http -desc "GitHub Action Build" "${{ env.BUILD_DIR }}\${{ env.SecurityRepoPath }}\SteamContentBuilder\scripts\app_build_700480.vdf" +quit
+        echo "${{ secrets.STEAM_CONFIG_VDF }}" | base64 -d > /hostedtoolcache/windows/steamcmd/latest/i386/config/config.vdf
+        ls -la /hostedtoolcache/windows/steamcmd/latest/i386
+        ls -la /hostedtoolcache/windows/steamcmd/latest/i386/config
+        steamcmd +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +run_app_build_http -desc "GitHub Action Build" "${{ env.BUILD_DIR }}\${{ env.SecurityRepoPath }}\SteamContentBuilder\scripts\app_build_700480.vdf" +quit
