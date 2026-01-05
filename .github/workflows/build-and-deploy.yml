@@ -45,8 +45,8 @@ jobs:
     - name: Build AllegianceSecurity Tools
       run: |
         msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Release /p:Platform="Any CPU" /t:AllegianceBuildTool
-        msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Release /p:Platform=x86 /p:IncludePath="${{ github.workspace }}\Allegiance\src\zlib;${{ github.workspace }}\${{ env.SecurityRepoPath }}\lib\steam;$(IncludePath)"
-        msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Debug /p:Platform=x86 /p:IncludePath="${{ github.workspace }}\Allegiance\src\zlib;${{ github.workspace }}\${{ env.SecurityRepoPath }}\lib\steam;$(IncludePath)"
+        msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Release /p:Platform=x86 /p:IncludePath="${{ github.workspace }}\Allegiance\src\zlib;${{ github.workspace }}\${{ env.SecurityRepoPath }}\lib\steam;"
+        msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Debug /p:Platform=x86 /p:IncludePath="${{ github.workspace }}\Allegiance\src\zlib;${{ github.workspace }}\${{ env.SecurityRepoPath }}\lib\steam;"
 
     - name: Copy Security Libs to Allegiance
       # Mirroring: xcopy ... C:\Source\git\Allegiance\src\Lib\AllegianceSecurity\ /Y
