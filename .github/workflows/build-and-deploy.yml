@@ -11,7 +11,7 @@ jobs:
     
     env:
       DirectXSDKPath: DirectXSDK2010
-      SolutionPath: VS2022\Allegiance.sln
+      SolutionPath: ..\VS2022\Allegiance.sln
       SecurityRepoPath: AllegianceSecurity
       # Configuration matching the batch file (Batch uses Release for Tools, FZRetail for Game)
       BuildPlatform: Any CPU
