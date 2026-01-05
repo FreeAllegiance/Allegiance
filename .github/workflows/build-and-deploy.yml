@@ -60,7 +60,7 @@ jobs:
         echo DirectX SDK Path: $env:DXSDK_DIR
 
         echo dbghelp directory:
-        dir C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\um\x86
+        dir "C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\um\x86"
 
     - name: Restore NuGet packages for Allegiance
       run: |
