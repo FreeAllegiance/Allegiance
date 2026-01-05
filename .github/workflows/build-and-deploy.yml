@@ -68,11 +68,6 @@ jobs:
     - name: Restore NuGet packages for AllegianceSecurity
       run: nuget restore ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln
 
-    - name: Setup MSVC Developer Command Prompt
-      uses: ilammy/msvc-dev-cmd@v1
-      with:
-        arch: x86
-
     - name: Build AllegianceSecurity Tools
       run: |
         msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Release /p:Platform="Any CPU" /t:AllegianceBuildTool
@@ -87,8 +82,17 @@ jobs:
 
     - name: Build Allegiance (FZRetail)
       run: |
+        $MSVCVersion = (Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC" | Sort-Object Name -Descending | Select-Object -First 1).Name
+        Write-Host "MSVC Version: $MSVCVersion"
+
+        $atlmfcPath = (Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC" | Sort-Object Name -Descending | Select-Object -First 1).Name
+        Write-Host "ATLMFC Version: $atlmfcPath"
+
+        $ucrtPath = Get-ChildItem -Path "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC" -Filter "ucrt.lib" -Recurse -ErrorAction SilentlyContinue | Select-Object FullName
+        Write-Host "UCRT Version: $ucrtPath"
+
         pushd Allegiance
-        Start-Process -FilePath 'msbuild' -ArgumentList '"${{ env.SolutionPath }}"', '/p:Configuration="${{ env.BuildConfiguration }}"', '/p:Platform="${{ env.BuildPlatform }}"', '/p:IncludePath="${{ github.workspace }}\${{ env.DirectXSDKPath }}\Include;$(IncludePath)"', '/p:LibraryPath="${{ github.workspace }}\${{ env.DirectXSDKPath }}\Lib\x86;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x86;$(LibraryPath)"', '/p:AutoBuild=true' -NoNewWindow -Wait 
+        # Start-Process -FilePath 'msbuild' -ArgumentList '"${{ env.SolutionPath }}"', '/p:Configuration="${{ env.BuildConfiguration }}"', '/p:Platform="${{ env.BuildPlatform }}"', '/p:IncludePath="${{ github.workspace }}\${{ env.DirectXSDKPath }}\Include;$(IncludePath)"', '/p:LibraryPath="${{ github.workspace }}\${{ env.DirectXSDKPath }}\Lib\x86;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x86;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\ucrt\x86;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\lib\x86;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.16.27023\atlmfc\lib\x86;$(LibraryPath)"', '/p:AutoBuild=true' -NoNewWindow -Wait 
         popd
 
     - name: Checkout Artwork
