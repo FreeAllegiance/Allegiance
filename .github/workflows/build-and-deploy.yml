@@ -11,7 +11,7 @@ jobs:
     
     env:
       DirectXSDKPath: DirectXSDK2010
-      SolutionPath: Allegiance\VS2022\Allegiance.sln
+      SolutionPath: VS2022\Allegiance.sln
       SecurityRepoPath: AllegianceSecurity
       # Configuration matching the batch file (Batch uses Release for Tools, FZRetail for Game)
       BuildPlatform: Any CPU
@@ -60,7 +60,10 @@ jobs:
         echo DirectX SDK Path: $env:DXSDK_DIR
 
     - name: Restore NuGet packages for Allegiance
-      run: nuget restore ${{ env.SolutionPath }}
+      run: |
+        pushd Allegiance
+        nuget restore ${{ env.SolutionPath }}
+        popd
 
     - name: Restore NuGet packages for AllegianceSecurity
       run: nuget restore ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln
@@ -79,7 +82,10 @@ jobs:
         xcopy "${{ env.SecurityRepoPath }}\Debug\AllegianceSecurityd.lib" "Allegiance\src\Lib\AllegianceSecurity\" /Y
 
     - name: Build Allegiance (FZRetail)
-      run: Start-Process -FilePath 'msbuild' -ArgumentList '"${{ env.SolutionPath }}"', '/p:Configuration="${{ env.BuildConfiguration }}"', '/p:Platform="${{ env.BuildPlatform }}"', '/p:IncludePath="${{ github.workspace }}\${{ env.DirectXSDKPath }}\Include;$(IncludePath)"', '/p:LibraryPath="${{ github.workspace }}\${{ env.DirectXSDKPath }}\Lib\x86;$(LibraryPath)"' -NoNewWindow -Wait 
+      run: |
+        pushd Allegiance
+        Start-Process -FilePath 'msbuild' -ArgumentList '"${{ env.SolutionPath }}"', '/p:Configuration="${{ env.BuildConfiguration }}"', '/p:Platform="${{ env.BuildPlatform }}"', '/p:IncludePath="${{ github.workspace }}\${{ env.DirectXSDKPath }}\Include;$(IncludePath)"', '/p:LibraryPath="${{ github.workspace }}\${{ env.DirectXSDKPath }}\Lib\x86;$(LibraryPath)"' -NoNewWindow -Wait 
+        popd
 
     - name: Checkout Artwork
       uses: actions/checkout@v4
