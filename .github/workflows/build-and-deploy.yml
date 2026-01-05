@@ -71,6 +71,7 @@ jobs:
 
         # Set the DXSDK_DIR environment to point to the source path.
         $CurrentDir = Get-Location
+        echo "BUILD_DIR=$CurrentDir" >> $env:GITHUB_ENV
         echo "DXSDK_DIR=$CurrentDir\${{ env.DirectXSDKPath }}" >> $env:GITHUB_ENV
 
         echo DirectX SDK Path: $CurrentDir\${{ env.DirectXSDKPath }}
@@ -187,4 +188,4 @@ jobs:
         STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
         STEAM_GUARD_CODE: ${{ secrets.STEAM_GUARD_CODE }}
       run: |
-        steamcmd +set_steam_guard_code $env:STEAM_GUARD_CODE +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +run_app_build_http -desc "GitHub Action Build" "${{ env.SecurityRepoPath }}\SteamContentBuilder\scripts\app_build_700480.vdf" +quit
+        steamcmd +set_steam_guard_code $env:STEAM_GUARD_CODE +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +run_app_build_http -desc "GitHub Action Build" "${{ env.BUILD_DIR }}\${{ env.SecurityRepoPath }}\SteamContentBuilder\scripts\app_build_700480.vdf" +quit
