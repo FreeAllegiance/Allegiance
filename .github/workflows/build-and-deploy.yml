@@ -57,7 +57,7 @@ jobs:
         $CurrentDir = Get-Location
         echo "DXSDK_DIR=$CurrentDir\${{ env.DirectXSDKPath }}" >> $env:GITHUB_ENV
 
-        echo DirectX SDK Path: $env:DXSDK_DIR
+        echo DirectX SDK Path: $CurrentDir\${{ env.DirectXSDKPath }}
 
     - name: Restore NuGet packages for Allegiance
       run: |
@@ -68,6 +68,10 @@ jobs:
     - name: Restore NuGet packages for AllegianceSecurity
       run: nuget restore ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln
 
+    - name: Setup MSVC Developer Command Prompt
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x86
 
     - name: Build AllegianceSecurity Tools
       run: |
