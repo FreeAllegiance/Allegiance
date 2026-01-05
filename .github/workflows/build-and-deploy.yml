@@ -84,7 +84,7 @@ jobs:
     - name: Build Allegiance (FZRetail)
       run: |
         pushd Allegiance
-        Start-Process -FilePath 'msbuild' -ArgumentList '"${{ env.SolutionPath }}"', '/p:Configuration="${{ env.BuildConfiguration }}"', '/p:Platform="${{ env.BuildPlatform }}"', '/p:IncludePath="${{ github.workspace }}\${{ env.DirectXSDKPath }}\Include;$(IncludePath)"', '/p:LibraryPath="${{ github.workspace }}\${{ env.DirectXSDKPath }}\Lib\x86;$(LibraryPath)"' -NoNewWindow -Wait 
+        Start-Process -FilePath 'msbuild' -ArgumentList '"${{ env.SolutionPath }}"', '/p:Configuration="${{ env.BuildConfiguration }}"', '/p:Platform="${{ env.BuildPlatform }}"', '/p:IncludePath="${{ github.workspace }}\${{ env.DirectXSDKPath }}\Include;$(IncludePath)"', '/p:LibraryPath="${{ github.workspace }}\${{ env.DirectXSDKPath }}\Lib\x86;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\um\x86;$(LibraryPath)"', '/p:AutoBuild=true' -NoNewWindow -Wait 
         popd
 
     - name: Checkout Artwork
