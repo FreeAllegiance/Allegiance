@@ -22,16 +22,16 @@ jobs:
     - name: Setup SteamCMD
       uses: CyberAndrii/setup-steamcmd@v1
 
-    - name: Steam Test
-      # Batch provides: +login ZapHopBuilder ... +run_app_build_http ...
-      # We need to ensure the VDF file path is correct. 
-      # Batch: %LOCALDIR%\scripts\app_build_700480.vdf -> AllegianceSecurity\SteamContentBuilder\scripts\app_build_700480.vdf
-      env:
-        STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
-        STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
-        STEAM_GUARD_CODE: ${{ secrets.STEAM_GUARD_CODE }}
-      run: |
-        steamcmd +set_steam_guard_code $env:STEAM_GUARD_CODE +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +quit
+    # - name: Steam Test
+    #   # Batch provides: +login ZapHopBuilder ... +run_app_build_http ...
+    #   # We need to ensure the VDF file path is correct. 
+    #   # Batch: %LOCALDIR%\scripts\app_build_700480.vdf -> AllegianceSecurity\SteamContentBuilder\scripts\app_build_700480.vdf
+    #   env:
+    #     STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
+    #     STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
+    #     STEAM_GUARD_CODE: ${{ secrets.STEAM_GUARD_CODE }}
+    #   run: |
+    #     steamcmd +set_steam_guard_code $env:STEAM_GUARD_CODE +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +quit
 
 
     - name: Checkout Allegiance
@@ -96,6 +96,11 @@ jobs:
         xcopy "${{ env.SecurityRepoPath }}\Release\AllegianceSecurity.lib" "Allegiance\src\Lib\AllegianceSecurity\" /Y
         xcopy "${{ env.SecurityRepoPath }}\Debug\AllegianceSecurityd.lib" "Allegiance\src\Lib\AllegianceSecurity\" /Y
 
+    - name: Setup MSVC Developer Command Prompt
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x86
+
     - name: Build Allegiance (FZRetail)
       run: |
         $MSVCVersion = (Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC" | Sort-Object Name -Descending | Select-Object -First 1).Name
@@ -108,7 +113,8 @@ jobs:
         Write-Host "UCRT Version: $ucrtPath"
 
         pushd Allegiance\src
-        Start-Process -FilePath 'msbuild' -ArgumentList '"${{ env.SolutionPath }}"', '/p:Configuration="${{ env.BuildConfiguration }}"', '/p:Platform="${{ env.BuildPlatform }}"', '/p:IncludePath="${{ github.workspace }}\${{ env.DirectXSDKPath }}\Include;..\src\lib\lua\include;..\src\lib\sol\include;$(IncludePath)"', '/p:LibraryPath="${{ github.workspace }}\${{ env.DirectXSDKPath }}\Lib\x86;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x86;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\ucrt\x86;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\lib\x86;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\atlmfc\lib\x86;..\src\lib\lua;..\src\lib\sol;$(LibraryPath)"', '/p:AutoBuild=true', '/t:Allegiance' -NoNewWindow -Wait 
+        # Start-Process -FilePath 'msbuild' -ArgumentList '"${{ env.SolutionPath }}"', '/p:Configuration="${{ env.BuildConfiguration }}"', '/p:Platform="${{ env.BuildPlatform }}"', '/p:IncludePath="${{ github.workspace }}\${{ env.DirectXSDKPath }}\Include;..\src\lib\lua\include;..\src\lib\sol\include;$(IncludePath)"', '/p:LibraryPath="${{ github.workspace }}\${{ env.DirectXSDKPath }}\Lib\x86;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x86;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\ucrt\x86;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\lib\x86;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\atlmfc\lib\x86;..\src\lib\lua;..\src\lib\sol;$(LibraryPath)"', '/p:AutoBuild=true', '/t:Allegiance' -NoNewWindow -Wait 
+        msbuild "${{ env.SolutionPath }}" /p:Configuration="${{ env.BuildConfiguration }}" /p:Platform="${{ env.BuildPlatform }}" '/p:IncludePath=${{ github.workspace }}\${{ env.DirectXSDKPath }}\Include;..\src\lib\lua\include;..\src\lib\sol\include;$(IncludePath)' '/p:LibraryPath=${{ github.workspace }}\${{ env.DirectXSDKPath }}\Lib\x86;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x86;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\ucrt\x86;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\lib\x86;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\atlmfc\lib\x86;..\src\lib\lua;..\src\lib\sol;$(LibraryPath)' /p:AutoBuild=true /t:Allegiance
         popd
 
     - name: Checkout Artwork
@@ -165,12 +171,11 @@ jobs:
 
 
     - name: Deploy to Steam
-      # Batch provides: +login ZapHopBuilder ... +run_app_build_http ...
-      # We need to ensure the VDF file path is correct. 
-      # Batch: %LOCALDIR%\scripts\app_build_700480.vdf -> AllegianceSecurity\SteamContentBuilder\scripts\app_build_700480.vdf
+      # If the account times out, you can update the steam guard code in the action secrets (see repo settings),
+      # then add this to the steamcmd command: +set_steam_guard_code $env:STEAM_GUARD_CODE
       env:
         STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
         STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
         STEAM_GUARD_CODE: ${{ secrets.STEAM_GUARD_CODE }}
       run: |
-        steamcmd +set_steam_guard_code $env:STEAM_GUARD_CODE +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +run_app_build_http -desc "GitHub Action Build" "${{ env.SecurityRepoPath }}\SteamContentBuilder\scripts\app_build_700480.vdf" +quit
+        steamcmd  +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +run_app_build_http -desc "GitHub Action Build" "${{ env.SecurityRepoPath }}\SteamContentBuilder\scripts\app_build_700480.vdf" +quit
