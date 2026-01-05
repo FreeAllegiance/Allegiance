@@ -61,7 +61,7 @@ jobs:
 
     - name: Restore NuGet packages for Allegiance
       run: |
-        pushd Allegiance
+        pushd Allegiance\src
         nuget restore ${{ env.SolutionPath }}
         popd
 
