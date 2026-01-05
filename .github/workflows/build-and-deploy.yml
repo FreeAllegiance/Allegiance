@@ -18,6 +18,19 @@ jobs:
       BuildConfiguration: FZRetail
 
     steps:
+
+    - name: Steam Test
+      # Batch provides: +login ZapHopBuilder ... +run_app_build_http ...
+      # We need to ensure the VDF file path is correct. 
+      # Batch: %LOCALDIR%\scripts\app_build_700480.vdf -> AllegianceSecurity\SteamContentBuilder\scripts\app_build_700480.vdf
+      env:
+        STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
+        STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
+        STEAM_GUARD_CODE: ${{ secrets.STEAM_GUARD_CODE }}
+      run: |
+        steamcmd +set_steam_guard_code $env:STEAM_GUARD_CODE +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +quit
+
+
     - name: Checkout Allegiance
       uses: actions/checkout@v4
       with:
