@@ -79,7 +79,7 @@ jobs:
         xcopy "${{ env.SecurityRepoPath }}\Debug\AllegianceSecurityd.lib" "Allegiance\src\Lib\AllegianceSecurity\" /Y
 
     - name: Build Allegiance (FZRetail)
-      run: msbuild "${{ env.SolutionPath }}" /p:Configuration="${{ env.BuildConfiguration }}" /p:Platform="${{ env.BuildPlatform }}" /p:IncludePath="${{ env.DirectXSDKPath }}\Include" /p:LibraryPath="${{ env.DirectXSDKPath }}\Lib\x86"
+      run: msbuild "${{ env.SolutionPath }}" /p:Configuration="${{ env.BuildConfiguration }}" /p:Platform="${{ env.BuildPlatform }}" /p:IncludePath="${{ github.workspace }}\${{ env.DirectXSDKPath }}\Include;`$(IncludePath)" /p:LibraryPath="${{ github.workspace }}\${{ env.DirectXSDKPath }}\Lib\x86;`$(LibraryPath)"
 
     - name: Checkout Artwork
       uses: actions/checkout@v4
