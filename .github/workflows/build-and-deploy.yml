@@ -19,6 +19,9 @@ jobs:
 
     steps:
 
+    - name: Setup SteamCMD
+      uses: CyberAndrii/setup-steamcmd@v1
+
     - name: Steam Test
       # Batch provides: +login ZapHopBuilder ... +run_app_build_http ...
       # We need to ensure the VDF file path is correct. 
@@ -159,8 +162,7 @@ jobs:
         xcopy "$ObjDir\Wintrek\Allegiance.exe" "$StagingDir\Allegiance.exe*" /Y /d
         xcopy "$ObjDir\Wintrek\Allegiance.pdb" "$StagingDir\Allegiance.pdb*" /Y /d
 
-    - name: Setup SteamCMD
-      uses: CyberAndrii/setup-steamcmd@v1
+
 
     - name: Deploy to Steam
       # Batch provides: +login ZapHopBuilder ... +run_app_build_http ...
