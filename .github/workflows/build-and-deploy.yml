@@ -55,7 +55,7 @@ jobs:
         xcopy "${{ env.SecurityRepoPath }}\Debug\AllegianceSecurityd.lib" "Allegiance\src\Lib\AllegianceSecurity\" /Y
 
     - name: Build Allegiance (FZRetail)
-      run: msbuild ${{ env.SolutionPath }} /p:Configuration=${{ env.BuildConfiguration }} /p:Platform=${{ env.BuildPlatform }}
+      run: msbuild "${{ env.SolutionPath }}" /p:Configuration="${{ env.BuildConfiguration }}" /p:Platform="${{ env.BuildPlatform }}"
 
     - name: Generate Artwork Hashes
       # Batch: AllegianceBuildTool.exe -generateArtworkHashes "C:\Source\git\Artwork" ...
