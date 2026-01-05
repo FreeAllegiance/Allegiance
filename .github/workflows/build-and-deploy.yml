@@ -32,9 +32,11 @@ jobs:
         STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
         STEAM_GUARD_CODE: ${{ secrets.STEAM_GUARD_CODE }}
       run: |
-        echo "${{ secrets.STEAM_CONFIG_VDF }}" | base64 -d > /hostedtoolcache/windows/steamcmd/latest/i386/config/config.vdf
+        ls -la /hostedtoolcache/windows/steamcmd
+        ls -la /hostedtoolcache/windows/steamcmd/latest
         ls -la /hostedtoolcache/windows/steamcmd/latest/i386
         ls -la /hostedtoolcache/windows/steamcmd/latest/i386/config
+        echo "${{ secrets.STEAM_CONFIG_VDF }}" | base64 -d > /hostedtoolcache/windows/steamcmd/latest/i386/config/config.vdf
         steamcmd +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +quit
 
 
