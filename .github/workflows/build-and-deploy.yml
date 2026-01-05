@@ -38,7 +38,7 @@ jobs:
         ls -la c:/hostedtoolcache/windows/steamcmd/latest/i386
         ls -la c:/hostedtoolcache/windows/steamcmd/latest/i386/config
         echo "${{ secrets.STEAM_CONFIG_VDF }}" | base64 -d > c:/hostedtoolcache/windows/steamcmd/latest/i386/config/config.vdf
-        c:/hostedtoolcache/windows/steamcmd/latest/i386/steamcmd +login "${{ secrets.STEAM_USERNAME }}" "${{ secrets.STEAM_PASSWORD }}" +quit
+        c:/hostedtoolcache/windows/steamcmd/latest/i386/steamcmd +login +info +quit
 
 
     # - name: CI Test
