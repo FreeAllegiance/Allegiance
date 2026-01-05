@@ -10,10 +10,11 @@ jobs:
     runs-on: windows-latest
     
     env:
+      DirectXSDKPath: DirectXSDK2010
       SolutionPath: Allegiance\VS2022\Allegiance.sln
       SecurityRepoPath: AllegianceSecurity
       # Configuration matching the batch file (Batch uses Release for Tools, FZRetail for Game)
-      BuildPlatform: "Any CPU"
+      BuildPlatform: Any CPU
       BuildConfiguration: FZRetail
 
     steps:
@@ -29,11 +30,34 @@ jobs:
         path: AllegianceSecurity
         token: ${{ secrets.ALLEGIANCE_SECURITY_PAT }}
 
+    - name: Checkout DirectX SDK
+      uses: actions/checkout@v4
+      with:
+        path: ${{ env.DirectXSDKPath }}
+        repository: ReactiioN1337/DirectX-SDK
+
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
 
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v2
+
+    - name: Download and Install DirectX SDK
+      shell: powershell
+      run: |
+        # $Url = "https://download.microsoft.com/download/A/E/7/AE743F1F-632B-4809-87A9-AA1BB3458E31/DXSDK_Jun10.exe"
+        # $Installer = "DXSDK_Jun10.exe"
+        # Invoke-WebRequest -Uri $Url -OutFile $Installer
+        # Start-Process -FilePath $Installer -ArgumentList "/U", "/O", "/F", "/S" -Wait
+        
+        # Manually set DXSDK_DIR
+        # echo "DXSDK_DIR=C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\" >> $env:GITHUB_ENV
+
+        # Set the DXSDK_DIR environment to point to the source path.
+        $CurrentDir = Get-Location
+        echo "DXSDK_DIR=$CurrentDir\${{ env.DirectXSDKPath }}" >> $env:GITHUB_ENV
+
+        echo DirectX SDK Path: $env:DXSDK_DIR
 
     - name: Restore NuGet packages for Allegiance
       run: nuget restore ${{ env.SolutionPath }}
@@ -55,7 +79,13 @@ jobs:
         xcopy "${{ env.SecurityRepoPath }}\Debug\AllegianceSecurityd.lib" "Allegiance\src\Lib\AllegianceSecurity\" /Y
 
     - name: Build Allegiance (FZRetail)
-      run: msbuild "${{ env.SolutionPath }}" /p:Configuration="${{ env.BuildConfiguration }}" /p:Platform="${{ env.BuildPlatform }}"
+      run: msbuild "${{ env.SolutionPath }}" /p:Configuration="${{ env.BuildConfiguration }}" /p:Platform="${{ env.BuildPlatform }}" /p:IncludePath="C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;$(IncludePath)" /p:LibraryPath="C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;$(LibraryPath)"
+
+    - name: Checkout Artwork
+      uses: actions/checkout@v4
+      with:
+        repository: FreeAllegiance/Artwork
+        path: Artwork
 
     - name: Generate Artwork Hashes
       # Batch: AllegianceBuildTool.exe -generateArtworkHashes "C:\Source\git\Artwork" ...
