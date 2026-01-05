@@ -157,4 +157,4 @@ jobs:
         STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
         STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
       run: |
-        steamcmd +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +run_app_build_http -desc "GitHub Action Build" "${{ env.SecurityRepoPath }}\SteamContentBuilder\scripts\app_build_700480.vdf" +quit
+        steamcmd +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +set_steam_guard_code $env:STEAM_GUARD_CODE +run_app_build_http -desc "GitHub Action Build" "${{ env.SecurityRepoPath }}\SteamContentBuilder\scripts\app_build_700480.vdf" +quit
