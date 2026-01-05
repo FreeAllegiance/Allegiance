@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-latest
     
     env:
-      SolutionPath: VS2022\Allegiance.sln
+      SolutionPath: Allegiance\VS2022\Allegiance.sln
       SecurityRepoPath: AllegianceSecurity
       # Configuration matching the batch file (Batch uses Release for Tools, FZRetail for Game)
       BuildPlatform: Any CPU
@@ -20,7 +20,7 @@ jobs:
     - name: Checkout Allegiance
       uses: actions/checkout@v4
       with:
-        path: .
+        path: Allegiance
 
     - name: Checkout AllegianceSecurity
       uses: actions/checkout@v4
@@ -41,17 +41,18 @@ jobs:
     - name: Restore NuGet packages for AllegianceSecurity
       run: nuget restore ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln
 
+
     - name: Build AllegianceSecurity Tools
       run: |
         msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Release /p:Platform="Any CPU" /t:AllegianceBuildTool
-        msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Release /p:Platform=x86
-        msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Debug /p:Platform=x86
+        msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Release /p:Platform=x86 /p:IncludePath="${{ github.workspace }}\Allegiance\src\zlib;${{ github.workspace }}\${{ env.SecurityRepoPath }}\lib\steam;$(IncludePath)"
+        msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Debug /p:Platform=x86 /p:IncludePath="${{ github.workspace }}\Allegiance\src\zlib;${{ github.workspace }}\${{ env.SecurityRepoPath }}\lib\steam;$(IncludePath)"
 
     - name: Copy Security Libs to Allegiance
       # Mirroring: xcopy ... C:\Source\git\Allegiance\src\Lib\AllegianceSecurity\ /Y
       run: |
-        xcopy "${{ env.SecurityRepoPath }}\Release\AllegianceSecurity.lib" "src\Lib\AllegianceSecurity\" /Y
-        xcopy "${{ env.SecurityRepoPath }}\Debug\AllegianceSecurityd.lib" "src\Lib\AllegianceSecurity\" /Y
+        xcopy "${{ env.SecurityRepoPath }}\Release\AllegianceSecurity.lib" "Allegiance\src\Lib\AllegianceSecurity\" /Y
+        xcopy "${{ env.SecurityRepoPath }}\Debug\AllegianceSecurityd.lib" "Allegiance\src\Lib\AllegianceSecurity\" /Y
 
     - name: Build Allegiance (FZRetail)
       run: msbuild ${{ env.SolutionPath }} /p:Configuration=${{ env.BuildConfiguration }} /p:Platform=${{ env.BuildPlatform }}
@@ -64,11 +65,11 @@ jobs:
       # Warning on this step if Artwork repo is needed.
       continue-on-error: true 
       run: |
-        ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -generateArtworkHashes "artwork" "${{ env.SecurityRepoPath }}\AllegianceSecurity\FileHashTable.cpp"
+        ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -generateArtworkHashes "Allegiance\artwork" "${{ env.SecurityRepoPath }}\AllegianceSecurity\FileHashTable.cpp"
 
     - name: Update Build Number
       run: |
-        ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -updateBuildNumber "src\Inc\SlmVer.h"
+        ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -updateBuildNumber "Allegiance\src\Inc\SlmVer.h"
 
     # Staging - Mirroring batch file xcopy commands
     - name: Stage Build Artifacts
@@ -84,7 +85,7 @@ jobs:
         # Note: Batch used 'objsv143\FZRetail'. MSBuild output path might differ on clean env, usually matches sln.
         # Assuming defaults based on VS2022/Allegiance.sln
         
-        $ObjDir = "objsv143\FZRetail"
+        $ObjDir = "Allegiance\objsv143\FZRetail"
         
         xcopy "$ObjDir\Wintrek\*.dll" "$StagingDir\" /s /d /Y
         xcopy "$ObjDir\Wintrek\*.pdb" "$StagingDir\" /s /d /Y
