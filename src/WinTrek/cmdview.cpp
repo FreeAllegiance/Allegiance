@@ -143,113 +143,113 @@ void CommandGeo::DrawShips(Context* pcontext)
             ObjectType    type = pmodel->GetObjectType();
             switch (type)
             {
-                default:
+            default:
+            {
+                if ((pmodel != pmodelOrders[0]) &&
+                    (pmodel != pmodelOrders[1]) &&
+                    (pmodel != pmodelOrders[2]))
                 {
-                    if ((pmodel != pmodelOrders[0]) &&
-                        (pmodel != pmodelOrders[1]) &&
-                        (pmodel != pmodelOrders[2]))
-                    {
-                        break;
-                    }
+                    break;
                 }
+            }
 
-                case OT_ship:
-                case OT_station:
-                case OT_asteroid:
-                case OT_warp:
-                {
-                    const Vector&   vecPosition = pmodel->GetPosition();
+            case OT_ship:
+            case OT_station:
+            case OT_asteroid:
+            case OT_warp:
+            {
+                const Vector& vecPosition = pmodel->GetPosition();
 
-                    // Add a drop line for the ship
-                    const Color& color = vecPosition.Z() > m_zGrid ? s_colorDropLineUp : s_colorDropLineDown;
+                // Add a drop line for the ship
+                const Color& color = vecPosition.Z() > m_zGrid ? s_colorDropLineUp : s_colorDropLineDown;
 
-                    indices.PushEnd(index);
-                    vertices.PushEnd(VertexL(
-                                vecPosition.X(),
-                                vecPosition.Y(),
-                                vecPosition.Z(),
-                                color.R(),
-                                color.G(),
-                                color.B(),
-                                1,
-                                0,
-                                0
-                            ));
-                    index++;
+                indices.PushEnd(index);
+                vertices.PushEnd(VertexL(
+                    vecPosition.X(),
+                    vecPosition.Y(),
+                    vecPosition.Z(),
+                    color.R(),
+                    color.G(),
+                    color.B(),
+                    1,
+                    0,
+                    0
+                ));
+                index++;
 
-                    indices.PushEnd(index);
-                    vertices.PushEnd(VertexL(
-                                vecPosition.X(),
-                                vecPosition.Y(),
-                                m_zGrid,
-                                color.R(),
-                                color.G(),
-                                color.B(),
-                                1,
-                                0,
-                                0
-                            ));
-                    index++;
+                indices.PushEnd(index);
+                vertices.PushEnd(VertexL(
+                    vecPosition.X(),
+                    vecPosition.Y(),
+                    m_zGrid,
+                    color.R(),
+                    color.G(),
+                    color.B(),
+                    1,
+                    0,
+                    0
+                ));
+                index++;
 
-                    // add some feet
-                    static int sizeFeet = 15;
+                // add some feet
+                static int sizeFeet = 15;
 
-                    indices.PushEnd(index);
-                    vertices.PushEnd(VertexL(
-                                vecPosition.X()+sizeFeet,
-                                vecPosition.Y(),
-                                m_zGrid,
-                                s_colorFeet.R(),
-                                s_colorFeet.G(),
-                                s_colorFeet.B(),
-                                1,
-                                0,
-                                0
-                            ));
-                    index++;
+                indices.PushEnd(index);
+                vertices.PushEnd(VertexL(
+                    vecPosition.X() + sizeFeet,
+                    vecPosition.Y(),
+                    m_zGrid,
+                    s_colorFeet.R(),
+                    s_colorFeet.G(),
+                    s_colorFeet.B(),
+                    1,
+                    0,
+                    0
+                ));
+                index++;
 
-                    indices.PushEnd(index);
-                    vertices.PushEnd(VertexL(
-                                vecPosition.X()-sizeFeet,
-                                vecPosition.Y(),
-                                m_zGrid,
-                                s_colorFeet.R(),
-                                s_colorFeet.G(),
-                                s_colorFeet.B(),
-                                1,
-                                0,
-                                0
-                            ));
-                    index++;
+                indices.PushEnd(index);
+                vertices.PushEnd(VertexL(
+                    vecPosition.X() - sizeFeet,
+                    vecPosition.Y(),
+                    m_zGrid,
+                    s_colorFeet.R(),
+                    s_colorFeet.G(),
+                    s_colorFeet.B(),
+                    1,
+                    0,
+                    0
+                ));
+                index++;
 
-                    indices.PushEnd(index);
-                    vertices.PushEnd(VertexL(
-                                vecPosition.X(),
-                                vecPosition.Y()+sizeFeet,
-                                m_zGrid,
-                                s_colorFeet.R(),
-                                s_colorFeet.G(),
-                                s_colorFeet.B(),
-                                1,
-                                0,
-                                0
-                            ));
-                    index++;
+                indices.PushEnd(index);
+                vertices.PushEnd(VertexL(
+                    vecPosition.X(),
+                    vecPosition.Y() + sizeFeet,
+                    m_zGrid,
+                    s_colorFeet.R(),
+                    s_colorFeet.G(),
+                    s_colorFeet.B(),
+                    1,
+                    0,
+                    0
+                ));
+                index++;
 
-                    indices.PushEnd(index);
-                    vertices.PushEnd(VertexL(
-                                vecPosition.X(),
-                                vecPosition.Y()-sizeFeet,
-                                m_zGrid,
-                                s_colorFeet.R(),
-                                s_colorFeet.G(),
-                                s_colorFeet.B(),
-                                1,
-                                0,
-                                0
-                            ));
-                    index++;
-                }
+                indices.PushEnd(index);
+                vertices.PushEnd(VertexL(
+                    vecPosition.X(),
+                    vecPosition.Y() - sizeFeet,
+                    m_zGrid,
+                    s_colorFeet.R(),
+                    s_colorFeet.G(),
+                    s_colorFeet.B(),
+                    1,
+                    0,
+                    0
+                ));
+                index++;
+            }
             }
         }
 
@@ -259,87 +259,6 @@ void CommandGeo::DrawShips(Context* pcontext)
 
         // After existing per-ship draw work, add waypoint line drawing for selected allied player ships on autopilot.
 
-        if (pmodel->GetObjectType() == OT_ship)
-        {
-            IshipIGC* pship = static_cast<IshipIGC*>(pmodel);
-
-            // Only draw for ships that are selected, allied, and on autopilot
-            IsideIGC* psideMine = trekClient.GetShip()->GetSide();
-            IsideIGC* pside = pship->GetSide();
-
-            const ShipListIGC* pselected = GetWindow()->GetConsoleImage()->GetSubjects();
-
-            bool bSelected = (pselected && pselected->find(pship));
-            bool bAllied = (pside == psideMine) || IsideIGC::AlliedSides(pside, psideMine);
-
-            if (bSelected && bAllied)
-            {
-                // Determine an ImodelIGC destination: prefer on-cluster waypoint buoy, otherwise use path warp or the target model.
-                ImodelIGC* ptarget = pship->GetCommandTarget(c_cmdAccepted);
-                if (!ptarget) ptarget = pship->GetCommandTarget(c_cmdPlan);
-                
-                ImodelIGC* pmodelDest = nullptr;
-
-                if (ptarget)
-                {
-                    if (ptarget->GetObjectType() == OT_buoy)
-                    {
-                        // buoy itself has position; use the buoy model
-                        IbuoyIGC* pbuoy = static_cast<IbuoyIGC*>(ptarget);
-                        if (pbuoy && (pbuoy->GetBuoyType() == c_buoyWaypoint))
-                            pmodelDest = pbuoy;
-                    }
-
-                    if (!pmodelDest)
-                    {
-                        IclusterIGC* pclusterTarget = ptarget->GetCluster();
-                        if ((pclusterTarget == NULL) || (pclusterTarget != m_pcluster))
-                        {
-                            // If target is off-cluster and ship isn't ripcording, get the local warp (aleph) path
-                            if (!pship->fRipcordActive())
-                            {
-                                ImodelIGC* ppath = FindPath(pship, ptarget, false);
-                                if (ppath)
-                                    pmodelDest = ppath;
-                            }
-                        }
-                        else
-                        {
-                            // target is on this cluster; draw to the model directly
-                            pmodelDest = ptarget;
-                        }
-                    }
-                }
-
-                // Draw line between ship position and destination model position (if available)
-                if (pmodelDest)
-                {
-                    Vector vShipPos = pship->GetPosition();
-                    Vector vDestPos = pmodelDest->GetPosition();
-
-                    
-                    Vector vShipGrid(vShipPos.X(), vShipPos.Y(), vShipPos.Z());
-                    Vector vDestGrid(vDestPos.X(), vDestPos.Y(), vDestPos.Z());
-
-                    TVector<VertexL> lineVerts(2);
-                    TVector<WORD> lineInds(2);
-
-                    Color lineColor = pside ? pside->GetColor() : Color::White();
-
-                    lineVerts.Set(0, VertexL(vShipGrid, lineColor));
-                    lineVerts.Set(1, VertexL(vDestGrid, lineColor));
-                    lineInds.Set(0, 0);
-                    lineInds.Set(1, 1);
-
-                    pcontext->PushState();
-                    pcontext->SetBlendMode(BlendModeAdd);
-                    pcontext->SetLineWidth(2.0f, true);
-                    pcontext->DrawLines(lineVerts, lineInds);
-                    pcontext->SetLineWidth(1.0f, true);
-                    pcontext->PopState();
-                }
-            }
-        }
     }
 
 }
@@ -365,6 +284,215 @@ void CommandGeo::DrawTop(Context* pcontext)
     pcontext->DrawString(pfont, s_colorNeutral, offset, topString);
 }
 
+void CommandGeo::DrawSelectedPaths(Context* pcontext)
+{
+
+    const ShipListIGC* pselected = GetWindow()->GetConsoleImage()->GetSubjects();
+    if (pselected == NULL)
+    {
+        return;
+    }
+    ShipLinkIGC* pshipLink = pselected->first();
+    IsideIGC* psideMine = trekClient.GetShip()->GetSide();
+
+    while (pshipLink != NULL) {
+        IshipIGC* pship = pshipLink->data();
+        IsideIGC* pside = pship->GetSide();
+
+        bool bAllied = (pside == psideMine) || IsideIGC::AlliedSides(pside, psideMine);
+
+        if (bAllied)
+        {
+            bool        bCoward = (pship->GetPilotType() < c_ptCarrier);
+            // Get target and validate
+            ImodelIGC* ptarget = pship->GetCommandTarget(c_cmdAccepted);
+            if (!ptarget)
+            {
+                pshipLink = pshipLink->next();
+                continue;
+            }
+
+            // Determine origin model based on ripcord state
+            ImodelIGC* poriginModel = pship->fRipcordActive() ? pship->GetRipcordModel() : pship;
+            assert(poriginModel);
+
+            // Get cluster information
+            IclusterIGC* poriginModelCluster = poriginModel->GetCluster();
+            if (!poriginModelCluster)
+            {
+                //selected ship is in base or is otherwise unable to get cluster
+                //Student TODO getting the originModel of a ship not in the view cluster is not reliable
+                //Unknown why
+                pshipLink = pshipLink->next();
+                continue;
+            }
+            IclusterIGC* ptargetCluster = ptarget->GetCluster();
+
+            ImodelIGC* pmodelOrigin = nullptr;
+            ImodelIGC* pmodelDest = nullptr;
+
+            // ===== CASE ANALYSIS AND LOGIC =====
+
+            bool bOriginModelInOurCluster = (poriginModelCluster == m_pcluster);
+            bool bTargetInOurCluster = (ptargetCluster == m_pcluster);
+
+            if (bOriginModelInOurCluster && bTargetInOurCluster)
+            {
+                // CASE 1: Both origin model and target in our cluster
+                // Draw line between origin model and target
+                pmodelOrigin = poriginModel;
+                pmodelDest = ptarget;
+            }
+            else if (bOriginModelInOurCluster && !bTargetInOurCluster)
+            {
+                // CASE 2: Origin model in our cluster, target not in our cluster
+                // Only draw if ship is not ripcording (ripcording has no path to draw)
+                if (!pship->fRipcordActive())
+                {
+                    // Find path from origin model to target
+                    IwarpIGC* warp = FindPath(poriginModel, ptarget, bCoward);
+                    if (!warp && bCoward)
+                    {
+                        warp = FindPath(poriginModel, ptarget, false);
+                    }
+                    if (warp != NULL)
+                    {    
+                        pmodelOrigin = poriginModel;
+                        pmodelDest = warp;
+                    }
+                }
+            }
+            else if (!bOriginModelInOurCluster && bTargetInOurCluster)
+            {
+                // CASES 3 & 5: Origin model not in our cluster, target in our cluster
+                // We need to find the warp through which the origin model would enter our cluster
+
+                // Find path from origin model to target
+                PathList* ppath = FindPathList(poriginModel, ptarget, bCoward);
+
+                //retry if we are coward without being coward
+                if (ppath == NULL && bCoward) {
+                    ppath = FindPathList(poriginModel, ptarget, false);
+                }
+                if (ppath && ppath->first() != NULL)
+                {
+                    // Walk through the path to find when we enter our cluster
+                    bool bFoundEntryWarp = false;
+                    PathLink* plink = ppath->first();
+
+                    while (plink != NULL && !bFoundEntryWarp)
+                    {
+                        IwarpIGC* pwarp = plink->data().pwarp;
+                        IwarpIGC* pwarpDest = pwarp->GetDestination();
+
+                        // Check if this warp's destination is in our cluster
+                        if (pwarpDest && pwarpDest->GetCluster() == m_pcluster)
+                        {
+                            pmodelOrigin = pwarpDest;
+                            pmodelDest = ptarget;
+                            bFoundEntryWarp = true;
+                        }
+
+                        plink = plink->next();
+                    }
+
+                    // Clean up the path list
+                    plink = ppath->first();
+                    while (plink != NULL)
+                    {
+                        PathLink* plinkNext = plink->next();
+                        delete plink;
+                        plink = plinkNext;
+                    }
+                    delete ppath;
+                }
+            }
+            else
+            {
+                // CASES 4 & 6: Neither origin model nor target in our cluster
+                // Check if the path passes through our cluster
+
+                PathList* ppath = FindPathList(poriginModel, ptarget, bCoward);
+
+                //retry if we are coward without being coward
+                if (ppath == NULL && bCoward) {
+                    ppath = FindPathList(poriginModel, ptarget, false);
+                }
+                if (ppath && ppath->first() != NULL)
+                {
+                    // Walk through the path to find entry and exit warps for our cluster
+                    IwarpIGC* pwarpEntryDest = nullptr;
+                    IwarpIGC* pwarpExitWarp = nullptr;
+
+                    PathLink* plink = ppath->first();
+                    while (plink != NULL)
+                    {
+                        IwarpIGC* pwarp = plink->data().pwarp;
+                        IwarpIGC* pwarpDest = pwarp->GetDestination();
+
+                        if (pwarpDest && pwarpDest->GetCluster() == m_pcluster)
+                        {
+                            // This warp's destination is in our cluster
+                            if (!pwarpEntryDest)
+                            {
+                                // This is our entry point
+                                pwarpEntryDest = pwarpDest;
+                            }
+                            // Keep updating to get the last (exit) warp
+                            pwarpExitWarp = pwarp;
+                        }
+
+                        plink = plink->next();
+                    }
+
+                    // If we found an entry point and exit point, draw the path
+                    if (pwarpEntryDest && pwarpExitWarp && pwarpExitWarp->GetCluster() == m_pcluster)
+                    {
+                        pmodelOrigin = pwarpEntryDest;
+                        pmodelDest = pwarpExitWarp;
+                    }
+
+                    // Clean up the path list
+                    plink = ppath->first();
+                    while (plink != NULL)
+                    {
+                        PathLink* plinkNext = plink->next();
+                        delete plink;
+                        plink = plinkNext;
+                    }
+                    delete ppath;
+                }
+            }
+
+            // ===== DRAW THE PATH =====
+            if (pmodelOrigin && pmodelDest && pmodelOrigin != pmodelDest)
+            {
+                Vector vOriginPos = pmodelOrigin->GetPosition();
+                Vector vDestPos = pmodelDest->GetPosition();
+
+                TVector<VertexL> lineVerts(2);
+                TVector<WORD> lineInds(2);
+
+                Color lineColor = pside ? pside->GetColor() : Color::White();
+
+                lineVerts.Set(0, VertexL(vOriginPos, lineColor));
+                lineVerts.Set(1, VertexL(vDestPos, lineColor));
+                lineInds.Set(0, 0);
+                lineInds.Set(1, 1);
+
+                pcontext->PushState();
+                pcontext->SetBlendMode(BlendModeAdd);
+                pcontext->SetLineWidth(2.0f, true);
+                pcontext->DrawLines(lineVerts, lineInds);
+                pcontext->SetLineWidth(1.0f, true);
+                pcontext->PopState();
+            }
+        }
+
+        pshipLink = pshipLink->next();
+    }
+}
+
 void CommandGeo::Render(Context* pcontext)
 {
     // use flat shading
@@ -372,6 +500,7 @@ void CommandGeo::Render(Context* pcontext)
 
     // draw the ships
     DrawShips(pcontext);
+    DrawSelectedPaths(pcontext);
 
     // draw the grid
     pcontext->DrawLines(m_vertices, m_indices);

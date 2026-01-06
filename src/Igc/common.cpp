@@ -882,29 +882,70 @@ ImodelIGC*  FindTarget(IshipIGC*           pship,
     return pmodelTarget;
 }
 
-struct Path
+IwarpIGC* FindPath(ImodelIGC* pOrigin,
+    ImodelIGC* pTarget,
+    bool       bCowardly)
 {
-    IwarpIGC*   pwarpStart;
-    IwarpIGC*   pwarp;
-    float       distance;
-};
-typedef Slist_utl<Path> PathList;
-typedef Slink_utl<Path> PathLink;
+    PathList* path = FindPathList(pOrigin, pTarget, bCowardly);
+    if (!path) {
+        return NULL;
+    }
 
-IwarpIGC* FindPath(IshipIGC*    pship,
-                   IclusterIGC* pclusterTarget,
-                   bool         bCowardly)
+    IwarpIGC* firstWarp = path->first()->data().pwarpStart;
+    delete path;
+    return firstWarp;
+}
+
+/// <summary>
+/// Returns the first warp on the path from the ship to the target, if the ship can see the target, NULL otherwise 
+/// </summary>
+/// <param name="pShip"></param>
+/// <param name="pTarget"></param>
+/// <param name="bCowardly"></param>
+/// <returns></returns>
+IwarpIGC* FindPath(IshipIGC*  pShip,
+                   ImodelIGC* pTarget,
+                   bool       bCowardly)
 {
-    assert (pship);
-    IsideIGC*   pside = pship->GetSide();
+    assert(pShip);
+    assert(pTarget);
+    IclusterIGC* pclusterTarget = pTarget->GetMission()->GetIgcSite()->GetCluster(pShip, pTarget);
+    if (!pclusterTarget)
+    {
+        return NULL;
+    }
+    return FindPath((ImodelIGC*)pShip, pTarget, bCowardly);
+}
 
-    IclusterIGC*    pclusterCurrent = pship->GetCluster();
-    assert (pclusterCurrent);
+/// <summary>
+/// Finds a path of warps from the origin model's cluster to the target cluster using a Dijkstra-like search. The search only considers warps the ship can see and can optionally restrict traversal to friendly clusters.
+/// </summary>
+/// <param name="pShip">Pointer to the ship used to check visibility and to determine the ship's side for friendliness checks. Must not be NULL.</param>
+/// <param name="pmodelOrigin">Pointer to the origin model; the search starts from this model's cluster and position. Must not be NULL.</param>
+/// <param name="pclusterTarget">Pointer to the target cluster to reach. If the origin's cluster equals this cluster the function returns NULL.</param>
+/// <param name="bCowardly">If true, limit traversal to friendly clusters (except the target cluster). If false, allow traversal through any visible cluster.</param>
+/// <returns>A pointer to a PathList describing the path (warp steps and accumulated distances) from the origin to the target, or NULL if no path is found. The caller receives ownership of the returned PathList and is responsible for freeing it.</returns>
+PathList* FindPathList(
+    ImodelIGC* pmodelOrigin,
+    ImodelIGC* pmodelTarget,
+    bool         bCowardly)
+{
+    assert(pmodelOrigin);
+    assert(pmodelTarget);
+    IsideIGC* pside = pmodelOrigin->GetSide();
+    if (!pmodelTarget->SeenBySide(pside))
+    {
+        return NULL;
+    }
+
+    IclusterIGC* pclusterCurrent = pmodelOrigin->GetCluster();
+    IclusterIGC* pclusterTarget = pmodelTarget->GetCluster();
+    assert(pclusterCurrent);
 
     if (pclusterCurrent == pclusterTarget)
         return NULL;
 
-    const Vector&   positionShip = pship->GetPosition();
+    const Vector& positionOrigin = pmodelOrigin->GetPosition();
 
     ClusterListIGC  explored;
     PathList        unexplored;
@@ -912,28 +953,28 @@ IwarpIGC* FindPath(IshipIGC*    pship,
     explored.last(pclusterCurrent);
 
     {
-        //Add the initial warps ... distance from the player to the aleph
-        const WarpListIGC*  pwarps = pclusterCurrent->GetWarps();
-        for (WarpLinkIGC*   wLink = pwarps->first(); (wLink != NULL); wLink = wLink->next())
+        //Add the initial warps ... distance from the origin model to the warp
+        const WarpListIGC* pwarps = pclusterCurrent->GetWarps();
+        for (WarpLinkIGC* wLink = pwarps->first(); (wLink != NULL); wLink = wLink->next())
         {
-            IwarpIGC*   pwarp = wLink->data();
-            if (pship->CanSee(pwarp))
+            IwarpIGC* pwarp = wLink->data();
+            if (pwarp->SeenBySide(pside))
             {
-                assert (pwarp->GetDestination());
-                IclusterIGC*    pclusterDestination = pwarp->GetDestination()->GetCluster();
+                assert(pwarp->GetDestination());
+                IclusterIGC* pclusterDestination = pwarp->GetDestination()->GetCluster();
                 if ((!bCowardly) ||
                     (pclusterTarget == pclusterDestination) ||
                     IsFriendlyCluster(pclusterDestination, pside))
                 {
-                    PathLink*   pl = new PathLink;
-                    assert (pl);
+                    PathLink* pl = new PathLink;
+                    assert(pl);
 
-                    Path&       path = pl->data();
-                    path.distance = (pwarp->GetPosition() - positionShip).LengthSquared();
+                    Path& path = pl->data();
+                    path.distance = (pwarp->GetPosition() - positionOrigin).LengthSquared();
                     path.pwarpStart = path.pwarp = pwarp;
 
                     //Keep the list sorted
-                    PathLink*   p = unexplored.first();
+                    PathLink* p = unexplored.first();
                     while (true)
                     {
                         if (p == NULL)
@@ -959,34 +1000,44 @@ IwarpIGC* FindPath(IshipIGC*    pship,
             return NULL;
     }
 
+    // Dijkstra's algorithm search
     while (true)
     {
-        PathLink*   plinkClosest = unexplored.first();
+        PathLink* plinkClosest = unexplored.first();
 
         if (!plinkClosest)
             return NULL;        //Never found a path
 
         const Path& path = plinkClosest->data();
-        IwarpIGC*   pwarp = path.pwarp;
+        IwarpIGC* pwarp = path.pwarp;
 
-        IclusterIGC*    pclusterNext = pwarp->GetDestination()->GetCluster();
+        IclusterIGC* pclusterNext = pwarp->GetDestination()->GetCluster();
+
+        // Found path to target - reconstruct and return the full path
         if (pclusterNext == pclusterTarget)
         {
-            //Found a path to the target
-            return path.pwarpStart;
+            //Found a path to the target - build return list
+            PathList* preturnPath = new PathList;
+
+            // Add the final path node
+            PathLink* plReturn = new PathLink;
+            plReturn->data() = path;
+            preturnPath->last(plReturn);
+
+            delete plinkClosest;
+            return preturnPath;
         }
 
         explored.last(pclusterNext);
 
-        //Add warps for the warp in the new cluster (that do not lead to a previously explored cluster)
-        //Add all of the warps in this cluster to the unexplored list
-        for (WarpLinkIGC*   pwl = pclusterNext->GetWarps()->first(); (pwl != NULL); pwl = pwl->next())
+        //Add warps for the warps in the new cluster (that do not lead to a previously explored cluster)
+        for (WarpLinkIGC* pwl = pclusterNext->GetWarps()->first(); (pwl != NULL); pwl = pwl->next())
         {
-            IwarpIGC*   pwarp = pwl->data();
+            IwarpIGC* pwarpNext = pwl->data();
 
-            if (pship->CanSee(pwarp))
+            if (pwarpNext->SeenBySide(pside))
             {
-                IclusterIGC*    pclusterDestination = pwarp->GetDestination()->GetCluster();
+                IclusterIGC* pclusterDestination = pwarpNext->GetDestination()->GetCluster();
 
                 if ((!bCowardly) ||
                     (pclusterDestination == pclusterTarget) ||
@@ -994,12 +1045,14 @@ IwarpIGC* FindPath(IshipIGC*    pship,
                 {
                     if (explored.find(pclusterDestination) == NULL)
                     {
-                        PathLink*   ppl = new PathLink;
-                        assert (ppl);
+                        PathLink* ppl = new PathLink;
+                        assert(ppl);
 
-                        Path&       ppathNew = ppl->data();
+                        Path& ppathNew = ppl->data();
                         ppathNew.pwarpStart = path.pwarpStart;
-                        ppathNew.pwarp = pwarp;
+                        ppathNew.pwarp = pwarpNext;
+                        ppathNew.distance = path.distance +
+                            (pwarpNext->GetPosition() - pwarp->GetPosition()).LengthSquared();
 
                         unexplored.last(ppl);
                     }
@@ -1009,18 +1062,6 @@ IwarpIGC* FindPath(IshipIGC*    pship,
 
         delete plinkClosest;
     }
-}
-
-IwarpIGC* FindPath(IshipIGC*  pShip,
-                   ImodelIGC* pTarget,
-                   bool       bCowardly)
-{
-    assert (pShip);
-    assert (pTarget);
-
-    IclusterIGC*    pclusterTarget = pTarget->GetMission()->GetIgcSite()->GetCluster(pShip, pTarget);
-
-    return pclusterTarget ? FindPath(pShip, pclusterTarget, bCowardly) : NULL;
 }
 
 bool    SearchClusters(ImodelIGC*    pmodel,
@@ -1902,9 +1943,9 @@ bool    GotoPlan::SetControls(float  dt, bool bDodge, ControlData*  pcontrols, i
                     m_pvOldClusterTarget = pclusterTarget;
 
                     bool        bCoward = (m_pship->GetPilotType() < c_ptCarrier);
-                    IwarpIGC*   pwarp = FindPath(m_pship, pclusterTarget, bCoward);
+                    IwarpIGC*   pwarp = FindPath(m_pship, m_wpTarget.m_pmodelTarget, bCoward);
                     if (bCoward && (pwarp == NULL))
-                        pwarp = FindPath(m_pship, pclusterTarget, false);
+                        pwarp = FindPath(m_pship, m_wpTarget.m_pmodelTarget, false);
 
                     if (pwarp)
                     {

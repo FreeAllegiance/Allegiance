@@ -993,7 +993,9 @@ public:
 
     inline IshipIGC*    GetShip() const         { return m_ship; }
 
-    inline IclusterIGC* GetCluster() const      {assert (m_ship); return m_viewCluster ? m_viewCluster : (m_ship ? m_ship->GetCluster() : NULL); }
+    inline IclusterIGC* GetCluster() const      {
+        assert (m_ship); 
+        return m_viewCluster ? m_viewCluster : (m_ship ? m_ship->GetCluster() : NULL); }
 
     IclusterIGC*        GetChatCluster() const
     {

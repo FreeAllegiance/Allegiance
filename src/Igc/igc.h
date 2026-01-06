@@ -4553,7 +4553,20 @@ float    turnToFace(const Vector&       deltaTarget,
                     ControlData*        controls,
                     float               skill = 1.0f);
 
+IwarpIGC* FindPath(ImodelIGC* pOrigin, ImodelIGC* pTarget, bool bCowardly);
 IwarpIGC*   FindPath(IshipIGC* pShip, ImodelIGC* pTarget, bool bCowardly);
+
+struct Path
+{
+    IwarpIGC* pwarpStart;
+    IwarpIGC* pwarp;
+    float       distance;
+};
+typedef Slist_utl<Path> PathList;
+typedef Slink_utl<Path> PathLink;
+
+
+PathList* FindPathList(ImodelIGC* pmodelOrigin, ImodelIGC* pmodelTarget, bool bCowardly);
 
 const char* GetModelType(ImodelIGC* pmodel);
 const char* GetModelName(ImodelIGC* pmodel);
