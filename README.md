@@ -1,7 +1,7 @@
 # BUILD STATUS
 [![Build status](https://ci.appveyor.com/api/projects/status/mllnn7jx72ge8u6s/branch/master?svg=true)](https://ci.appveyor.com/project/BackTrak/allegiance)
 
-# Installation
+# Installation Test
 
 Download and install the latest "Visual Studio Community Edition" : https://www.visualstudio.com/downloads/
 
