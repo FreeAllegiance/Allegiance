@@ -116,6 +116,10 @@ jobs:
     - name: Restore NuGet packages for AllegianceSecurity
       run: nuget restore ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln
 
+    - name: Build AllegianceSecurity Tools
+      run: |
+        msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Release /p:Platform="Any CPU" /t:AllegianceBuildTool
+
     - name: Generate Artwork Hashes
       # Batch: AllegianceBuildTool.exe -generateArtworkHashes "C:\Source\git\Artwork" ...
       # Note: Artwork folder is referenced. Assuming it is in the root or explicitly checked out. 
@@ -125,6 +129,10 @@ jobs:
       continue-on-error: true 
       run: |
         ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -generateArtworkHashes "Allegiance\artwork" "${{ env.SecurityRepoPath }}\AllegianceSecurity\FileHashTable.cpp"
+
+    - name: Update Build Number
+      run: |
+        ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -updateBuildNumber "Allegiance\src\Inc\SlmVer.h"
 
     - name: Build AllegianceSecurity Tools
       run: |
@@ -143,10 +151,7 @@ jobs:
       with:
         arch: x86
 
-    - name: Update Build Number
-      run: |
-        ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -updateBuildNumber "Allegiance\src\Inc\SlmVer.h"
-
+    
     - name: Build Allegiance (FZRetail)
       shell: cmd
       run: |
