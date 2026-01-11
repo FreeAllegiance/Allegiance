@@ -36,6 +36,8 @@ jobs:
         STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
         STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
       run: |
+        export scriptsDir="$GITHUB_WORKSPACE/${{ env.SecurityRepoPath }}/SteamContentBuilder/scripts"
+        ls -la $scriptsDir
         c:/hostedtoolcache/windows/steamcmd/latest/i386/steamcmd +login $STEAM_USERNAME $STEAM_PASSWORD +quit || true
 
     - name: Get Steam Guard Code
@@ -197,4 +199,6 @@ jobs:
         cd ${{ env.SecurityRepoPath }}/SteamContentBuilder
         ls -la ./scripts
         ls -la ./Staging
-        c:/hostedtoolcache/windows/steamcmd/latest/i386/steamcmd +set_steam_guard_code $STEAM_GUARD_CODE +login $STEAM_USERNAME $STEAM_PASSWORD +run_app_build_http -desc "GitHub Action Build" "./scripts/app_build_700480.vdf" +quit
+        export scriptsDir="$GITHUB_WORKSPACE/${{ env.SecurityRepoPath }}/SteamContentBuilder/scripts"
+        ls -la $scriptsDir
+        c:/hostedtoolcache/windows/steamcmd/latest/i386/steamcmd +set_steam_guard_code $STEAM_GUARD_CODE +login $STEAM_USERNAME $STEAM_PASSWORD +run_app_build_http -desc "GitHub Action Build" "$scriptsDir/app_build_700480.vdf" +quit
