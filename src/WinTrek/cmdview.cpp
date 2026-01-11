@@ -288,6 +288,7 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
 {
 
     const ShipListIGC* pselected = GetWindow()->GetConsoleImage()->GetSubjects();
+    debugf("Start Draw Selected Paths, Selcted NULL ? %s", pselected ? "NO" : "YES");
     if (pselected == NULL)
     {
         return;
@@ -300,6 +301,7 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
         IsideIGC* pside = pship->GetSide();
 
         bool bAllied = (pside == psideMine) || IsideIGC::AlliedSides(pside, psideMine);
+        
 
         if (bAllied)
         {
@@ -308,6 +310,7 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
             ImodelIGC* ptarget = pship->GetCommandTarget(c_cmdAccepted);
             if (!ptarget)
             {
+                debugf("Selected Ship: %s, No `c_cmdAccepted` target", pship->GetName());
                 pshipLink = pshipLink->next();
                 continue;
             }
@@ -318,6 +321,19 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
 
             // Get cluster information
             IclusterIGC* poriginModelCluster = poriginModel->GetCluster();
+            debugf("Selected Ship: %s, Ripcording: %s, In Station: %s, originModel: %s, Ship Cluster: %s, Origin Cluster %s",
+                pship->GetName(),
+                pship->fRipcordActive() ? "TRUE" : "FALSE",
+                pship->GetStation() ? pship->GetStation()->GetName() : "NO",
+                poriginModel->GetName(),
+                pship->GetCluster() ? pship->GetCluster()->GetName() : "NULL",
+                poriginModelCluster ? poriginModelCluster->GetName() : "NULL");
+            IclusterIGC* ptargetCluster = ptarget->GetCluster();
+            
+            debugf("Target: %s, Target Cluster: %s",
+                ptarget->GetName(),
+                ptargetCluster ? ptargetCluster->GetName() : "NULL");
+
             if (!poriginModelCluster)
             {
                 //selected ship is in base or is otherwise unable to get cluster
@@ -326,7 +342,7 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
                 pshipLink = pshipLink->next();
                 continue;
             }
-            IclusterIGC* ptargetCluster = ptarget->GetCluster();
+            
 
             ImodelIGC* pmodelOrigin = nullptr;
             ImodelIGC* pmodelDest = nullptr;
@@ -338,6 +354,7 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
 
             if (bOriginModelInOurCluster && bTargetInOurCluster)
             {
+                debugf("origin and target same sector");
                 // CASE 1: Both origin model and target in our cluster
                 // Draw line between origin model and target
                 pmodelOrigin = poriginModel;
@@ -345,6 +362,7 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
             }
             else if (bOriginModelInOurCluster && !bTargetInOurCluster)
             {
+                debugf("origin in same sector and target not");
                 // CASE 2: Origin model in our cluster, target not in our cluster
                 // Only draw if ship is not ripcording (ripcording has no path to draw)
                 if (!pship->fRipcordActive())
@@ -364,6 +382,7 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
             }
             else if (!bOriginModelInOurCluster && bTargetInOurCluster)
             {
+                debugf("origin not in same sector and target is");
                 // CASES 3 & 5: Origin model not in our cluster, target in our cluster
                 // We need to find the warp through which the origin model would enter our cluster
 
@@ -409,6 +428,7 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
             }
             else
             {
+                debugf("Both not in same sector");
                 // CASES 4 & 6: Neither origin model nor target in our cluster
                 // Check if the path passes through our cluster
 
