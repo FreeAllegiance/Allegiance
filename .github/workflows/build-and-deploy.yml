@@ -27,7 +27,7 @@ jobs:
       with:
         path: Allegiance
 
-    - name: Steam Test
+    - name: Initiate Steam Guard Request
       shell: bash
       # Batch provides: +login ZapHopBuilder ... +run_app_build_http ...
       # We need to ensure the VDF file path is correct. 
@@ -47,7 +47,7 @@ jobs:
         echo "STEAM_GUARD_CODE=$code" >> $env:GITHUB_ENV
         Write-Host "Steam Guard code captured: $code"
 
-    - name: Steam Test 2
+    - name: Login With Steam Guard Code
       shell: bash
       # Batch provides: +login ZapHopBuilder ... +run_app_build_http ...
       # We need to ensure the VDF file path is correct. 
@@ -57,25 +57,12 @@ jobs:
         STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
         STEAM_CONFIG_VDF: ${{ secrets.STEAM_CONFIG_VDF }}
       run: |
-        pwd
-        ls -la c:/hostedtoolcache/windows/steamcmd
-        ls -la c:/hostedtoolcache/windows/steamcmd/latest
-        ls -la c:/hostedtoolcache/windows/steamcmd/latest/i386
-        ls -la c:/hostedtoolcache/windows/steamcmd/latest/i386/config
-        echo "$STEAM_CONFIG_VDF" | base64 -d > c:/hostedtoolcache/windows/steamcmd/latest/i386/config/config.vdf
-        c:/hostedtoolcache/windows/steamcmd/latest/i386/steamcmd +set_steam_guard_code $STEAM_GUARD_CODE +login $STEAM_USERNAME $STEAM_PASSWORD +quit || true
+        c:/hostedtoolcache/windows/steamcmd/latest/i386/steamcmd +set_steam_guard_code $STEAM_GUARD_CODE +login $STEAM_USERNAME $STEAM_PASSWORD +quit
 
-    # - name: CI Test
-    #   uses: game-ci/steam-deploy@v3
-    #   with:
-    #     username: ${{ secrets.STEAM_USERNAME }}
-    #     configVdf: ${{ secrets.STEAM_CONFIG_VDF}}
-    #     appId: ${{ secrets.STEAM_APP_ID }}
-    #     buildDescription: ${{ github.sha }}
-    #     rootPath: Allegiance\objsv143\FZRetail\WinTrek
-    #     depot1Path: Allegiance\objsv143\FZRetail\WinTrek
-    #     depot1InstallScriptPath: $BUILD_DIR\${{ env.SecurityRepoPath }}\SteamContentBuilder\scripts\app_build_700480.vdf
-    #     releaseBranch: next-release
+    - name: Checkout Allegiance
+      uses: actions/checkout@v4
+      with:
+        path: Allegiance
 
     - name: Checkout AllegianceSecurity
       uses: actions/checkout@v4
@@ -121,42 +108,24 @@ jobs:
         popd
 
     - name: Restore NuGet packages for AllegianceSecurity
-      run: nuget restore $SecurityRepoPath\AllegianceSecurity.sln
+      run: nuget restore ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln
 
     - name: Build AllegianceSecurity Tools
       run: |
-        msbuild $SecurityRepoPath\AllegianceSecurity.sln /p:Configuration=Release /p:Platform="Any CPU" /t:AllegianceBuildTool
-        msbuild $SecurityRepoPath\AllegianceSecurity.sln /p:Configuration=Release /p:Platform=x86 /t:AllegianceSecurity '/p:IncludePath="${{ github.workspace }}\Allegiance\src\zlib;${{ github.workspace }}\$SecurityRepoPath\lib\steam;"'
-        msbuild $SecurityRepoPath\AllegianceSecurity.sln /p:Configuration=Debug /p:Platform=x86 /t:AllegianceSecurity '/p:IncludePath="${{ github.workspace }}\Allegiance\src\zlib;${{ github.workspace }}\$SecurityRepoPath\lib\steam;"'
+        msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Release /p:Platform="Any CPU" /t:AllegianceBuildTool
+        msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Release /p:Platform=x86 /t:AllegianceSecurity '/p:IncludePath="${{ github.workspace }}\Allegiance\src\zlib;${{ github.workspace }}\${{ env.SecurityRepoPath }}\lib\steam;"'
+        msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Debug /p:Platform=x86 /t:AllegianceSecurity '/p:IncludePath="${{ github.workspace }}\Allegiance\src\zlib;${{ github.workspace }}\${{ env.SecurityRepoPath }}\lib\steam;"'
 
     - name: Copy Security Libs to Allegiance
       # Mirroring: xcopy ... C:\Source\git\Allegiance\src\Lib\AllegianceSecurity\ /Y
       run: |
-        xcopy "$SecurityRepoPath\Release\AllegianceSecurity.lib" "Allegiance\src\Lib\AllegianceSecurity\" /Y
-        xcopy "$SecurityRepoPath\Debug\AllegianceSecurityd.lib" "Allegiance\src\Lib\AllegianceSecurity\" /Y
+        xcopy "${{ env.SecurityRepoPath }}\Release\AllegianceSecurity.lib" "Allegiance\src\Lib\AllegianceSecurity\" /Y
+        xcopy "${{ env.SecurityRepoPath }}\Debug\AllegianceSecurityd.lib" "Allegiance\src\Lib\AllegianceSecurity\" /Y
 
     - name: Setup MSVC Developer Command Prompt
       uses: ilammy/msvc-dev-cmd@v1
       with:
         arch: x86
-
-    # - name: Build Allegiance (FZRetail)
-    #   run: |
-    #     $MSVCVersion = (Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC" | Sort-Object Name -Descending | Select-Object -First 1).Name
-    #     Write-Host "MSVC Version: $MSVCVersion"
-
-    #     $atlmfcPath = (Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC" | Sort-Object Name -Descending | Select-Object -First 1).Name
-    #     Write-Host "ATLMFC Version: $atlmfcPath"
-
-    #     $ucrtPath = Get-ChildItem -Path "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC" -Filter "ucrt.lib" -Recurse -ErrorAction SilentlyContinue | Select-Object FullName
-    #     Write-Host "UCRT Version: $ucrtPath"
-
-    #     pushd Allegiance\src
-    #     # Start-Process -FilePath 'msbuild' -ArgumentList '"${{ env.SolutionPath }}"', '/p:Configuration="${{ env.BuildConfiguration }}"', '/p:Platform="${{ env.BuildPlatform }}"', '/p:IncludePath="${{ github.workspace }}\${{ env.DirectXSDKPath }}\Include;..\src\lib\lua\include;..\src\lib\sol\include;$(IncludePath)"', '/p:LibraryPath="${{ github.workspace }}\${{ env.DirectXSDKPath }}\Lib\x86;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x86;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\ucrt\x86;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\lib\x86;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\atlmfc\lib\x86;..\src\lib\lua;..\src\lib\sol;$(LibraryPath)"', '/p:AutoBuild=true', '/t:Allegiance' -NoNewWindow -Wait 
-        
-    #     cmd /c "msbuild `"${{ env.SolutionPath }}`" /p:Configuration=`"${{ env.BuildConfiguration }}`" /p:Platform=`"${{ env.BuildPlatform }}`" /p:IncludePath=`"${{ github.workspace }}\${{ env.DirectXSDKPath }}\Include;..\src\lib\lua\include;..\src\lib\sol\include;$(IncludePath)`" /p:LibraryPath=`"${{ github.workspace }}\${{ env.DirectXSDKPath }}\Lib\x86;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x86;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\ucrt\x86;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\lib\x86;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\atlmfc\lib\x86;..\src\lib\lua;..\src\lib\sol;$(LibraryPath)`" /p:AutoBuild=true /t:Allegiance"
-
-    #     popd
   
     - name: Build Allegiance (FZRetail)
       shell: cmd
@@ -179,11 +148,11 @@ jobs:
       # Warning on this step if Artwork repo is needed.
       continue-on-error: true 
       run: |
-        $SecurityRepoPath\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -generateArtworkHashes "Allegiance\artwork" "$SecurityRepoPath\AllegianceSecurity\FileHashTable.cpp"
+        ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -generateArtworkHashes "Allegiance\artwork" "${{ env.SecurityRepoPath }}\AllegianceSecurity\FileHashTable.cpp"
 
     - name: Update Build Number
       run: |
-        $SecurityRepoPath\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -updateBuildNumber "Allegiance\src\Inc\SlmVer.h"
+        ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -updateBuildNumber "Allegiance\src\Inc\SlmVer.h"
 
     # Staging - Mirroring batch file xcopy commands
     - name: Stage Build Artifacts
@@ -192,8 +161,8 @@ jobs:
         $StagingDir = "Staging"
         
         # Security Tools
-        xcopy "$SecurityRepoPath\AllegianceBuildTool\bin\Release\*.exe" "$StagingDir\" /s /d /Y
-        xcopy "$SecurityRepoPath\AllegianceBuildTool\bin\Release\*.dll" "$StagingDir\" /s /d /Y
+        xcopy "${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\*.exe" "$StagingDir\" /s /d /Y
+        xcopy "${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\*.dll" "$StagingDir\" /s /d /Y
 
         # Game Binaries (FZRetail / Win32 aka x86)
         # Note: Batch used 'objsv143\FZRetail'. MSBuild output path might differ on clean env, usually matches sln.
@@ -216,18 +185,16 @@ jobs:
         xcopy "$ObjDir\Wintrek\Allegiance.exe" "$StagingDir\Allegiance.exe*" /Y /d
         xcopy "$ObjDir\Wintrek\Allegiance.pdb" "$StagingDir\Allegiance.pdb*" /Y /d
 
-
-
     - name: Deploy to Steam
       shell: bash
-      # Steam Guard code is automatically retrieved from email and passed via $STEAM_GUARD_CODE
+      # If the account times out, you can update the steam guard code in the action secrets (see repo settings),
+      # then add this to the steamcmd command: +set_steam_guard_code $env:STEAM_GUARD_CODE
       env:
         STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
         STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
-        STEAM_CONFIG_VDF: ${{ secrets.STEAM_CONFIG_VDF }}
-        BUILD_DIR: ${{ env.BUILD_DIR }}
+        STEAM_GUARD_CODE: ${{ secrets.STEAM_GUARD_CODE }}
       run: |
-        echo "$STEAM_CONFIG_VDF" | base64 -d > /hostedtoolcache/windows/steamcmd/latest/i386/config/config.vdf
+        echo "${{ secrets.STEAM_CONFIG_VDF }}" | base64 -d > /hostedtoolcache/windows/steamcmd/latest/i386/config/config.vdf
         ls -la /hostedtoolcache/windows/steamcmd/latest/i386
         ls -la /hostedtoolcache/windows/steamcmd/latest/i386/config
-        steamcmd +set_steam_guard_code $STEAM_GUARD_CODE +login $STEAM_USERNAME $STEAM_PASSWORD +run_app_build_http -desc "GitHub Action Build" "$BUILD_DIR\$SecurityRepoPath\SteamContentBuilder\scripts\app_build_700480.vdf" +quit
+        steamcmd +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +run_app_build_http -desc "GitHub Action Build" "${{ env.BUILD_DIR }}\${{ env.SecurityRepoPath }}\SteamContentBuilder\scripts\app_build_700480.vdf" +quit
