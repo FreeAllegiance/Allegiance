@@ -74,7 +74,7 @@ jobs:
     #     buildDescription: ${{ github.sha }}
     #     rootPath: Allegiance\objsv143\FZRetail\WinTrek
     #     depot1Path: Allegiance\objsv143\FZRetail\WinTrek
-    #     depot1InstallScriptPath: $BUILD_DIR\$SECURITY_REPO_PATH\SteamContentBuilder\scripts\app_build_700480.vdf
+    #     depot1InstallScriptPath: $BUILD_DIR\${{ env.SecurityRepoPath }}\SteamContentBuilder\scripts\app_build_700480.vdf
     #     releaseBranch: next-release
 
     - name: Checkout AllegianceSecurity
@@ -121,19 +121,19 @@ jobs:
         popd
 
     - name: Restore NuGet packages for AllegianceSecurity
-      run: nuget restore $SECURITY_REPO_PATH\AllegianceSecurity.sln
+      run: nuget restore $SecurityRepoPath\AllegianceSecurity.sln
 
     - name: Build AllegianceSecurity Tools
       run: |
-        msbuild $SECURITY_REPO_PATH\AllegianceSecurity.sln /p:Configuration=Release /p:Platform="Any CPU" /t:AllegianceBuildTool
-        msbuild $SECURITY_REPO_PATH\AllegianceSecurity.sln /p:Configuration=Release /p:Platform=x86 /t:AllegianceSecurity '/p:IncludePath="${{ github.workspace }}\Allegiance\src\zlib;${{ github.workspace }}\$SECURITY_REPO_PATH\lib\steam;"'
-        msbuild $SECURITY_REPO_PATH\AllegianceSecurity.sln /p:Configuration=Debug /p:Platform=x86 /t:AllegianceSecurity '/p:IncludePath="${{ github.workspace }}\Allegiance\src\zlib;${{ github.workspace }}\$SECURITY_REPO_PATH\lib\steam;"'
+        msbuild $SecurityRepoPath\AllegianceSecurity.sln /p:Configuration=Release /p:Platform="Any CPU" /t:AllegianceBuildTool
+        msbuild $SecurityRepoPath\AllegianceSecurity.sln /p:Configuration=Release /p:Platform=x86 /t:AllegianceSecurity '/p:IncludePath="${{ github.workspace }}\Allegiance\src\zlib;${{ github.workspace }}\$SecurityRepoPath\lib\steam;"'
+        msbuild $SecurityRepoPath\AllegianceSecurity.sln /p:Configuration=Debug /p:Platform=x86 /t:AllegianceSecurity '/p:IncludePath="${{ github.workspace }}\Allegiance\src\zlib;${{ github.workspace }}\$SecurityRepoPath\lib\steam;"'
 
     - name: Copy Security Libs to Allegiance
       # Mirroring: xcopy ... C:\Source\git\Allegiance\src\Lib\AllegianceSecurity\ /Y
       run: |
-        xcopy "$SECURITY_REPO_PATH\Release\AllegianceSecurity.lib" "Allegiance\src\Lib\AllegianceSecurity\" /Y
-        xcopy "$SECURITY_REPO_PATH\Debug\AllegianceSecurityd.lib" "Allegiance\src\Lib\AllegianceSecurity\" /Y
+        xcopy "$SecurityRepoPath\Release\AllegianceSecurity.lib" "Allegiance\src\Lib\AllegianceSecurity\" /Y
+        xcopy "$SecurityRepoPath\Debug\AllegianceSecurityd.lib" "Allegiance\src\Lib\AllegianceSecurity\" /Y
 
     - name: Setup MSVC Developer Command Prompt
       uses: ilammy/msvc-dev-cmd@v1
@@ -179,11 +179,11 @@ jobs:
       # Warning on this step if Artwork repo is needed.
       continue-on-error: true 
       run: |
-        $SECURITY_REPO_PATH\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -generateArtworkHashes "Allegiance\artwork" "$SECURITY_REPO_PATH\AllegianceSecurity\FileHashTable.cpp"
+        $SecurityRepoPath\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -generateArtworkHashes "Allegiance\artwork" "$SecurityRepoPath\AllegianceSecurity\FileHashTable.cpp"
 
     - name: Update Build Number
       run: |
-        $SECURITY_REPO_PATH\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -updateBuildNumber "Allegiance\src\Inc\SlmVer.h"
+        $SecurityRepoPath\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -updateBuildNumber "Allegiance\src\Inc\SlmVer.h"
 
     # Staging - Mirroring batch file xcopy commands
     - name: Stage Build Artifacts
@@ -192,8 +192,8 @@ jobs:
         $StagingDir = "Staging"
         
         # Security Tools
-        xcopy "$SECURITY_REPO_PATH\AllegianceBuildTool\bin\Release\*.exe" "$StagingDir\" /s /d /Y
-        xcopy "$SECURITY_REPO_PATH\AllegianceBuildTool\bin\Release\*.dll" "$StagingDir\" /s /d /Y
+        xcopy "$SecurityRepoPath\AllegianceBuildTool\bin\Release\*.exe" "$StagingDir\" /s /d /Y
+        xcopy "$SecurityRepoPath\AllegianceBuildTool\bin\Release\*.dll" "$StagingDir\" /s /d /Y
 
         # Game Binaries (FZRetail / Win32 aka x86)
         # Note: Batch used 'objsv143\FZRetail'. MSBuild output path might differ on clean env, usually matches sln.
@@ -226,9 +226,8 @@ jobs:
         STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
         STEAM_CONFIG_VDF: ${{ secrets.STEAM_CONFIG_VDF }}
         BUILD_DIR: ${{ env.BUILD_DIR }}
-        SECURITY_REPO_PATH: ${{ env.SecurityRepoPath }}
       run: |
         echo "$STEAM_CONFIG_VDF" | base64 -d > /hostedtoolcache/windows/steamcmd/latest/i386/config/config.vdf
         ls -la /hostedtoolcache/windows/steamcmd/latest/i386
         ls -la /hostedtoolcache/windows/steamcmd/latest/i386/config
-        steamcmd +set_steam_guard_code $STEAM_GUARD_CODE +login $STEAM_USERNAME $STEAM_PASSWORD +run_app_build_http -desc "GitHub Action Build" "$BUILD_DIR\$SECURITY_REPO_PATH\SteamContentBuilder\scripts\app_build_700480.vdf" +quit
+        steamcmd +set_steam_guard_code $STEAM_GUARD_CODE +login $STEAM_USERNAME $STEAM_PASSWORD +run_app_build_http -desc "GitHub Action Build" "$BUILD_DIR\$SecurityRepoPath\SteamContentBuilder\scripts\app_build_700480.vdf" +quit
