@@ -36,8 +36,6 @@ jobs:
         STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
         STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
       run: |
-        export scriptsDir=$(cygpath -u "$GITHUB_WORKSPACE/${{ env.SecurityRepoPath }}/SteamContentBuilder/scripts")
-        ls -la $scriptsDir
         c:/hostedtoolcache/windows/steamcmd/latest/i386/steamcmd +login $STEAM_USERNAME $STEAM_PASSWORD +quit || true
 
     - name: Get Steam Guard Code
@@ -72,6 +70,13 @@ jobs:
         repository: BackTrak/AllegianceSecurity
         path: AllegianceSecurity
         token: ${{ secrets.ALLEGIANCE_SECURITY_PAT }}
+
+    - name: Check Scripts Directory
+      shell: bash
+      run: |
+        export scriptsDir=$(cygpath -u "$GITHUB_WORKSPACE/${{ env.SecurityRepoPath }}/SteamContentBuilder/scripts")
+        ls -la $scriptsDir
+
 
     - name: Checkout DirectX SDK
       uses: actions/checkout@v4
