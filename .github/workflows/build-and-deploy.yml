@@ -22,6 +22,11 @@ jobs:
     - name: Setup SteamCMD
       uses: CyberAndrii/setup-steamcmd@v1
 
+    - name: Checkout Allegiance
+      uses: actions/checkout@v4
+      with:
+        path: Allegiance
+
     - name: Steam Test
       shell: bash
       # Batch provides: +login ZapHopBuilder ... +run_app_build_http ...
@@ -31,20 +36,14 @@ jobs:
         STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
         STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
       run: |
-        pwd
-        ls -la c:/hostedtoolcache/windows/steamcmd
-        ls -la c:/hostedtoolcache/windows/steamcmd/latest
-        ls -la c:/hostedtoolcache/windows/steamcmd/latest/i386
-        ls -la c:/hostedtoolcache/windows/steamcmd/latest/i386/config
-        echo "${{ secrets.STEAM_CONFIG_VDF }}" | base64 -d > c:/hostedtoolcache/windows/steamcmd/latest/i386/config/config.vdf
-        c:/hostedtoolcache/windows/steamcmd/latest/i386/steamcmd +set_steam_guard_code $STEAM_GUARD_CODE +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +quit || true
+        c:/hostedtoolcache/windows/steamcmd/latest/i386/steamcmd +login $STEAM_USERNAME $STEAM_PASSWORD +quit || true
 
     - name: Get Steam Guard Code
       shell: pwsh
       env:
         STEAM_GUARD_MAILBOX: ${{ secrets.STEAM_GUARD_MAILBOX }}
       run: |
-        $code = .\.github\scripts\get_steam_guard_code.ps1 -Mailbox $env:STEAM_GUARD_MAILBOX
+        $code = .\Allegiance\.github\scripts\get_steam_guard_code.ps1 -Mailbox $env:STEAM_GUARD_MAILBOX
         echo "STEAM_GUARD_CODE=$code" >> $env:GITHUB_ENV
         Write-Host "Steam Guard code captured: $code"
 
@@ -77,12 +76,6 @@ jobs:
     #     depot1Path: Allegiance\objsv143\FZRetail\WinTrek
     #     depot1InstallScriptPath: $BUILD_DIR\$SECURITY_REPO_PATH\SteamContentBuilder\scripts\app_build_700480.vdf
     #     releaseBranch: next-release
-
-
-    - name: Checkout Allegiance
-      uses: actions/checkout@v4
-      with:
-        path: Allegiance
 
     - name: Checkout AllegianceSecurity
       uses: actions/checkout@v4
