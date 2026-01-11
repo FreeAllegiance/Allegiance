@@ -199,4 +199,4 @@ jobs:
         ls -la ./Staging
         export scriptsDir=$(cygpath -u "$GITHUB_WORKSPACE/${{ env.SecurityRepoPath }}/SteamContentBuilder/scripts")
         ls -la $scriptsDir
-        c:/hostedtoolcache/windows/steamcmd/latest/i386/steamcmd +set_steam_guard_code $STEAM_GUARD_CODE +login $STEAM_USERNAME $STEAM_PASSWORD +run_app_build_http -desc "GitHub Action Build" "$scriptsDir/app_next-release_build_700480.vdf" +quit
+        c:/hostedtoolcache/windows/steamcmd/latest/i386/steamcmd +set_steam_guard_code $STEAM_GUARD_CODE +login $STEAM_USERNAME $STEAM_PASSWORD +run_app_build_http -desc "GitHub Action Build: $GITHUB_SHA" "$scriptsDir/app_next-release_build_700480.vdf" +quit
