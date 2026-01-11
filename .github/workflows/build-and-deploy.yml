@@ -193,6 +193,7 @@ jobs:
         STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
         STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
       run: |
+        pwd
         cd ${{ env.SecurityRepoPath }}/SteamContentBuilder
         ls -la ./scripts
         ls -la ./Staging
