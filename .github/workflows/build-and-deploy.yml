@@ -77,6 +77,12 @@ jobs:
         path: ${{ env.DirectXSDKPath }}
         repository: ReactiioN1337/DirectX-SDK
 
+    - name: Checkout Artwork
+      uses: actions/checkout@v4
+      with:
+        repository: FreeAllegiance/Artwork
+        path: Artwork
+
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
 
@@ -110,6 +116,16 @@ jobs:
     - name: Restore NuGet packages for AllegianceSecurity
       run: nuget restore ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln
 
+    - name: Generate Artwork Hashes
+      # Batch: AllegianceBuildTool.exe -generateArtworkHashes "C:\Source\git\Artwork" ...
+      # Note: Artwork folder is referenced. Assuming it is in the root or explicitly checked out. 
+      # The batch file had "C:\Source\git\Artwork". We might need to check out the Artwork repo too if it's separate.
+      # For now, assuming it might be missing or part of the main repo. 
+      # Warning on this step if Artwork repo is needed.
+      continue-on-error: true 
+      run: |
+        ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -generateArtworkHashes "Allegiance\artwork" "${{ env.SecurityRepoPath }}\AllegianceSecurity\FileHashTable.cpp"
+
     - name: Build AllegianceSecurity Tools
       run: |
         msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Release /p:Platform="Any CPU" /t:AllegianceBuildTool
@@ -126,33 +142,17 @@ jobs:
       uses: ilammy/msvc-dev-cmd@v1
       with:
         arch: x86
-  
+
+    - name: Update Build Number
+      run: |
+        ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -updateBuildNumber "Allegiance\src\Inc\SlmVer.h"
+
     - name: Build Allegiance (FZRetail)
       shell: cmd
       run: |
         pushd Allegiance\src
         msbuild "..\VS2022\Allegiance.sln" /p:Configuration="FZRetail" /p:Platform="Any CPU" /p:IncludePath="D:\a\Allegiance\Allegiance\DirectXSDK2010\Include;..\src\lib\lua\include;..\src\lib\sol\include;$(IncludePath)" /p:LibraryPath="D:\a\Allegiance\Allegiance\DirectXSDK2010\Lib\x86;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x86;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\ucrt\x86;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\lib\x86;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\atlmfc\lib\x86;..\src\lib\lua;..\src\lib\sol;$(LibraryPath)" /p:AutoBuild=true /t:Allegiance
         popd
-
-    - name: Checkout Artwork
-      uses: actions/checkout@v4
-      with:
-        repository: FreeAllegiance/Artwork
-        path: Artwork
-
-    - name: Generate Artwork Hashes
-      # Batch: AllegianceBuildTool.exe -generateArtworkHashes "C:\Source\git\Artwork" ...
-      # Note: Artwork folder is referenced. Assuming it is in the root or explicitly checked out. 
-      # The batch file had "C:\Source\git\Artwork". We might need to check out the Artwork repo too if it's separate.
-      # For now, assuming it might be missing or part of the main repo. 
-      # Warning on this step if Artwork repo is needed.
-      continue-on-error: true 
-      run: |
-        ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -generateArtworkHashes "Allegiance\artwork" "${{ env.SecurityRepoPath }}\AllegianceSecurity\FileHashTable.cpp"
-
-    - name: Update Build Number
-      run: |
-        ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -updateBuildNumber "Allegiance\src\Inc\SlmVer.h"
 
     # Staging - Mirroring batch file xcopy commands
     - name: Stage Build Artifacts
