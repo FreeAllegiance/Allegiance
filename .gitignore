@@ -25,7 +25,7 @@ bld/
 
 # Visual Studio 2015 cache/options directory
 .vs/
-.vscode/
+# .vscode/ is tracked
 # Uncomment if you have tasks that create the project's static files in wwwroot
 #wwwroot/
 
@@ -327,6 +327,9 @@ $RECYCLE.BIN/
 
 # Allow boost library
 !src/Lib/boost/boost/preprocessor/debug
+
 /src/Pigs/Piglets/Junk
+src/Pigs/**/AGCLib.dll
+
 /out/build/x64-Debug
 /src/build

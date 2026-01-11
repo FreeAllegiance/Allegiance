@@ -70,8 +70,8 @@
     <Midl>
       <AdditionalIncludeDirectories>.\$(SolutionDir);.\$(TargetDir);..\src\Inc;..\src\AGC;.\$(OutDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <GenerateTypeLibrary>true</GenerateTypeLibrary>
-      <TypeLibraryName>$(TargetDir)/AGC.tlb</TypeLibraryName>
-      <OutputDirectory>$(TargetDir)\</OutputDirectory>
+      <TypeLibraryName>$(OutDir)AGC.tlb</TypeLibraryName>
+      <OutputDirectory>$(OutDir)</OutputDirectory>
       <HeaderFileName>%(FileName).h</HeaderFileName>
     </Midl>
     <ClCompile>
@@ -115,17 +115,14 @@
       <UACExecutionLevel>HighestAvailable</UACExecutionLevel>
     </Link>
     <CustomBuildStep>
-      <Command>regsvr32 $(TargetPath) /s</Command>
+      <Command>regsvr32 $(TargetPath) /s &amp; echo registered &gt; $(IntDir)reg_complete.txt &amp; exit 0</Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>
-      </Outputs>
+      <Outputs>$(IntDir)reg_complete.txt</Outputs>
     </CustomBuildStep>
     <PreBuildEvent>
-      <Command>..\src\AGC\Pre-build.bat $(OutDir)</Command>
-    </PreBuildEvent>
-    <PreBuildEvent>
-      <Message>Transforming XML</Message>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>xcopy ..\src\lib\steam\steam_api.dll $(OutDir) /s /d /y
@@ -136,8 +133,8 @@ xcopy $(ProjectDir)..\src\Inc\steam_appid.txt $(OutDir) /s /d /y</Command>
     <Midl>
       <AdditionalIncludeDirectories>$(TargetDir);..\src\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <GenerateTypeLibrary>true</GenerateTypeLibrary>
-      <TypeLibraryName>$(TargetDir)/AGC.tlb</TypeLibraryName>
-      <OutputDirectory>$(TargetDir)\</OutputDirectory>
+      <TypeLibraryName>$(OutDir)AGC.tlb</TypeLibraryName>
+      <OutputDirectory>$(OutDir)</OutputDirectory>
       <HeaderFileName>%(FileName).h</HeaderFileName>
     </Midl>
     <ClCompile>
@@ -194,7 +191,8 @@ xcopy $(ProjectDir)..\src\Inc\steam_appid.txt $(OutDir) /s /d /y</Command>
       </Outputs>
     </CustomBuildStep>
     <PreBuildEvent>
-      <Command>..\src\AGC\Pre-build.bat $(OutDir)</Command>
+      <Command>
+      </Command>
       <Message>Transforming XML</Message>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -435,6 +433,10 @@ mc.exe -r $(OutDir) -h $(OutDir) $(OutDir)AGCEventsMC.mc
     <ClInclude Include="..\src\AGC\TCStrings.h" />
     <ClInclude Include="..\src\AGC\TCUtility.h" />
   </ItemGroup>
+  <Target Name="GenerateAGCEvents" BeforeTargets="PrepareForBuild;ClCompile" Inputs="..\src\AGC\AGCEvents.xml;..\src\AGC\AGCEventsCPP.xsl;..\src\AGC\AGCEventsRC2.xsl;..\src\AGC\AGCEventsRCH.xsl;..\src\AGC\AGCEventsMC.xsl" Outputs="..\src\AGC\AGCEventsCPP.h;..\src\AGC\AGCEventsRC2.rc2;..\src\AGC\AGCEventsRCH.h;..\src\AGC\AGCEventsMC.mc;..\src\AGC\AGCEventsMC.h;..\src\AGC\AGCEventsMC.rc">
+    <Message Text="Generating AGCEvents..." Importance="high" />
+    <Exec Command="cd ..\src\AGC &amp;&amp; Pre-build.bat" />
+  </Target>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

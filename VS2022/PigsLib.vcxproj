@@ -67,8 +67,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='FZDebug|Win32'">
     <Midl>
       <AdditionalIncludeDirectories>$(TargetDir);..\src\Test\Inc;..\src\Inc;$(TargetDir)\..\..\Guids;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <TypeLibraryName>$(TargetDir)/$(ProjectName).tlb</TypeLibraryName>
-      <OutputDirectory>$(TargetDir)</OutputDirectory>
+      <TypeLibraryName>$(OutDir)PigsLib.tlb</TypeLibraryName>
+      <OutputDirectory>$(OutDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <DllDataFileName>%(Filename)_dlldata.c</DllDataFileName>
     </Midl>
@@ -109,8 +109,8 @@ xcopy $(ProjectDir)..\src\Inc\steam_appid.txt $(OutDir) /s /d /y</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='FZRetail|Win32'">
     <Midl>
       <AdditionalIncludeDirectories>$(TargetDir);..\src\Test\Inc;..\src\Inc;$(TargetDir)\..\..\Guids;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <TypeLibraryName>$(TargetDir)/$(ProjectName).tlb</TypeLibraryName>
-      <OutputDirectory>$(TargetDir)</OutputDirectory>
+      <TypeLibraryName>$(OutDir)PigsLib.tlb</TypeLibraryName>
+      <OutputDirectory>$(OutDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <DllDataFileName>%(Filename)_dlldata.c</DllDataFileName>
     </Midl>
@@ -163,14 +163,22 @@ xcopy $(ProjectDir)..\src\Inc\steam_appid.txt $(OutDir) /s /d /y</Command>
     <None Include="..\src\Pigs\PigsLib\PigsLib.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="..\src\Inc\PigsIDL.idl" />
+    <Midl Include="..\src\Inc\PigsIDL.idl">
+      <GenerateTypeLibrary Condition="'$(Configuration)|$(Platform)'=='FZDebug|Win32'">false</GenerateTypeLibrary>
+    </Midl>
     <Midl Include="..\src\Pigs\PigsLib\PigsLib.idl" />
-    <Midl Include="..\src\Inc\ScrRun.idl" />
+    <Midl Include="..\src\Inc\ScrRun.idl">
+      <GenerateTypeLibrary Condition="'$(Configuration)|$(Platform)'=='FZDebug|Win32'">false</GenerateTypeLibrary>
+    </Midl>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\src\Pigs\PigsLib\PigsLib.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Target Name="GenerateInterop" AfterTargets="Link" Inputs="$(OutDir)PigsLib.tlb;$(OutDir)..\..\Guids\AGC.tlb;$(OutDir)..\..\Test\TCObj\TCObj.tlb" Outputs="$(OutDir)PigsLib.dll">
+    <Message Text="Generating PigsLib Interop Assembly..." Importance="high" />
+    <Exec Command="copy /y &quot;$(OutDir)..\..\Guids\AGC.tlb&quot; &quot;$(OutDir)&quot; &amp; copy /y &quot;$(OutDir)..\..\Test\TCObj\TCObj.tlb&quot; &quot;$(OutDir)&quot; &amp; &quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools\TlbImp.exe&quot; &quot;$(OutDir)PigsLib.tlb&quot; /out:&quot;$(OutDir)PigsLib.dll&quot; /reference:&quot;$(OutDir)..\..\Guids\AGCLib.dll&quot; /namespace:PigsLib /silent /nologo" />
+  </Target>
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>

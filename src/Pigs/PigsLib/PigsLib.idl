@@ -34,7 +34,7 @@ library PigsLib
   ///////////////////////////////////////////////////////////////////////////
 	// {secret}
 	[
-		hidden, noncreatable, uuid(29E0A264-CC16-11d2-9646-00C04F68DEB0)
+		uuid(29E0A264-CC16-11d2-9646-00C04F68DEB0)
 	]
 	coclass PigsInterfaces
 	{
