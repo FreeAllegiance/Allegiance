@@ -197,4 +197,4 @@ jobs:
         cd ${{ env.SecurityRepoPath }}/SteamContentBuilder
         ls -la ./scripts
         ls -la ./Staging
-        c:/hostedtoolcache/windows/steamcmd/latest/i386/steamcmd +set_steam_guard_code $STEAM_GUARD_CODE +login $env:STEAM_USERNAME $env:STEAM_PASSWORD +run_app_build_http -desc "GitHub Action Build" "./scripts/app_build_700480.vdf" +quit
+        c:/hostedtoolcache/windows/steamcmd/latest/i386/steamcmd +set_steam_guard_code $STEAM_GUARD_CODE +login $STEAM_USERNAME $STEAM_PASSWORD +run_app_build_http -desc "GitHub Action Build" "./scripts/app_build_700480.vdf" +quit
