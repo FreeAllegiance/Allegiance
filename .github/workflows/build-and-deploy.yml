@@ -214,6 +214,6 @@ jobs:
       run: |
         $StagingDir = "${{ env.SecurityRepoPath }}\SteamContentBuilder\Staging"
         pwd
-        ls -la "$StagingDir"
+        dir "$StagingDir"
         echo ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -generateFileChecksumAndUpload "https://allegiance.zaphop.com/api/drm" $env:DRM_UPLOAD_KEY "$StagingDir\Allegiance.exe"
         ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -generateFileChecksumAndUpload "https://allegiance.zaphop.com/api/drm" $env:DRM_UPLOAD_KEY "$StagingDir\Allegiance.exe"
