@@ -209,7 +209,6 @@ jobs:
         c:/hostedtoolcache/windows/steamcmd/latest/i386/steamcmd +set_steam_guard_code $STEAM_GUARD_CODE +login $STEAM_USERNAME $STEAM_PASSWORD +run_app_build_http -desc "GitHub Action Build: $GITHUB_SHA" "$scriptsDir/app_next-release_build_700480.vdf" +quit
     
     - name: Update Build Hash
-      shell: cmd
       env:
         DRM_UPLOAD_KEY: ${{ secrets.DRM_UPLOAD_KEY }}
       run: |
