@@ -333,3 +333,4 @@ src/Pigs/**/AGCLib.dll
 
 /out/build/x64-Debug
 /src/build
+/build

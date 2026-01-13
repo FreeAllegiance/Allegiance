@@ -16,6 +16,7 @@ jobs:
       # Configuration matching the batch file (Batch uses Release for Tools, FZRetail for Game)
       BuildPlatform: Any CPU
       BuildConfiguration: FZRetail
+      BUILD_DIR: "" # Initialized here to satisfy the linter
 
     steps:
 
@@ -82,6 +83,7 @@ jobs:
       with:
         repository: FreeAllegiance/Artwork
         path: Artwork
+        ref: next-release
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
@@ -205,3 +207,11 @@ jobs:
         export scriptsDir=$(cygpath -u "$GITHUB_WORKSPACE/${{ env.SecurityRepoPath }}/SteamContentBuilder/scripts")
         ls -la $scriptsDir
         c:/hostedtoolcache/windows/steamcmd/latest/i386/steamcmd +set_steam_guard_code $STEAM_GUARD_CODE +login $STEAM_USERNAME $STEAM_PASSWORD +run_app_build_http -desc "GitHub Action Build: $GITHUB_SHA" "$scriptsDir/app_next-release_build_700480.vdf" +quit
+    
+    - name: Update Build Hash
+      shell: cmd
+      env:
+        DRM_UPLOAD_KEY: ${{ secrets.DRM_UPLOAD_KEY }}
+      run: |
+        $StagingDir = "${{ env.SecurityRepoPath }}\SteamContentBuilder\Staging"
+        ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -generateFileChecksumAndUpload "https://allegiance.zaphop.com/api/drm" $DRM_UPLOAD_KEY "$StagingDir\Allegiance.exe"
