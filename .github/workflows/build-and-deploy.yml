@@ -213,5 +213,7 @@ jobs:
         DRM_UPLOAD_KEY: ${{ secrets.DRM_UPLOAD_KEY }}
       run: |
         $StagingDir = "${{ env.SecurityRepoPath }}\SteamContentBuilder\Staging"
-        echo ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -generateFileChecksumAndUpload "https://allegiance.zaphop.com/api/drm" $DRM_UPLOAD_KEY "$StagingDir\Allegiance.exe"
-        ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -generateFileChecksumAndUpload "https://allegiance.zaphop.com/api/drm" $DRM_UPLOAD_KEY "$StagingDir\Allegiance.exe"
+        pwd
+        ls -la "$StagingDir"
+        echo ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -generateFileChecksumAndUpload "https://allegiance.zaphop.com/api/drm" $env:DRM_UPLOAD_KEY "$StagingDir\Allegiance.exe"
+        ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -generateFileChecksumAndUpload "https://allegiance.zaphop.com/api/drm" $env:DRM_UPLOAD_KEY "$StagingDir\Allegiance.exe"
