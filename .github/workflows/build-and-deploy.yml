@@ -17,6 +17,7 @@ jobs:
       BuildPlatform: Any CPU
       BuildConfiguration: FZRetail
       BUILD_DIR: "" # Initialized here to satisfy the linter
+      BUILD_NUMBER: "" # Initialized here to satisfy the linter
 
     steps:
 
@@ -123,22 +124,18 @@ jobs:
         msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Release /p:Platform="Any CPU" /t:AllegianceBuildTool
 
     - name: Generate Artwork Hashes
-      # Batch: AllegianceBuildTool.exe -generateArtworkHashes "C:\Source\git\Artwork" ...
-      # Note: Artwork folder is referenced. Assuming it is in the root or explicitly checked out. 
-      # The batch file had "C:\Source\git\Artwork". We might need to check out the Artwork repo too if it's separate.
-      # For now, assuming it might be missing or part of the main repo. 
-      # Warning on this step if Artwork repo is needed.
-      continue-on-error: true 
       run: |
         ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -generateArtworkHashes "Allegiance\artwork" "${{ env.SecurityRepoPath }}\AllegianceSecurity\FileHashTable.cpp" -forceUpdate
 
     - name: Update Build Number
+      shell: pwsh
       run: |
-        ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -updateBuildNumber "Allegiance\src\Inc\SlmVer.h"
+        $buildNumber = & "${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe" -updateBuildNumber "Allegiance\src\Inc\SlmVer.h"
+        echo "BUILD_NUMBER=$buildNumber" >> $env:GITHUB_ENV
+        Write-Host "Build number captured: $buildNumber"
 
     - name: Build AllegianceSecurity Tools
       run: |
-        msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Release /p:Platform="Any CPU" /t:AllegianceBuildTool
         msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Release /p:Platform=x86 /t:AllegianceSecurity '/p:IncludePath="${{ github.workspace }}\Allegiance\src\zlib;${{ github.workspace }}\${{ env.SecurityRepoPath }}\lib\steam;"'
         msbuild ${{ env.SecurityRepoPath }}\AllegianceSecurity.sln /p:Configuration=Debug /p:Platform=x86 /t:AllegianceSecurity '/p:IncludePath="${{ github.workspace }}\Allegiance\src\zlib;${{ github.workspace }}\${{ env.SecurityRepoPath }}\lib\steam;"'
 
@@ -205,8 +202,15 @@ jobs:
         ls -la ./scripts
         ls -la ./Staging
         export scriptsDir=$(cygpath -u "$GITHUB_WORKSPACE/${{ env.SecurityRepoPath }}/SteamContentBuilder/scripts")
+        export objDir=$(cygpath -u "$GITHUB_WORKSPACE/Allegiance/objsv143/FZRetail")
+        export stagingDir=$(cygpath -u "$GITHUB_WORKSPACE/${{ env.SecurityRepoPath }}/SteamContentBuilder/Staging")
         ls -la $scriptsDir
-        c:/hostedtoolcache/windows/steamcmd/latest/i386/steamcmd +set_steam_guard_code $STEAM_GUARD_CODE +login $STEAM_USERNAME $STEAM_PASSWORD +run_app_build_http -desc "GitHub Action Build: $GITHUB_SHA" "$scriptsDir/app_next-release_build_700480.vdf" +quit
+        c:/hostedtoolcache/windows/steamcmd/latest/i386/steamcmd \
+          +set_steam_guard_code $STEAM_GUARD_CODE \
+          +login $STEAM_USERNAME $STEAM_PASSWORD \
+          +drm_wrap 700480 "$objDir/Wintrek/Allegiance.exe" "$stagingDir/Allegiance.exe" drmtoolp 6 \
+          +run_app_build_http -desc "GitHub Action Build: $GITHUB_SHA" "$scriptsDir/app_next-release_build_700480.vdf" \
+          +quit
     
     - name: Update Build Hash
       env:
