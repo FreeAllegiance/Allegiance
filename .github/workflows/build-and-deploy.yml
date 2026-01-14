@@ -130,7 +130,7 @@ jobs:
       # Warning on this step if Artwork repo is needed.
       continue-on-error: true 
       run: |
-        ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -generateArtworkHashes "Allegiance\artwork" "${{ env.SecurityRepoPath }}\AllegianceSecurity\FileHashTable.cpp"
+        ${{ env.SecurityRepoPath }}\AllegianceBuildTool\bin\Release\AllegianceBuildTool.exe -generateArtworkHashes "Allegiance\artwork" "${{ env.SecurityRepoPath }}\AllegianceSecurity\FileHashTable.cpp" -forceUpdate
 
     - name: Update Build Number
       run: |
