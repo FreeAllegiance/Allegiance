@@ -32,8 +32,8 @@ public:
         int nStrLenLine;
 
         IEngineFont* pfont = TrekResources::GetFont(m_pFontSize, m_pchatInfo->IsFromLeader());
-
-        while ((nStrLenLine = pfont->GetMaxTextLength(strMsg, ptLineSize.X(), true))
+        int availableWidth = ptLineSize.X() - 6;
+        while ((nStrLenLine = pfont->GetMaxTextLength(strMsg, availableWidth, true))
                 < nStrLenLeft)
         {
             int nStrLenWordBreak = nStrLenLine;

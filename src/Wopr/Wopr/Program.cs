@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.ExceptionServices;
 using System.Security.Policy;
 using System.Text;
 using System.Threading;
@@ -28,6 +29,7 @@ namespace Wopr
             p.Run(args);
         }
 
+        [HandleProcessCorruptedStateExceptions]
         private void Run(string[] args)
         {
             //AllegianceInterop.ClientConnection cc = new ClientConnection();
@@ -208,8 +210,15 @@ namespace Wopr
                     }
                 }
 
-                teamDirectorYellow.UpdateTeamStrategies();
-                teamDirectorBlue.UpdateTeamStrategies();
+                try
+                {
+                    teamDirectorYellow.UpdateTeamStrategies();
+                    teamDirectorBlue.UpdateTeamStrategies();
+                }
+                catch (Exception ex)
+                {
+                    Log("Exception in UpdateTeamStrategies: " + ex.ToString());
+                }
 
                 if (resignPostedTime != null && (DateTime.Now - resignPostedTime.GetValueOrDefault(DateTime.MinValue)).TotalSeconds > 3)
                 {

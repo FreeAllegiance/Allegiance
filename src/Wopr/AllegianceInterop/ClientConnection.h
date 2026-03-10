@@ -169,8 +169,8 @@ namespace AllegianceInterop
 
 		System::Collections::Generic::List<MissionInfoWrapper ^> ^ GetMissionList();
 		void JoinMission(MissionInfoWrapper ^ missionInfo, String ^ password);
-		IshipIGCWrapper ^ GetShip() { ConvertTo(IshipIGCWrapper, m_nativeClient->GetShip()) };
-		IsideIGCWrapper ^ GetSide() { ConvertTo(IsideIGCWrapper, m_nativeClient->GetSide()) };
+		IshipIGCWrapper ^ GetShip() { if (m_nativeClient == nullptr) return nullptr; ConvertTo(IshipIGCWrapper, m_nativeClient->GetShip()) };
+		IsideIGCWrapper ^ GetSide() { if (m_nativeClient == nullptr) return nullptr; ConvertTo(IsideIGCWrapper, m_nativeClient->GetSide()) };
 		void AddMoneyToBucket(IbucketIGCWrapper ^ bucket, Money money) { m_nativeClient->AddMoneyToBucket(bucket->m_instance, money); };
 		Money GetMoney(void) { return m_nativeClient->GetMoney(); };
 		ImissionIGCWrapper ^ GetCore() { ConvertTo(ImissionIGCWrapper, m_nativeClient->GetCore()) };
@@ -230,7 +230,8 @@ namespace AllegianceInterop
 		void EndLockDown(AllegianceInterop::LockdownCriteria lockdownCriteria) { m_nativeClient->EndLockDown((int)lockdownCriteria); }
 
 
-		void SendChat(
+		[System::Runtime::ExceptionServices::HandleProcessCorruptedStateExceptions]
+		bool SendChat(
 			IshipIGCWrapper ^							pshipSender,
 			AllegianceInterop::ChatTarget				ctRecipient,
 			ObjectID									oidRecipient,
@@ -242,22 +243,40 @@ namespace AllegianceInterop
 			ImodelIGCWrapper ^							pmodelTarget,
 			bool										bObjectModel)
 		{
-			marshal_context^ context = gcnew marshal_context();
+			try
+			{
+				marshal_context^ context = gcnew marshal_context();
 
-			if (pshipSender == nullptr)
-				return;
+				if (pshipSender == nullptr)
+					return false;
 
-			m_nativeClient->SendChat(
-				pshipSender->m_instance,
-				(::ChatTarget) ctRecipient,
-				oidRecipient,
-				soundID,
-				context->marshal_as<const char*>(pszText),
-				cid,
-				otTarget,
-				oidTarget,
-				pmodelTarget ? pmodelTarget->m_instance : nullptr,
-				bObjectModel);
+				if (m_nativeClient == nullptr)
+					return false;
+
+				m_nativeClient->SendChat(
+					pshipSender->m_instance,
+					(::ChatTarget)ctRecipient,
+					oidRecipient,
+					soundID,
+					context->marshal_as<const char*>(pszText),
+					cid,
+					otTarget,
+					oidTarget,
+					pmodelTarget ? pmodelTarget->m_instance : nullptr,
+					bObjectModel);
+
+				return true;
+			}
+			catch (System::Exception ^ ex)
+			{
+				System::Console::WriteLine("Exception in SendChat: " + ex->ToString());
+				return false;
+			}
+			catch (...)
+			{
+				System::Console::WriteLine("Native exception in SendChat");
+				return false;
+			}
 		}
 
 		ShipID SideLeaderShipID(SideID sideID) { return m_nativeClient->MyMission()->SideLeaderShipID(sideID); }

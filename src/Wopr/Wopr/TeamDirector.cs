@@ -8,6 +8,7 @@ using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.ExceptionServices;
 using Wopr.Constants;
 using Wopr.Entities;
 using Wopr.Strategies;
@@ -225,14 +226,41 @@ namespace Wopr
             ChangeStrategy(clientConnection, strategyID, lastStrategy.PlayerName, lastStrategy.SideIndex, lastStrategy.IsGameController, lastStrategy.IsCommander);
         }
 
+        [HandleProcessCorruptedStateExceptions]
         internal void PostResignAndQuit()
         {
-            var firstConnectedClient = _connectedClientsByPlayerName.Values.FirstOrDefault();
+            try
+            {
+                var firstConnectedClient = _connectedClientsByPlayerName.Values.FirstOrDefault();
 
-            var ship = firstConnectedClient.GetShip();
+                if (firstConnectedClient == null)
+                {
+                    Log("Global", "PostResignAndQuit: No connected clients. Terminating.");
+                    System.Environment.Exit(0);
+                    return;
+                }
 
-            if (ship != null)    
-                firstConnectedClient.SendChat(ship, AllegianceInterop.ChatTarget.CHAT_TEAM, -1, -1, "#resign", -1, -1, -1, null, false);
+                var ship = firstConnectedClient.GetShip();
+
+                if (ship != null)
+                {
+                    if (firstConnectedClient.SendChat(ship, AllegianceInterop.ChatTarget.CHAT_TEAM, -1, -1, "#resign", -1, -1, -1, null, false) == false)
+                    {
+                        Log("Global", "PostResignAndQuit: SendChat failed. Terminating.");
+                        System.Environment.Exit(0);
+                    }
+                }
+                else
+                {
+                    Log("Global", "PostResignAndQuit: No ship found. Terminating.");
+                    System.Environment.Exit(0);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log("Global", "Exception in PostResignAndQuit (terminating): " + ex.ToString());
+                System.Environment.Exit(0);
+            }
         }
 
         public void ChangeStrategy(AllegianceInterop.ClientConnection clientConnection, StrategyID strategyID, string playerName, short sideIndex, bool isGameController, bool isCommander)
@@ -313,6 +341,7 @@ namespace Wopr
             public bool isCommander;
         }
 
+        [HandleProcessCorruptedStateExceptions]
         private void CreatePlayerThread(object createPlayerObject)
         {
             CreatePlayerThreadParams createPlayerParams = (CreatePlayerThreadParams)createPlayerObject;
