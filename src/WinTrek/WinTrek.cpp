@@ -5723,7 +5723,7 @@ public:
         }
         else if (m_pchatSize->GetValue() == 3.0f)
         {
-            return "Set Chat: Size Huge";
+            return "Set Chat: Huge";
         }
                 
         return "Invalid Chat size";

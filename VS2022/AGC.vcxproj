@@ -435,7 +435,7 @@ mc.exe -r $(OutDir) -h $(OutDir) $(OutDir)AGCEventsMC.mc
   </ItemGroup>
   <Target Name="GenerateAGCEvents" BeforeTargets="PrepareForBuild;ClCompile" Inputs="..\src\AGC\AGCEvents.xml;..\src\AGC\AGCEventsCPP.xsl;..\src\AGC\AGCEventsRC2.xsl;..\src\AGC\AGCEventsRCH.xsl;..\src\AGC\AGCEventsMC.xsl" Outputs="..\src\AGC\AGCEventsCPP.h;..\src\AGC\AGCEventsRC2.rc2;..\src\AGC\AGCEventsRCH.h;..\src\AGC\AGCEventsMC.mc;..\src\AGC\AGCEventsMC.h;..\src\AGC\AGCEventsMC.rc">
     <Message Text="Generating AGCEvents..." Importance="high" />
-    <Exec Command="cd ..\src\AGC &amp;&amp; Pre-build.bat" />
+    <Exec Command="cd ..\src\AGC &amp;&amp; Pre-build.bat $(OutDir)" />
   </Target>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
