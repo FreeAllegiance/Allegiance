@@ -4836,14 +4836,14 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
       pMission   = pfsMission->GetIGCMission();
   }
 
-  ttPreHandler.Stop("...for message type %s from %s", g_rgszMsgNames[pfm->fmid],
+  ttPreHandler.Stop("...for message type %s from %s", SafeMsgName(pfm->fmid),
                     pfsPlayer ? pfsPlayer->GetName() : "<unknown>");
 
   if (!pfsPlayer && (pfm->fmid != FM_C_LOGONREQ))
   {
     _AGCModule.TriggerEvent(NULL, AllsrvEventID_MsgFromUnknownPlayer, "", -1, -1, -1, 2,
         "DPNID", VT_I4, cnxnFrom.GetID(), // pkk - Returns DPNID (DirectPlay network identifier)
-        "MsgName", VT_LPSTR, g_rgszMsgNames[pfm->fmid]); // pkk - This should return FedSrvMsgID text, but somehow it doesn't
+        "MsgName", VT_LPSTR, SafeMsgName(pfm->fmid)); // pkk - This should return FedSrvMsgID text, but somehow it doesn't
   }
   else
   switch(pfm->fmid)
@@ -4920,6 +4920,17 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 
       TrapHackBoot(pfmChat->cbMessage >= 0);
       TrapHackBoot(pfmChat->ibMessage == sizeof(FMD_CS_CHATMESSAGE));
+
+      // R3 #3 / M5 - The Message var-length field is consumed by _strnicmp/_stricmp/
+      // lstrcpy/lstrcmpi as a NUL-terminated C string below. Confirm the field lies
+      // wholly within the received bytes (ibMessage + cbMessage <= cbmsg) AND that its
+      // last in-bounds byte is '\0' before any string op. cbMessage==0 is allowed (no
+      // string; downstream code NULL-checks FM_VAR_REF/pszMsg). ibMessage and cbMessage
+      // are unsigned short (IB/CB); the (int) cast forces signed arithmetic so the sum
+      // cannot wrap, and the cbMessage==0 short-circuit prevents the -1 underflow.
+      TrapHackBoot(pfmChat->ibMessage + (int)pfmChat->cbMessage <= pfmChat->cbmsg);
+      TrapHackBoot(pfmChat->cbMessage == 0 ||
+                   ((char*)pfmChat)[pfmChat->ibMessage + pfmChat->cbMessage - 1] == '\0');
 
 	  // BT - STEAM - Send the message up to the lobby for logging.
 	  ZString targetName;
@@ -5804,8 +5815,6 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 
     case FM_C_LOGONREQ:
     {
-      CQLogonStats * pquery = new CQLogonStats(GotLogonDetails);
-      CQLogonStatsData * pqd = pquery->GetData();
       if (NULL != g.pServerCounters)
         g.pServerCounters->cLoginAttempts++;
 
@@ -5813,13 +5822,16 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
       char * szReason = "Sorry Charlie. Something \"weird\" happened."; // default failure message
       bool fRetry = false;
 
-      // sanity check the message
+      // sanity check the message (before allocating pquery, so a TrapHackBootNoPlayer break cannot leak it)
       TrapHackBootNoPlayer(NULL != FM_VAR_REF(pfmLogon, CharacterName)
           && NULL != memchr(FM_VAR_REF(pfmLogon, CharacterName), 0, c_cbName));
       TrapHackBootNoPlayer(NULL == FM_VAR_REF(pfmLogon, MissionPassword)
           || NULL != memchr(FM_VAR_REF(pfmLogon, MissionPassword), 0, c_cbGamePassword));
       TrapHackBootNoPlayer(NULL != FM_VAR_REF(pfmLogon, CDKey)
           && NULL != memchr(FM_VAR_REF(pfmLogon, CDKey), 0, c_cbCDKey));
+
+      CQLogonStats * pquery = new CQLogonStats(GotLogonDetails);
+      CQLogonStatsData * pqd = pquery->GetData();
 
       if (pfmLogon->fedsrvVer == MSGVER)
       { // ok, they have the right version of the client
@@ -5946,13 +5958,31 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 			// the steam security.
 			&& strcmp(pqd->szCDKey, g.szBotAuthenticationGuid) != 0)
 		{
+			if (pfmLogon->steamAuthTicketLength > sizeof(pqd->steamAuthTicket))
+			{
+				debugf("steam auth ticket length out of range: %u\n", pfmLogon->steamAuthTicketLength);
+
+				pqd->fValid = false;
+				pqd->fRetry = false;
+				Strcpy(pqd->szReason, "Your client sent an invalid Steam authentication ticket. This action has been logged.");
+				PostThreadMessage(g.idReceiveThread, wm_sql_querydone, (WPARAM)NULL, (LPARAM)pquery);
+				break;
+			}
+
 			memcpy(pqd->steamAuthTicket, pfmLogon->steamAuthTicket, pfmLogon->steamAuthTicketLength);
 			pqd->steamAuthTicketLength = pfmLogon->steamAuthTicketLength;
 			pqd->steamID = pfmLogon->steamID;
 
 			CSteamValidation *steamValidation = new CSteamValidation(g.idReceiveThread, pqd->characterID, pquery, pqd);
 			DWORD threadID;
-			CreateThread(NULL, 0, LogonThread, steamValidation, 0, &threadID);
+			HANDLE hLogonThread = CreateThread(NULL, 0, LogonThread, steamValidation, 0, &threadID);
+			if (hLogonThread != NULL)
+			{
+				// LogonThread is fire-and-forget (it deletes steamValidation itself and posts wm_sql_querydone
+				// to dispose pquery); closing the handle now does not stop the thread, it just releases the
+				// kernel handle so it is not leaked once the thread eventually exits.
+				CloseHandle(hLogonThread);
+			}
 		}
 		else
 		{
@@ -6006,6 +6036,13 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 
 				PostThreadMessage(g.idReceiveThread, wm_sql_querydone, (WPARAM)NULL, (LPARAM)logonDetailsQuery);
 			}
+
+#if defined(ALLSRV_STANDALONE)
+			// This (non-Steam / bot / steam-auth-disabled) path never hands pquery to CSteamValidation and,
+			// in ALLSRV_STANDALONE builds, the g.sql.PostQuery(pquery) call below is compiled out, so dispose pquery here.
+			delete pquery;
+			pquery = NULL;
+#endif
 		}
 
 		//DWORD threadID;
@@ -6050,6 +6087,10 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
       } // if correct messaging version
       else
       {
+        // client version mismatch: the version-ok block above (which owns/disposes pquery) was skipped, so free it here to avoid a leak.
+        delete pquery;
+        pquery = NULL;
+
         if (NULL != g.pServerCounters)
           g.pServerCounters->cLoginsFailed++;
         char szVerError[350];
@@ -7821,7 +7862,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
   assert(0 == g.fm.CbUsedSpaceInOutbox());
   //g.fm.SetPriority(c_mcpDefault);
 
-  timerOnAppMessage.Stop("...for message type %s\n", g_rgszMsgNames[pfm->fmid]);
+  timerOnAppMessage.Stop("...for message type %s\n", SafeMsgName(pfm->fmid));
 
   return(S_OK);
 }

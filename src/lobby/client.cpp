@@ -235,7 +235,7 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
   CFLClient * pClient = CFLClient::FromConnection(cnxnFrom);
   assert(pClient);
 
-  debugf("Client: %s from <%s> at time %u\n", g_rgszMsgNames[pfm->fmid], cnxnFrom.GetName(), Time::Now());
+  debugf("Client: %s from <%s> at time %u\n", SafeMsgName(pfm->fmid), cnxnFrom.GetName(), Time::Now());
   
   switch (pfm->fmid)
   {
@@ -265,8 +265,17 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 
 	  // BT - STEAM
 	  ZeroMemory(&pqd->steamAuthTicket, sizeof(pqd->steamAuthTicket));
-	  memcpy(pqd->steamAuthTicket, pfmLogon->steamAuthTicket, pfmLogon->steamAuthTicketLength);
-	  pqd->steamAuthTicketLength = pfmLogon->steamAuthTicketLength;
+	  // BT - STEAM - bounds-guard: a hostile/garbage client could send steamAuthTicketLength > sizeof(steamAuthTicket),
+	  // overflowing the fixed 1024-byte destination buffer. Only copy when it fits; otherwise treat the ticket as empty.
+	  if (pfmLogon->steamAuthTicketLength <= sizeof(pqd->steamAuthTicket))
+	  {
+		  memcpy(pqd->steamAuthTicket, pfmLogon->steamAuthTicket, pfmLogon->steamAuthTicketLength);
+		  pqd->steamAuthTicketLength = pfmLogon->steamAuthTicketLength;
+	  }
+	  else
+	  {
+		  pqd->steamAuthTicketLength = 0;
+	  }
 	  pqd->steamID = pfmLogon->steamID;
 
       if (g_pAutoUpdate && pfmLogon->crcFileList != g_pAutoUpdate->GetFileListCRC())
