@@ -331,7 +331,7 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		pfmPlayerRankResponse->commandSigma = commandSigma;
 		pfmPlayerRankResponse->commandMu = commandMu;
 		
-		debugf("Client: %s from <%s> at time %u. Rank: %ld\n", g_rgszMsgNames[pfm->fmid], cnxnFrom.GetName(), Time::Now(), pfmPlayerRankResponse->rank);
+		debugf("Client: %s from <%s> at time %u. Rank: %ld\n", SafeMsgName(pfm->fmid), cnxnFrom.GetName(), Time::Now(), pfmPlayerRankResponse->rank);
 
 		pthis->SendMessages(&cnxnFrom, FM_GUARANTEED, FM_FLUSH);
 

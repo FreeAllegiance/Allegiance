@@ -720,6 +720,18 @@ extern const char * g_rgszMsgNames[];
 #define MAXMESSAGES 400
 #define ALLOC_MSG_LIST const char * g_rgszMsgNames[MAXMESSAGES + 1]
 
+// Safe lookup into g_rgszMsgNames. g_rgszMsgNames has MAXMESSAGES + 1 entries
+// (valid indices 0..MAXMESSAGES). A network-controlled fmid can exceed this range,
+// so callers must NOT index g_rgszMsgNames directly. This helper bounds-checks the
+// id and also returns a placeholder when the slot was never registered (NULL).
+inline const char * SafeMsgName(FEDMSGID fmid)
+{
+  if (fmid > MAXMESSAGES)
+    return "<invalid>";
+  const char * sz = g_rgszMsgNames[fmid];
+  return sz ? sz : "<invalid>";
+}
+
 /*-------------------------------------------------------------------------
  * AddMsg
  *-------------------------------------------------------------------------

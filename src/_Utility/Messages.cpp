@@ -752,6 +752,7 @@ HRESULT FedMessaging::OnSysMessage( const DPlayMsg& msg )
     if ( hr != DPN_OK )
     {
         debugf( "m_pDirectPlayServer->GetClientInfo failed\n");
+        delete[] pPlayerInfo;
         return hr;
     }
 
@@ -1013,10 +1014,20 @@ HRESULT FedMessaging::ReceiveMessages()
 
           int cMsgs = 0;
 #ifndef NO_MSG_CRC
+          // Guard: a network-controlled packet smaller than the CRC trailer (sizeof(int))
+          // would make PacketSize() (= m_dwcbPacket - sizeof(int)) underflow as an unsigned
+          // DWORD to ~4GB, sending MemoryCRC() and the trailer read out of bounds. Reject such packets.
+          if (m_dwcbPacket < sizeof(int))
+          {
+            // Too small to contain a CRC trailer; treat as a bad packet and skip the message walk.
+            m_pfmSite->OnBadCRC(this, *pcnxnFrom, m_rgbbuffInPacket, m_dwcbPacket);
+          }
+          else
+          {
           int crc = MemoryCRC(m_rgbbuffInPacket, PacketSize());
           if (crc == *(int*)(m_rgbbuffInPacket + PacketSize()))
           {
-#endif            
+#endif
             static CTempTimer tt("spent looping through message queue", .1f);
             tt.Start();
             g_fConnectionDeleted = false;
@@ -1026,7 +1037,7 @@ HRESULT FedMessaging::ReceiveMessages()
 
             while (pfm && !g_fConnectionDeleted)
             {
-              if(pfm->fmid > 0 && pfm->cbmsg >= sizeof(FEDMESSAGE) && pfm->cbmsg <= PacketSize())
+              if(pfm->fmid > 0 && pfm->fmid <= MAXMESSAGES && pfm->cbmsg >= sizeof(FEDMESSAGE) && pfm->cbmsg <= PacketSize())
               {
 				 /* if (strcmp(pcnxnFrom->GetName(), "+BackTrak@Dev") == 0)
 				  {
@@ -1062,14 +1073,15 @@ HRESULT FedMessaging::ReceiveMessages()
 #endif
               }
             }
-#ifndef NO_MSG_CRC          
+#ifndef NO_MSG_CRC
           }
           else
           {
             // ACK! Failed CRC. WTF??? ...<sigh> but it happens
             m_pfmSite->OnBadCRC(this, *pcnxnFrom, m_rgbbuffInPacket, m_dwcbPacket);
           }
-#endif          
+          } // close the m_dwcbPacket >= sizeof(int) guard added above
+#endif
         }
         else
         {
@@ -1192,17 +1204,20 @@ bool FedMessaging::KillSvr()
     
     int i = 0;
     const int cRetries = 50; // let's give it 50 retries
-    while (STILL_ACTIVE == exitcode && i > cRetries) 
+    while (STILL_ACTIVE == exitcode && i < cRetries)
     {
       GetExitCodeProcess(pi.hProcess, &exitcode);
       Sleep(100);
       i++;
     }
-    if (i > cRetries)
+    if (STILL_ACTIVE == exitcode)
       fCreated = false;
     else
       debugf("Slept (100ms) %d times  waiting for killsvr\n", i);
     Sleep(1000); // wait another second to make sure it's really gone
+    // CreateProcess opened these handles; close them so they don't leak.
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
   }
   else
   {
@@ -1653,7 +1668,7 @@ HRESULT FedMessaging::GetIPAddress(CFMConnection & cnxn, char szRemoteAddress[64
 {
   //assert( m_pDirectPlayServer != 0 );
 
-  IDirectPlay8Address* pAddress;
+  IDirectPlay8Address* pAddress = NULL;
 
   // WLP 2005 - made this server client and server side
   //
@@ -1670,6 +1685,11 @@ HRESULT FedMessaging::GetIPAddress(CFMConnection & cnxn, char szRemoteAddress[64
 		return E_FAIL;
 	  }
   }
+
+  // If neither path produced an address (e.g. neither server nor client is
+  // active, or the API returned success without setting pAddress), don't deref NULL.
+  if (pAddress == NULL)
+    return E_FAIL;
 
   WCHAR add[200];
   DWORD cnt = 200;
