@@ -3255,6 +3255,14 @@ class IshipIGC : public IscannerIGC
         virtual CommandID            GetCommandID(Command i) const = 0;
         virtual void                 SetCommand(Command i, ImodelIGC* target, CommandID cid) = 0;
 
+        //The warp this ship has committed to leaving its current cluster by. The AI picks
+        //one when a plan is set and then flies that leg to the end (GotoPlan::SetControls
+        //caches it in m_wpWarp), so it is a decision, not something a client can recompute:
+        //recomputing from a later position finds a different aleph and draws a route the
+        //ship is not flying. The server replicates the choice instead.
+        virtual IwarpIGC*            GetWaypointWarp(void) const = 0;
+        virtual void                 SetWaypointWarp(IwarpIGC* pwarp) = 0;
+
         virtual void                 PreplotShipMove(Time          timeStop) = 0;
         virtual void                 PlotShipMove(Time          timeStop) = 0;
         virtual void                 ExecuteShipMove(Time          timeStop) = 0;
@@ -4903,6 +4911,9 @@ class IIgcSite : public IObject
                                    IclusterIGC* pclusterOld,
                                    IclusterIGC* pclusterNew)  {}    //changing clusters
         virtual void CommandChangedEvent(Command i, IshipIGC * pship, ImodelIGC* ptarget, CommandID cid) {};
+
+        //The ship has committed to (or abandoned) a warp out of its current cluster.
+        virtual void WarpWaypointChangedEvent(IshipIGC* pship, IwarpIGC* pwarp) {};
         virtual bool HandlePickDefaultOrder(IshipIGC* pship) { return false; }
 
         virtual void Preload(const char*    pszModelName,

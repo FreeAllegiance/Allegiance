@@ -1971,6 +1971,7 @@ bool    GotoPlan::SetControls(float  dt, bool bDodge, ControlData*  pcontrols, i
         {
             //The ship's cluster changed ... recalculate goals from the original goal
             m_wpWarp.Reset();
+            m_pship->SetWaypointWarp(NULL);
             m_maskWaypoints = c_wpTarget;
 
             //See if the goal was to enter a warp
@@ -2005,6 +2006,7 @@ bool    GotoPlan::SetControls(float  dt, bool bDodge, ControlData*  pcontrols, i
 			//If so reset the waypoint to start heading toward target
 			//instead of the aleph
 			m_wpWarp.Reset();
+			m_pship->SetWaypointWarp(NULL);
             m_maskWaypoints = c_wpTarget;
 
 			m_pvOldClusterTarget = pclusterTarget;
@@ -2035,12 +2037,17 @@ bool    GotoPlan::SetControls(float  dt, bool bDodge, ControlData*  pcontrols, i
                     if (pwarp)
                     {
                         m_wpWarp.Set(Waypoint::c_oEnter, pwarp);
+                        //Tell everyone which way this ship has decided to go, so the
+                        //command view can draw the leg it is actually flying rather
+                        //than re-deriving one from a position it has since left.
+                        m_pship->SetWaypointWarp(pwarp);
                         m_maskWaypoints = c_wpTarget | c_wpWarp;
                     }
                     else
                     {
                         //Do not know of a warp to the intended target ... keep the original target around & clear the warp waypoint
                         m_maskWaypoints = c_wpTarget;
+                        m_pship->SetWaypointWarp(NULL);
 
                         if (bDodge)
                             Dodge(m_pship, NULL, pstate);
@@ -2147,6 +2154,7 @@ bool    GotoPlan::SetControls(float  dt, bool bDodge, ControlData*  pcontrols, i
             if (((gpm & c_gpmFinished) != 0) && (m_wpTarget.m_pmodelTarget->GetObjectType() != OT_ship))
             {
                 m_wpWarp.Reset();
+                m_pship->SetWaypointWarp(NULL);
                 m_wpTarget.Reset();
 
                 m_maskWaypoints = 0;

@@ -539,6 +539,9 @@ void CFSShip::SetCluster(IclusterIGC * pcluster, bool   bViewOnly)
                 pfmSSU->otAccepted  = pmodelAccepted ? pmodelAccepted->GetObjectType() : NA;
                 pfmSSU->oidAccepted = pmodelAccepted ? pmodelAccepted->GetObjectID()   : NA;
                 pfmSSU->cidAccepted = m_pShip->GetCommandID(c_cmdAccepted);
+
+                IwarpIGC*   pwarpWaypoint = m_pShip->GetWaypointWarp();
+                pfmSSU->oidWaypointWarp = pwarpWaypoint ? pwarpWaypoint->GetObjectID() : NA;
             }
 
             pfmSSU->bIsRipcording = m_pShip->fRipcordActive();
@@ -890,6 +893,9 @@ void CFSPlayer::SetCluster(IclusterIGC* pcluster, bool bViewOnly)
                         pfmSSU->otAccepted  = pmodelAccepted ? pmodelAccepted->GetObjectType() : NA;
                         pfmSSU->oidAccepted = pmodelAccepted ? pmodelAccepted->GetObjectID()   : NA;
                         pfmSSU->cidAccepted = pshipExist->GetCommandID(c_cmdAccepted);
+
+                        IwarpIGC*   pwarpWaypoint = pshipExist->GetWaypointWarp();
+                        pfmSSU->oidWaypointWarp = pwarpWaypoint ? pwarpWaypoint->GetObjectID() : NA;
                     }
                     pfmSSU->bIsRipcording = pshipExist->fRipcordActive();
                   }

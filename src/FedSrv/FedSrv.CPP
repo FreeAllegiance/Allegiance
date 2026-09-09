@@ -13746,6 +13746,29 @@ void FedSrvSiteBase::CommandChangedEvent(Command i, IshipIGC * pship, ImodelIGC*
             fCurrentTarget ? FM_NOT_GUARANTEED : FM_GUARANTEED, FM_FLUSH);
     }
 }
+void FedSrvSiteBase::WarpWaypointChangedEvent(IshipIGC* pship, IwarpIGC* pwarp)
+{
+    //Only drones commit to a warp for a whole leg; a player steers themselves, and
+    //nothing draws a route for them.
+    if (pship->GetPilotType() >= c_ptPlayer)
+        return;
+
+    IsideIGC*   pside = pship->GetSide();
+    if (pside == NULL)
+        return;
+
+    CFMRecipient*   precip = CFSSide::FromIGC(pside)->GetGroup();
+
+    BEGIN_PFM_CREATE(g.fm, pfmWW, S, WARP_WAYPOINT)
+    END_PFM_CREATE
+    pfmWW->shipID = pship->GetObjectID();
+    pfmWW->oidWarp = pwarp ? pwarp->GetObjectID() : NA;
+
+    //Guaranteed: the client holds this until it is told otherwise, so a dropped
+    //message would leave it drawing a leg the ship gave up on.
+    g.fm.SendMessages(precip, FM_GUARANTEED, FM_FLUSH);
+}
+
 void     FedSrvSiteBase::CreateBuildingEffect(Time           now,
                                               IasteroidIGC*  pasteroid,
                                               IshipIGC*      pshipBuilder)

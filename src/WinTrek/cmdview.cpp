@@ -312,18 +312,86 @@ static void LogSelectedPath(ShipID shipID, const char* format, ...)
 // A ship that is running away routes only through friendly space; if that yields
 // nothing, the route through hostile space is still what it would have to fly, and
 // is still worth drawing.
-static PathList* FindPathTo(IclusterIGC* pclusterOrigin,
+static PathList* FindPathFrom(IclusterIGC*  pclusterOrigin,
+                              const Vector& positionOrigin,
+                              IsideIGC*     pside,
+                              ImodelIGC*    ptarget,
+                              bool          bCoward)
+{
+    PathList* ppath = FindPathList(pclusterOrigin, positionOrigin, pside, ptarget, bCoward);
+
+    if ((ppath == NULL) && bCoward)
+        ppath = FindPathList(pclusterOrigin, positionOrigin, pside, ptarget, false);
+
+    return ppath;
+}
+
+// The route to draw for a ship.
+//
+// The first hop is not ours to choose. The AI picks one aleph when the plan is set and
+// flies that leg to the end (GotoPlan::SetControls caches it in m_wpWarp), and the server
+// tells us which one. Searching for it again from the ship's current position finds
+// whichever aleph is cheapest from *here*, which stops being the one it committed to as
+// soon as it has moved - and then we draw a route it was never going to fly. So take the
+// committed hop as given and only search the remainder, starting from where that warp
+// comes out.
+static PathList* BuildRoute(IshipIGC*    pship,
+                            IclusterIGC* pclusterOrigin,
                             ImodelIGC*   poriginModel,
                             IsideIGC*    pside,
                             ImodelIGC*   ptarget,
                             bool         bCoward)
 {
-    PathList* ppath = FindPathList(pclusterOrigin, poriginModel->GetPosition(),
-                                   pside, ptarget, bCoward);
+    const Vector& positionOrigin = poriginModel->GetPosition();
 
-    if ((ppath == NULL) && bCoward)
-        ppath = FindPathList(pclusterOrigin, poriginModel->GetPosition(),
-                             pside, ptarget, false);
+    IwarpIGC* pwarpCommitted = pship->GetWaypointWarp();
+
+    // Only meaningful for the ship itself (not a ripcord model), and only while it is
+    // still in the cluster that warp leaves from - once through, the server picks again.
+    if ((poriginModel != (ImodelIGC*)pship) ||
+        (pwarpCommitted == NULL) ||
+        (pwarpCommitted->GetCluster() != pclusterOrigin))
+    {
+        return FindPathFrom(pclusterOrigin, positionOrigin, pside, ptarget, bCoward);
+    }
+
+    IwarpIGC*    pwarpExit    = pwarpCommitted->GetDestination();
+    IclusterIGC* pclusterNext = pwarpExit ? pwarpExit->GetCluster() : NULL;
+
+    if (pclusterNext == NULL)
+        return FindPathFrom(pclusterOrigin, positionOrigin, pside, ptarget, bCoward);
+
+    PathList* ppath;
+
+    if (pclusterNext == ptarget->GetCluster())
+    {
+        // The committed hop lands on the target: nothing further to search.
+        ppath = new PathList;
+    }
+    else
+    {
+        ppath = FindPathFrom(pclusterNext, pwarpExit->GetPosition(), pside, ptarget, bCoward);
+
+        // We know the leg it is flying but cannot see a way on from the far side. Drawing
+        // the rest would be invention, so draw nothing.
+        if (ppath == NULL)
+            return NULL;
+    }
+
+    PathLink* plFirst = new PathLink;
+    Path&     pathFirst = plFirst->data();
+
+    pathFirst.pwarpStart = pwarpCommitted;
+    pathFirst.pwarp      = pwarpCommitted;
+    pathFirst.distance   = (pwarpCommitted->GetPosition() - positionOrigin).Length();
+    pathFirst.pprev      = NULL;
+
+    ppath->first(plFirst);
+
+    // pwarpStart names the first warp of the whole route, so the searched remainder needs
+    // correcting now that it has a hop in front of it.
+    for (PathLink* plink = ppath->first(); plink != NULL; plink = plink->next())
+        plink->data().pwarpStart = pwarpCommitted;
 
     return ppath;
 }
@@ -421,7 +489,7 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
 
                 if (!pship->fRipcordActive())
                 {
-                    PathList* ppath = FindPathTo(poriginModelCluster, poriginModel, pside, ptarget, bCoward);
+                    PathList* ppath = BuildRoute(pship, poriginModelCluster, poriginModel, pside, ptarget, bCoward);
                     if (ppath && ppath->first())
                     {
                         pmodelOrigin = poriginModel;
@@ -441,7 +509,7 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
                 // draw from there to the target.
                 pszCase = "origin elsewhere, target in view sector";
 
-                PathList* ppath = FindPathTo(poriginModelCluster, poriginModel, pside, ptarget, bCoward);
+                PathList* ppath = BuildRoute(pship, poriginModelCluster, poriginModel, pside, ptarget, bCoward);
                 if (ppath)
                 {
                     for (PathLink* plink = ppath->first(); plink != NULL; plink = plink->next())
@@ -466,7 +534,7 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
                 // from the warp it arrives at, to the warp it leaves by.
                 pszCase = "origin and target both elsewhere";
 
-                PathList* ppath = FindPathTo(poriginModelCluster, poriginModel, pside, ptarget, bCoward);
+                PathList* ppath = BuildRoute(pship, poriginModelCluster, poriginModel, pside, ptarget, bCoward);
                 if (ppath)
                 {
                     IwarpIGC* pwarpEntryDest = nullptr;

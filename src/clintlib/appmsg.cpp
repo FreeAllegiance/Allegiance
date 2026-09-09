@@ -1171,6 +1171,12 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                             if (pmodelCurrent && (pmodelCurrent->GetObjectType() == OT_buoy))
                                 pmodelCurrent = NULL;
                             ship->SetCommand(c_cmdCurrent, pmodelCurrent, c_cidNone);
+
+                            //Which aleph it has committed to, if any. Changes after this
+                            //arrive as FM_S_WARP_WAYPOINT.
+                            ship->SetWaypointWarp((pfmSSU->oidWaypointWarp == NA)
+                                ? NULL
+                                : (IwarpIGC*)m_pCoreIGC->GetModel(OT_warp, pfmSSU->oidWaypointWarp));
                         }
 
                         if (ship->GetCluster() == NULL)
@@ -1831,6 +1837,26 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             ImineIGC*   pmine = pcluster->GetMine(pfmMD->mineID);
             if (pmine)
                 pmine->Terminate();
+        }
+        break;
+
+        case FM_S_WARP_WAYPOINT:
+        {
+            if (!IsInGame())
+                break;
+
+            CASTPFM(pfmWW, S, WARP_WAYPOINT, pfm);
+
+            IshipIGC*   pship = m_pCoreIGC->GetShip(pfmWW->shipID);
+            if (pship)
+            {
+                //The server has decided which way this ship leaves its cluster. Take it as
+                //given rather than working one out: the command view draws the leg the ship
+                //is flying, not the one that looks cheapest from where it happens to be now.
+                pship->SetWaypointWarp((pfmWW->oidWarp == NA)
+                    ? NULL
+                    : (IwarpIGC*)m_pCoreIGC->GetModel(OT_warp, pfmWW->oidWarp));
+            }
         }
         break;
 

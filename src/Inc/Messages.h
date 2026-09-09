@@ -590,8 +590,18 @@ DEFINE_FEDMSG(S, SINGLE_SHIP_UPDATE, 78)
   ObjectType                otAccepted;     //c_cmdAccepted
   ObjectID                  oidAccepted;
   CommandID                 cidAccepted;
+  ObjectID                  oidWaypointWarp;  //Warp this ship has committed to leaving by, NA for none
   ServerSingleShipUpdate    shipupdate;
   bool                      bIsRipcording;
+END_FEDMSG
+
+//A ship has committed to a warp out of its cluster, or given one up. The AI picks
+//one aleph per leg and flies it to the end, so this is a decision the client cannot
+//recompute for itself - from a later position a different aleph looks cheaper and the
+//command view would draw a route the ship is not flying.
+DEFINE_FEDMSG(S, WARP_WAYPOINT, 201)
+  ShipID                    shipID;
+  ObjectID                  oidWarp;        //NA when the ship no longer has one
 END_FEDMSG
 
 DEFINE_FEDMSG(C, SUICIDE, 80)
