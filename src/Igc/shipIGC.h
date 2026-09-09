@@ -783,9 +783,24 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                     pmodelOld->Release();
                 }
 
-                if ((i == c_cmdAccepted || i == c_cmdCurrent) && 
+                //Student todo make sure c_cmdPlan is being sent to client on miner update
+                if ((i == c_cmdAccepted || i == c_cmdCurrent || i == c_cmdPlan) && 
                     (cidOld != cid || pmodelOld != target))
                     GetMyMission()->GetIgcSite()->CommandChangedEvent(i, this, target, cid);
+            }
+        }
+
+        virtual IwarpIGC*            GetWaypointWarp(void) const
+        {
+            return m_pwarpWaypoint;
+        }
+
+        virtual void                 SetWaypointWarp(IwarpIGC* pwarp)
+        {
+            if (pwarp != m_pwarpWaypoint)
+            {
+                m_pwarpWaypoint = pwarp;
+                GetMyMission()->GetIgcSite()->WarpWaypointChangedEvent(this, pwarp);
             }
         }
 
@@ -2645,6 +2660,11 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
         short               m_nextLaunchSlot;
 
         PilotType           m_pilotType;
+
+        //Not reference counted: warps live as long as the mission does, and a ship that
+        //outlives one is not a case that can arise. Cleared whenever the ship stops
+        //flying that leg.
+        IwarpIGC*           m_pwarpWaypoint;
         bool                m_bAutopilot;
         bool                m_bRunningAway;
         WarningMask         m_warningMask;

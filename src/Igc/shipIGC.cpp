@@ -37,6 +37,7 @@ CshipIGC::CshipIGC(void)
     m_pshipParent(NULL),
     m_turretID(NA),
     m_bAutopilot(false),
+    m_pwarpWaypoint(NULL),
     m_gotoplan(this),
     m_dtTimeBetweenComplaints(c_dtTimeBetweenComplaints),
     m_nKills(0),

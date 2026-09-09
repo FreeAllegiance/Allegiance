@@ -3200,11 +3200,19 @@ bool CommandToDrone(CFSMission*         pfsMission,
             {
                 if (pshipTo->GetPilotType() == c_ptMiner && pdb->type == c_buoyCluster)
                     pminerCluster = pfsMission->GetIGCMission()->GetCluster(pdb->clusterID);
-                //Create a buoy for this chat message
+                //Create a buoy for this chat message. A buoy the mission already holds is
+                //not built a second time (CbuoyIGC::Initialize returns E_ABORT and this
+                //comes back NULL) - that existing buoy is the one the order names.
                 *ppmodelTarget = (ImodelIGC*)(pfsMission->GetIGCMission()->CreateObject(g.timeNow, OT_buoy, pdb, sizeof(*pdb)));
-                assert(*ppmodelTarget);
+                if (!*ppmodelTarget && (pdb->buoyID != NA))
+                {
+                    *ppmodelTarget = (ImodelIGC*)(pfsMission->GetIGCMission()->GetBuoy(pdb->buoyID));
+                    if (*ppmodelTarget)
+                        (*ppmodelTarget)->AddRef();     //Match the reference CreateObject would have returned
+                }
 
-                ((IbuoyIGC*)*ppmodelTarget)->AddConsumer();
+                if (*ppmodelTarget)
+                    ((IbuoyIGC*)*ppmodelTarget)->AddConsumer();
             }
             else
             {
@@ -3310,9 +3318,13 @@ bool CommandToDrone(CFSMission*         pfsMission,
                 CommandID cid = c_cidGoto;
                 if (pminerCluster)
                     cid = c_cidJoin;
+
+                //CreateObject returns NULL if it declined to build the buoy. The command
+                //is still worth remembering without one, but there is nothing to release.
                 pshipTo->SetCommand(c_cmdQueued, buoy, cid);
 
-                buoy->Release(); //SetCommand added the consumer needed
+                if (buoy)
+                    buoy->Release(); //SetCommand added the consumer needed
             }
             else {
                 // Remember that we just got a player command -> c_cidGoto instead of None
@@ -5299,6 +5311,17 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 
       CASTPFM(pfmBuoy, CS, CHATBUOY, pfm);
       pfmBuoy->cd.sidSender = pfsPlayer->GetIGCShip()->GetObjectID();
+
+      //Buoy IDs are the server's to hand out, because an ID has to name the same buoy
+      //here and on every client. A client can name a buoy this mission already holds -
+      //re-issuing an order against a waypoint that is already up - and that one keeps its
+      //ID, since it is that same buoy. Anything else was minted from the sender's own
+      //provisional range (ImissionIGC::GenerateProvisionalBuoyID) and gets a real ID
+      //stamped on it here, before the message is read or passed on, so that the buoy the
+      //server builds, the one echoed to the rest of the side, and the one the following
+      //ORDER_CHANGE names are all the same buoy.
+      if (pfsMission->GetIGCMission()->GetBuoy(pfmBuoy->db.buoyID) == NULL)
+          pfmBuoy->db.buoyID = pfsMission->GetIGCMission()->GenerateNewBuoyID();
 
       ForwardChatMessage(pfsMission, pfsPlayer, pfm,
                          &(pfmBuoy->cd),
@@ -13702,14 +13725,30 @@ void FedSrvSiteBase::CommandChangedEvent(Command i, IshipIGC * pship, ImodelIGC*
     IclusterIGC*    pcluster;
 
     if ((i == c_cmdAccepted) ||
-        ((i == c_cmdCurrent) &&
-         (pship->GetPilotType() >= c_ptPlayer) &&
-         (pcluster = pship->GetCluster()) && //intentional =
-         (pship->IsUsingAreaOfEffectWeapon())))
+        (i == c_cmdPlan) ||
+        (
+            (i == c_cmdCurrent) &&
+            (pship->GetPilotType() >= c_ptPlayer) &&
+            (pcluster = pship->GetCluster()) && //intentional =
+            (pship->IsUsingAreaOfEffectWeapon())
+            )
+        )
     {
+        // If target is a buoy, export it to clients first
+        if (ptarget && (ptarget->GetObjectType() == OT_buoy))
+        {
+            CFMRecipient* precipBuoy = (i == c_cmdCurrent)
+                ? GetGroupSectorFlying(pcluster)
+                : CFSSide::FromIGC(pship->GetSide())->GetGroup();
+
+            g.fm.SetDefaultRecipient(precipBuoy, FM_GUARANTEED);
+            ExportObj(ptarget, OT_buoy, NULL);
+            g.fm.SendMessages(precipBuoy, FM_GUARANTEED, FM_FLUSH);
+        }
+
         BEGIN_PFM_CREATE(g.fm, pfmOC, CS, ORDER_CHANGE)
-        END_PFM_CREATE
-        pfmOC->command = i;
+            END_PFM_CREATE
+            pfmOC->command = i;
         pfmOC->shipID = pship->GetObjectID();
         pfmOC->commandID = cid;
         if (ptarget)
@@ -13725,11 +13764,39 @@ void FedSrvSiteBase::CommandChangedEvent(Command i, IshipIGC * pship, ImodelIGC*
 
         bool fCurrentTarget = (i == c_cmdCurrent);
         g.fm.SendMessages(fCurrentTarget
-                              ? GetGroupSectorFlying(pcluster)
-                              : CFSSide::FromIGC(pship->GetSide())->GetGroup(),
-                          fCurrentTarget ? FM_NOT_GUARANTEED : FM_GUARANTEED, FM_FLUSH);
+            ? GetGroupSectorFlying(pcluster)
+            : CFSSide::FromIGC(pship->GetSide())->GetGroup(),
+            fCurrentTarget ? FM_NOT_GUARANTEED : FM_GUARANTEED, FM_FLUSH);
     }
 }
+void FedSrvSiteBase::WarpWaypointChangedEvent(IshipIGC* pship, IwarpIGC* pwarp)
+{
+    //Only drones commit to a warp for a whole leg. A player can switch on autopilot, but
+    //that runs on their own client (BaseClient sets it; the server never calls
+    //SetAutopilot on a player's ship), so CshipIGC::PlotShipMove never runs GotoPlan for
+    //one here and this hook does not fire for them in the first place. The test is what
+    //says so, and matches how autopilot is filtered elsewhere in IGC
+    //(CclusterIGC::Update). Nothing repeats either way: SetWaypointWarp only raises the
+    //event when the warp actually changes, which is once per leg.
+    if (pship->GetPilotType() >= c_ptPlayer)
+        return;
+
+    IsideIGC*   pside = pship->GetSide();
+    if (pside == NULL)
+        return;
+
+    CFMRecipient*   precip = CFSSide::FromIGC(pside)->GetGroup();
+
+    BEGIN_PFM_CREATE(g.fm, pfmWW, S, WARP_WAYPOINT)
+    END_PFM_CREATE
+    pfmWW->shipID = pship->GetObjectID();
+    pfmWW->oidWarp = pwarp ? pwarp->GetObjectID() : NA;
+
+    //Guaranteed: the client holds this until it is told otherwise, so a dropped
+    //message would leave it drawing a leg the ship gave up on.
+    g.fm.SendMessages(precip, FM_GUARANTEED, FM_FLUSH);
+}
+
 void     FedSrvSiteBase::CreateBuildingEffect(Time           now,
                                               IasteroidIGC*  pasteroid,
                                               IshipIGC*      pshipBuilder)

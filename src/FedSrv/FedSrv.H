@@ -141,6 +141,7 @@ public:
   void TerminateModelEvent(ImodelIGC* model);
   void TerminateMissionEvent(ImissionIGC* pMission) {}
   void CommandChangedEvent(Command i, IshipIGC * pship, ImodelIGC* ptarget, CommandID cid);
+  void WarpWaypointChangedEvent(IshipIGC* pship, IwarpIGC* pwarp);
 
   void        CreateBuildingEffect(Time           now,
                                    IasteroidIGC*  pasteroid,

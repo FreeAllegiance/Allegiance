@@ -1785,6 +1785,7 @@ public:
             db.position = Vector(0, 0, 0);
             db.clusterID = pcluster->GetObjectID();
             db.type = c_buoyCluster;
+            db.buoyID = trekClient.m_pCoreIGC->GenerateProvisionalBuoyID();  //The server stamps the real one
 
             IbuoyIGC*   b = (IbuoyIGC*)(trekClient.m_pCoreIGC->CreateObject(trekClient.m_now, OT_buoy, &db, sizeof(db)));
             assert (b);
@@ -1961,6 +1962,7 @@ public:
                 db.position = m_positionStop;
                 db.clusterID = trekClient.GetCluster()->GetObjectID();
                 db.type = c_buoyWaypoint;
+                db.buoyID = trekClient.m_pCoreIGC->GenerateProvisionalBuoyID();  //The server stamps the real one
 
                 IbuoyIGC*   b = (IbuoyIGC*)(trekClient.m_pCoreIGC->CreateObject(trekClient.m_now, OT_buoy, &db, sizeof(db)));
                 assert (b);
@@ -2587,6 +2589,7 @@ public:
                             db.position = Vector(0, 0, 0);
                             db.clusterID = pcluster->GetObjectID();
                             db.type = c_buoyCluster;
+                            db.buoyID = trekClient.m_pCoreIGC->GenerateProvisionalBuoyID();  //The server stamps the real one
 
                             pmodelBest = (IbuoyIGC*)(trekClient.m_pCoreIGC->CreateObject(trekClient.m_now, OT_buoy, &db, sizeof(db)));
                             assert (pmodelBest);
