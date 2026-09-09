@@ -4,10 +4,6 @@
 #include <button.h>
 #include <controls.h>
 
-#include <stdarg.h>
-#include <map>
-#include <string>
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // CommandGeo
@@ -256,17 +252,14 @@ void CommandGeo::DrawShips(Context* pcontext)
             }
             }
         }
-
-        // draw the drop lines
-        if (index)
-            pcontext->DrawLines(vertices, indices);
-
-        // After existing per-ship draw work, add waypoint line drawing for selected allied player ships on autopilot.
-
     }
 
+    // draw the drop lines
+    if (index)
+        pcontext->DrawLines(vertices, indices);
 }
 
+//Student 7/18/2022 - indicate the original top of the sector, so it can be rotated and there still be a point of reference to discuss with teammates.
 void CommandGeo::DrawTop(Context* pcontext)
 {
     TRef<IEngineFont> pfont = TrekResources::HugeBoldFont();
@@ -286,27 +279,6 @@ void CommandGeo::DrawTop(Context* pcontext)
     offset.SetX(offset.X() - xShiftStr * 0.5f);
 
     pcontext->DrawString(pfont, s_colorNeutral, offset, topString);
-}
-
-// Debug logging below runs for every selected ship on every frame, which floods the
-// log (17k lines in eight minutes of play) and buries anything interesting. Emit one
-// consolidated line per ship, and only when what it would say actually changes.
-static void LogSelectedPath(ShipID shipID, const char* format, ...)
-{
-    static std::map<ShipID, std::string> s_lastLine;
-
-    char bfr[1024];
-    va_list vl;
-    va_start(vl, format);
-    _vsnprintf_s(bfr, sizeof(bfr), sizeof(bfr) - 1, format, vl);
-    va_end(vl);
-
-    std::string& strLast = s_lastLine[shipID];
-    if (strLast == bfr)
-        return;
-
-    strLast = bfr;
-    debugf("%s\n", bfr);
 }
 
 // A ship that is running away routes only through friendly space; if that yields
@@ -409,7 +381,6 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
     while (pshipLink != NULL) {
         IshipIGC* pship = pshipLink->data();
         IsideIGC* pside = pship->GetSide();
-        ShipID    shipID = pship->GetObjectID();
 
         bool bAllied = (pside == psideMine) || IsideIGC::AlliedSides(pside, psideMine);
 
@@ -420,8 +391,6 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
             ImodelIGC* ptarget = pship->GetCommandTarget(c_cmdAccepted);
             if (!ptarget)
             {
-                LogSelectedPath(shipID, "Selected ship %s: no c_cmdAccepted target",
-                    pship->GetName());
                 pshipLink = pshipLink->next();
                 continue;
             }
@@ -432,7 +401,6 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
 
             // Get cluster information
             IclusterIGC* poriginModelCluster = poriginModel->GetCluster();
-            const char*  pszClusterSource = "current";
 
             if (!poriginModelCluster && (poriginModel->GetObjectType() == OT_ship))
             {
@@ -445,7 +413,6 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
                 if (ppi && (ppi->LastSeenSector() != NA))
                 {
                     poriginModelCluster = trekClient.GetCore()->GetCluster(ppi->LastSeenSector());
-                    pszClusterSource = "last seen";
                 }
             }
 
@@ -454,18 +421,12 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
             if (!poriginModelCluster)
             {
                 // Selected ship is docked, or we have never been told where it is.
-                LogSelectedPath(shipID,
-                    "Selected ship %s: origin %s has no cluster (in station: %s) - nothing to draw",
-                    pship->GetName(),
-                    GetModelName(poriginModel),
-                    pship->GetStation() ? pship->GetStation()->GetName() : "NO");
                 pshipLink = pshipLink->next();
                 continue;
             }
 
             ImodelIGC* pmodelOrigin = nullptr;
             ImodelIGC* pmodelDest = nullptr;
-            const char* pszCase = "no path";
 
             // ===== CASE ANALYSIS AND LOGIC =====
 
@@ -476,7 +437,6 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
             {
                 // CASE 1: Both origin model and target in our cluster
                 // Draw line between origin model and target
-                pszCase = "origin and target both in view sector";
                 pmodelOrigin = poriginModel;
                 pmodelDest = ptarget;
             }
@@ -485,8 +445,6 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
                 // CASE 2: Origin model in our cluster, target not in our cluster.
                 // Draw from the origin out to the warp it would leave through.
                 // Ripcording has no route to draw - the ship is not flying one.
-                pszCase = "origin in view sector, target elsewhere";
-
                 if (!pship->fRipcordActive())
                 {
                     PathList* ppath = BuildRoute(pship, poriginModelCluster, poriginModel, pside, ptarget, bCoward);
@@ -497,18 +455,12 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
                     }
                     delete ppath;
                 }
-                else
-                {
-                    pszCase = "origin in view sector, target elsewhere (ripcording)";
-                }
             }
             else if (!bOriginModelInOurCluster && bTargetInOurCluster)
             {
                 // CASES 3 & 5: Origin model not in our cluster, target in our cluster.
                 // Find the warp through which the origin model enters our cluster and
                 // draw from there to the target.
-                pszCase = "origin elsewhere, target in view sector";
-
                 PathList* ppath = BuildRoute(pship, poriginModelCluster, poriginModel, pside, ptarget, bCoward);
                 if (ppath)
                 {
@@ -532,8 +484,6 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
                 // CASES 4 & 6: Neither origin model nor target in our cluster.
                 // Draw the leg that crosses our cluster, if the route passes through it:
                 // from the warp it arrives at, to the warp it leaves by.
-                pszCase = "origin and target both elsewhere";
-
                 PathList* ppath = BuildRoute(pship, poriginModelCluster, poriginModel, pside, ptarget, bCoward);
                 if (ppath)
                 {
@@ -569,19 +519,6 @@ void CommandGeo::DrawSelectedPaths(Context* pcontext)
                     delete ppath;
                 }
             }
-
-            LogSelectedPath(shipID,
-                "Selected ship %s: origin %s in %s (%s), target %s in %s, viewing %s -> %s, drawing %s to %s",
-                pship->GetName(),
-                GetModelName(poriginModel),
-                poriginModelCluster->GetName(),
-                pszClusterSource,
-                GetModelName(ptarget),
-                ptargetCluster ? ptargetCluster->GetName() : "NULL",
-                m_pcluster ? m_pcluster->GetName() : "NULL",
-                pszCase,
-                pmodelOrigin ? GetModelName(pmodelOrigin) : "nothing",
-                pmodelDest ? GetModelName(pmodelDest) : "nothing");
 
             // ===== DRAW THE PATH =====
             if (pmodelOrigin && pmodelDest && pmodelOrigin != pmodelDest)

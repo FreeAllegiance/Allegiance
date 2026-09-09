@@ -66,11 +66,17 @@ HRESULT CbuoyIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, 
 
     SetMass(0.0f);
 
-    //Student todo - would this cause problems on the server side?
-    IbuoyIGC *existing = pMission->GetBuoy(m_buoyID);
-    if (existing) {
-        pMission->DeleteBuoy(existing);
-    }
+    //The same buoy can be exported to a client more than once: every visible buoy in a
+    //sector is sent to a player entering it (CFSPlayer::SetCluster), and a buoy named as
+    //a command target is sent again ahead of the ORDER_CHANGE that names it. Buoy IDs are
+    //stable across exports, so a second arrival is that same buoy, not a new one. Keeping
+    //it would split one buoy's consumer count across two objects, and neither would ever
+    //reach zero, so the waypoint would never disappear.
+    //E_ABORT discards this instance without terminating it (CmissionIGC::CreateObject) -
+    //nothing has been registered yet, so there is nothing to undo.
+    if (pMission->GetBuoy(m_buoyID) != NULL)
+        return E_ABORT;
+
     pMission->AddBuoy(this);
 
     SetCluster(pcluster);
@@ -98,7 +104,7 @@ int     CbuoyIGC::Export(void*    data) const
         dataBuoy->clusterID = GetCluster()->GetObjectID();
         dataBuoy->type = m_type;
         dataBuoy->buoyID = m_buoyID;
-        //dataBuoy->visible = m_visible;
+        dataBuoy->visible = m_visible;
     }
 
     return sizeof(DataBuoyIGC);

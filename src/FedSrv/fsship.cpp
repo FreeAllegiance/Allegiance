@@ -572,51 +572,16 @@ void CFSShip::SetCluster(IclusterIGC * pcluster, bool   bViewOnly)
     }
     else if (!bViewOnly)
     {
-        // Ship is leaving the sector - release consumer references on all buoys
-        IclusterIGC* pclusterOld = m_pShip->GetCluster();
-        if (pclusterOld)
+        //The ship has left the sector for nowhere - docked, or dead. Drop any buoy it was
+        //holding: SetCommand releases the consumer reference, and a buoy with no consumers
+        //left terminates itself, which is what takes the waypoint off everyone's map.
+        //No cluster test here: CshipIGC::SetCluster raises ChangeCluster after the ship's
+        //cluster is already the new one, so asking for it would only ever return NULL.
+        for (Command i = 0; i < c_cmdMax; i++)
         {
-            // Release consumer references on all command targets that are buoys
-            for (Command i = 0; i < c_cmdMax; i++)
-            {
-                ImodelIGC* ptarget = m_pShip->GetCommandTarget(i);
-                if (ptarget && ptarget->GetObjectType() == OT_buoy)
-                {
-                    // SetCommand will handle the ReleaseConsumer call
-                    m_pShip->SetCommand(i, NULL, c_cidNone);
-                }
-            }
-
-            // Buoys are managed at the mission level, not the cluster level
-            // So we need to iterate through the mission's buoys and filter by cluster
-            ImissionIGC* pMission = GetIGCShip()->GetMission();
-            if (pMission)
-            {
-                const BuoyListIGC * pboylist = pMission->GetBuoys();
-                for (BuoyLinkIGC* pboylink = pboylist->first(); pboylink; pboylink = pboylink->next())
-                {
-                    IbuoyIGC * pbuoy = pboylink->data();
-                    
-                    // Only process buoys in this cluster
-                    if (pbuoy->GetCluster() == pclusterOld)
-                    {
-                        // Release consumer reference - buoy may self-terminate if no more consumers
-                        // Only if this ship hasn't already released via SetCommand above
-                        bool bIsCommandTarget = false;
-                        for (Command i = 0; i < c_cmdMax; i++)
-                        {
-                            if (m_pShip->GetCommandTarget(i) == (ImodelIGC*)pbuoy)
-                            {
-                                bIsCommandTarget = true;
-                                break;
-                            }
-                        }
-                        
-                        // If this buoy is not currently a command target for this ship, 
-                        // it doesn't have a consumer reference from this ship
-                    }
-                }
-            }
+            ImodelIGC* ptarget = m_pShip->GetCommandTarget(i);
+            if (ptarget && ptarget->GetObjectType() == OT_buoy)
+                m_pShip->SetCommand(i, NULL, c_cidNone);
         }
     }
 }
@@ -1225,7 +1190,7 @@ void CFSPlayer::SetSide(CFSMission * pfsMission, IsideIGC * pside)
 
     if (psideOld ) // if leaving a side
     {
-      LPCSTR pszContext = GetIGCShip() ? GetIGCShip()->GetMission()->GetContextName() : NULL;
+      LPCSTR pszContext = GetIGCShip()->GetMission() ? GetIGCShip()->GetMission()->GetContextName() : NULL;
 	  // TE Modify LeaveTeam AGCEvent to include MissionID, and change UniqueID to ObjectID
       _AGCModule.TriggerContextEvent(NULL, EventID_LeaveTeam, pszContext,
         GetName(), idShip, psideOld->GetUniqueID(), -1, 3, // Changed UniqueID to ObjectID. Modified ParamCount to 3

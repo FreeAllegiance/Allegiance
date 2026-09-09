@@ -599,7 +599,7 @@ END_FEDMSG
 //one aleph per leg and flies it to the end, so this is a decision the client cannot
 //recompute for itself - from a later position a different aleph looks cheaper and the
 //command view would draw a route the ship is not flying.
-DEFINE_FEDMSG(S, WARP_WAYPOINT, 201)
+DEFINE_FEDMSG(S, WARP_WAYPOINT, 174)
   ShipID                    shipID;
   ObjectID                  oidWarp;        //NA when the ship no longer has one
 END_FEDMSG

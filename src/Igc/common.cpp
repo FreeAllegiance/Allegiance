@@ -989,15 +989,20 @@ PathList* FindPathList(
     if ((pclusterTarget == NULL) || (pclusterCurrent == pclusterTarget))
         return NULL;
 
-    ClusterListIGC  explored;
+    //Warps whose node has already been expanded. Keyed on the warp taken, not on the
+    //cluster it lands in: what a hop costs depends on where in a cluster you come out,
+    //so two ways into the same cluster are genuinely different states. Closing a cluster
+    //on the first arrival throws away the other alephs into it, and with them any route
+    //that gets in by a longer hop and out by a much shorter one - which is exactly the
+    //case where a route through more sectors is the faster one. One node per warp is
+    //still bounded by the number of warps in the mission.
+    WarpListIGC     explored;
     PathList        unexplored;
 
     //Nodes that have been taken off the frontier. They are kept alive (rather than
     //deleted as they are popped) so that the pprev chain stays valid until the path
     //is reconstructed at the end of the search.
     PathList        closed;
-
-    explored.last(pclusterCurrent);
 
     {
         //Add the initial warps ... distance from the origin model to the warp
@@ -1061,12 +1066,20 @@ PathList* FindPathList(
         const Path& path = plinkClosest->data();
         IwarpIGC* pwarp = path.pwarp;
 
+        //A cheaper route through this same warp was already expanded, so this entry is
+        //stale. (Both were queued before either was popped, which the add-side check
+        //below cannot catch.)
+        if (explored.find(pwarp) != NULL)
+            continue;
+
+        explored.last(pwarp);
+
         IwarpIGC* pwarpExit = pwarp->GetDestination();  //Where we emerge, in pclusterNext
         IclusterIGC* pclusterNext = pwarpExit->GetCluster();
 
         //Reached the target cluster - record it as a candidate and keep searching, so a
-        //different aleph with a shorter crossing can still win. The cluster is left
-        //unexplored so that every way in gets weighed.
+        //different aleph with a shorter crossing can still win. Other ways in are still
+        //on the frontier, so each gets weighed in turn.
         if (pclusterNext == pclusterTarget)
         {
             const float total = path.distance +
@@ -1081,18 +1094,15 @@ PathList* FindPathList(
             continue;           //No point routing onwards through the target
         }
 
-        //A shorter route to this cluster was already expanded, so this entry is stale.
-        //(Both routes were queued before either was popped, which the add-side check
-        //below cannot catch.)
-        if (explored.find(pclusterNext) != NULL)
-            continue;
-
-        explored.last(pclusterNext);
-
-        //Add warps for the warps in the new cluster (that do not lead to a previously explored cluster)
+        //Add the warps out of the cluster we just arrived in, skipping any already expanded
         for (WarpLinkIGC* pwl = pclusterNext->GetWarps()->first(); (pwl != NULL); pwl = pwl->next())
         {
             IwarpIGC* pwarpNext = pwl->data();
+
+            //Going straight back out the way we came in returns us to where this hop
+            //started having flown nothing, so no route needs it.
+            if (pwarpNext == pwarpExit)
+                continue;
 
             if (pwarpNext->SeenBySide(pside))
             {
@@ -1102,7 +1112,7 @@ PathList* FindPathList(
                     (pclusterDestination == pclusterTarget) ||
                     IsFriendlyCluster(pclusterDestination, pside))
                 {
-                    if (explored.find(pclusterDestination) == NULL)
+                    if (explored.find(pwarpNext) == NULL)
                     {
                         PathLink* ppl = new PathLink;
                         assert(ppl);

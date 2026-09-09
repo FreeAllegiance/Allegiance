@@ -13748,8 +13748,13 @@ void FedSrvSiteBase::CommandChangedEvent(Command i, IshipIGC * pship, ImodelIGC*
 }
 void FedSrvSiteBase::WarpWaypointChangedEvent(IshipIGC* pship, IwarpIGC* pwarp)
 {
-    //Only drones commit to a warp for a whole leg; a player steers themselves, and
-    //nothing draws a route for them.
+    //Only drones commit to a warp for a whole leg. A player can switch on autopilot, but
+    //that runs on their own client (BaseClient sets it; the server never calls
+    //SetAutopilot on a player's ship), so CshipIGC::PlotShipMove never runs GotoPlan for
+    //one here and this hook does not fire for them in the first place. The test is what
+    //says so, and matches how autopilot is filtered elsewhere in IGC
+    //(CclusterIGC::Update). Nothing repeats either way: SetWaypointWarp only raises the
+    //event when the warp actually changes, which is once per leg.
     if (pship->GetPilotType() >= c_ptPlayer)
         return;
 
