@@ -3200,11 +3200,19 @@ bool CommandToDrone(CFSMission*         pfsMission,
             {
                 if (pshipTo->GetPilotType() == c_ptMiner && pdb->type == c_buoyCluster)
                     pminerCluster = pfsMission->GetIGCMission()->GetCluster(pdb->clusterID);
-                //Create a buoy for this chat message
+                //Create a buoy for this chat message. A buoy the mission already holds is
+                //not built a second time (CbuoyIGC::Initialize returns E_ABORT and this
+                //comes back NULL) - that existing buoy is the one the order names.
                 *ppmodelTarget = (ImodelIGC*)(pfsMission->GetIGCMission()->CreateObject(g.timeNow, OT_buoy, pdb, sizeof(*pdb)));
-                assert(*ppmodelTarget);
+                if (!*ppmodelTarget && (pdb->buoyID != NA))
+                {
+                    *ppmodelTarget = (ImodelIGC*)(pfsMission->GetIGCMission()->GetBuoy(pdb->buoyID));
+                    if (*ppmodelTarget)
+                        (*ppmodelTarget)->AddRef();     //Match the reference CreateObject would have returned
+                }
 
-                ((IbuoyIGC*)*ppmodelTarget)->AddConsumer();
+                if (*ppmodelTarget)
+                    ((IbuoyIGC*)*ppmodelTarget)->AddConsumer();
             }
             else
             {
@@ -3310,9 +3318,13 @@ bool CommandToDrone(CFSMission*         pfsMission,
                 CommandID cid = c_cidGoto;
                 if (pminerCluster)
                     cid = c_cidJoin;
+
+                //CreateObject returns NULL if it declined to build the buoy. The command
+                //is still worth remembering without one, but there is nothing to release.
                 pshipTo->SetCommand(c_cmdQueued, buoy, cid);
 
-                buoy->Release(); //SetCommand added the consumer needed
+                if (buoy)
+                    buoy->Release(); //SetCommand added the consumer needed
             }
             else {
                 // Remember that we just got a player command -> c_cidGoto instead of None
@@ -5299,6 +5311,17 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 
       CASTPFM(pfmBuoy, CS, CHATBUOY, pfm);
       pfmBuoy->cd.sidSender = pfsPlayer->GetIGCShip()->GetObjectID();
+
+      //Buoy IDs are the server's to hand out, because an ID has to name the same buoy
+      //here and on every client. A client can name a buoy this mission already holds -
+      //re-issuing an order against a waypoint that is already up - and that one keeps its
+      //ID, since it is that same buoy. Anything else was minted from the sender's own
+      //provisional range (ImissionIGC::GenerateProvisionalBuoyID) and gets a real ID
+      //stamped on it here, before the message is read or passed on, so that the buoy the
+      //server builds, the one echoed to the rest of the side, and the one the following
+      //ORDER_CHANGE names are all the same buoy.
+      if (pfsMission->GetIGCMission()->GetBuoy(pfmBuoy->db.buoyID) == NULL)
+          pfmBuoy->db.buoyID = pfsMission->GetIGCMission()->GenerateNewBuoyID();
 
       ForwardChatMessage(pfsMission, pfsPlayer, pfm,
                          &(pfmBuoy->cd),

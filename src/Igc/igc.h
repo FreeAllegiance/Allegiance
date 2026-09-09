@@ -2902,6 +2902,7 @@ class ImissionIGC : public IstaticIGC
                                                    IpartTypeIGC*    ppt) = 0;
 
         virtual BuoyID                  GenerateNewBuoyID(void) = 0;
+        virtual BuoyID                  GenerateProvisionalBuoyID(void) = 0;
         virtual ShipID                  GenerateNewShipID(void) = 0;
         virtual AsteroidID              GenerateNewAsteroidID(void) = 0;
         virtual StationID               GenerateNewStationID(void) = 0;

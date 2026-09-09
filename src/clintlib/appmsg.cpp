@@ -2707,9 +2707,19 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
             if (pfmBuoy->cd.sidSender != m_ship->GetObjectID())
             {
-                //Create a buoy for this chat message
+                //Create a buoy for this chat message. A buoy we already hold is not built
+                //a second time (CbuoyIGC::Initialize returns E_ABORT and this comes back
+                //NULL) - that existing buoy is the one the message names.
                 IbaseIGC*   b = m_pCoreIGC->CreateObject(lastUpdate, OT_buoy, &(pfmBuoy->db), sizeof(pfmBuoy->db));
-                assert (b);
+                if (!b && (pfmBuoy->db.buoyID != NA))
+                {
+                    b = m_pCoreIGC->GetBuoy(pfmBuoy->db.buoyID);
+                    if (b)
+                        b->AddRef();        //Match the reference CreateObject would have returned
+                }
+
+                if (!b)
+                    break;
 
                 ((IbuoyIGC*)b)->AddConsumer();
 
