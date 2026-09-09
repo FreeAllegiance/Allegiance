@@ -1154,8 +1154,23 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                         ship->SetRipcordModel(pfmSSU->bIsRipcording ? ship : NULL); //Just has to be a valid pointer
 
                         {
-                            ImodelIGC*  pmodel = m_pCoreIGC->GetModel(pfmSSU->otTarget, pfmSSU->oidTarget);
-                            ship->SetCommand(c_cmdCurrent, pmodel, c_cidNone);
+                            //The standing order first: this is the slot the command view draws
+                            //a route for, and the one the server keeps in sync from here on via
+                            //ORDER_CHANGE. If it names a buoy, the consumer reference taken here
+                            //is released by the matching ORDER_CHANGE when the order is cleared,
+                            //which is what lets the waypoint disappear.
+                            ImodelIGC*  pmodelAccepted = m_pCoreIGC->GetModel(pfmSSU->otAccepted, pfmSSU->oidAccepted);
+                            ship->SetCommand(c_cmdAccepted, pmodelAccepted, pfmSSU->cidAccepted);
+
+                            //c_cmdCurrent is a snapshot: the server does not broadcast changes to
+                            //it for a drone, so nothing would ever tell us to let go of a buoy
+                            //named here and the waypoint would outlive the order. Ships are safe
+                            //to hold - they are not consumer-counted - and that is all this slot
+                            //is read for on the client (who is shooting at whom).
+                            ImodelIGC*  pmodelCurrent = m_pCoreIGC->GetModel(pfmSSU->otTarget, pfmSSU->oidTarget);
+                            if (pmodelCurrent && (pmodelCurrent->GetObjectType() == OT_buoy))
+                                pmodelCurrent = NULL;
+                            ship->SetCommand(c_cmdCurrent, pmodelCurrent, c_cidNone);
                         }
 
                         if (ship->GetCluster() == NULL)

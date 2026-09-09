@@ -581,8 +581,15 @@ END_FEDMSG
 //are just getting information on (which gets sent
 //immediately when a ship undocks, ejects, or enters the sector)
 DEFINE_FEDMSG(S, SINGLE_SHIP_UPDATE, 78)
-  ObjectType                otTarget;
+  ObjectType                otTarget;       //c_cmdCurrent
   ObjectID                  oidTarget;
+  //The standing order as well as what the ship is doing right now. The two slots are
+  //replicated differently - c_cmdAccepted changes are broadcast to the side as
+  //ORDER_CHANGE, c_cmdCurrent changes are not, for a drone - so the client has to be
+  //told which is which rather than filing one under the other.
+  ObjectType                otAccepted;     //c_cmdAccepted
+  ObjectID                  oidAccepted;
+  CommandID                 cidAccepted;
   ServerSingleShipUpdate    shipupdate;
   bool                      bIsRipcording;
 END_FEDMSG

@@ -918,13 +918,12 @@ IwarpIGC* FindPath(IshipIGC*  pShip,
 }
 
 /// <summary>
-/// Finds a path of warps from the origin model's cluster to the target cluster using a Dijkstra-like search. The search only considers warps the ship can see and can optionally restrict traversal to friendly clusters.
+/// Finds the route of warps from the origin model's cluster to the target's cluster. Only warps visible to the origin's side are considered, and traversal can optionally be restricted to friendly clusters.
 /// </summary>
-/// <param name="pShip">Pointer to the ship used to check visibility and to determine the ship's side for friendliness checks. Must not be NULL.</param>
-/// <param name="pmodelOrigin">Pointer to the origin model; the search starts from this model's cluster and position. Must not be NULL.</param>
-/// <param name="pclusterTarget">Pointer to the target cluster to reach. If the origin's cluster equals this cluster the function returns NULL.</param>
+/// <param name="pmodelOrigin">Pointer to the origin model; the search starts from this model's cluster and position. Must not be NULL. Returns NULL if the model has no cluster - use the explicit-origin overload in that case.</param>
+/// <param name="pmodelTarget">Pointer to the target model. Must not be NULL.</param>
 /// <param name="bCowardly">If true, limit traversal to friendly clusters (except the target cluster). If false, allow traversal through any visible cluster.</param>
-/// <returns>A pointer to a PathList describing the path (warp steps and accumulated distances) from the origin to the target, or NULL if no path is found. The caller receives ownership of the returned PathList and is responsible for freeing it.</returns>
+/// <returns>A PathList holding every hop from the origin cluster to the target cluster, in travel order, or NULL if no path is found. The caller owns the returned PathList and is responsible for deleting it.</returns>
 PathList* FindPathList(
     ImodelIGC* pmodelOrigin,
     ImodelIGC* pmodelTarget,
@@ -932,23 +931,71 @@ PathList* FindPathList(
 {
     assert(pmodelOrigin);
     assert(pmodelTarget);
-    IsideIGC* pside = pmodelOrigin->GetSide();
+
+    IclusterIGC* pclusterOrigin = pmodelOrigin->GetCluster();
+    if (!pclusterOrigin)
+    {
+        //The caller knows where the origin is, we do not. Use the overload below.
+        return NULL;
+    }
+
+    return FindPathList(pclusterOrigin,
+                        pmodelOrigin->GetPosition(),
+                        pmodelOrigin->GetSide(),
+                        pmodelTarget,
+                        bCowardly);
+}
+
+//Insert into the frontier keeping it ordered by accumulated distance, so the search
+//always expands the closest node next.
+//
+//This ordering is what makes the result depend only on geometry. Warp positions are
+//identical on client and server, so both derive the same route. An unordered frontier
+//resolves equally-short routes by warp list order instead - and those orders differ:
+//the server builds its lists at mission load, the client builds them in the order warps
+//are discovered and exported. Same information, different answer.
+static void InsertByDistance(PathList& unexplored, PathLink* pl)
+{
+    const float distance = pl->data().distance;
+
+    for (PathLink* p = unexplored.first(); p != NULL; p = p->next())
+    {
+        if (distance < p->data().distance)
+        {
+            p->txen(pl);        //Insert in front of the more distant link
+            return;
+        }
+    }
+
+    unexplored.last(pl);        //Nothing further away ... to the end of the list
+}
+
+PathList* FindPathList(
+    IclusterIGC*  pclusterCurrent,
+    const Vector& positionOrigin,
+    IsideIGC*     pside,
+    ImodelIGC*    pmodelTarget,
+    bool          bCowardly)
+{
+    assert(pclusterCurrent);
+    assert(pmodelTarget);
     if (!pmodelTarget->SeenBySide(pside))
     {
         return NULL;
     }
 
-    IclusterIGC* pclusterCurrent = pmodelOrigin->GetCluster();
     IclusterIGC* pclusterTarget = pmodelTarget->GetCluster();
-    assert(pclusterCurrent);
 
-    if (pclusterCurrent == pclusterTarget)
+    if ((pclusterTarget == NULL) || (pclusterCurrent == pclusterTarget))
         return NULL;
-
-    const Vector& positionOrigin = pmodelOrigin->GetPosition();
 
     ClusterListIGC  explored;
     PathList        unexplored;
+
+    //Nodes that have been taken off the frontier. They are kept alive (rather than
+    //deleted as they are popped) so that the pprev chain stays valid until the path
+    //is reconstructed at the end of the search.
+    PathList        closed;
 
     explored.last(pclusterCurrent);
 
@@ -970,28 +1017,14 @@ PathList* FindPathList(
                     assert(pl);
 
                     Path& path = pl->data();
-                    path.distance = (pwarp->GetPosition() - positionOrigin).LengthSquared();
+
+                    //True distance, not squared: these accumulate across hops, and a sum
+                    //of squares is not a distance.
+                    path.distance = (pwarp->GetPosition() - positionOrigin).Length();
                     path.pwarpStart = path.pwarp = pwarp;
+                    path.pprev = NULL;      //First hop out of the origin cluster
 
-                    //Keep the list sorted
-                    PathLink* p = unexplored.first();
-                    while (true)
-                    {
-                        if (p == NULL)
-                        {
-                            //Nothing left ... to the end of the list
-                            unexplored.last(pl);
-                            break;
-                        }
-                        else if (path.distance < p->data().distance)
-                        {
-                            //Insert in front of the existing link (which has a greater distance)
-                            p->txen(pl);
-                            break;
-                        }
-
-                        p = p->next();
-                    }
+                    InsertByDistance(unexplored, pl);
                 }
             }
         }
@@ -1000,33 +1033,59 @@ PathList* FindPathList(
             return NULL;
     }
 
+    //Best route found into the target cluster so far. Reaching that cluster is not the
+    //end of the journey - the ship still has to cross it to the target - so a route is
+    //only comparable once that last leg is counted, and the cheapest way in is not
+    //necessarily through the nearest aleph.
+    const Path* pbestPath = NULL;
+    float       bestTotal = 0.0f;
+
     // Dijkstra's algorithm search
     while (true)
     {
         PathLink* plinkClosest = unexplored.first();
 
         if (!plinkClosest)
-            return NULL;        //Never found a path
+            break;              //Frontier exhausted
+
+        //Every remaining route already costs at least this much before its final leg,
+        //which is never negative, so nothing still queued can beat the best.
+        if (pbestPath && (plinkClosest->data().distance >= bestTotal))
+            break;
+
+        //Move the node off the frontier, but keep it alive: nodes discovered from it
+        //point back at it via pprev, and the chain is walked when the target is reached.
+        plinkClosest->unlink();
+        closed.last(plinkClosest);
 
         const Path& path = plinkClosest->data();
         IwarpIGC* pwarp = path.pwarp;
 
-        IclusterIGC* pclusterNext = pwarp->GetDestination()->GetCluster();
+        IwarpIGC* pwarpExit = pwarp->GetDestination();  //Where we emerge, in pclusterNext
+        IclusterIGC* pclusterNext = pwarpExit->GetCluster();
 
-        // Found path to target - reconstruct and return the full path
+        //Reached the target cluster - record it as a candidate and keep searching, so a
+        //different aleph with a shorter crossing can still win. The cluster is left
+        //unexplored so that every way in gets weighed.
         if (pclusterNext == pclusterTarget)
         {
-            //Found a path to the target - build return list
-            PathList* preturnPath = new PathList;
+            const float total = path.distance +
+                (pmodelTarget->GetPosition() - pwarpExit->GetPosition()).Length();
 
-            // Add the final path node
-            PathLink* plReturn = new PathLink;
-            plReturn->data() = path;
-            preturnPath->last(plReturn);
+            if ((pbestPath == NULL) || (total < bestTotal))
+            {
+                pbestPath = &path;
+                bestTotal = total;
+            }
 
-            delete plinkClosest;
-            return preturnPath;
+            continue;           //No point routing onwards through the target
         }
+
+        //A shorter route to this cluster was already expanded, so this entry is stale.
+        //(Both routes were queued before either was popped, which the add-side check
+        //below cannot catch.)
+        if (explored.find(pclusterNext) != NULL)
+            continue;
 
         explored.last(pclusterNext);
 
@@ -1051,17 +1110,43 @@ PathList* FindPathList(
                         Path& ppathNew = ppl->data();
                         ppathNew.pwarpStart = path.pwarpStart;
                         ppathNew.pwarp = pwarpNext;
-                        ppathNew.distance = path.distance +
-                            (pwarpNext->GetPosition() - pwarp->GetPosition()).LengthSquared();
 
-                        unexplored.last(ppl);
+                        //The leg flown inside pclusterNext runs from where we emerge from
+                        //the previous warp to the next warp - not from the previous warp
+                        //itself, which sits in the cluster we just left.
+                        ppathNew.distance = path.distance +
+                            (pwarpNext->GetPosition() - pwarpExit->GetPosition()).Length();
+                        ppathNew.pprev = &path;     //Stable: `path` lives in `closed`
+
+                        InsertByDistance(unexplored, ppl);
                     }
                 }
             }
         }
-
-        delete plinkClosest;
     }
+
+    if (pbestPath == NULL)
+        return NULL;            //Never found a path
+
+    //Walk the pprev chain back to the origin cluster, prepending as we go so that the
+    //returned list runs origin-first.
+    PathList* preturnPath = new PathList;
+
+    for (const Path* pnode = pbestPath; pnode != NULL; pnode = pnode->pprev)
+    {
+        PathLink* plReturn = new PathLink;
+        assert(plReturn);
+
+        plReturn->data() = *pnode;
+
+        //The search nodes die with `closed` when we return, so do not hand the caller
+        //pointers into them.
+        plReturn->data().pprev = NULL;
+
+        preturnPath->first(plReturn);
+    }
+
+    return preturnPath;
 }
 
 bool    SearchClusters(ImodelIGC*    pmodel,

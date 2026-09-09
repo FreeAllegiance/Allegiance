@@ -279,6 +279,25 @@ class       CstationIGC : public TmodelIGC<IstationIGC>
 
                 if (pcluster != NULL)
                     pcluster->GetClusterSite()->MoveStation();
+
+                //A station changing hands changes both sides' territory. This lives here,
+                //in shared IGC code, rather than only in the server's capture handler, so
+                //that clients recompute it too: IsTerritory() steers IsFriendlyCluster(),
+                //which steers cowardly pathfinding, and a client whose territory disagrees
+                //with the server's draws a different route than the drone actually flies.
+                //It derives only from station sides and SeenBySide, both of which the client
+                //already has, so it exposes nothing the team does not already know.
+                //Only once the station is actually placed: Initialize() calls SetSide()
+                //before SetCluster(), and UpdateTerritory() walks every station's cluster,
+                //so running it here at mission load would dereference a NULL cluster.
+                //Initialize() does its own UpdateTerritory() call after SetCluster().
+                if (pcluster != NULL)
+                {
+                    if (psideOld != NULL)
+                        psideOld->UpdateTerritory();
+                    if (psideNew != NULL)
+                        psideNew->UpdateTerritory();
+                }
             }
         }
 

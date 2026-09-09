@@ -526,21 +526,19 @@ void CFSShip::SetCluster(IclusterIGC * pcluster, bool   bViewOnly)
             m_pShip->ExportShipUpdate(&(pfmSSU->shipupdate));
 
             {
-                ImodelIGC*  pmodelTarget = m_pShip->GetCommandTarget(c_cmdAccepted);
-                if (pmodelTarget)
-                {
-                    pfmSSU->otTarget = pmodelTarget->GetObjectType();
-                    pfmSSU->oidTarget = pmodelTarget->GetObjectID();
-                    debugf("CFSShip::SetCluster - Broadcasting ship %s (ID:%d) command target: type=%d, id=%d\n",
-                        m_pShip->GetName(), m_pShip->GetObjectID(), pfmSSU->otTarget, pfmSSU->oidTarget);
-                }
-                else
-                {
-                    pfmSSU->otTarget = NA;
-                    pfmSSU->oidTarget = NA;
-                    debugf("CFSShip::SetCluster - Ship %s (ID:%d) has no command target\n",
-                        m_pShip->GetName(), m_pShip->GetObjectID());
-                }                    
+                //Send both slots. c_cmdCurrent is what the ship is doing right now; the client
+                //uses it to tell who is shooting at whom. c_cmdAccepted is the standing order,
+                //and is what the command view draws a route for - and, because it is the only
+                //slot whose changes are broadcast to the side as ORDER_CHANGE, the only one a
+                //client can hold a buoy consumer reference for and expect to be told to let go.
+                ImodelIGC*  pmodelCurrent = m_pShip->GetCommandTarget(c_cmdCurrent);
+                pfmSSU->otTarget  = pmodelCurrent ? pmodelCurrent->GetObjectType() : NA;
+                pfmSSU->oidTarget = pmodelCurrent ? pmodelCurrent->GetObjectID()   : NA;
+
+                ImodelIGC*  pmodelAccepted = m_pShip->GetCommandTarget(c_cmdAccepted);
+                pfmSSU->otAccepted  = pmodelAccepted ? pmodelAccepted->GetObjectType() : NA;
+                pfmSSU->oidAccepted = pmodelAccepted ? pmodelAccepted->GetObjectID()   : NA;
+                pfmSSU->cidAccepted = m_pShip->GetCommandID(c_cmdAccepted);
             }
 
             pfmSSU->bIsRipcording = m_pShip->fRipcordActive();
@@ -881,21 +879,17 @@ void CFSPlayer::SetCluster(IclusterIGC* pcluster, bool bViewOnly)
                     pshipExist->ExportShipUpdate(&(pfmSSU->shipupdate));
 
                     {
-                        ImodelIGC*  pmodelTarget = pshipExist->GetCommandTarget(c_cmdAccepted);
-                        if (pmodelTarget)
-                        {
-                            pfmSSU->otTarget = pmodelTarget->GetObjectType();
-                            pfmSSU->oidTarget = pmodelTarget->GetObjectID();
-                            debugf("CFSPlayer::SetCluster - Sending ship %s (ID:%d) command target to joining player: type=%d, id=%d\n",
-                                pshipExist->GetName(), pshipExist->GetObjectID(), pfmSSU->otTarget, pfmSSU->oidTarget);
-                        }
-                        else
-                        {
-                            pfmSSU->otTarget = NA;
-                            pfmSSU->oidTarget = NA;
-                            debugf("CFSPlayer::SetCluster - Ship %s (ID:%d) has no command target for joining player\n",
-                                pshipExist->GetName(), pshipExist->GetObjectID());
-                        }                    
+                        //Both slots, as above. A player entering the sector has missed every
+                        //ORDER_CHANGE issued before they arrived, so this is their only chance
+                        //to learn what the ships already here have been ordered to do.
+                        ImodelIGC*  pmodelCurrent = pshipExist->GetCommandTarget(c_cmdCurrent);
+                        pfmSSU->otTarget  = pmodelCurrent ? pmodelCurrent->GetObjectType() : NA;
+                        pfmSSU->oidTarget = pmodelCurrent ? pmodelCurrent->GetObjectID()   : NA;
+
+                        ImodelIGC*  pmodelAccepted = pshipExist->GetCommandTarget(c_cmdAccepted);
+                        pfmSSU->otAccepted  = pmodelAccepted ? pmodelAccepted->GetObjectType() : NA;
+                        pfmSSU->oidAccepted = pmodelAccepted ? pmodelAccepted->GetObjectID()   : NA;
+                        pfmSSU->cidAccepted = pshipExist->GetCommandID(c_cmdAccepted);
                     }
                     pfmSSU->bIsRipcording = pshipExist->fRipcordActive();
                   }

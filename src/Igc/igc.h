@@ -4558,15 +4558,25 @@ IwarpIGC*   FindPath(IshipIGC* pShip, ImodelIGC* pTarget, bool bCowardly);
 
 struct Path
 {
-    IwarpIGC* pwarpStart;
-    IwarpIGC* pwarp;
+    IwarpIGC* pwarpStart;       //First warp leaving the origin cluster
+    IwarpIGC* pwarp;            //Warp taken on this hop
     float       distance;
+    const Path* pprev;          //Previous hop while searching; always NULL in a returned PathList
 };
 typedef Slist_utl<Path> PathList;
 typedef Slink_utl<Path> PathLink;
 
 
 PathList* FindPathList(ImodelIGC* pmodelOrigin, ImodelIGC* pmodelTarget, bool bCowardly);
+
+//As above, but with the origin supplied explicitly. Needed on the client, where a ship
+//outside the sector being viewed has no cluster of its own (the server only sends ship
+//updates to players flying in that sector) but its last known sector is still known.
+PathList* FindPathList(IclusterIGC*  pclusterOrigin,
+                       const Vector& positionOrigin,
+                       IsideIGC*     pside,
+                       ImodelIGC*    pmodelTarget,
+                       bool          bCowardly);
 
 const char* GetModelType(ImodelIGC* pmodel);
 const char* GetModelName(ImodelIGC* pmodel);
