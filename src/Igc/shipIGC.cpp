@@ -3749,11 +3749,17 @@ ImodelIGC*  CshipIGC::PickRipcordGoal(IclusterIGC*   pcluster)
 
     ImodelIGC*  pmodelBest = NULL;
 
-    //Selection first, then the standing order, so that a specifically selected target still
-    //wins when both are in the sector being ripped to.
-    ImodelIGC*  pcandidates[2] = { m_commandTargets[c_cmdCurrent], m_commandTargets[c_cmdAccepted] };
+    //Selection first, then the standing order, then the plan, so that a specifically
+    //selected target still wins when more than one of them is in the sector being ripped to.
+    //The plan has to be among them: it is the slot the ship actually flies (ResetWaypoint
+    //reads no other), and a drone or miner whose plan has moved on from its standing order -
+    //a full miner heading back to base, say - would otherwise have the rip aimed at a target
+    //it is no longer going to.
+    ImodelIGC*  pcandidates[3] = { m_commandTargets[c_cmdCurrent],
+                                   m_commandTargets[c_cmdAccepted],
+                                   m_commandTargets[c_cmdPlan] };
 
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 3; i++)
     {
         ImodelIGC*  pmodel = pcandidates[i];
 
@@ -3780,10 +3786,35 @@ bool    CshipIGC::IsClusterOnRouteTo(IclusterIGC*   pcluster,
     if (pclusterShip == NULL)
         return false;
 
+    Vector          positionFrom = GetPosition();
+
+    //A ship already committed to an aleph flies that one whatever a fresh search says now:
+    //it is held until the ship is through. BuildRoute (src/WinTrek/cmdview.cpp) draws the
+    //route that way, so the same hop has to be taken here, or once the ship has moved far
+    //enough for another aleph to look cheaper the rip starts aiming off the line the pilot
+    //is looking at.
+    IwarpIGC*   pwarpCommitted = GetWaypointWarp();
+    if (pwarpCommitted && (pwarpCommitted->GetCluster() == pclusterShip))
+    {
+        IwarpIGC*       pwarpExit = pwarpCommitted->GetDestination();
+        IclusterIGC*    pclusterNext = pwarpExit ? pwarpExit->GetCluster() : NULL;
+
+        if (pclusterNext)
+        {
+            //The committed hop is part of the route by definition.
+            if (pclusterNext == pcluster)
+                return true;
+
+            //The rest of the way is searched from where it lands.
+            pclusterShip = pclusterNext;
+            positionFrom = pwarpExit->GetPosition();
+        }
+    }
+
     //Cowardly the same way the route line is: CommandGeo::DrawSelectedPaths asks for a
     //route with this same test (src/WinTrek/cmdview.cpp), so asking differently here would
     //let the rip pick a teleport off a route the ship would never fly.
-    PathList*   ppath = FindRouteList(pclusterShip, GetPosition(), GetSide(), pmodelGoal,
+    PathList*   ppath = FindRouteList(pclusterShip, positionFrom, GetSide(), pmodelGoal,
                                       IsCowardlyRoute());
     if (ppath == NULL)
         return false;      //Nowhere to go, or the goal is in the sector we are already in

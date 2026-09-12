@@ -4878,9 +4878,18 @@ void      WinTrekClient::ReceiveChat(IshipIGC*   pshipSender,
                     (trekClient.GetShip()->GetParentShip() == NULL) &&
                     trekClient.GetCluster(trekClient.GetShip(), pmodelTarget))
                 {
+                    //An order we addressed to ourselves reaches this twice for one keypress:
+                    //once from the local echo BaseClient::SendChat raises, and again when the
+                    //server sends the message back to its recipient - us - as CHAT_INDIVIDUAL.
+                    //Setting the same order twice is harmless; announcing an autopilot that is
+                    //already flying is not, so the sound only goes with actually engaging it.
+                    bool    bWasOnAutopilot = trekClient.GetShip()->GetAutopilot();
+
                     trekClient.SetAutoPilot(true);
                     trekClient.bInitTrekJoyStick = true;
-                    PlaySoundEffect(salAutopilotEngageSound);
+
+                    if (!bWasOnAutopilot)
+                        PlaySoundEffect(salAutopilotEngageSound);
                 }
             }
             else

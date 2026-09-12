@@ -531,8 +531,64 @@ void CFSShip::SetCluster(IclusterIGC * pcluster, bool   bViewOnly)
     {
         IshipIGC* pshipParent = m_pShip->GetParentShip();
 
+        // if this is a drone that has arrived in a sector to which it was told
+        // to go, clear its objective.
+        //
+        //Before the snapshot below, not after: the snapshot is broadcast to everyone flying
+        //here, and clearing afterwards would have told them the drone is still flying to the
+        //buoy it has just reached. The side is put right by the ORDER_CHANGE that clearing
+        //raises, but an allied or sector-only client never sees that one and would hold the
+        //stale plan - and a consumer reference on a waypoint that should be gone - for as
+        //long as the drone stayed in the sector.
+        if (!IsPlayer())
+        {
+            for (Command i = 0; i < c_cmdMax; i++)
+            {
+                ImodelIGC* ptarget = m_pShip->GetCommandTarget(i);
+
+                // if this command has a cluster buoy in this cluster...
+                if (ptarget && ptarget->GetObjectType() == OT_buoy 
+                    && ((IbuoyIGC*)ptarget)->GetBuoyType() == c_buoyCluster
+                    && ((IbuoyIGC*)ptarget)->GetCluster() == pcluster)
+                {
+                    // clear the command
+                    m_pShip->SetCommand(i, NULL, c_cidNone);
+                }
+            }
+        }
+
         if ((pshipParent == NULL) && !bViewOnly)
         {
+            //A buoy named in the snapshot below has to exist on the client before the
+            //snapshot naming it arrives, or the order is dropped on the floor and the route
+            //with it. One in this sector everybody here already has; one in a sector further
+            //on - the ordinary case for a plan - is only known to those who saw the
+            //ORDER_CHANGE that set it, which leaves out anyone who joined since. Send it
+            //again here, scoped the way ORDER_CHANGE is: to the ship's own side, who are the
+            //ones told about these two slots at all.
+            {
+                CFSSide*    pfsSide = CFSSide::FromIGC(m_pShip->GetSide());
+                CFMGroup*   pgrpSide = pfsSide ? pfsSide->GetGroup() : NULL;
+                ImodelIGC*  ptargetSent = NULL;     //The two slots usually name the same buoy
+
+                for (int i = 0; (pgrpSide != NULL) && (i < 2); i++)
+                {
+                    ImodelIGC*  ptarget = m_pShip->GetCommandTarget((i == 0) ? c_cmdAccepted
+                                                                             : c_cmdPlan);
+
+                    if (ptarget && (ptarget != ptargetSent) &&
+                        (ptarget->GetObjectType() == OT_buoy) &&
+                        (((IbuoyIGC*)ptarget)->GetCluster() != pcluster))
+                    {
+                        g.fm.SetDefaultRecipient(pgrpSide, FM_GUARANTEED);
+                        ExportObj(ptarget, OT_buoy, NULL);
+                        g.fm.SendMessages(pgrpSide, FM_GUARANTEED, FM_FLUSH);
+
+                        ptargetSent = ptarget;
+                    }
+                }
+            }
+
             //Everyone already in the sector now knows about the player's ship
             //(assuming the player is not in a turret)
             QueueLoadoutChange();
@@ -582,24 +638,6 @@ void CFSShip::SetCluster(IclusterIGC * pcluster, bool   bViewOnly)
             SetDeviation(0.0f);
         }
 
-        // if this is a drone that has arrived in a sector to which it was told
-        // to go, clear its objective.
-        if (!IsPlayer())
-        {
-            for (Command i = 0; i < c_cmdMax; i++)
-            {
-                ImodelIGC* ptarget = m_pShip->GetCommandTarget(i);
-                
-                // if this command has a cluster buoy in this cluster...
-                if (ptarget && ptarget->GetObjectType() == OT_buoy 
-                    && ((IbuoyIGC*)ptarget)->GetBuoyType() == c_buoyCluster
-                    && ((IbuoyIGC*)ptarget)->GetCluster() == pcluster)
-                {
-                    // clear the command
-                    m_pShip->SetCommand(i, NULL, c_cidNone);
-                }
-            }
-        }
     }
     else if (!bViewOnly)
     {

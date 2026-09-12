@@ -1181,7 +1181,18 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                         //command view has to have the model to draw the route from. Failing
                         //that, the ship stands in for it, which says "ripcording" and no more.
                         if (!pfmSSU->bIsRipcording)
-                            ship->SetRipcordModel(NULL);
+                        {
+                            //The countdown effect goes with the model. A rip that landed
+                            //sends this update from SetCluster and the RIPCORD_ABORTED that
+                            //ends it afterwards, and that handler returns early once the
+                            //model is gone - so clearing only the model here would leave the
+                            //ship counting down forever.
+                            if (ship->GetRipcordModel() != NULL)
+                            {
+                                ship->SetRipcordModel(NULL);
+                                ship->GetThingSite()->SetTimeUntilRipcord(-1.0f);
+                            }
+                        }
                         else
                         {
                             ImodelIGC*  pmodelRipcord = m_pCoreIGC->GetModel(pfmSSU->otRipcord,
