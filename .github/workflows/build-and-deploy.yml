@@ -7,11 +7,6 @@ on:
 
 jobs:
   build-and-deploy:
-    # Not windows-latest: GitHub repointed that label - and windows-2025 with it - at the
-    # Windows Server 2025 + Visual Studio 2026 image in June 2026. That image carries no
-    # VS 2022 at all, and its side-by-side v143 toolset (which this solution builds with)
-    # has no atlmfc, so src/Inc/allegdb.h fails on atldbcli.h. windows-2022 is the label
-    # that still means Visual Studio 2022.
     runs-on: windows-2022
     
     env:
