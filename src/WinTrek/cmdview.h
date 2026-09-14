@@ -68,6 +68,7 @@ private:
     //TRef<Surface>  m_top; //GetModeler()->LoadImage("toparrowbmp", true)->GetSurface();
 
     void DrawShips(Context* pcontext);
+    void DrawSelectedPaths(Context* pcontext);
     void DrawTop(Context* pcontext);
 
 public:

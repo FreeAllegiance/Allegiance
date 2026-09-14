@@ -882,75 +882,154 @@ ImodelIGC*  FindTarget(IshipIGC*           pship,
     return pmodelTarget;
 }
 
-struct Path
+IwarpIGC* FindPath(ImodelIGC* pOrigin,
+    ImodelIGC* pTarget,
+    bool       bCowardly)
 {
-    IwarpIGC*   pwarpStart;
-    IwarpIGC*   pwarp;
-    float       distance;
-};
-typedef Slist_utl<Path> PathList;
-typedef Slink_utl<Path> PathLink;
+    PathList* path = FindPathList(pOrigin, pTarget, bCowardly);
+    if (!path) {
+        return NULL;
+    }
 
-IwarpIGC* FindPath(IshipIGC*    pship,
-                   IclusterIGC* pclusterTarget,
-                   bool         bCowardly)
+    IwarpIGC* firstWarp = path->first()->data().pwarpStart;
+    delete path;
+    return firstWarp;
+}
+
+/// <summary>
+/// Returns the first warp on the path from the ship to the target, if the ship can see the target, NULL otherwise 
+/// </summary>
+/// <param name="pShip"></param>
+/// <param name="pTarget"></param>
+/// <param name="bCowardly"></param>
+/// <returns></returns>
+IwarpIGC* FindPath(IshipIGC*  pShip,
+                   ImodelIGC* pTarget,
+                   bool       bCowardly)
 {
-    assert (pship);
-    IsideIGC*   pside = pship->GetSide();
+    assert(pShip);
+    assert(pTarget);
+    IclusterIGC* pclusterTarget = pTarget->GetMission()->GetIgcSite()->GetCluster(pShip, pTarget);
+    if (!pclusterTarget)
+    {
+        return NULL;
+    }
+    return FindPath((ImodelIGC*)pShip, pTarget, bCowardly);
+}
 
-    IclusterIGC*    pclusterCurrent = pship->GetCluster();
-    assert (pclusterCurrent);
+/// <summary>
+/// Finds the route of warps from the origin model's cluster to the target's cluster. Only warps visible to the origin's side are considered, and traversal can optionally be restricted to friendly clusters.
+/// </summary>
+/// <param name="pmodelOrigin">Pointer to the origin model; the search starts from this model's cluster and position. Must not be NULL. Returns NULL if the model has no cluster - use the explicit-origin overload in that case.</param>
+/// <param name="pmodelTarget">Pointer to the target model. Must not be NULL.</param>
+/// <param name="bCowardly">If true, limit traversal to friendly clusters (except the target cluster). If false, allow traversal through any visible cluster.</param>
+/// <returns>A PathList holding every hop from the origin cluster to the target cluster, in travel order, or NULL if no path is found. The caller owns the returned PathList and is responsible for deleting it.</returns>
+PathList* FindPathList(
+    ImodelIGC* pmodelOrigin,
+    ImodelIGC* pmodelTarget,
+    bool         bCowardly)
+{
+    assert(pmodelOrigin);
+    assert(pmodelTarget);
 
-    if (pclusterCurrent == pclusterTarget)
+    IclusterIGC* pclusterOrigin = pmodelOrigin->GetCluster();
+    if (!pclusterOrigin)
+    {
+        //The caller knows where the origin is, we do not. Use the overload below.
+        return NULL;
+    }
+
+    return FindPathList(pclusterOrigin,
+                        pmodelOrigin->GetPosition(),
+                        pmodelOrigin->GetSide(),
+                        pmodelTarget,
+                        bCowardly);
+}
+
+//Insert into the frontier keeping it ordered by accumulated distance, so the search
+//always expands the closest node next.
+//
+//This ordering is what makes the result depend only on geometry. Warp positions are
+//identical on client and server, so both derive the same route. An unordered frontier
+//resolves equally-short routes by warp list order instead - and those orders differ:
+//the server builds its lists at mission load, the client builds them in the order warps
+//are discovered and exported. Same information, different answer.
+static void InsertByDistance(PathList& unexplored, PathLink* pl)
+{
+    const float distance = pl->data().distance;
+
+    for (PathLink* p = unexplored.first(); p != NULL; p = p->next())
+    {
+        if (distance < p->data().distance)
+        {
+            p->txen(pl);        //Insert in front of the more distant link
+            return;
+        }
+    }
+
+    unexplored.last(pl);        //Nothing further away ... to the end of the list
+}
+
+PathList* FindPathList(
+    IclusterIGC*  pclusterCurrent,
+    const Vector& positionOrigin,
+    IsideIGC*     pside,
+    ImodelIGC*    pmodelTarget,
+    bool          bCowardly)
+{
+    assert(pclusterCurrent);
+    assert(pmodelTarget);
+    if (!pmodelTarget->SeenBySide(pside))
+    {
+        return NULL;
+    }
+
+    IclusterIGC* pclusterTarget = pmodelTarget->GetCluster();
+
+    if ((pclusterTarget == NULL) || (pclusterCurrent == pclusterTarget))
         return NULL;
 
-    const Vector&   positionShip = pship->GetPosition();
-
-    ClusterListIGC  explored;
+    //Warps whose node has already been expanded. Keyed on the warp taken, not on the
+    //cluster it lands in: what a hop costs depends on where in a cluster you come out,
+    //so two ways into the same cluster are genuinely different states. Closing a cluster
+    //on the first arrival throws away the other alephs into it, and with them any route
+    //that gets in by a longer hop and out by a much shorter one - which is exactly the
+    //case where a route through more sectors is the faster one. One node per warp is
+    //still bounded by the number of warps in the mission.
+    WarpListIGC     explored;
     PathList        unexplored;
 
-    explored.last(pclusterCurrent);
+    //Nodes that have been taken off the frontier. They are kept alive (rather than
+    //deleted as they are popped) so that the pprev chain stays valid until the path
+    //is reconstructed at the end of the search.
+    PathList        closed;
 
     {
-        //Add the initial warps ... distance from the player to the aleph
-        const WarpListIGC*  pwarps = pclusterCurrent->GetWarps();
-        for (WarpLinkIGC*   wLink = pwarps->first(); (wLink != NULL); wLink = wLink->next())
+        //Add the initial warps ... distance from the origin model to the warp
+        const WarpListIGC* pwarps = pclusterCurrent->GetWarps();
+        for (WarpLinkIGC* wLink = pwarps->first(); (wLink != NULL); wLink = wLink->next())
         {
-            IwarpIGC*   pwarp = wLink->data();
-            if (pship->CanSee(pwarp))
+            IwarpIGC* pwarp = wLink->data();
+            if (pwarp->SeenBySide(pside))
             {
-                assert (pwarp->GetDestination());
-                IclusterIGC*    pclusterDestination = pwarp->GetDestination()->GetCluster();
+                assert(pwarp->GetDestination());
+                IclusterIGC* pclusterDestination = pwarp->GetDestination()->GetCluster();
                 if ((!bCowardly) ||
                     (pclusterTarget == pclusterDestination) ||
                     IsFriendlyCluster(pclusterDestination, pside))
                 {
-                    PathLink*   pl = new PathLink;
-                    assert (pl);
+                    PathLink* pl = new PathLink;
+                    assert(pl);
 
-                    Path&       path = pl->data();
-                    path.distance = (pwarp->GetPosition() - positionShip).LengthSquared();
+                    Path& path = pl->data();
+
+                    //True distance, not squared: these accumulate across hops, and a sum
+                    //of squares is not a distance.
+                    path.distance = (pwarp->GetPosition() - positionOrigin).Length();
                     path.pwarpStart = path.pwarp = pwarp;
+                    path.pprev = NULL;      //First hop out of the origin cluster
 
-                    //Keep the list sorted
-                    PathLink*   p = unexplored.first();
-                    while (true)
-                    {
-                        if (p == NULL)
-                        {
-                            //Nothing left ... to the end of the list
-                            unexplored.last(pl);
-                            break;
-                        }
-                        else if (path.distance < p->data().distance)
-                        {
-                            //Insert in front of the existing link (which has a greater distance)
-                            p->txen(pl);
-                            break;
-                        }
-
-                        p = p->next();
-                    }
+                    InsertByDistance(unexplored, pl);
                 }
             }
         }
@@ -959,68 +1038,125 @@ IwarpIGC* FindPath(IshipIGC*    pship,
             return NULL;
     }
 
+    //Best route found into the target cluster so far. Reaching that cluster is not the
+    //end of the journey - the ship still has to cross it to the target - so a route is
+    //only comparable once that last leg is counted, and the cheapest way in is not
+    //necessarily through the nearest aleph.
+    const Path* pbestPath = NULL;
+    float       bestTotal = 0.0f;
+
+    // Dijkstra's algorithm search
     while (true)
     {
-        PathLink*   plinkClosest = unexplored.first();
+        PathLink* plinkClosest = unexplored.first();
 
         if (!plinkClosest)
-            return NULL;        //Never found a path
+            break;              //Frontier exhausted
+
+        //Every remaining route already costs at least this much before its final leg,
+        //which is never negative, so nothing still queued can beat the best.
+        if (pbestPath && (plinkClosest->data().distance >= bestTotal))
+            break;
+
+        //Move the node off the frontier, but keep it alive: nodes discovered from it
+        //point back at it via pprev, and the chain is walked when the target is reached.
+        plinkClosest->unlink();
+        closed.last(plinkClosest);
 
         const Path& path = plinkClosest->data();
-        IwarpIGC*   pwarp = path.pwarp;
+        IwarpIGC* pwarp = path.pwarp;
 
-        IclusterIGC*    pclusterNext = pwarp->GetDestination()->GetCluster();
+        //A cheaper route through this same warp was already expanded, so this entry is
+        //stale. (Both were queued before either was popped, which the add-side check
+        //below cannot catch.)
+        if (explored.find(pwarp) != NULL)
+            continue;
+
+        explored.last(pwarp);
+
+        IwarpIGC* pwarpExit = pwarp->GetDestination();  //Where we emerge, in pclusterNext
+        IclusterIGC* pclusterNext = pwarpExit->GetCluster();
+
+        //Reached the target cluster - record it as a candidate and keep searching, so a
+        //different aleph with a shorter crossing can still win. Other ways in are still
+        //on the frontier, so each gets weighed in turn.
         if (pclusterNext == pclusterTarget)
         {
-            //Found a path to the target
-            return path.pwarpStart;
+            const float total = path.distance +
+                (pmodelTarget->GetPosition() - pwarpExit->GetPosition()).Length();
+
+            if ((pbestPath == NULL) || (total < bestTotal))
+            {
+                pbestPath = &path;
+                bestTotal = total;
+            }
+
+            continue;           //No point routing onwards through the target
         }
 
-        explored.last(pclusterNext);
-
-        //Add warps for the warp in the new cluster (that do not lead to a previously explored cluster)
-        //Add all of the warps in this cluster to the unexplored list
-        for (WarpLinkIGC*   pwl = pclusterNext->GetWarps()->first(); (pwl != NULL); pwl = pwl->next())
+        //Add the warps out of the cluster we just arrived in, skipping any already expanded
+        for (WarpLinkIGC* pwl = pclusterNext->GetWarps()->first(); (pwl != NULL); pwl = pwl->next())
         {
-            IwarpIGC*   pwarp = pwl->data();
+            IwarpIGC* pwarpNext = pwl->data();
 
-            if (pship->CanSee(pwarp))
+            //Going straight back out the way we came in returns us to where this hop
+            //started having flown nothing, so no route needs it.
+            if (pwarpNext == pwarpExit)
+                continue;
+
+            if (pwarpNext->SeenBySide(pside))
             {
-                IclusterIGC*    pclusterDestination = pwarp->GetDestination()->GetCluster();
+                IclusterIGC* pclusterDestination = pwarpNext->GetDestination()->GetCluster();
 
                 if ((!bCowardly) ||
                     (pclusterDestination == pclusterTarget) ||
                     IsFriendlyCluster(pclusterDestination, pside))
                 {
-                    if (explored.find(pclusterDestination) == NULL)
+                    if (explored.find(pwarpNext) == NULL)
                     {
-                        PathLink*   ppl = new PathLink;
-                        assert (ppl);
+                        PathLink* ppl = new PathLink;
+                        assert(ppl);
 
-                        Path&       ppathNew = ppl->data();
+                        Path& ppathNew = ppl->data();
                         ppathNew.pwarpStart = path.pwarpStart;
-                        ppathNew.pwarp = pwarp;
+                        ppathNew.pwarp = pwarpNext;
 
-                        unexplored.last(ppl);
+                        //The leg flown inside pclusterNext runs from where we emerge from
+                        //the previous warp to the next warp - not from the previous warp
+                        //itself, which sits in the cluster we just left.
+                        ppathNew.distance = path.distance +
+                            (pwarpNext->GetPosition() - pwarpExit->GetPosition()).Length();
+                        ppathNew.pprev = &path;     //Stable: `path` lives in `closed`
+
+                        InsertByDistance(unexplored, ppl);
                     }
                 }
             }
         }
-
-        delete plinkClosest;
     }
-}
 
-IwarpIGC* FindPath(IshipIGC*  pShip,
-                   ImodelIGC* pTarget,
-                   bool       bCowardly)
-{
-    assert (pShip);
-    assert (pTarget);
+    if (pbestPath == NULL)
+        return NULL;            //Never found a path
 
-    IclusterIGC*    pclusterTarget = pTarget->GetMission()->GetIgcSite()->GetCluster(pShip, pTarget);
+    //Walk the pprev chain back to the origin cluster, prepending as we go so that the
+    //returned list runs origin-first.
+    PathList* preturnPath = new PathList;
 
-    return pclusterTarget ? FindPath(pShip, pclusterTarget, bCowardly) : NULL;
+    for (const Path* pnode = pbestPath; pnode != NULL; pnode = pnode->pprev)
+    {
+        PathLink* plReturn = new PathLink;
+        assert(plReturn);
+
+        plReturn->data() = *pnode;
+
+        //The search nodes die with `closed` when we return, so do not hand the caller
+        //pointers into them.
+        plReturn->data().pprev = NULL;
+
+        preturnPath->first(plReturn);
+    }
+
+    return preturnPath;
 }
 
 bool    SearchClusters(ImodelIGC*    pmodel,
@@ -1845,6 +1981,7 @@ bool    GotoPlan::SetControls(float  dt, bool bDodge, ControlData*  pcontrols, i
         {
             //The ship's cluster changed ... recalculate goals from the original goal
             m_wpWarp.Reset();
+            m_pship->SetWaypointWarp(NULL);
             m_maskWaypoints = c_wpTarget;
 
             //See if the goal was to enter a warp
@@ -1879,6 +2016,7 @@ bool    GotoPlan::SetControls(float  dt, bool bDodge, ControlData*  pcontrols, i
 			//If so reset the waypoint to start heading toward target
 			//instead of the aleph
 			m_wpWarp.Reset();
+			m_pship->SetWaypointWarp(NULL);
             m_maskWaypoints = c_wpTarget;
 
 			m_pvOldClusterTarget = pclusterTarget;
@@ -1902,19 +2040,24 @@ bool    GotoPlan::SetControls(float  dt, bool bDodge, ControlData*  pcontrols, i
                     m_pvOldClusterTarget = pclusterTarget;
 
                     bool        bCoward = (m_pship->GetPilotType() < c_ptCarrier);
-                    IwarpIGC*   pwarp = FindPath(m_pship, pclusterTarget, bCoward);
+                    IwarpIGC*   pwarp = FindPath(m_pship, m_wpTarget.m_pmodelTarget, bCoward);
                     if (bCoward && (pwarp == NULL))
-                        pwarp = FindPath(m_pship, pclusterTarget, false);
+                        pwarp = FindPath(m_pship, m_wpTarget.m_pmodelTarget, false);
 
                     if (pwarp)
                     {
                         m_wpWarp.Set(Waypoint::c_oEnter, pwarp);
+                        //Tell everyone which way this ship has decided to go, so the
+                        //command view can draw the leg it is actually flying rather
+                        //than re-deriving one from a position it has since left.
+                        m_pship->SetWaypointWarp(pwarp);
                         m_maskWaypoints = c_wpTarget | c_wpWarp;
                     }
                     else
                     {
                         //Do not know of a warp to the intended target ... keep the original target around & clear the warp waypoint
                         m_maskWaypoints = c_wpTarget;
+                        m_pship->SetWaypointWarp(NULL);
 
                         if (bDodge)
                             Dodge(m_pship, NULL, pstate);
@@ -2021,6 +2164,7 @@ bool    GotoPlan::SetControls(float  dt, bool bDodge, ControlData*  pcontrols, i
             if (((gpm & c_gpmFinished) != 0) && (m_wpTarget.m_pmodelTarget->GetObjectType() != OT_ship))
             {
                 m_wpWarp.Reset();
+                m_pship->SetWaypointWarp(NULL);
                 m_wpTarget.Reset();
 
                 m_maskWaypoints = 0;

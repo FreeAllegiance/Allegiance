@@ -526,17 +526,22 @@ void CFSShip::SetCluster(IclusterIGC * pcluster, bool   bViewOnly)
             m_pShip->ExportShipUpdate(&(pfmSSU->shipupdate));
 
             {
-                ImodelIGC*  pmodelTarget = m_pShip->GetCommandTarget(c_cmdCurrent);
-                if (pmodelTarget)
-                {
-                    pfmSSU->otTarget = pmodelTarget->GetObjectType();
-                    pfmSSU->oidTarget = pmodelTarget->GetObjectID();
-                }
-                else
-                {
-                    pfmSSU->otTarget = NA;
-                    pfmSSU->oidTarget = NA;
-                }                    
+                //Send both slots. c_cmdCurrent is what the ship is doing right now; the client
+                //uses it to tell who is shooting at whom. c_cmdAccepted is the standing order,
+                //and is what the command view draws a route for - and, because it is the only
+                //slot whose changes are broadcast to the side as ORDER_CHANGE, the only one a
+                //client can hold a buoy consumer reference for and expect to be told to let go.
+                ImodelIGC*  pmodelCurrent = m_pShip->GetCommandTarget(c_cmdCurrent);
+                pfmSSU->otTarget  = pmodelCurrent ? pmodelCurrent->GetObjectType() : NA;
+                pfmSSU->oidTarget = pmodelCurrent ? pmodelCurrent->GetObjectID()   : NA;
+
+                ImodelIGC*  pmodelAccepted = m_pShip->GetCommandTarget(c_cmdAccepted);
+                pfmSSU->otAccepted  = pmodelAccepted ? pmodelAccepted->GetObjectType() : NA;
+                pfmSSU->oidAccepted = pmodelAccepted ? pmodelAccepted->GetObjectID()   : NA;
+                pfmSSU->cidAccepted = m_pShip->GetCommandID(c_cmdAccepted);
+
+                IwarpIGC*   pwarpWaypoint = m_pShip->GetWaypointWarp();
+                pfmSSU->oidWaypointWarp = pwarpWaypoint ? pwarpWaypoint->GetObjectID() : NA;
             }
 
             pfmSSU->bIsRipcording = m_pShip->fRipcordActive();
@@ -565,6 +570,20 @@ void CFSShip::SetCluster(IclusterIGC * pcluster, bool   bViewOnly)
             }
         }
     }
+    else if (!bViewOnly)
+    {
+        //The ship has left the sector for nowhere - docked, or dead. Drop any buoy it was
+        //holding: SetCommand releases the consumer reference, and a buoy with no consumers
+        //left terminates itself, which is what takes the waypoint off everyone's map.
+        //No cluster test here: CshipIGC::SetCluster raises ChangeCluster after the ship's
+        //cluster is already the new one, so asking for it would only ever return NULL.
+        for (Command i = 0; i < c_cmdMax; i++)
+        {
+            ImodelIGC* ptarget = m_pShip->GetCommandTarget(i);
+            if (ptarget && ptarget->GetObjectType() == OT_buoy)
+                m_pShip->SetCommand(i, NULL, c_cidNone);
+        }
+    }
 }
 
 
@@ -574,7 +593,7 @@ void CFSShip::SetCluster(IclusterIGC * pcluster, bool   bViewOnly)
  * Purpose:
  *    Handle a station being captured by a ship
  */
-void CFSShip::CaptureStation(IstationIGC * pstation)
+void CFSShip::CaptureStation(IstationIGC* pstation)
 {
   {
     //Fudge the hitpoints of the station
@@ -768,6 +787,42 @@ void CFSPlayer::SetCluster(IclusterIGC* pcluster, bool bViewOnly)
         }
 
         {
+            // Let's build up a list of station updates so we can batch 'em down
+            IsideIGC* pside = GetIGCShip()->GetSide();
+
+            // CRITICAL FIX: Send all buoys in the sector to the player FIRST, BEFORE sending ship updates
+            // that might reference them as command targets. This must happen BEFORE we send any
+            // SINGLE_SHIP_UPDATE messages that might have buoy command references.
+            {
+                ImissionIGC* pMission = GetIGCShip()->GetMission();
+                if (pMission)
+                {
+                    const BuoyListIGC * pboylist = pMission->GetBuoys();
+                    for (BuoyLinkIGC* pboylink = pboylist->first(); pboylink; pboylink = pboylink->next())
+                    {
+                        IbuoyIGC * pbuoy = pboylink->data();
+                        
+                        // Only process buoys in this cluster that have consumers (are being used as command targets)
+                        if (pbuoy->GetCluster() == pcluster && pbuoy->GetVisibleF())
+                        {
+                            // Send this buoy to the client
+                            int cbExport = pbuoy->Export(NULL);
+                            BEGIN_PFM_CREATE(g.fm, pfmExport, S, EXPORT)
+                                FM_VAR_PARM(NULL, cbExport)
+                            END_PFM_CREATE
+                            pfmExport->objecttype = OT_buoy;
+                            pbuoy->Export(FM_VAR_REF(pfmExport, exportData));
+                            
+                            g.fm.SendMessages(GetConnection(), FM_GUARANTEED, FM_DONT_FLUSH);
+                            
+                            // NOTE: Do NOT increment consumer here - SetCommand will do it when
+                            // the ship's command is updated to reference this buoy
+                        }
+                    }
+                }
+            }
+
+            // NOW send existing ships with their command targets (buoys are already on client)
             for (ShipLinkIGC*   pshiplink = pcluster->GetShips()->first(); pshiplink; pshiplink = pshiplink->next())
             {
                 IshipIGC * pshipExist = pshiplink->data();
@@ -792,27 +847,25 @@ void CFSPlayer::SetCluster(IclusterIGC* pcluster, bool bViewOnly)
                     pshipExist->ExportShipUpdate(&(pfmSSU->shipupdate));
 
                     {
-                        ImodelIGC*  pmodelTarget = pshipExist->GetCommandTarget(c_cmdCurrent);
-                        if (pmodelTarget)
-                        {
-                            pfmSSU->otTarget = pmodelTarget->GetObjectType();
-                            pfmSSU->oidTarget = pmodelTarget->GetObjectID();
-                        }
-                        else
-                        {
-                            pfmSSU->otTarget = NA;
-                            pfmSSU->oidTarget = NA;
-                        }                    
+                        //Both slots, as above. A player entering the sector has missed every
+                        //ORDER_CHANGE issued before they arrived, so this is their only chance
+                        //to learn what the ships already here have been ordered to do.
+                        ImodelIGC*  pmodelCurrent = pshipExist->GetCommandTarget(c_cmdCurrent);
+                        pfmSSU->otTarget  = pmodelCurrent ? pmodelCurrent->GetObjectType() : NA;
+                        pfmSSU->oidTarget = pmodelCurrent ? pmodelCurrent->GetObjectID()   : NA;
+
+                        ImodelIGC*  pmodelAccepted = pshipExist->GetCommandTarget(c_cmdAccepted);
+                        pfmSSU->otAccepted  = pmodelAccepted ? pmodelAccepted->GetObjectType() : NA;
+                        pfmSSU->oidAccepted = pmodelAccepted ? pmodelAccepted->GetObjectID()   : NA;
+                        pfmSSU->cidAccepted = pshipExist->GetCommandID(c_cmdAccepted);
+
+                        IwarpIGC*   pwarpWaypoint = pshipExist->GetWaypointWarp();
+                        pfmSSU->oidWaypointWarp = pwarpWaypoint ? pwarpWaypoint->GetObjectID() : NA;
                     }
                     pfmSSU->bIsRipcording = pshipExist->fRipcordActive();
                   }
                 }
             }
-        }
-
-        {
-            // Let's build up a list of station updates so we can batch 'em down
-            IsideIGC* pside = GetIGCShip()->GetSide();
 
             {
                 const StationListIGC * pstnlist = pcluster->GetStations();
@@ -1458,6 +1511,4 @@ void CFSDrone::Dock(IstationIGC * pstation)
     //Drones always instantly undock
     //CFSShip::Dock(pstation);
 }
-
-
 

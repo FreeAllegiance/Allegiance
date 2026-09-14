@@ -2902,6 +2902,7 @@ class ImissionIGC : public IstaticIGC
                                                    IpartTypeIGC*    ppt) = 0;
 
         virtual BuoyID                  GenerateNewBuoyID(void) = 0;
+        virtual BuoyID                  GenerateProvisionalBuoyID(void) = 0;
         virtual ShipID                  GenerateNewShipID(void) = 0;
         virtual AsteroidID              GenerateNewAsteroidID(void) = 0;
         virtual StationID               GenerateNewStationID(void) = 0;
@@ -3254,6 +3255,14 @@ class IshipIGC : public IscannerIGC
         virtual ImodelIGC*           GetCommandTarget(Command i) const = 0;
         virtual CommandID            GetCommandID(Command i) const = 0;
         virtual void                 SetCommand(Command i, ImodelIGC* target, CommandID cid) = 0;
+
+        //The warp this ship has committed to leaving its current cluster by. The AI picks
+        //one when a plan is set and then flies that leg to the end (GotoPlan::SetControls
+        //caches it in m_wpWarp), so it is a decision, not something a client can recompute:
+        //recomputing from a later position finds a different aleph and draws a route the
+        //ship is not flying. The server replicates the choice instead.
+        virtual IwarpIGC*            GetWaypointWarp(void) const = 0;
+        virtual void                 SetWaypointWarp(IwarpIGC* pwarp) = 0;
 
         virtual void                 PreplotShipMove(Time          timeStop) = 0;
         virtual void                 PlotShipMove(Time          timeStop) = 0;
@@ -4553,7 +4562,30 @@ float    turnToFace(const Vector&       deltaTarget,
                     ControlData*        controls,
                     float               skill = 1.0f);
 
+IwarpIGC* FindPath(ImodelIGC* pOrigin, ImodelIGC* pTarget, bool bCowardly);
 IwarpIGC*   FindPath(IshipIGC* pShip, ImodelIGC* pTarget, bool bCowardly);
+
+struct Path
+{
+    IwarpIGC* pwarpStart;       //First warp leaving the origin cluster
+    IwarpIGC* pwarp;            //Warp taken on this hop
+    float       distance;
+    const Path* pprev;          //Previous hop while searching; always NULL in a returned PathList
+};
+typedef Slist_utl<Path> PathList;
+typedef Slink_utl<Path> PathLink;
+
+
+PathList* FindPathList(ImodelIGC* pmodelOrigin, ImodelIGC* pmodelTarget, bool bCowardly);
+
+//As above, but with the origin supplied explicitly. Needed on the client, where a ship
+//outside the sector being viewed has no cluster of its own (the server only sends ship
+//updates to players flying in that sector) but its last known sector is still known.
+PathList* FindPathList(IclusterIGC*  pclusterOrigin,
+                       const Vector& positionOrigin,
+                       IsideIGC*     pside,
+                       ImodelIGC*    pmodelTarget,
+                       bool          bCowardly);
 
 const char* GetModelType(ImodelIGC* pmodel);
 const char* GetModelName(ImodelIGC* pmodel);
@@ -4880,6 +4912,9 @@ class IIgcSite : public IObject
                                    IclusterIGC* pclusterOld,
                                    IclusterIGC* pclusterNew)  {}    //changing clusters
         virtual void CommandChangedEvent(Command i, IshipIGC * pship, ImodelIGC* ptarget, CommandID cid) {};
+
+        //The ship has committed to (or abandoned) a warp out of its current cluster.
+        virtual void WarpWaypointChangedEvent(IshipIGC* pship, IwarpIGC* pwarp) {};
         virtual bool HandlePickDefaultOrder(IshipIGC* pship) { return false; }
 
         virtual void Preload(const char*    pszModelName,

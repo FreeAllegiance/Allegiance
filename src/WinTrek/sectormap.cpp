@@ -1555,6 +1555,7 @@ private:
                             db.position = Vector(0, 0, 0);
                             db.clusterID = pClusterFound->GetObjectID();
                             db.type = c_buoyCluster;
+                            db.buoyID = trekClient.m_pCoreIGC->GenerateProvisionalBuoyID();  //The server stamps the real one
 
                             IbuoyIGC*   b = (IbuoyIGC*)(trekClient.m_pCoreIGC->CreateObject(trekClient.m_now, OT_buoy, &db, sizeof(db)));
                             assert (b);

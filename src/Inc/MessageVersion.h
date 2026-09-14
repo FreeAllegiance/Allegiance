@@ -18,12 +18,13 @@
    one server, and many clients, the server is always up to date by definition.
    ***Also gets incremented for changes to parts.h***
 */
-const int MSGVER = 216; // KGJV updated for R5 - 203 Imago R5Contrib 7/11/09 (missionparam.bAllowAllied*) - 204 Imago FAZR6 (wing behavior), + #2 6/10
+const int MSGVER = 217; // KGJV updated for R5 - 203 Imago R5Contrib 7/11/09 (missionparam.bAllowAllied*) - 204 Imago FAZR6 (wing behavior), + #2 6/10
 						// 206 Imago, #62 (remote version) 7/10
 						// 207 roid info (#100)  //208 #132 more He3 updates //#121 viz
 						// 210 Xynth #163 Optimize msg  //211 Xynth #156 miner ore
 						// 212 Imago #169 added nNumNoatPlayers to LOBBYMISSIONINFO
 						// 213 //Imago #192 //214 Xynth #208 //215 Xynth #170 
 						// 216 pkk - Keep out outdated clients
+						// 217 Student - SINGLE_SHIP_UPDATE carries both command slots + committed warp, new WARP_WAYPOINT
 
 #endif

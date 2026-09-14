@@ -1154,8 +1154,29 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                         ship->SetRipcordModel(pfmSSU->bIsRipcording ? ship : NULL); //Just has to be a valid pointer
 
                         {
-                            ImodelIGC*  pmodel = m_pCoreIGC->GetModel(pfmSSU->otTarget, pfmSSU->oidTarget);
-                            ship->SetCommand(c_cmdCurrent, pmodel, c_cidNone);
+                            //The standing order first: this is the slot the command view draws
+                            //a route for, and the one the server keeps in sync from here on via
+                            //ORDER_CHANGE. If it names a buoy, the consumer reference taken here
+                            //is released by the matching ORDER_CHANGE when the order is cleared,
+                            //which is what lets the waypoint disappear.
+                            ImodelIGC*  pmodelAccepted = m_pCoreIGC->GetModel(pfmSSU->otAccepted, pfmSSU->oidAccepted);
+                            ship->SetCommand(c_cmdAccepted, pmodelAccepted, pfmSSU->cidAccepted);
+
+                            //c_cmdCurrent is a snapshot: the server does not broadcast changes to
+                            //it for a drone, so nothing would ever tell us to let go of a buoy
+                            //named here and the waypoint would outlive the order. Ships are safe
+                            //to hold - they are not consumer-counted - and that is all this slot
+                            //is read for on the client (who is shooting at whom).
+                            ImodelIGC*  pmodelCurrent = m_pCoreIGC->GetModel(pfmSSU->otTarget, pfmSSU->oidTarget);
+                            if (pmodelCurrent && (pmodelCurrent->GetObjectType() == OT_buoy))
+                                pmodelCurrent = NULL;
+                            ship->SetCommand(c_cmdCurrent, pmodelCurrent, c_cidNone);
+
+                            //Which aleph it has committed to, if any. Changes after this
+                            //arrive as FM_S_WARP_WAYPOINT.
+                            ship->SetWaypointWarp((pfmSSU->oidWaypointWarp == NA)
+                                ? NULL
+                                : (IwarpIGC*)m_pCoreIGC->GetModel(OT_warp, pfmSSU->oidWaypointWarp));
                         }
 
                         if (ship->GetCluster() == NULL)
@@ -1816,6 +1837,26 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             ImineIGC*   pmine = pcluster->GetMine(pfmMD->mineID);
             if (pmine)
                 pmine->Terminate();
+        }
+        break;
+
+        case FM_S_WARP_WAYPOINT:
+        {
+            if (!IsInGame())
+                break;
+
+            CASTPFM(pfmWW, S, WARP_WAYPOINT, pfm);
+
+            IshipIGC*   pship = m_pCoreIGC->GetShip(pfmWW->shipID);
+            if (pship)
+            {
+                //The server has decided which way this ship leaves its cluster. Take it as
+                //given rather than working one out: the command view draws the leg the ship
+                //is flying, not the one that looks cheapest from where it happens to be now.
+                pship->SetWaypointWarp((pfmWW->oidWarp == NA)
+                    ? NULL
+                    : (IwarpIGC*)m_pCoreIGC->GetModel(OT_warp, pfmWW->oidWarp));
+            }
         }
         break;
 
@@ -2666,9 +2707,19 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
             if (pfmBuoy->cd.sidSender != m_ship->GetObjectID())
             {
-                //Create a buoy for this chat message
+                //Create a buoy for this chat message. A buoy we already hold is not built
+                //a second time (CbuoyIGC::Initialize returns E_ABORT and this comes back
+                //NULL) - that existing buoy is the one the message names.
                 IbaseIGC*   b = m_pCoreIGC->CreateObject(lastUpdate, OT_buoy, &(pfmBuoy->db), sizeof(pfmBuoy->db));
-                assert (b);
+                if (!b && (pfmBuoy->db.buoyID != NA))
+                {
+                    b = m_pCoreIGC->GetBuoy(pfmBuoy->db.buoyID);
+                    if (b)
+                        b->AddRef();        //Match the reference CreateObject would have returned
+                }
+
+                if (!b)
+                    break;
 
                 ((IbuoyIGC*)b)->AddConsumer();
 
