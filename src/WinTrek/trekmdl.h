@@ -80,6 +80,7 @@ public:
     virtual void PageUp()                          = 0;
     virtual void PageDown()                        = 0;
 	virtual void SetChatLines(int lines)		   = 0; // #294 - Turkey
+    virtual void SetChatTextSize(int size)         = 0; 
 };
 
 class ChatListPaneFactory : public IFunction

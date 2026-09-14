@@ -160,7 +160,6 @@ public:
 protected:
 
     // BT - mutex rollback 9/24
-#ifndef _M_CEE // BT - WOPR - AllegianceInterop Compatibility
   static ZAutoCriticalSection &GetSyncObject()
   {
     // Shared by all instances, which is not a big deal since this is only
@@ -168,7 +167,6 @@ protected:
     static ZAutoCriticalSection s_cs;
     return s_cs;
   }
-#endif 
 
   uint32_t GetSlot()
   {

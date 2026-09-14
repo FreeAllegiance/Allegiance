@@ -91,10 +91,15 @@
       <AdditionalIncludeDirectories>$(Outdir)..\Guids;..\src\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DllDataFileName>%(Filename)_dlldata.c</DllDataFileName>
       <TypeLibraryName>$(IntDir)$(ProjectName)_%(Filename).tlb</TypeLibraryName>
+      <GenerateTypeLibrary>true</GenerateTypeLibrary>
     </Midl>
     <PreLinkEvent>
       <Command>lib /out:$(OutDir)AGCGuid.lib $(OutDir)AGCGuid.obj</Command>
     </PreLinkEvent>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='FZDebug-NoYellowComm|Win32'">
     <ClCompile>
@@ -115,6 +120,7 @@
       <AdditionalIncludeDirectories>$(Outdir)..\Guids;..\src\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DllDataFileName>%(Filename)_dlldata.c</DllDataFileName>
       <TypeLibraryName>$(IntDir)$(ProjectName)_%(Filename).tlb</TypeLibraryName>
+      <GenerateTypeLibrary>true</GenerateTypeLibrary>
     </Midl>
     <PreLinkEvent>
       <Command>lib /out:$(OutDir)AGCGuid.lib $(OutDir)AGCGuid.obj</Command>
@@ -211,6 +217,10 @@
     </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Target Name="GenerateAGCLibInterop" AfterTargets="Build" Inputs="$(OutDir)AGC.tlb" Outputs="$(OutDir)AGCLib.dll">
+    <Message Text="Generating AGCLib Interop Assembly..." Importance="high" />
+    <Exec Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools\TlbImp.exe&quot; &quot;$(OutDir)AGC.tlb&quot; /out:&quot;$(OutDir)AGCLib.dll&quot; /silent /nologo" />
+  </Target>
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>

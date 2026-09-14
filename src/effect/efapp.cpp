@@ -13,6 +13,9 @@
 #include "framedata.h"
 #include "gamestate.h"
 #include "help.h"
+#include <enginep.h>
+
+#include <unordered_map>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -26,6 +29,10 @@ TRef<IEngineFont> g_pfontLarge;
 TRef<IEngineFont> g_pfontLargeBold;
 TRef<IEngineFont> g_pfontHuge;
 TRef<IEngineFont> g_pfontHugeBold;
+
+//Student 12/29 improve chat readability
+std::unordered_map<int, TRef<IEngineFont>> g_mChatMap;
+std::unordered_map<int, TRef<IEngineFont>> g_mChatBoldMap;
 
 IEngineFont* TrekResources::SmallFont()
 {
@@ -55,6 +62,20 @@ IEngineFont* TrekResources::HugeFont()
 IEngineFont* TrekResources::HugeBoldFont()
 {
     return g_pfontHugeBold;
+}
+
+
+IEngineFont* TrekResources::GetFont(int fontSize, bool bold)
+{
+    switch (fontSize) {
+        default:
+        case 1:
+            return bold ? TrekResources::SmallBoldFont() : TrekResources::SmallFont();
+        case 2:
+            return bold ? TrekResources::LargeBoldFont() : TrekResources::LargeFont();
+        case 3:
+            return bold ? TrekResources::HugeBoldFont() : TrekResources::HugeFont();
+    }
 }
 
 void TrekResources::Initialize(Modeler* pmodeler)

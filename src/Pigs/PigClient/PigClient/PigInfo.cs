@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Windows.Input;
 
-
 namespace PigClient
 {
     public partial class PigInfo : INotifyPropertyChanged

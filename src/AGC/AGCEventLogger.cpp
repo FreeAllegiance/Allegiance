@@ -195,7 +195,7 @@ void DisplayOLEDBErrorRecords(HRESULT hrErr = S_OK)
 			StringFromGUID2(guid, wszGuid, sizeof(wszGuid) / sizeof(WCHAR));
 			TCERRLOG_PART5(
 				"Source:\"%ls\"\nDescription:\"%ls\"\nHelp File:\"%ls\"\nHelp Context:%4d\nGUID:%ls\n",
-				bstrSource, bstrDesc, bstrHelpFile, dwHelpContext, wszGuid);
+				(BSTR)bstrSource, (BSTR)bstrDesc, (BSTR)bstrHelpFile, dwHelpContext, wszGuid);
 			bstrSource.Empty();
 			bstrDesc.Empty();
 			bstrHelpFile.Empty();
@@ -287,14 +287,14 @@ void CAGCEventLogger::LogEvent(IAGCEvent* pEvent, bool bSynchronous)
 	
 		// mdvalley: prevent crashes when no %Parameter% in strings.
 		// That took so long to figure out.
-		WORD NumStrings = vecParamStrings.size();
+		size_t NumStrings = vecParamStrings.size();
 		LPCWSTR* lpStrings = NULL;
 		if(NumStrings)
 			lpStrings = (LPCWSTR*)(&(*vecParamStrings.begin()));
 
         // Report the event to the NT Event log
         ReportEventW(m_shEventLog, wSeverity, 0, dwEventID, NULL,
-          vecParamStrings.size(), 0,
+          static_cast<WORD>(NumStrings), 0,
 // VS.Net 2003 port
 #if _MSC_VER >= 1310
         lpStrings, NULL);

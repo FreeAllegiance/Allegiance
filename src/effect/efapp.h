@@ -48,7 +48,10 @@ public:
     static COLORREF GridTextColor() { return RGB(117,217,210); }
     static COLORREF GridSelTextColor() { return RGB(0,0,0); }
 
+    
+
     static void Initialize(Modeler* pmodeler);
+    static IEngineFont* GetFont(int fontSize, bool bold);
     static void Terminate();
 };
 

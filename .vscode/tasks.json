@@ -1,0 +1,101 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Solution",
+            "type": "shell",
+            "command": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\MSBuild\\Current\\Bin\\MSBuild.exe",
+            "args": [
+                "VS2022\\Allegiance.sln",
+                "/p:Configuration=${input:configuration}",
+                "/p:Platform=${input:platform}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$msCompile",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Build Project",
+            "type": "shell",
+            "command": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\MSBuild\\Current\\Bin\\MSBuild.exe",
+            "args": [
+                "VS2022\\${input:projectFile}",
+                "/p:Configuration=${input:configuration}",
+                "/p:Platform=${input:platform}"
+            ],
+            "group": "build",
+            "problemMatcher": "$msCompile",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "projectFile",
+            "type": "pickString",
+            "description": "Select the project to build",
+            "options": [
+                "ZLibrary.vcxproj",
+                "Guids.vcxproj",
+                "Utility.vcxproj",
+                "SoundEngine.vcxproj",
+                "mdlc.vcxproj",
+                "Igc.vcxproj",
+                "ClintLib.vcxproj",
+                "AGC.vcxproj",
+                "Allegiance.vcxproj",
+                "Server.vcxproj",
+                "Lobby.vcxproj",
+                "cvh.vcxproj",
+                "sharemem.vcxproj",
+                "TCLib.vcxproj",
+                "mdledit.vcxproj",
+                "AllSrvUI.vcxproj",
+                "training.vcxproj",
+                "Engine.vcxproj",
+                "effect.vcxproj",
+                "Reloader.vcxproj",
+                "AutoUpdate.vcxproj",
+                "TCObj.vcxproj",
+                "PigGUID.vcxproj",
+                "PigsLib.vcxproj",
+                "PigAccts.vcxproj",
+                "PigSrv.vcxproj",
+                "PigConfig.vcxproj",
+                "Ui.vcxproj"
+            ]
+        },
+        {
+            "id": "configuration",
+            "type": "pickString",
+            "description": "Select configuration",
+            "default": "FZDebug",
+            "options": [
+                "Debug",
+                "FZDebug",
+                "FZDebug-NoYellowComm",
+                "FZRetail",
+                "Release"
+            ]
+        },
+        {
+            "id": "platform",
+            "type": "pickString",
+            "description": "Select platform",
+            "default": "Win32",
+            "options": [
+                "Win32",
+                "x64",
+                "Any CPU"
+            ]
+        }
+    ]
+}
