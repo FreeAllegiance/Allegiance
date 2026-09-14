@@ -293,7 +293,7 @@ HRESULT FedSrvLobbySite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
     break;
   }
 
-  timerOnAppMessage.Stop("...for message type %s\n", g_rgszMsgNames[pfm->fmid]);
+  timerOnAppMessage.Stop("...for message type %s\n", SafeMsgName(pfm->fmid));
   return hr;
 }
 

@@ -3916,7 +3916,7 @@ void CFSMission::CreateDPGroups(IclusterIGC * pcluster)
   char szBuff[std::max(sizeof(szDocked), sizeof(szFlying)) + c_cbName + 1];
   wsprintf(szBuff, "%s%s", szDocked, pcluster->GetName());
   pcg->pgrpClusterDocked = g.fm.CreateGroup(szBuff);
-  wsprintf(szBuff, "%s%s", szDocked, pcluster->GetName());
+  wsprintf(szBuff, "%s%s", szFlying, pcluster->GetName());
   pcg->pgrpClusterFlying = g.fm.CreateGroup(szBuff);
 
   ((CFSCluster*)pcluster->GetPrivateData())->SetClusterGroups(pcg);

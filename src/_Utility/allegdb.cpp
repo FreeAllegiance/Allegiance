@@ -143,6 +143,38 @@ HRESULT CSQLCore::Init(LPCOLESTR strSQLConfig, DWORD nThreadIDNotify, DWORD cSil
 
 CSQLCore::~CSQLCore()
 {
+  // R6: signal ALL sql threads (queue + workers) to exit, and make sure the
+  // queue thread has fully stopped BEFORE we delete its wrapper. The wrapper's
+  // underlying TCThread is auto-deleting (m_bAutoDelete == true): when its
+  // thread proc returns it does 'delete this' and CloseHandle(m_hThread). So we
+  // must grab a stable handle to the queue thread WHILE it is still alive
+  // (before SetEvent), then wait on that handle, and only afterwards delete the
+  // wrapper. m_hKillSQLEvent is a manual-reset event, so a single SetEvent wakes
+  // every waiter and stays signaled.
+  HANDLE hQueueThread = NULL;
+  if (m_pthdQueue && m_hKillSQLEvent)
+  {
+    // Open a private SYNCHRONIZE handle to the still-running queue thread.
+    hQueueThread = OpenThread(SYNCHRONIZE, FALSE, m_pthdQueue->GetThreadID());
+  }
+
+  // Tell every sql thread (queue thread and all worker threads) to exit.
+  if (m_hKillSQLEvent)
+    SetEvent(m_hKillSQLEvent);
+
+  // Wait for the queue thread proc to fully return (which self-deletes its
+  // TCThread) before we touch/delete the wrapper, to avoid a use-after-free.
+  if (hQueueThread)
+  {
+    WaitForSingleObject(hQueueThread, INFINITE);
+    CloseHandle(hQueueThread);
+  }
+
+  // Safe now: the queue thread has exited; the wrapper's implicit destructor
+  // does not touch the (already self-freed) TCThread.
+  delete m_pthdQueue;
+  m_pthdQueue = NULL;
+
   DWORD i = 0;
   for (i = 0; i < m_cNotifyThreads && m_pargNotifyThreads; i++)
   {
@@ -160,6 +192,13 @@ CSQLCore::~CSQLCore()
 
   CloseHandle(m_hQueryNotify);
   CloseHandle(m_hQuerySilent);
+
+  // All threads that waited on the kill event have now been released; close it.
+  if (m_hKillSQLEvent)
+  {
+    CloseHandle(m_hKillSQLEvent);
+    m_hKillSQLEvent = NULL;
+  }
 }
 
 
