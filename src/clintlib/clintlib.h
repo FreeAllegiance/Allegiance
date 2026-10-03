@@ -1088,8 +1088,19 @@ public:
 
     void RequestRipcord(IshipIGC*   pship, IclusterIGC*  pcluster)
     {
+        RequestRipcord(pship, pcluster, NULL);
+    }
+
+    //pmodelGoal is what the pilot is heading for - their selection, or the order they are
+    //flying. Only this end knows it in every case: a waypoint is a buoy the client minted
+    //and the server was never handed, so the order change naming it landed there as NULL.
+    //Sending the point itself is what lets the rip aim at it.
+    void RequestRipcord(IshipIGC*   pship, IclusterIGC*  pcluster, ImodelIGC*  pmodelGoal)
+    {
         if (pship == m_ship)
         {
+            const Vector*   ppositionGoal = GetRipcordGoalPosition(pship, pcluster, pmodelGoal);
+
             if (m_fm.IsConnected())
             {
                 SetMessageType(BaseClient::c_mtGuaranteed);
@@ -1097,13 +1108,37 @@ public:
                     END_PFM_CREATE;
 
                 pfmRequest->sidRipcord = pcluster ? pcluster->GetObjectID() : NA;
+                pfmRequest->bHasGoal = (ppositionGoal != NULL);
+                pfmRequest->positionGoal = ppositionGoal ? *ppositionGoal : Vector::GetZero();
             }
             else
-                RipcordLocal(pship, pcluster);
+                RipcordLocal(pship, pcluster, ppositionGoal);
         }
     }
 
-    void RipcordLocal(IshipIGC*   pship, IclusterIGC*  pcluster)
+    //The point a rip into pcluster should aim at, or NULL when the pilot asked for the sector
+    //as a whole and the server should pick for them. A sector marker sits at the centre, which
+    //is nowhere anybody wants to arrive, so it counts as asking for the sector rather than for
+    //a point in it.
+    const Vector*   GetRipcordGoalPosition(IshipIGC*     pship,
+                                           IclusterIGC*  pcluster,
+                                           ImodelIGC*    pmodelGoal)
+    {
+        if ((pmodelGoal == NULL) || (pcluster == NULL))
+            return NULL;
+
+        if (GetCluster(pship, pmodelGoal) != pcluster)
+            return NULL;
+
+        if ((pmodelGoal->GetObjectType() == OT_buoy) &&
+            (((IbuoyIGC*)pmodelGoal)->GetBuoyType() == c_buoyCluster))
+            return NULL;
+
+        return &(pmodelGoal->GetPosition());
+    }
+
+    void RipcordLocal(IshipIGC*   pship, IclusterIGC*  pcluster,
+                      const Vector*  ppositionGoal = NULL)
     {
         if (pcluster == nullptr)
             debugf("RipcordLocal destination cluster id: NULL\n");
@@ -1132,7 +1167,7 @@ public:
         else if (pmodelRipcordOld == NULL ||
                 pmodelRipcordOld->GetCluster() != pcluster)
         {
-            ImodelIGC*      pmodelRipcordDest = pship->FindRipcordModel(pcluster);
+            ImodelIGC*      pmodelRipcordDest = pship->FindRipcordModel(pcluster, ppositionGoal);
             if (pmodelRipcordDest != NULL)
             {
 

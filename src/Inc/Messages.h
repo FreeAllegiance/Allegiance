@@ -581,10 +581,40 @@ END_FEDMSG
 //are just getting information on (which gets sent
 //immediately when a ship undocks, ejects, or enters the sector)
 DEFINE_FEDMSG(S, SINGLE_SHIP_UPDATE, 78)
-  ObjectType                otTarget;
+  ObjectType                otTarget;       //c_cmdCurrent
   ObjectID                  oidTarget;
+  //The standing order as well as what the ship is doing right now. The two slots are
+  //replicated differently - c_cmdAccepted changes are broadcast to the side as
+  //ORDER_CHANGE, c_cmdCurrent changes are not, for a drone - so the client has to be
+  //told which is which rather than filing one under the other.
+  ObjectType                otAccepted;     //c_cmdAccepted
+  ObjectID                  oidAccepted;
+  CommandID                 cidAccepted;
+  //The plan is the slot the ship actually flies, and it is not always the standing order -
+  //a full miner is sent to a base to unload while still holding "mine that rock" as its
+  //accepted order. Its changes are broadcast as ORDER_CHANGE like c_cmdAccepted, but a
+  //client entering or re-viewing a sector has missed all of those, so it has to come in
+  //here too or the route drawn for every ship already present is the wrong one.
+  ObjectType                otPlan;         //c_cmdPlan
+  ObjectID                  oidPlan;
+  CommandID                 cidPlan;
+  ObjectID                  oidWaypointWarp;  //Warp this ship has committed to leaving by, NA for none
   ServerSingleShipUpdate    shipupdate;
   bool                      bIsRipcording;
+  //And what it is ripcording to. RIPCORD_ACTIVATE is sent once, when the rip starts, so a
+  //client that arrives after that has only ever been told the fact; without the target it
+  //cannot draw the route the ship will fly out of the teleport it is heading for.
+  ObjectType                otRipcord;      //NA when not ripcording, or when we cannot name it
+  ObjectID                  oidRipcord;
+END_FEDMSG
+
+//A ship has committed to a warp out of its cluster, or given one up. The AI picks
+//one aleph per leg and flies it to the end, so this is a decision the client cannot
+//recompute for itself - from a later position a different aleph looks cheaper and the
+//command view would draw a route the ship is not flying.
+DEFINE_FEDMSG(S, WARP_WAYPOINT, 174)
+  ShipID                    shipID;
+  ObjectID                  oidWarp;        //NA when the ship no longer has one
 END_FEDMSG
 
 DEFINE_FEDMSG(C, SUICIDE, 80)
@@ -950,6 +980,15 @@ END_FEDMSG
 
 DEFINE_FEDMSG(C, RIPCORD_REQUEST, 184)
     SectorID    sidRipcord;
+
+    //Where in that sector the pilot is trying to end up, so the rip can pick the teleport
+    //that leaves them the least left to fly. The client has to say, because the thing it is
+    //flying to is often a waypoint it minted itself - a buoy the server has never been given,
+    //whose ID means nothing here - and then the ship's command slots look empty from the
+    //server's side. bHasGoal is false when the pilot asked for the sector as a whole, which
+    //is the server's own to answer (it aims at a base they could dock at).
+    bool        bHasGoal;
+    Vector      positionGoal;
 END_FEDMSG
 
 DEFINE_FEDMSG(S, RIPCORD_ACTIVATE, 185)
@@ -962,8 +1001,12 @@ END_FEDMSG
 DEFINE_FEDMSG(S, RIPCORD_DENIED, 186)
 END_FEDMSG
 
+//A ship has stopped ripcording. Sent when the rip lands as well as when it is called off:
+//either way the client has to let go of the ripcord model, or the command view keeps
+//drawing that ship's route from a teleport it has already arrived at or given up on.
 DEFINE_FEDMSG(S, RIPCORD_ABORTED, 187)
     ShipID        shipidRipcord;
+    bool          bLanded;        //true if the rip completed, false if it was called off
 END_FEDMSG
 
 DEFINE_FEDMSG(S, WARP_BOMB, 188)
@@ -1032,7 +1075,7 @@ END_FEDMSG
 
 DEFINE_FEDMSG(CS, HIGHLIGHT_CLUSTER, 199)  //Xynth #208 Notify clients of sector highlight
     SectorID            clusterID;	
-	bool				highlight;	
+	ClusterHighlight	highlight;	
 END_FEDMSG
 
 

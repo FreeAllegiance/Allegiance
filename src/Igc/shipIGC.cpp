@@ -37,6 +37,7 @@ CshipIGC::CshipIGC(void)
     m_pshipParent(NULL),
     m_turretID(NA),
     m_bAutopilot(false),
+    m_pwarpWaypoint(NULL),
     m_gotoplan(this),
     m_dtTimeBetweenComplaints(c_dtTimeBetweenComplaints),
     m_nKills(0),
@@ -3715,7 +3716,182 @@ struct  ShipPair
 typedef Slist_utl<ShipPair> ShipPairList;
 typedef Slink_utl<ShipPair> ShipPairLink;
 
-ImodelIGC*    CshipIGC::FindRipcordModel(IclusterIGC*   pcluster)
+const Vector*   CshipIGC::GetDockPosition(IclusterIGC*   pcluster)
+{
+    if (m_myHullType.GetHullType() == NULL)
+        return NULL;
+
+    HullAbilityBitMask      habm = m_myHullType.GetCapabilities();
+
+    //The same test the waypoint code uses to decide whether a station counts as somewhere
+    //this hull can put down.
+    StationAbilityBitMask   sabm;
+    if ((habm & c_habmFighter) == 0)
+        sabm = c_sabmCapLand;
+    else if (habm & c_habmLifepod)
+        sabm = c_sabmLand | c_sabmRescue;
+    else
+        sabm = c_sabmLand;
+
+    //Several dockable bases in one sector is unusual; measuring from the centre at least
+    //makes the pick the same one for everybody rather than list order.
+    ImodelIGC*  pstation = FindTarget(this, c_ttFriendly | c_ttStation | c_ttNearest,
+                                      NULL, pcluster, &(Vector::GetZero()), NULL,
+                                      sabm);
+
+    return pstation ? &(pstation->GetPosition()) : NULL;
+}
+
+ImodelIGC*  CshipIGC::PickRipcordGoal(IclusterIGC*   pcluster)
+{
+    IsideIGC*   pside = GetSide();
+    IIgcSite*   pigc = GetMyMission()->GetIgcSite();
+
+    ImodelIGC*  pmodelBest = NULL;
+
+    //Selection first, then the standing order, then the plan, so that a specifically
+    //selected target still wins when more than one of them is in the sector being ripped to.
+    //The plan has to be among them: it is the slot the ship actually flies (ResetWaypoint
+    //reads no other), and a drone or miner whose plan has moved on from its standing order -
+    //a full miner heading back to base, say - would otherwise have the rip aimed at a target
+    //it is no longer going to.
+    ImodelIGC*  pcandidates[3] = { m_commandTargets[c_cmdCurrent],
+                                   m_commandTargets[c_cmdAccepted],
+                                   m_commandTargets[c_cmdPlan] };
+
+    for (int i = 0; i < 3; i++)
+    {
+        ImodelIGC*  pmodel = pcandidates[i];
+
+        if ((pmodel == NULL) || !pmodel->SeenBySide(pside))
+            continue;
+
+        //Anything in the sector being ripped to settles it outright.
+        if (pigc->GetCluster(this, pmodel) == pcluster)
+            return pmodel;
+
+        //Otherwise remember the first one we saw, for the "is this sector on the way there"
+        //test the caller makes.
+        if (pmodelBest == NULL)
+            pmodelBest = pmodel;
+    }
+
+    return pmodelBest;
+}
+
+bool    CshipIGC::IsClusterOnRouteTo(IclusterIGC*   pcluster,
+                                    ImodelIGC*     pmodelGoal)
+{
+    IclusterIGC*    pclusterShip = GetCluster();
+    if (pclusterShip == NULL)
+        return false;
+
+    Vector          positionFrom = GetPosition();
+
+    //A ship already committed to an aleph flies that one whatever a fresh search says now:
+    //it is held until the ship is through. BuildRoute (src/WinTrek/cmdview.cpp) draws the
+    //route that way, so the same hop has to be taken here, or once the ship has moved far
+    //enough for another aleph to look cheaper the rip starts aiming off the line the pilot
+    //is looking at.
+    IwarpIGC*   pwarpCommitted = GetWaypointWarp();
+    if (pwarpCommitted && (pwarpCommitted->GetCluster() == pclusterShip))
+    {
+        IwarpIGC*       pwarpExit = pwarpCommitted->GetDestination();
+        IclusterIGC*    pclusterNext = pwarpExit ? pwarpExit->GetCluster() : NULL;
+
+        if (pclusterNext)
+        {
+            //The committed hop is part of the route by definition.
+            if (pclusterNext == pcluster)
+                return true;
+
+            //The rest of the way is searched from where it lands.
+            pclusterShip = pclusterNext;
+            positionFrom = pwarpExit->GetPosition();
+        }
+    }
+
+    //Cowardly the same way the route line is: CommandGeo::DrawSelectedPaths asks for a
+    //route with this same test (src/WinTrek/cmdview.cpp), so asking differently here would
+    //let the rip pick a teleport off a route the ship would never fly.
+    PathList*   ppath = FindRouteList(pclusterShip, positionFrom, GetSide(), pmodelGoal,
+                                      IsCowardlyRoute());
+    if (ppath == NULL)
+        return false;      //Nowhere to go, or the goal is in the sector we are already in
+
+    bool    bOnRoute = false;
+    for (PathLink* plink = ppath->first(); (plink != NULL); plink = plink->next())
+    {
+        IwarpIGC*   pwarpExit = plink->data().pwarp->GetDestination();
+        if (pwarpExit && (pwarpExit->GetCluster() == pcluster))
+        {
+            bOnRoute = true;
+            break;
+        }
+    }
+
+    delete ppath;
+
+    return bOnRoute;
+}
+
+const Vector*   CshipIGC::GetRipcordGoalPosition(IclusterIGC*   pcluster,
+                                                 ImodelIGC*     pmodelGoal,
+                                                 bool           bAimAtDock)
+{
+    if (pmodelGoal)
+    {
+        IclusterIGC*    pclusterGoal = GetMyMission()->GetIgcSite()->GetCluster(this, pmodelGoal);
+
+        if (pclusterGoal == pcluster)
+        {
+            //An order to go to a sector is a marker sitting at the sector centre. Nobody
+            //wants to be at the centre of a sector, so that one is not a position to aim
+            //at - fall through to the dockable base below.
+            if ((pmodelGoal->GetObjectType() != OT_buoy) ||
+                (((IbuoyIGC*)pmodelGoal)->GetBuoyType() != c_buoyCluster))
+                return &(pmodelGoal->GetPosition());
+        }
+        else if (pclusterGoal && IsClusterOnRouteTo(pcluster, pmodelGoal))
+        {
+            //The goal is further on and this sector is a step towards it, so the pilot
+            //leaves again through an aleph. Aim at the first aleph of the route they will
+            //fly - the same search the route line is drawn from, so the teleport picked
+            //matches the line shown.
+            //
+            //Whatever the pilot happens to have targeted is NOT a goal for this rip unless
+            //the sector they asked for is on the way to it. Ripping out of a sector you have
+            //something selected in would otherwise aim at the aleph leading back to it, and
+            //pick the teleport furthest from where the pilot actually wants to be.
+            PathList*   ppath = FindRouteList(pcluster, Vector::GetZero(), GetSide(),
+                                              pmodelGoal, IsCowardlyRoute());
+            if (ppath)
+            {
+                //The warp outlives the path list; only the list itself is ours to free.
+                const Vector*   pposition = &(ppath->first()->data().pwarpStart->GetPosition());
+                delete ppath;
+
+                return pposition;
+            }
+        }
+    }
+
+    //The sector as a whole is the goal, or nothing the pilot has selected bears on this rip.
+    //What makes a sector worth ripping to is the base in it, so aim at one they could dock
+    //at - unless the caller has a better idea of what this sector is being ripped to for.
+    if (!bAimAtDock)
+        return NULL;
+
+    const Vector*   ppositionDock = GetDockPosition(pcluster);
+
+    //No base to head for. The centre is not much of an aim, but it is an aim: without one
+    //the search falls back on the order the stations happen to be listed in, which is what
+    //made the first teleport built win every time however many the side put up.
+    return ppositionDock ? ppositionDock : &(Vector::GetZero());
+}
+
+ImodelIGC*    CshipIGC::FindRipcordModel(IclusterIGC*   pcluster,
+                                         const Vector*  ppositionGoal)
 {
     IsideIGC*       pside = GetSide();
 
@@ -3772,22 +3948,26 @@ ImodelIGC*    CshipIGC::FindRipcordModel(IclusterIGC*   pcluster)
 		}
     }
 
-	ImodelIGC*      pmodelGoal = NULL;
-    const Vector*   positionGoal = NULL;
-    {
-        pmodelGoal = m_commandTargets[c_cmdCurrent];
-        if (!pmodelGoal)
-            pmodelGoal = m_commandTargets[c_cmdAccepted];
+	//The pilot has two notions of where they are going and they are often both set and in
+	//different sectors: c_cmdCurrent is whatever they have selected, c_cmdAccepted is the
+	//order they are actually flying - a waypoint they dropped, say. Prefer whichever is in
+	//the sector being ripped to. A rock selected there is the thing they want to arrive next
+	//to, and so is a waypoint dropped there; a selection left behind in the sector they are
+	//leaving is neither, and taking it would throw away the waypoint that is the whole
+	//reason for the rip.
+	ImodelIGC*      pmodelGoal = PickRipcordGoal(pcluster);
 
-        if (pmodelGoal)
-        {
-            if (pmodelGoal->SeenBySide(pside) &&
-                (pigc->GetCluster(this, pmodelGoal) == pcluster))
-            {
-                positionGoal = &(pmodelGoal->GetPosition());
-            }
-        }
-    }
+    //The point in the destination sector the pilot is actually trying to reach. Every
+    //teleport in the sector is measured against it, so a side that builds more than one
+    //gets something for them: the pilot arrives at whichever leaves the least left to fly.
+    //
+    //A point handed to us settles it: a player flying to a waypoint is the case the command
+    //slots cannot answer, because that waypoint is a buoy their own client made and the
+    //ID it named in its order change matches nothing here, so c_cmdAccepted reads as empty
+    //and the rip would aim at the dockable base instead of where the pilot is going.
+    const Vector*   positionGoal = ppositionGoal
+                                   ? ppositionGoal
+                                   : GetRipcordGoalPosition(pcluster, pmodelGoal, true);
 
     //Search adjacent clusters for an appropriate target
     WarpListIGC     warps;
@@ -3799,8 +3979,13 @@ ImodelIGC*    CshipIGC::FindRipcordModel(IclusterIGC*   pcluster)
     {
         assert (pcluster);
 
+	//A carrier or probe the pilot picked out is a rip target in its own right - but only
+	//where it is. The sector being searched moves outward from the one asked for, and the
+	//pilot can also have something selected in a sector that has nothing to do with this
+	//rip; taking it either way would send them somewhere they never asked to go and skip
+	//every teleport in the sector they did ask for.
 	ImodelIGC*  pmodelRipcord = NULL;
-	if (pmodelGoal) //TheRock 13-12-2009 Allow ripcording to a probe or ship when a teleport is in the same sector.
+	if (pmodelGoal && (pigc->GetCluster(this, pmodelGoal) == pcluster)) //TheRock 13-12-2009 Allow ripcording to a probe or ship when a teleport is in the same sector.
 	{
 		if (pmodelGoal->GetObjectType() == OT_probe)
 		{
@@ -3832,106 +4017,125 @@ ImodelIGC*    CshipIGC::FindRipcordModel(IclusterIGC*   pcluster)
 		}
 	}
 
-	if (pmodelRipcord == NULL) {
-        	pmodelRipcord = FindTarget(this, positionGoal ? (c_ttFriendly | c_ttStation | c_ttNearest) : (c_ttFriendly | c_ttStation),
-                                               NULL, pcluster, positionGoal, NULL,
-                                               c_sabmRipcord);
-	}
+	//Each kind of ripcord target is searched separately, then they compete. Stopping at the
+	//first station found is what made extra teleports pointless, and what hid a carrier
+	//parked next to the goal behind a teleport on the far side of the sector.
+	ImodelIGC*  pstationRipcord = FindTarget(this, positionGoal ? (c_ttFriendly | c_ttStation | c_ttNearest) : (c_ttFriendly | c_ttStation),
+                                             NULL, pcluster, positionGoal, NULL,
+                                             c_sabmRipcord);
 
-        if ((pmodelRipcord == NULL) && (m_pilotType >= c_ptPlayer))
+	ImodelIGC*  pprobeRipcord = NULL;
+	ImodelIGC*  pshipRipcord = NULL;
+
+        if (m_pilotType >= c_ptPlayer)
         {
             float   d2Goal = FLT_MAX;
 
-            if (GetMission()->GetMissionParams()->bAllowAlliedRip) {
-                //No station in the cluster to ripcord to ... try allied  and our probes
-                //Search backwords so that we'll get the most recently dropped probe
-                //if multiple probes without a target
-                for (ProbeLinkIGC*  ppl = pcluster->GetProbes()->last(); (ppl != NULL); ppl = ppl->txen())
-                {
-                    IprobeIGC*  pprobe = ppl->data();
-                    if ((pprobe->GetSide() == pside || pside->AlliedSides(pside,pprobe->GetSide())) && pprobe->GetCanRipcord(ripcordSpeed)) //ALLY RIPCORD imago 7/8/09
-                    {
-                        if (positionGoal)
-                        {
-                            float   d2 = (pprobe->GetPosition() - *positionGoal).LengthSquared();
-                            if (d2 < d2Goal)
-                            {
-                                pmodelRipcord = pprobe;
-                                d2Goal = d2;
-                            }
-                        }
-                        else
-                        {
-                            pmodelRipcord = pprobe;
-                            break;
-                        }
-                    }
-                }
-			} else {
-                //No station in the cluster to ripcord to ... try probes
-                //Search backwords so that we'll get the most recently dropped probe
-                //if multiple probes without a target
-                for (ProbeLinkIGC*  ppl = pcluster->GetProbes()->last(); (ppl != NULL); ppl = ppl->txen())
-                {
-                    IprobeIGC*  pprobe = ppl->data();
-                    if ((pprobe->GetSide() == pside) && pprobe->GetCanRipcord(ripcordSpeed))
-                    {
-                        if (positionGoal)
-                        {
-                            float   d2 = (pprobe->GetPosition() - *positionGoal).LengthSquared();
-                            if (d2 < d2Goal)
-                            {
-                                pmodelRipcord = pprobe;
-                                d2Goal = d2;
-                            }
-                        }
-                        else
-                        {
-                            pmodelRipcord = pprobe;
-                            break;
-                        }
-                    }
-                }
+            //Search backwords so that we'll get the most recently dropped probe
+            //if multiple probes without a target
+            for (ProbeLinkIGC*  ppl = pcluster->GetProbes()->last(); (ppl != NULL); ppl = ppl->txen())
+            {
+                IprobeIGC*  pprobe = ppl->data();
 
+				//ALLY RIPCORD imago 7/8/09
+                if (!((pprobe->GetSide() == pside) ||
+                      (pside->AlliedSides(pside, pprobe->GetSide()) && GetMission()->GetMissionParams()->bAllowAlliedRip)))
+                    continue;
+
+                if (!pprobe->GetCanRipcord(ripcordSpeed))
+                    continue;
+
+                if (positionGoal)
+                {
+                    float   d2 = (pprobe->GetPosition() - *positionGoal).LengthSquared();
+                    if (d2 < d2Goal)
+                    {
+                        pprobeRipcord = pprobe;
+                        d2Goal = d2;
+                    }
+                }
+                else
+                {
+                    pprobeRipcord = pprobe;
+                    break;
+                }
             }
 
-            if (pmodelRipcord == NULL)
+            float   energyBest = -FLT_MAX;
+            d2Goal = FLT_MAX;
+
+            for (ShipPairLink*   psl = pairs.first(); (psl != NULL); psl = psl->next())
             {
-                float   debtMin = FLT_MAX;
+                if (psl->data().pcluster != pcluster)
+                    continue;
 
-                //No station or probe in the cluster to ripcord to ... try ships
-                for (ShipPairLink*   psl = pairs.first(); (psl != NULL); psl = psl->next())
+                IshipIGC*   pshipTarget = psl->data().pship;
+
+                //Landing a rip on a ship spends that ship's energy, and every rip already on
+                //its way to it is committed to spending some as well - so what is left for us
+                //is its energy less that debt. Sending a pilot to a carrier that cannot pay
+                //only aborts the rip on arrival (FedSrvSiteBase::UseRipcord), so do not.
+                float   energy = pshipTarget->GetEnergy() - pshipTarget->GetRipcordDebt();
+                if (energy < m_ripcordCost)
+                    continue;
+
+                if (positionGoal == NULL)
                 {
-                    if (psl->data().pcluster == pcluster)
+                    //Nothing to measure against, so spread the load: whichever has the most
+                    //left to spend.
+                    if (energy > energyBest)
                     {
-                        float   debt = psl->data().pship->GetRipcordDebt();
-
-                        if (positionGoal == NULL)
-                        {
-                            if (debt < debtMin)
-                            {
-                                debtMin = debt;
-                                pmodelRipcord = psl->data().pship;
-                            }
-                        }
-                        else
-                        {
-                            float   d2 = (psl->data().pship->GetPosition() - *positionGoal).LengthSquared();
-                            if ((debt < debtMin) ||
-                                ((debt == debtMin) && (d2 < d2Goal)))
-                            {
-                                debtMin = debt;
-                                d2Goal = d2;
-                                pmodelRipcord = psl->data().pship;
-                            }
-                        }
+                        energyBest = energy;
+                        pshipRipcord = pshipTarget;
+                    }
+                }
+                else
+                {
+                    //Nearest wins; energy only separates two that are equally far, so a pilot
+                    //is not sent across the sector to the carrier with the fullest tank.
+                    float   d2 = (pshipTarget->GetPosition() - *positionGoal).LengthSquared();
+                    if ((d2 < d2Goal) ||
+                        ((d2 == d2Goal) && (energy > energyBest)))
+                    {
+                        energyBest = energy;
+                        d2Goal = d2;
+                        pshipRipcord = pshipTarget;
                     }
                 }
             }
         }
 
-        if (pmodelRipcord)
-            return pmodelRipcord;
+        //Pick between them. With somewhere to aim at, that is simply whichever is nearest it;
+        //ties, and having nothing to aim at, fall back to the old order of preference, which
+        //puts the free arrival (a station) ahead of one that costs a carrier its energy.
+        ImodelIGC*  pmodelRipcordBest = pmodelRipcord;
+        if (pmodelRipcordBest == NULL)
+        {
+            ImodelIGC*  pcandidates[3] = { pstationRipcord, pprobeRipcord, pshipRipcord };
+
+            float   d2Best = FLT_MAX;
+            for (int i = 0; i < 3; i++)
+            {
+                if (pcandidates[i] == NULL)
+                    continue;
+
+                if (positionGoal == NULL)
+                {
+                    pmodelRipcordBest = pcandidates[i];
+                    break;
+                }
+
+                float   d2 = (pcandidates[i]->GetPosition() - *positionGoal).LengthSquared();
+                if (d2 < d2Best)
+                {
+                    d2Best = d2;
+                    pmodelRipcordBest = pcandidates[i];
+                }
+            }
+        }
+
+        if (pmodelRipcordBest)
+            return pmodelRipcordBest;
 
         clustersVisited.first(pcluster);
 
@@ -3968,7 +4172,14 @@ ImodelIGC*    CshipIGC::FindRipcordModel(IclusterIGC*   pcluster)
         delete plink;
 
         pcluster = pwarp->GetCluster();
-        positionGoal = &(pwarp->GetPosition());
+
+        //A sector short of the one asked for: the pilot still has to fly on from here, so
+        //aim at the aleph they leave through rather than anywhere in this sector.
+        //No dockable-base fallback out here: this sector is not the one that was asked
+        //for, so what matters is reaching the aleph on towards it, which is pwarp below.
+        positionGoal = pmodelGoal ? GetRipcordGoalPosition(pcluster, pmodelGoal, false) : NULL;
+        if (positionGoal == NULL)
+            positionGoal = &(pwarp->GetPosition());
     }
 }
 void    CshipIGC::SetAutopilot(bool bAutopilot)

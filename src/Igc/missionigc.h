@@ -851,7 +851,34 @@ class   CmissionIGC : public ImissionIGC
 
         BuoyID                  GenerateNewBuoyID(void)
         {
+            //Both ends of the wire mint buoy IDs, and a buoy that arrives from the other
+            //end keeps the ID it was given there (CbuoyIGC::Initialize) without advancing
+            //this counter. So the next number up is not necessarily free. Handing out one
+            //that is already taken does not fail loudly: Initialize reads the duplicate as
+            //a re-import of the existing buoy and returns E_ABORT, so CreateObject hands
+            //the caller a NULL it was not expecting.
+            while ((m_nextBuoyID == NA) || (GetBuoy(m_nextBuoyID) != NULL))
+                m_nextBuoyID++;
+
             return m_nextBuoyID++;
+        }
+
+        BuoyID                  GenerateProvisionalBuoyID(void)
+        {
+            //A buoy ID names the same buoy on the server and on every client, so only the
+            //server hands one out - it stamps the real ID on a new buoy when the order
+            //carrying it arrives (FM_CS_CHATBUOY). A client still needs a buoy of its own
+            //to carry that order's position, and it must not claim an ID the server could
+            //later hand to a different buoy, so it takes one from the far end of the range
+            //instead. A provisional buoy never outlives the message it was made for, so
+            //this search stops almost immediately.
+            for (BuoyID id = NA - 1; id > NA - 100; id--)
+            {
+                if (GetBuoy(id) == NULL)
+                    return id;
+            }
+
+            return NA;      //No free provisional ID: cannot happen with one buoy in flight
         }
 
         ShipID                  GenerateNewShipID(void)

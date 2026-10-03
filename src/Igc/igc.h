@@ -507,6 +507,15 @@ const WingID            c_widMax = 10;
 const SideID c_cSidesMax = 6;
 const int c_cAlliancesMax = c_cSidesMax/2; // #ALLY max alliances possible (distinct groups of allied teams)
 
+//Xynth #208 A team's manual mark on a sector, cycled by ctrl-right clicking the minimap.
+//Ordered so a cycle is (state + 1) % c_chMax.
+typedef unsigned char   ClusterHighlight;
+const ClusterHighlight  c_chNone      = 0;      //Unmarked
+const ClusterHighlight  c_chImportant = 1;      //Flashes cyan and alerts the team
+const ClusterHighlight  c_chDanger    = 2;      //Flashes red, and the team's pathing treats it as hostile
+const ClusterHighlight  c_chMax       = 3;
+
+
 extern const char*      c_pszWingName[c_widMax];
 
 const DevelopmentID     c_didTeamMoney = 1;
@@ -2902,6 +2911,7 @@ class ImissionIGC : public IstaticIGC
                                                    IpartTypeIGC*    ppt) = 0;
 
         virtual BuoyID                  GenerateNewBuoyID(void) = 0;
+        virtual BuoyID                  GenerateProvisionalBuoyID(void) = 0;
         virtual ShipID                  GenerateNewShipID(void) = 0;
         virtual AsteroidID              GenerateNewAsteroidID(void) = 0;
         virtual StationID               GenerateNewStationID(void) = 0;
@@ -3255,6 +3265,17 @@ class IshipIGC : public IscannerIGC
         virtual CommandID            GetCommandID(Command i) const = 0;
         virtual void                 SetCommand(Command i, ImodelIGC* target, CommandID cid) = 0;
 
+        //The warp this ship has committed to leaving its current cluster by. The AI picks
+        //one when a plan is set and then flies that leg to the end (GotoPlan::SetControls
+        //caches it in m_wpWarp), so it is a decision, not something a client can recompute:
+        //recomputing from a later position finds a different aleph and draws a route the
+        //ship is not flying. The server replicates the choice instead.
+        virtual IwarpIGC*            GetWaypointWarp(void) const = 0;
+        virtual void                 SetWaypointWarp(IwarpIGC* pwarp) = 0;
+
+        //Drop the committed leg and let the ship choose a route again on its next move.
+        virtual void                 ReplanRoute(void) = 0;
+
         virtual void                 PreplotShipMove(Time          timeStop) = 0;
         virtual void                 PlotShipMove(Time          timeStop) = 0;
         virtual void                 ExecuteShipMove(Time          timeStop) = 0;
@@ -3379,7 +3400,12 @@ class IshipIGC : public IscannerIGC
 
         virtual ImodelIGC*          GetRipcordModel(void) const = 0;
         virtual void                SetRipcordModel(ImodelIGC*  pmodel) = 0;
-        virtual ImodelIGC*          FindRipcordModel(IclusterIGC*   pcluster) = 0;
+        //ppositionGoal, when given, is where in pcluster the pilot is trying to end up, and
+        //overrides anything this ship's own command slots suggest. A player's waypoint is a
+        //buoy their client minted and never handed over, so the server's copy of the ship has
+        //no idea it exists: the client passes the point along with the ripcord request instead.
+        virtual ImodelIGC*          FindRipcordModel(IclusterIGC*   pcluster,
+                                                     const Vector*  ppositionGoal = NULL) = 0;
 
         virtual float               GetRipcordDebt(void) const = 0;
         virtual void                AdjustRipcordDebt(float delta) = 0;
@@ -4131,8 +4157,8 @@ class IclusterIGC : public IbaseIGC
         virtual float            GetPendingTreasures(void) const = 0;
         virtual void             SetPendingTreasures(float  fpt) = 0;
         virtual float            GetCost(void) const = 0;
-		virtual void			 SetHighlight(bool hl) = 0; //Xynth #208
-		virtual bool			 GetHighlight(void) const = 0;
+		virtual void			 SetHighlight(SideID sid, ClusterHighlight ch) = 0; //Xynth #208
+		virtual ClusterHighlight GetHighlight(SideID sid) const = 0;
 };
 
 class IasteroidIGC : public IdamageIGC
@@ -4553,7 +4579,41 @@ float    turnToFace(const Vector&       deltaTarget,
                     ControlData*        controls,
                     float               skill = 1.0f);
 
-IwarpIGC*   FindPath(IshipIGC* pShip, ImodelIGC* pTarget, bool bCowardly);
+IwarpIGC* FindPath(ImodelIGC* pOrigin, ImodelIGC* pTarget, bool bCowardly, bool bAvoidDanger = true);
+IwarpIGC*   FindPath(IshipIGC* pShip, ImodelIGC* pTarget, bool bCowardly, bool bAvoidDanger = true);
+
+struct Path
+{
+    IwarpIGC* pwarpStart;       //First warp leaving the origin cluster
+    IwarpIGC* pwarp;            //Warp taken on this hop
+    float       distance;
+    const Path* pprev;          //Previous hop while searching; always NULL in a returned PathList
+};
+typedef Slist_utl<Path> PathList;
+typedef Slink_utl<Path> PathLink;
+
+
+PathList* FindPathList(ImodelIGC* pmodelOrigin, ImodelIGC* pmodelTarget, bool bCowardly, bool bAvoidDanger = true);
+
+//As above, but with the origin supplied explicitly. Needed on the client, where a ship
+//outside the sector being viewed has no cluster of its own (the server only sends ship
+//updates to players flying in that sector) but its last known sector is still known.
+PathList* FindPathList(IclusterIGC*  pclusterOrigin,
+                       const Vector& positionOrigin,
+                       IsideIGC*     pside,
+                       ImodelIGC*    pmodelTarget,
+                       bool          bCowardly,
+                       bool          bAvoidDanger = true);
+
+//The route a ship will actually fly. Staying in friendly space and keeping out of sectors
+//the side marked dangerous are both preferences, dropped in that order when no route obeys
+//them. Route drawing calls this too, so the line drawn is the line flown.
+PathList* FindRouteList(IclusterIGC*  pclusterOrigin,
+                        const Vector& positionOrigin,
+                        IsideIGC*     pside,
+                        ImodelIGC*    pmodelTarget,
+                        bool          bCowardly);
+IwarpIGC* FindRoute(IshipIGC* pship, ImodelIGC* pmodelTarget, bool bCowardly);
 
 const char* GetModelType(ImodelIGC* pmodel);
 const char* GetModelName(ImodelIGC* pmodel);
@@ -4880,6 +4940,9 @@ class IIgcSite : public IObject
                                    IclusterIGC* pclusterOld,
                                    IclusterIGC* pclusterNew)  {}    //changing clusters
         virtual void CommandChangedEvent(Command i, IshipIGC * pship, ImodelIGC* ptarget, CommandID cid) {};
+
+        //The ship has committed to (or abandoned) a warp out of its current cluster.
+        virtual void WarpWaypointChangedEvent(IshipIGC* pship, IwarpIGC* pwarp) {};
         virtual bool HandlePickDefaultOrder(IshipIGC* pship) { return false; }
 
         virtual void Preload(const char*    pszModelName,
@@ -5332,6 +5395,16 @@ class   GotoPlan
 
             m_pvOldCluster = m_pship->GetCluster();
             m_pvOldClusterTarget = pmodelTarget->GetCluster();
+        }
+
+        //Throw away the leg being flown, keeping the target, so the next Execute searches
+        //for a route again. The search is only run when a plan is set or the target
+        //changes sector, which is what makes a ship in flight keep to a route the map has
+        //since made a bad one - a sector marked dangerous under it, say.
+        void    ReplanRoute(void)
+        {
+            m_wpWarp.Reset();
+            m_maskWaypoints &= ~c_wpWarp;
         }
 
         int     GetMaskWaypoints(void) const

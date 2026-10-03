@@ -1469,14 +1469,32 @@ public:
 
             if (m_pchsCurrent->m_ctRecipient == CHAT_GROUP)
             {
-                ChatTarget ct = CHAT_GROUP;
+                //One member of the group carries the echo: the message that comes back to us,
+                //puts the line in our own chat log and, if it is addressed to us, gives our ship
+                //the order. Give it to our own ship whenever we are in the group - an order we
+                //included ourselves in is one we have given ourselves, and if the echo goes to
+                //some other member instead we never act on it at all.
+                IshipIGC*   pshipEcho = NULL;
+                for (ShipLinkIGC*   psl = m_pchsCurrent->m_shipsSubject.first(); (psl != NULL); psl = psl->next())
+                {
+                    if (psl->data() == trekClient.GetShip())
+                    {
+                        pshipEcho = psl->data();
+                        break;
+                    }
+                }
+
                 for (ShipLinkIGC*   psl = m_pchsCurrent->m_shipsSubject.first(); (psl != NULL); psl = psl->next())
                 {
                     IshipIGC* pship = psl->data();
 
+                    //Nobody in the group is us, so the first one carries it, as before.
+                    if (pshipEcho == NULL)
+                        pshipEcho = pship;
+
                     trekClient.SendChat(
                         trekClient.GetShip(),
-                        ct, 
+                        (pship == pshipEcho) ? CHAT_GROUP : CHAT_GROUP_NOECHO, 
                         pship->GetObjectID(),
                         idSonicChat, 
                         pszText,
@@ -1485,8 +1503,6 @@ public:
                         oidTarget, 
                         pmodel
                     );
-
-                    ct = CHAT_GROUP_NOECHO;
                 }
             }
             else
@@ -1785,6 +1801,7 @@ public:
             db.position = Vector(0, 0, 0);
             db.clusterID = pcluster->GetObjectID();
             db.type = c_buoyCluster;
+            db.buoyID = trekClient.m_pCoreIGC->GenerateProvisionalBuoyID();  //The server stamps the real one
 
             IbuoyIGC*   b = (IbuoyIGC*)(trekClient.m_pCoreIGC->CreateObject(trekClient.m_now, OT_buoy, &db, sizeof(db)));
             assert (b);
@@ -1961,6 +1978,7 @@ public:
                 db.position = m_positionStop;
                 db.clusterID = trekClient.GetCluster()->GetObjectID();
                 db.type = c_buoyWaypoint;
+                db.buoyID = trekClient.m_pCoreIGC->GenerateProvisionalBuoyID();  //The server stamps the real one
 
                 IbuoyIGC*   b = (IbuoyIGC*)(trekClient.m_pCoreIGC->CreateObject(trekClient.m_now, OT_buoy, &db, sizeof(db)));
                 assert (b);
@@ -2587,6 +2605,7 @@ public:
                             db.position = Vector(0, 0, 0);
                             db.clusterID = pcluster->GetObjectID();
                             db.type = c_buoyCluster;
+                            db.buoyID = trekClient.m_pCoreIGC->GenerateProvisionalBuoyID();  //The server stamps the real one
 
                             pmodelBest = (IbuoyIGC*)(trekClient.m_pCoreIGC->CreateObject(trekClient.m_now, OT_buoy, &db, sizeof(db)));
                             assert (pmodelBest);

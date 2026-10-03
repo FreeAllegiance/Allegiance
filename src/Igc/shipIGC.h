@@ -783,10 +783,42 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                     pmodelOld->Release();
                 }
 
-                if ((i == c_cmdAccepted || i == c_cmdCurrent) && 
+                //Announce what the slot actually holds now, not the target this call was
+                //given. ResetWaypoint above can have replaced it already: a layer told to
+                //build at an aleph gets its plan rewritten to a freshly made buoy by a
+                //nested SetCommand, and that nested call has already announced the buoy by
+                //the time we get here. Announcing the aleph again would tell the client a
+                //plan the ship no longer has - and the client, running the same
+                //ResetWaypoint on it, would mint a buoy of its own that nothing on the wire
+                //will ever take away. That is a waypoint left floating in the sector.
+                if ((i == c_cmdAccepted || i == c_cmdCurrent || i == c_cmdPlan) &&
                     (cidOld != cid || pmodelOld != target))
-                    GetMyMission()->GetIgcSite()->CommandChangedEvent(i, this, target, cid);
+                    GetMyMission()->GetIgcSite()->CommandChangedEvent(i, this,
+                                                                      m_commandTargets[i],
+                                                                      m_commandIDs[i]);
             }
+        }
+
+        virtual IwarpIGC*            GetWaypointWarp(void) const
+        {
+            return m_pwarpWaypoint;
+        }
+
+        virtual void                 SetWaypointWarp(IwarpIGC* pwarp)
+        {
+            if (pwarp != m_pwarpWaypoint)
+            {
+                m_pwarpWaypoint = pwarp;
+                GetMyMission()->GetIgcSite()->WarpWaypointChangedEvent(this, pwarp);
+            }
+        }
+
+        virtual void                 ReplanRoute(void)
+        {
+            //The committed warp is left alone here: the next Execute sets it to whatever
+            //the fresh search picks, and SetWaypointWarp only tells the clients when that
+            //turns out to be a different aleph.
+            m_gotoplan.ReplanRoute();
         }
 
         virtual void                 ExecuteTurretMove(Time          timeStart,
@@ -1847,7 +1879,8 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
             if (m_pmodelRipcord && (m_pmodelRipcord->GetObjectType() == OT_ship))
                 ((IshipIGC*)(ImodelIGC*)m_pmodelRipcord)->AdjustRipcordDebt(m_ripcordCost);
         }
-        virtual ImodelIGC*          FindRipcordModel(IclusterIGC*   pcluster);
+        virtual ImodelIGC*          FindRipcordModel(IclusterIGC*   pcluster,
+                                                     const Vector*  ppositionGoal = NULL);
 
         virtual float               GetRipcordDebt(void) const
         {
@@ -2533,6 +2566,35 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
     private:
         bool    bShouldUseRipcord(IclusterIGC*  pcluster);
 
+        //Where in pcluster a ripcord should try to put the pilot down. NULL when there is
+        //nothing to aim at, in which case any teleport in the sector will do. bAimAtDock
+        //says whether a sector with nothing selected in it should aim at a dockable base -
+        //true for the sector actually asked for, false for one being searched beyond it.
+        const Vector*   GetRipcordGoalPosition(IclusterIGC*  pcluster,
+                                               ImodelIGC*    pmodelGoal,
+                                               bool          bAimAtDock);
+
+        //Whether pcluster is a sector the ship would pass through on its way to pmodelGoal,
+        //which is what makes that goal worth aiming at when ripping into pcluster.
+        bool            IsClusterOnRouteTo(IclusterIGC*  pcluster,
+                                           ImodelIGC*    pmodelGoal);
+
+        //Which of the pilot's targets - the selection or the standing order - a ripcord into
+        //pcluster should aim at. NULL if neither is anything to aim at.
+        ImodelIGC*      PickRipcordGoal(IclusterIGC*  pcluster);
+
+        //The position of a station in pcluster this hull could dock at, or NULL if none.
+        const Vector*   GetDockPosition(IclusterIGC*  pcluster);
+
+        //Whether this ship's routes keep to friendly space. Anything smaller than a capital
+        //ship runs away; the command view tests the pilot type the same way when it draws
+        //the route, and the two have to agree or the rip aims at a sector off the line the
+        //pilot is shown.
+        bool            IsCowardlyRoute(void) const
+        {
+            return m_pilotType < c_ptCarrier;
+        }
+
         void                WarpShip(Time           timeUpdate,
                                      float          deltaT,
                                      Vector*        position,
@@ -2645,6 +2707,11 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
         short               m_nextLaunchSlot;
 
         PilotType           m_pilotType;
+
+        //Not reference counted: warps live as long as the mission does, and a ship that
+        //outlives one is not a case that can arise. Cleared whenever the ship stops
+        //flying that leg.
+        IwarpIGC*           m_pwarpWaypoint;
         bool                m_bAutopilot;
         bool                m_bRunningAway;
         WarningMask         m_warningMask;

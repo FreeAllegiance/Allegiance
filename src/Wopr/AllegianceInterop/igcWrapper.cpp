@@ -3756,13 +3756,13 @@ namespace AllegianceInterop
 	{
 		return m_instance->GetCost();
 	}
-	void			 IclusterIGCWrapper::SetHighlight(bool hl)
+	void			 IclusterIGCWrapper::SetHighlight(SideID sid, ClusterHighlight ch)
 	{
-		return m_instance->SetHighlight(hl);
+		return m_instance->SetHighlight(sid, ch);
 	}
-	bool			 IclusterIGCWrapper::GetHighlight()
+	ClusterHighlight IclusterIGCWrapper::GetHighlight(SideID sid)
 	{
-		return m_instance->GetHighlight();
+		return m_instance->GetHighlight(sid);
 	}
 	IasteroidIGCWrapper::IasteroidIGCWrapper(::IasteroidIGC * instance) : IdamageIGCWrapper(instance)
 	{

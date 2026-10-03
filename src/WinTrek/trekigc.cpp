@@ -4858,7 +4858,14 @@ void      WinTrekClient::ReceiveChat(IshipIGC*   pshipSender,
         if (pmodelTarget && trekClient.GetShip()->LegalCommand(cid, pmodelTarget))
         {
 
-            Command cmd = (ctRecipient == CHAT_INDIVIDUAL) && (pshipSender == trekClient.GetShip())
+            //An order we gave ourselves is one we have already agreed to, so it goes straight
+            //into the slot we fly. Only an order from somebody else waits in c_cmdQueued for
+            //[Insert]. Addressing a group we are a member of is still giving ourselves the
+            //order, and leaving that one queued strands it there: the timeout that stops the
+            //prompt clears the prompt only, not the slot (RejectQueuedCommand(false)), so the
+            //waypoint sits in c_cmdQueued holding a consumer and never goes away.
+            Command cmd = ((ctRecipient == CHAT_INDIVIDUAL) || (ctRecipient == CHAT_GROUP)) &&
+                          (pshipSender == trekClient.GetShip())
                           ? c_cmdAccepted
                           : c_cmdQueued;
 
@@ -4871,9 +4878,18 @@ void      WinTrekClient::ReceiveChat(IshipIGC*   pshipSender,
                     (trekClient.GetShip()->GetParentShip() == NULL) &&
                     trekClient.GetCluster(trekClient.GetShip(), pmodelTarget))
                 {
+                    //An order we addressed to ourselves reaches this twice for one keypress:
+                    //once from the local echo BaseClient::SendChat raises, and again when the
+                    //server sends the message back to its recipient - us - as CHAT_INDIVIDUAL.
+                    //Setting the same order twice is harmless; announcing an autopilot that is
+                    //already flying is not, so the sound only goes with actually engaging it.
+                    bool    bWasOnAutopilot = trekClient.GetShip()->GetAutopilot();
+
                     trekClient.SetAutoPilot(true);
                     trekClient.bInitTrekJoyStick = true;
-                    PlaySoundEffect(salAutopilotEngageSound);
+
+                    if (!bWasOnAutopilot)
+                        PlaySoundEffect(salAutopilotEngageSound);
                 }
             }
             else

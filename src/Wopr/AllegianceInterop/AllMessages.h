@@ -3880,8 +3880,17 @@ namespace AllegianceInterop
 
                         ObjectType otTarget,
                         ObjectID oidTarget,
+                        ObjectType otAccepted,
+                        ObjectID oidAccepted,
+                        CommandID cidAccepted,
+                        ObjectType otPlan,
+                        ObjectID oidPlan,
+                        CommandID cidPlan,
+                        ObjectID oidWaypointWarp,
                         ServerSingleShipUpdate shipupdate,
-                        bool bIsRipcording
+                        bool bIsRipcording,
+                        ObjectType otRipcord,
+                        ObjectID oidRipcord
             ) 
 		{
             SimpleClient sc;
@@ -3892,8 +3901,17 @@ namespace AllegianceInterop
 
              pfm->otTarget = otTarget;
              pfm->oidTarget = oidTarget;
+             pfm->otAccepted = otAccepted;
+             pfm->oidAccepted = oidAccepted;
+             pfm->cidAccepted = cidAccepted;
+             pfm->otPlan = otPlan;
+             pfm->oidPlan = oidPlan;
+             pfm->cidPlan = cidPlan;
+             pfm->oidWaypointWarp = oidWaypointWarp;
              pfm->shipupdate = shipupdate;
              pfm->bIsRipcording = bIsRipcording;
+             pfm->otRipcord = otRipcord;
+             pfm->oidRipcord = oidRipcord;
 
 			 this->m_Instance = pfm;
         }
@@ -3917,6 +3935,69 @@ namespace AllegianceInterop
 			}
 		}
 
+        property ObjectType otAccepted
+		{
+		public:
+			ObjectType get()
+			{
+				return m_Instance->otAccepted; 
+			}
+		}
+
+        property ObjectID oidAccepted
+		{
+		public:
+			ObjectID get()
+			{
+				return m_Instance->oidAccepted; 
+			}
+		}
+
+        property CommandID cidAccepted
+		{
+		public:
+			CommandID get()
+			{
+				return m_Instance->cidAccepted; 
+			}
+		}
+
+        property ObjectType otPlan
+		{
+		public:
+			ObjectType get()
+			{
+				return m_Instance->otPlan; 
+			}
+		}
+
+        property ObjectID oidPlan
+		{
+		public:
+			ObjectID get()
+			{
+				return m_Instance->oidPlan; 
+			}
+		}
+
+        property CommandID cidPlan
+		{
+		public:
+			CommandID get()
+			{
+				return m_Instance->cidPlan; 
+			}
+		}
+
+        property ObjectID oidWaypointWarp
+		{
+		public:
+			ObjectID get()
+			{
+				return m_Instance->oidWaypointWarp; 
+			}
+		}
+
         property ServerSingleShipUpdate shipupdate
 		{
 		public:
@@ -3932,6 +4013,24 @@ namespace AllegianceInterop
 			bool get()
 			{
 				return m_Instance->bIsRipcording; 
+			}
+		}
+
+        property ObjectType otRipcord
+		{
+		public:
+			ObjectType get()
+			{
+				return m_Instance->otRipcord; 
+			}
+		}
+
+        property ObjectID oidRipcord
+		{
+		public:
+			ObjectID get()
+			{
+				return m_Instance->oidRipcord; 
 			}
 		}
 
@@ -6943,7 +7042,9 @@ namespace AllegianceInterop
 
 		FMD_C_RIPCORD_REQUEST(
 
-                        SectorID sidRipcord
+                        SectorID sidRipcord,
+                        bool bHasGoal,
+                        Vector positionGoal
             ) 
 		{
             SimpleClient sc;
@@ -6953,6 +7054,8 @@ namespace AllegianceInterop
             END_PFM_CREATE
 
              pfm->sidRipcord = sidRipcord;
+             pfm->bHasGoal = bHasGoal;
+             pfm->positionGoal = positionGoal;
 
 			this->m_Instance = pfm;
         }
@@ -6964,6 +7067,24 @@ namespace AllegianceInterop
 			SectorID get()
 			{
 				return m_Instance->sidRipcord; 
+			}
+		}
+
+        property bool bHasGoal
+		{
+		public:
+			bool get()
+			{
+				return m_Instance->bHasGoal; 
+			}
+		}
+
+        property Vector positionGoal
+		{
+		public:
+			Vector get()
+			{
+				return m_Instance->positionGoal; 
 			}
 		}
 
@@ -7076,7 +7197,8 @@ namespace AllegianceInterop
 
 		FMD_S_RIPCORD_ABORTED(
 
-                        ShipID shipidRipcord
+                        ShipID shipidRipcord,
+                        bool bLanded
             ) 
 		{
             SimpleClient sc;
@@ -7086,6 +7208,7 @@ namespace AllegianceInterop
             END_PFM_CREATE
 
              pfm->shipidRipcord = shipidRipcord;
+             pfm->bLanded = bLanded;
 
 			this->m_Instance = pfm;
         }
@@ -7097,6 +7220,15 @@ namespace AllegianceInterop
 			ShipID get()
 			{
 				return m_Instance->shipidRipcord; 
+			}
+		}
+
+        property bool bLanded
+		{
+		public:
+			bool get()
+			{
+				return m_Instance->bLanded; 
 			}
 		}
 
@@ -7666,7 +7798,7 @@ namespace AllegianceInterop
 		FMD_CS_HIGHLIGHT_CLUSTER(
 
                         SectorID clusterID,
-                        bool highlight
+                        ClusterHighlight highlight
             ) 
 		{
             SimpleClient sc;
@@ -7691,10 +7823,10 @@ namespace AllegianceInterop
 			}
 		}
 
-        property bool highlight
+        property ClusterHighlight highlight
 		{
 		public:
-			bool get()
+			ClusterHighlight get()
 			{
 				return m_Instance->highlight; 
 			}

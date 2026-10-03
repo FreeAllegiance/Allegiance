@@ -57,7 +57,8 @@ HRESULT CclusterIGC::Initialize(ImissionIGC* pMission, Time   now, const void* d
                                   float(m_data.planetRadius));
     }
 
-	m_highlight = false;  //Xynth #208
+	for (SideID sid = 0; sid < c_cSidesMax; sid++)
+		m_highlight[sid] = c_chNone;
 
     return S_OK;
 }

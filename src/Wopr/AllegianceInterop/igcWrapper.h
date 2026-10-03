@@ -1773,8 +1773,8 @@ namespace AllegianceInterop
         float            GetPendingTreasures();
         void             SetPendingTreasures(float fpt);
         float            GetCost();
-        void			 SetHighlight(bool hl);
-        bool			 GetHighlight();
+        void			 SetHighlight(SideID sid, ClusterHighlight ch);
+        ClusterHighlight GetHighlight(SideID sid);
     };
 
     public ref class IasteroidIGCWrapper : IdamageIGCWrapper

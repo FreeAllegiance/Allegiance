@@ -8,6 +8,12 @@ const int   c_iClusterHasShipRipcord = 2;
 
 const Color c_rgColorNeutral(0.5f, 0.5f, 0.5f);
 
+//Xynth #208 The colour a marked sector flashes in on the minimap
+static Color GetHighlightColor(ClusterHighlight ch)
+{
+    return (ch == c_chDanger) ? Color::Red() : Color::Cyan();
+}
+
 static void GetClusterOwners(IclusterIGC*    pcluster, SideID& sideOwner, SideID& sideSecondaryOwner)
 {
     assert (c_cSidesMax == 6);
@@ -1040,9 +1046,12 @@ public:
             {
                 Point    xy = Point::Cast(GetClusterPoint(pCluster));
 
-                // draw the sector outline Xynth #208 Draw in flashing Cyan if highlighted
-				if (pCluster->GetHighlight() && !m_bFlashFrame)
-					pcontext->DrawImage3D(m_pimageSectorEmpty->GetSurface(), Color::Cyan(), true, xy);
+                // Draw the sector outline. A marked sector flashes instead: cyan if it is
+                // marked important, red if it is marked dangerous.
+				ClusterHighlight highlight = pCluster->GetHighlight(trekClient.GetSideID());
+
+				if ((highlight != c_chNone) && !m_bFlashFrame)
+					pcontext->DrawImage3D(m_pimageSectorEmpty->GetSurface(), GetHighlightColor(highlight), true, xy);
 				else
 					pcontext->DrawImage3D(m_pimageSectorEmpty->GetSurface(), Color::White(), true, xy);
 
@@ -1189,11 +1198,11 @@ public:
                     );
                 }
 
-				if (pCluster->GetHighlight() && !m_bFlashFrame)  //Xynth #208 8/2010
-				{  //Color center of circle cyan for highlight effect
+				if ((highlight != c_chNone) && !m_bFlashFrame)  //Xynth #208 8/2010
+				{  //Color center of circle for highlight effect
 					pcontext->DrawImage3D(
                         m_pimageSecondaryOwnerHighlight->GetSurface(),
-                        Color::Cyan(),
+                        GetHighlightColor(highlight),
                         true,
                         xy
                     );
@@ -1492,12 +1501,13 @@ private:
 			{
 				if (pClusterFound)
 				{
-					if (trekClient.GetPlayerInfo()->IsTeamLeader())
-					{  //commanders toggle and forward to team
-						pClusterFound->SetHighlight(!pClusterFound->GetHighlight());
+					SideID sidMe = trekClient.GetSideID();
 
-						bool newHighlight;
-						newHighlight = pClusterFound->GetHighlight();
+					if (trekClient.GetPlayerInfo()->IsTeamLeader())
+					{  //commanders cycle none -> important -> danger and forward to team
+						ClusterHighlight newHighlight =
+							(ClusterHighlight)((pClusterFound->GetHighlight(sidMe) + 1) % c_chMax);
+						pClusterFound->SetHighlight(sidMe, newHighlight);
 
 						trekClient.SetMessageType(BaseClient::c_mtGuaranteed);
 						BEGIN_PFM_CREATE(trekClient.m_fm, pfmhighlight, CS, HIGHLIGHT_CLUSTER)
@@ -1507,7 +1517,7 @@ private:
 
 					}
 					else
-						pClusterFound->SetHighlight(false);  //Only let players turn off highlight
+						pClusterFound->SetHighlight(sidMe, c_chNone);  //Only let players turn off highlight
 
 				}
 			}
@@ -1555,6 +1565,7 @@ private:
                             db.position = Vector(0, 0, 0);
                             db.clusterID = pClusterFound->GetObjectID();
                             db.type = c_buoyCluster;
+                            db.buoyID = trekClient.m_pCoreIGC->GenerateProvisionalBuoyID();  //The server stamps the real one
 
                             IbuoyIGC*   b = (IbuoyIGC*)(trekClient.m_pCoreIGC->CreateObject(trekClient.m_now, OT_buoy, &db, sizeof(db)));
                             assert (b);

@@ -478,15 +478,17 @@ class       CclusterIGC : public IclusterIGC
             return m_fCost;
         }
 
-		//Xynth #208
-		virtual void			SetHighlight(bool hl)
+		//Xynth #208 Each side marks sectors for itself, so the state is stored per side.
+		virtual void			SetHighlight(SideID sid, ClusterHighlight ch)
 		{
-			m_highlight = hl;
+			if ((sid >= 0) && (sid < c_cSidesMax))
+				m_highlight[sid] = ch;
 		}
 
-		virtual bool			GetHighlight() const
+		virtual ClusterHighlight GetHighlight(SideID sid) const
 		{
-			return m_highlight;
+			//Spectators and anyone without a side see no marks
+			return ((sid >= 0) && (sid < c_cSidesMax)) ? m_highlight[sid] : c_chNone;
 		}
 
 		//Imago 8/10 #121 #120 (adapted from common)
@@ -577,7 +579,7 @@ class       CclusterIGC : public IclusterIGC
 
         int                 m_nPass;
 
-		bool				m_highlight;  //Xynth #208 Highlight in minimap
+		ClusterHighlight	m_highlight[c_cSidesMax];  //Xynth #208 Per-side highlight in minimap
 };
 
 #endif //__CLUSTERIGC_H_

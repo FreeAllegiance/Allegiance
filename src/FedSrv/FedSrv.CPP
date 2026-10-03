@@ -3200,11 +3200,19 @@ bool CommandToDrone(CFSMission*         pfsMission,
             {
                 if (pshipTo->GetPilotType() == c_ptMiner && pdb->type == c_buoyCluster)
                     pminerCluster = pfsMission->GetIGCMission()->GetCluster(pdb->clusterID);
-                //Create a buoy for this chat message
+                //Create a buoy for this chat message. A buoy the mission already holds is
+                //not built a second time (CbuoyIGC::Initialize returns E_ABORT and this
+                //comes back NULL) - that existing buoy is the one the order names.
                 *ppmodelTarget = (ImodelIGC*)(pfsMission->GetIGCMission()->CreateObject(g.timeNow, OT_buoy, pdb, sizeof(*pdb)));
-                assert(*ppmodelTarget);
+                if (!*ppmodelTarget && (pdb->buoyID != NA))
+                {
+                    *ppmodelTarget = (ImodelIGC*)(pfsMission->GetIGCMission()->GetBuoy(pdb->buoyID));
+                    if (*ppmodelTarget)
+                        (*ppmodelTarget)->AddRef();     //Match the reference CreateObject would have returned
+                }
 
-                ((IbuoyIGC*)*ppmodelTarget)->AddConsumer();
+                if (*ppmodelTarget)
+                    ((IbuoyIGC*)*ppmodelTarget)->AddConsumer();
             }
             else
             {
@@ -3310,9 +3318,13 @@ bool CommandToDrone(CFSMission*         pfsMission,
                 CommandID cid = c_cidGoto;
                 if (pminerCluster)
                     cid = c_cidJoin;
+
+                //CreateObject returns NULL if it declined to build the buoy. The command
+                //is still worth remembering without one, but there is nothing to release.
                 pshipTo->SetCommand(c_cmdQueued, buoy, cid);
 
-                buoy->Release(); //SetCommand added the consumer needed
+                if (buoy)
+                    buoy->Release(); //SetCommand added the consumer needed
             }
             else {
                 // Remember that we just got a player command -> c_cidGoto instead of None
@@ -4785,6 +4797,74 @@ static DWORD WINAPI LogonThread(LPVOID threadData)
 
 
 
+//Does the route pship is flying pass through pclusterMarked?
+//
+//The first leg is already committed - the ship picked one aleph when the plan was set and
+//flies it to the end (GetWaypointWarp) - and the rest of the trip is whatever the search
+//returns from where that aleph comes out, which is exactly what GotoPlan will ask for when
+//it arrives. So looking at the first hop alone is not enough: a sector three hops along is
+//still a sector this ship is on its way to.
+static bool RouteCrossesCluster(IshipIGC* pship, ImodelIGC* pmodelPlan, IclusterIGC* pclusterMarked)
+{
+    IwarpIGC*    pwarpExit = pship->GetWaypointWarp()->GetDestination();
+    IclusterIGC* pclusterNext = pwarpExit->GetCluster();
+
+    if (pclusterNext == pclusterMarked)
+        return true;
+
+    IclusterIGC* pclusterTarget = pship->GetMission()->GetIgcSite()->GetCluster(pship, pmodelPlan);
+
+    //Where it is going is not somewhere it can be routed around, and once it is there the
+    //rest of the trip takes no more alephs.
+    if ((pclusterTarget == NULL) || (pclusterTarget == pclusterMarked) || (pclusterNext == pclusterTarget))
+        return false;
+
+    PathList* ppath = FindRouteList(pclusterNext,
+                                    pwarpExit->GetPosition(),
+                                    pship->GetSide(),
+                                    pmodelPlan,
+                                    pship->GetPilotType() < c_ptCarrier);
+    if (!ppath)
+        return false;
+
+    bool bCrosses = false;
+    for (PathLink* pl = ppath->first(); (pl != NULL) && !bCrosses; pl = pl->next())
+        bCrosses = (pl->data().pwarp->GetDestination()->GetCluster() == pclusterMarked);
+
+    delete ppath;
+    return bCrosses;
+}
+
+//Tell every drone of pside whose route runs through pclusterMarked to choose a new one,
+//and say so on team chat when bAnnounce. Players route themselves and are left alone.
+static void ReplanRoutesThrough(IsideIGC* pside, IclusterIGC* pclusterMarked, bool bAnnounce)
+{
+    for (ShipLinkIGC* psl = pside->GetShips()->first(); (psl != NULL); psl = psl->next())
+    {
+        IshipIGC* pshipDrone = psl->data();
+
+        if (pshipDrone->GetPilotType() >= c_ptPlayer)
+            continue;
+
+        ImodelIGC* pmodelPlan = pshipDrone->GetCommandTarget(c_cmdPlan);
+
+        //No committed aleph means it is not partway along a route between sectors: there
+        //is no decision here for the mark to overturn.
+        if (!pmodelPlan || !pshipDrone->GetWaypointWarp() || !pshipDrone->GetCluster())
+            continue;
+
+        if (!RouteCrossesCluster(pshipDrone, pmodelPlan, pclusterMarked))
+            continue;
+
+        pshipDrone->ReplanRoute();
+
+        if (bAnnounce)
+            pshipDrone->GetMission()->GetIgcSite()->SendChat(pshipDrone, CHAT_TEAM, pside->GetObjectID(),
+                                                             droneEnemyOnScopeSound,
+                                                             "Rerouting around the marked sector.");
+    }
+}
+
 /*-------------------------------------------------------------------------
  * OnAppMessage
  *-------------------------------------------------------------------------
@@ -5299,6 +5379,17 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 
       CASTPFM(pfmBuoy, CS, CHATBUOY, pfm);
       pfmBuoy->cd.sidSender = pfsPlayer->GetIGCShip()->GetObjectID();
+
+      //Buoy IDs are the server's to hand out, because an ID has to name the same buoy
+      //here and on every client. A client can name a buoy this mission already holds -
+      //re-issuing an order against a waypoint that is already up - and that one keeps its
+      //ID, since it is that same buoy. Anything else was minted from the sender's own
+      //provisional range (ImissionIGC::GenerateProvisionalBuoyID) and gets a real ID
+      //stamped on it here, before the message is read or passed on, so that the buoy the
+      //server builds, the one echoed to the rest of the side, and the one the following
+      //ORDER_CHANGE names are all the same buoy.
+      if (pfsMission->GetIGCMission()->GetBuoy(pfmBuoy->db.buoyID) == NULL)
+          pfmBuoy->db.buoyID = pfsMission->GetIGCMission()->GenerateNewBuoyID();
 
       ForwardChatMessage(pfsMission, pfsPlayer, pfm,
                          &(pfmBuoy->cd),
@@ -7370,8 +7461,42 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 	case FM_CS_HIGHLIGHT_CLUSTER:
 	{
 		CASTPFM(pfmHC, CS, HIGHLIGHT_CLUSTER, pfm);
-		
-		g.fm.ForwardMessage(CFSSide::FromIGC(pfsPlayer->GetSide())->GetGroup(),pfmHC, FM_GUARANTEED);
+
+		IsideIGC* pside = pfsPlayer->GetSide();
+		TrapHackBoot(pside);
+		TrapHackBoot(pfmHC->highlight < c_chMax);
+		TrapHackBoot(pfsMission->GetLeader(pside->GetObjectID()) == pfsPlayer);
+
+		//The server needs the mark too: a sector marked dangerous is routed around by the
+		//side's drones, and their orders are pathed here.
+		IclusterIGC* pcluster = pfsMission->GetIGCMission()->GetCluster(pfmHC->clusterID);
+		TrapHackBoot(pcluster);
+
+		const SideID           sid = pside->GetObjectID();
+		const ClusterHighlight highlightOld = pcluster->GetHighlight(sid);
+
+		//A mark changes the map under ships that are already on their way, and the search
+		//that chose their route only runs when a plan is set or its target moves sector.
+		//So the ships whose route runs through this sector are found here and told to
+		//choose again.
+		//
+		//This has to happen before the mark is applied: afterwards the search keeps out of
+		//the sector, so a route that used to go through it can no longer be recognised.
+		//Replanning early is safe - ReplanRoute only throws the flown leg away, and the
+		//search that replaces it does not run until the next Execute, by which time the
+		//mark is set.
+		if ((pfmHC->highlight == c_chDanger) && (highlightOld != c_chDanger))
+			ReplanRoutesThrough(pside, pcluster, true);
+
+		pcluster->SetHighlight(sid, pfmHC->highlight);
+
+		//Clearing a mark opens the sector back up, and the routes that gain by it are the
+		//ones that now want to go through it - which is the search after the mark is gone.
+		//No one is told: nothing was pushed off anything, the shorter way is simply back.
+		if ((highlightOld == c_chDanger) && (pfmHC->highlight != c_chDanger))
+			ReplanRoutesThrough(pside, pcluster, false);
+
+		g.fm.ForwardMessage(CFSSide::FromIGC(pside)->GetGroup(),pfmHC, FM_GUARANTEED);
 	}
 	break;
 
@@ -7724,7 +7849,9 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
       }
 
       CASTPFM(pfmRipcord, C, RIPCORD_REQUEST, pfm);
-      RequestRipcord(pfsPlayer->GetIGCShip(), pfsMission->GetIGCMission()->GetCluster(pfmRipcord->sidRipcord));
+      RequestRipcord(pfsPlayer->GetIGCShip(),
+                     pfsMission->GetIGCMission()->GetCluster(pfmRipcord->sidRipcord),
+                     pfmRipcord->bHasGoal ? &(pfmRipcord->positionGoal) : NULL);
     }
     break;
 
@@ -13316,7 +13443,57 @@ void * FedSrvSiteBase::GetDroneFromShip(IshipIGC * pship) // return value is rea
   return pfsShip->IsPlayer() ? NULL : (void *) pfsShip->GetDrone()->GetDrone();
 }
 
+//Tell a set of clients that pship is now ripcording to pmodel, aiming at pcluster.
+static void SendRipcordActivated(IshipIGC*      pship,
+                                 ImodelIGC*     pmodel,
+                                 IclusterIGC*   pcluster,
+                                 CFMRecipient*  precipient)
+{
+    if (precipient == NULL)
+        return;
+
+    BEGIN_PFM_CREATE(g.fm, pfmRA, S, RIPCORD_ACTIVATE)
+    END_PFM_CREATE
+    pfmRA->shipidRipcord = pship->GetObjectID();
+
+    pfmRA->otRipcord = pmodel->GetObjectType();
+    pfmRA->oidRipcord = pmodel->GetObjectID();
+    pfmRA->sidRipcord = pcluster->GetObjectID();
+
+    g.fm.SendMessages(precipient, FM_GUARANTEED, FM_FLUSH);
+}
+
+//Tell everyone who was told about the rip that it is over, either way it ended. The side
+//group is the one that matters: it reaches the ship's own side wherever they are, which is
+//who draws its route. bLanded keeps the "ripcord aborted" sound for an actual abort.
+static void SendRipcordEnded(IshipIGC* pship, bool bLanded)
+{
+    IclusterIGC*    pcluster = pship->GetCluster();
+    CFSSide*        pfsSide  = CFSSide::FromIGC(pship->GetSide());
+
+    for (int i = 0; i < 2; i++)
+    {
+        CFMRecipient*   precipient = (i == 0)
+                                     ? (CFMRecipient*)(pfsSide ? pfsSide->GetGroup() : NULL)
+                                     : (CFMRecipient*)(pcluster ? GetGroupSectorFlying(pcluster) : NULL);
+        if (precipient == NULL)
+            continue;
+
+        BEGIN_PFM_CREATE(g.fm, pfmRipcordAborted, S, RIPCORD_ABORTED)
+        END_PFM_CREATE
+        pfmRipcordAborted->shipidRipcord = pship->GetObjectID();
+        pfmRipcordAborted->bLanded = bLanded;
+
+        g.fm.SendMessages(precipient, FM_GUARANTEED, FM_FLUSH);
+    }
+}
+
 void FedSrvSiteBase::RequestRipcord(IshipIGC* pship, IclusterIGC* pcluster)
+{
+    RequestRipcord(pship, pcluster, NULL);
+}
+
+void FedSrvSiteBase::RequestRipcord(IshipIGC* pship, IclusterIGC* pcluster, const Vector* ppositionGoal)
 {
     IclusterIGC*    pclusterShip = pship->GetCluster();
 
@@ -13332,10 +13509,7 @@ void FedSrvSiteBase::RequestRipcord(IshipIGC* pship, IclusterIGC* pcluster)
 
             pship->SetRipcordModel(NULL);
 			pship->SetStateBits(droneRipMaskIGC, 0);  //Xynth #188 7/2010
-            BEGIN_PFM_CREATE(g.fm, pfmRipcordAborted, S, RIPCORD_ABORTED)
-            END_PFM_CREATE
-            pfmRipcordAborted->shipidRipcord = pship->GetObjectID();
-            g.fm.SendMessages(GetGroupSectorFlying(pclusterShip), FM_GUARANTEED, FM_FLUSH);
+            SendRipcordEnded(pship, false);
         }
     }
     else if ((pmodelRipcord == NULL) ||
@@ -13343,7 +13517,7 @@ void FedSrvSiteBase::RequestRipcord(IshipIGC* pship, IclusterIGC* pcluster)
     {
         assert (pclusterShip);
 
-        ImodelIGC*    pmodelNew = pship->FindRipcordModel(pcluster);
+        ImodelIGC*    pmodelNew = pship->FindRipcordModel(pcluster, ppositionGoal);
         if (pmodelNew)
         {
             ImodelIGC*  pmodelOld = pship->GetRipcordModel();
@@ -13353,19 +13527,22 @@ void FedSrvSiteBase::RequestRipcord(IshipIGC* pship, IclusterIGC* pcluster)
                 pship->ResetRipcordTimeLeft();
             }
 
-            if ((pmodelNew != pmodelOld) && pfsShip->IsPlayer())
+            if (pmodelNew != pmodelOld)
             {
-                BEGIN_PFM_CREATE(g.fm, pfmRA, S, RIPCORD_ACTIVATE)
-                END_PFM_CREATE
-                pfmRA->shipidRipcord = pship->GetObjectID();
+                //The side always has to be told, and told which model: the command view draws
+                //a ripcording ship's route from the teleport it is heading for, so a client
+                //that only knows "it is ripcording" draws the flight the pilot has already
+                //given up on. Drones were never announced at all, which is why an auto-
+                //teleporting miner's line came off the aleph it was flying to.
+                CFSSide*    pfsSide = CFSSide::FromIGC(pship->GetSide());
+                SendRipcordActivated(pship, pmodelNew, pcluster,
+                                     pfsSide ? pfsSide->GetGroup() : NULL);
 
-                pfmRA->otRipcord = pmodelNew->GetObjectType();
-                pfmRA->oidRipcord = pmodelNew->GetObjectID();
-                pfmRA->sidRipcord = pcluster->GetObjectID();
-
-                g.fm.SendMessages((pmodelOld == NULL)
-                                  ? (CFMRecipient*)(GetGroupSectorFlying(pclusterShip))
-                                  : (CFMRecipient*)(pfsShip->GetPlayer()->GetConnection()), FM_GUARANTEED, FM_FLUSH);
+                //And, as before, everyone in the sector sees a player's rip start, so that
+                //the ripcord effect plays for them too.
+                if (pfsShip->IsPlayer() && (pmodelOld == NULL))
+                    SendRipcordActivated(pship, pmodelNew, pcluster,
+                                         GetGroupSectorFlying(pclusterShip));
             }
         }
         else if (pfsShip->IsPlayer())
@@ -13427,11 +13604,7 @@ bool FedSrvSiteBase::ContinueRipcord(IshipIGC* pship, ImodelIGC* pmodel)
     if (!rc)
     {
 		pship->SetStateBits(droneRipMaskIGC, 0);  //Xynth #188 7/2010
-        BEGIN_PFM_CREATE(g.fm, pfmRipcordAborted, S, RIPCORD_ABORTED)
-        END_PFM_CREATE
-        pfmRipcordAborted->shipidRipcord = pship->GetObjectID();
-        g.fm.SendMessages(GetGroupSectorFlying(pship->GetCluster()), FM_GUARANTEED, FM_FLUSH);
-
+        SendRipcordEnded(pship, false);
     }
 
     return rc;
@@ -13454,10 +13627,7 @@ bool FedSrvSiteBase::UseRipcord(IshipIGC* pship, ImodelIGC* pmodel)
             {
 				pship->SetStateBits(droneRipMaskIGC, 0); //Xynth #188 7/2010
                 //No energy for ripcord
-                BEGIN_PFM_CREATE(g.fm, pfmRipcordAborted, S, RIPCORD_ABORTED)
-                END_PFM_CREATE
-                pfmRipcordAborted->shipidRipcord = pship->GetObjectID();
-                g.fm.SendMessages(GetGroupSectorFlying(pship->GetCluster()), FM_GUARANTEED, FM_FLUSH);
+                SendRipcordEnded(pship, false);
 
                 return true;
             }
@@ -13500,6 +13670,12 @@ bool FedSrvSiteBase::UseRipcord(IshipIGC* pship, ImodelIGC* pmodel)
 
     CFSShip* pfsShip = (CFSShip*)pship->GetPrivateData();
     pfsShip->ShipStatusSpotted(pship->GetSide());
+
+    //The rip landed. CshipIGC::Update drops the ripcord model as soon as we return, but only
+    //here - the ship update that goes out with the cluster change is built while it is still
+    //set, so without this the client would be left holding a teleport the ship has already
+    //arrived at, and would draw its route from there for the rest of the game.
+    SendRipcordEnded(pship, true);
 
     return true;
 }
@@ -13699,17 +13875,49 @@ void FedSrvSiteBase::ClusterUpdateEvent(IclusterIGC* c)
 void FedSrvSiteBase::CommandChangedEvent(Command i, IshipIGC * pship, ImodelIGC* ptarget, CommandID cid)
 {
     // forward the command change to everyone on the side.
-    IclusterIGC*    pcluster;
+    IclusterIGC*    pcluster = NULL;
 
     if ((i == c_cmdAccepted) ||
-        ((i == c_cmdCurrent) &&
-         (pship->GetPilotType() >= c_ptPlayer) &&
-         (pcluster = pship->GetCluster()) && //intentional =
-         (pship->IsUsingAreaOfEffectWeapon())))
+        (i == c_cmdPlan) ||
+        (
+            (i == c_cmdCurrent) &&
+            (pship->GetPilotType() >= c_ptPlayer) &&
+            (pcluster = pship->GetCluster()) && //intentional =
+            (pship->IsUsingAreaOfEffectWeapon())
+            )
+        )
     {
+        //A client cannot be told an order naming an object it does not have - the lookup
+        //fails, the order lands as NULL, and nothing ever restates it, so the ship keeps the
+        //route it had before. A drone only ever commits to a target one of our own ships can
+        //already see (CshipIGC::CanSee), but that includes what a single ship has in scanner
+        //range, which can be ahead of what the side has been shown: a miner arriving in a
+        //sector picks a rock its own scanner found before the spotting pass reveals it.
+        //Revealing it here is what that pass would do a moment later anyway, and it marks the
+        //object seen, so the later pass then does nothing.
+        IsideIGC*   psideShip = pship->GetSide();
+        if (ptarget && psideShip && !ptarget->SeenBySide(psideShip))
+        {
+            ObjectType  otTarget = ptarget->GetObjectType();
+            if ((otTarget == OT_asteroid) || (otTarget == OT_station) || (otTarget == OT_warp))
+                ptarget->SetSideVisibility(psideShip, true);
+        }
+
+        // If target is a buoy, export it to clients first
+        if (ptarget && (ptarget->GetObjectType() == OT_buoy))
+        {
+            CFMRecipient* precipBuoy = (i == c_cmdCurrent)
+                ? GetGroupSectorFlying(pcluster)
+                : CFSSide::FromIGC(pship->GetSide())->GetGroup();
+
+            g.fm.SetDefaultRecipient(precipBuoy, FM_GUARANTEED);
+            ExportObj(ptarget, OT_buoy, NULL);
+            g.fm.SendMessages(precipBuoy, FM_GUARANTEED, FM_FLUSH);
+        }
+
         BEGIN_PFM_CREATE(g.fm, pfmOC, CS, ORDER_CHANGE)
-        END_PFM_CREATE
-        pfmOC->command = i;
+            END_PFM_CREATE
+            pfmOC->command = i;
         pfmOC->shipID = pship->GetObjectID();
         pfmOC->commandID = cid;
         if (ptarget)
@@ -13724,12 +13932,43 @@ void FedSrvSiteBase::CommandChangedEvent(Command i, IshipIGC * pship, ImodelIGC*
         }
 
         bool fCurrentTarget = (i == c_cmdCurrent);
-        g.fm.SendMessages(fCurrentTarget
-                              ? GetGroupSectorFlying(pcluster)
-                              : CFSSide::FromIGC(pship->GetSide())->GetGroup(),
-                          fCurrentTarget ? FM_NOT_GUARANTEED : FM_GUARANTEED, FM_FLUSH);
+        CFSSide*    pfsSide = CFSSide::FromIGC(pship->GetSide());
+        CFMRecipient*   precipient = fCurrentTarget
+            ? (CFMRecipient*)GetGroupSectorFlying(pcluster)
+            : (CFMRecipient*)(pfsSide ? pfsSide->GetGroup() : NULL);
+
+        g.fm.SendMessages(precipient,
+            fCurrentTarget ? FM_NOT_GUARANTEED : FM_GUARANTEED, FM_FLUSH);
     }
 }
+void FedSrvSiteBase::WarpWaypointChangedEvent(IshipIGC* pship, IwarpIGC* pwarp)
+{
+    //Only drones commit to a warp for a whole leg. A player can switch on autopilot, but
+    //that runs on their own client (BaseClient sets it; the server never calls
+    //SetAutopilot on a player's ship), so CshipIGC::PlotShipMove never runs GotoPlan for
+    //one here and this hook does not fire for them in the first place. The test is what
+    //says so, and matches how autopilot is filtered elsewhere in IGC
+    //(CclusterIGC::Update). Nothing repeats either way: SetWaypointWarp only raises the
+    //event when the warp actually changes, which is once per leg.
+    if (pship->GetPilotType() >= c_ptPlayer)
+        return;
+
+    IsideIGC*   pside = pship->GetSide();
+    if (pside == NULL)
+        return;
+
+    CFMRecipient*   precip = CFSSide::FromIGC(pside)->GetGroup();
+
+    BEGIN_PFM_CREATE(g.fm, pfmWW, S, WARP_WAYPOINT)
+    END_PFM_CREATE
+    pfmWW->shipID = pship->GetObjectID();
+    pfmWW->oidWarp = pwarp ? pwarp->GetObjectID() : NA;
+
+    //Guaranteed: the client holds this until it is told otherwise, so a dropped
+    //message would leave it drawing a leg the ship gave up on.
+    g.fm.SendMessages(precip, FM_GUARANTEED, FM_FLUSH);
+}
+
 void     FedSrvSiteBase::CreateBuildingEffect(Time           now,
                                               IasteroidIGC*  pasteroid,
                                               IshipIGC*      pshipBuilder)

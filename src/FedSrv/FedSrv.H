@@ -119,6 +119,10 @@ public:
   bool ContinueRipcord(IshipIGC* pship, ImodelIGC* pmodel);
   bool UseRipcord(IshipIGC* pship, ImodelIGC* pmodel);
   void RequestRipcord(IshipIGC* pship, IclusterIGC* pcluster);
+  //As above, but aiming at a point the pilot's own client named. Kept as a separate
+  //overload so the two-argument form still overrides IIgcSite's, which is how a drone
+  //auto-teleporting gets here.
+  void RequestRipcord(IshipIGC* pship, IclusterIGC* pcluster, const Vector* ppositionGoal);
   void HitWarpEvent(IshipIGC* pship, IwarpIGC* pwarp);
   bool HitTreasureEvent(Time now, IshipIGC* ship, ItreasureIGC* treasure);
   void PaydayEvent(IsideIGC* pside, float money);
@@ -141,6 +145,7 @@ public:
   void TerminateModelEvent(ImodelIGC* model);
   void TerminateMissionEvent(ImissionIGC* pMission) {}
   void CommandChangedEvent(Command i, IshipIGC * pship, ImodelIGC* ptarget, CommandID cid);
+  void WarpWaypointChangedEvent(IshipIGC* pship, IwarpIGC* pwarp);
 
   void        CreateBuildingEffect(Time           now,
                                    IasteroidIGC*  pasteroid,

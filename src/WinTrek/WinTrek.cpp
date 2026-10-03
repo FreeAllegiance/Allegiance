@@ -9486,9 +9486,10 @@ public:
                         else
                         {
                             IclusterIGC*    pcluster = NULL;
+                            ImodelIGC*      pmodel = NULL;
                             if (!trekClient.GetShip()->fRipcordActive())
                             {
-                                ImodelIGC*  pmodel = trekClient.GetShip()->GetCommandTarget(c_cmdCurrent);
+                                pmodel = trekClient.GetShip()->GetCommandTarget(c_cmdCurrent);
 
                                 if (!pmodel)
                                     pmodel = trekClient.GetShip()->GetCommandTarget(c_cmdAccepted);
@@ -9500,7 +9501,11 @@ public:
                                     pcluster = trekClient.GetShip()->GetCluster();
                                 assert (pcluster);
                             }
-                            trekClient.RequestRipcord(trekClient.GetShip(), pcluster);
+
+                            //Hand the goal over as well as the sector: a waypoint is a buoy
+                            //this client made, so the server has no way to look it up and would
+                            //otherwise fall back on aiming at a dockable base.
+                            trekClient.RequestRipcord(trekClient.GetShip(), pcluster, pmodel);
                         }
                     }
             }
