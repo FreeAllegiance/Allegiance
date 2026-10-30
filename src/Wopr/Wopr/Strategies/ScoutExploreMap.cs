@@ -1,4 +1,4 @@
-﻿using AllegianceInterop;
+using AllegianceInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -276,7 +276,7 @@ namespace Wopr.Strategies
             {
                 try
                 {
-                    _runningTasks++;
+                    Interlocked.Increment(ref _runningTasks);
 
                     var currentUnexploredClusters = GameInfo.GetUnexploredClusters(ClientConnection.GetCore());
 
@@ -349,7 +349,7 @@ namespace Wopr.Strategies
                 }
                 finally
                 {
-                    _runningTasks--;
+                    Interlocked.Decrement(ref _runningTasks);
                 }
             });
         }
@@ -380,7 +380,7 @@ namespace Wopr.Strategies
 
                     //bool sweepLeft = currentSweepingScoutCount > 0;
 
-                    _runningTasks++;
+                    Interlocked.Increment(ref _runningTasks);
 
                     bool sweepComplete = true;
 
@@ -477,7 +477,7 @@ namespace Wopr.Strategies
                 }
                 finally
                 {
-                    _runningTasks--;
+                    Interlocked.Decrement(ref _runningTasks);
                     _isSweeping = false;
                     GameInfo.DecrementSweepingScoutCount(ship.GetCluster());
                 }

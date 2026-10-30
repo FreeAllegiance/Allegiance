@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -290,11 +290,11 @@ namespace Wopr.Strategies
         {
             _cancellationTokenSource.Cancel();
 
-            for (int i = 0; i < 10 * 100 && _runningTasks > 0; i++)
+            for (int i = 0; i < 100 && _runningTasks > 0; i++)
                 Thread.Sleep(100);
 
             if (_runningTasks > 0)
-                throw new Exception("Error: All running tasks didn't exit after 10 seconds after a cancel was requested.");
+                Log($"Warning: {_runningTasks} running tasks didn't exit after 10 seconds after a cancel was requested.");
         }
         
         public void OnAppMessage(byte[] bytes)

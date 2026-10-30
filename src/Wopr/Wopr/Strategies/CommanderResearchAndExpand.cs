@@ -1,4 +1,4 @@
-﻿using AllegianceInterop;
+using AllegianceInterop;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -530,43 +530,57 @@ namespace Wopr.Strategies
             {
                 Task.Run(() =>
                 {
-
-                    IclusterIGCWrapper intermediateCluster = null;
-
-                    while (targetCluster.GetAsteroids().Count == 0 && _cancellationTokenSource.IsCancellationRequested == false)
+                    try
                     {
-                        if (intermediateCluster == null || (shipCluster.GetObjectID() == intermediateCluster.GetObjectID()))
-                        //if (ship.GetCommandID((sbyte) CommandType.c_cmdCurrent) <= (sbyte) CommandID.c_cidNone)
+                        Interlocked.Increment(ref _runningTasks);
+
+                        IclusterIGCWrapper intermediateCluster = null;
+
+                        while (_cancellationTokenSource.IsCancellationRequested == false && targetCluster.GetAsteroids().Count == 0)
                         {
-                            Log($"Looking for intermediate cluster, target cluster: {targetCluster.GetName()} has not been discovered yet. Current ship command is: {((CommandID)ship.GetCommandID((sbyte)CommandType.c_cmdCurrent)).ToString()}");
-                            
-                            var pathFinder = new DijkstraPathFinder(GameInfo.Clusters, targetCluster.GetObjectID(), GetHomeCluster().GetObjectID());
-
-                            // Find a sector on the route that we have already explored, we will send the constructor there while we wait for scouts to find the way.
-                            for (intermediateCluster = targetCluster; intermediateCluster.GetAsteroids().Count == 0; intermediateCluster = pathFinder.NextCluster(intermediateCluster, GetHomeCluster()));
-                               
-
-                            if (intermediateCluster != null && shipCluster != null && shipCluster.GetObjectID() != intermediateCluster.GetObjectID())
+                            if (intermediateCluster == null || (shipCluster.GetObjectID() == intermediateCluster.GetObjectID()))
+                            //if (ship.GetCommandID((sbyte) CommandType.c_cmdCurrent) <= (sbyte) CommandID.c_cidNone)
                             {
-                                Log($"Found intermediate cluster: {intermediateCluster.GetName()}, sending con there.");
+                                Log($"Looking for intermediate cluster, target cluster: {targetCluster.GetName()} has not been discovered yet. Current ship command is: {((CommandID)ship.GetCommandID((sbyte)CommandType.c_cmdCurrent)).ToString()}");
+                                
+                                var pathFinder = new DijkstraPathFinder(GameInfo.Clusters, targetCluster.GetObjectID(), GetHomeCluster().GetObjectID());
 
-                                // Send the con to the middle of the cluster, and wait for the way to be found.
-                                var buoy = ClientConnection.CreateBuoy((sbyte)BuoyType.c_buoyWaypoint, 0, 0, 0, intermediateCluster.GetObjectID(), true);
-                                var command = ship.GetDefaultOrder(buoy);
+                                // Find a sector on the route that we have already explored, we will send the constructor there while we wait for scouts to find the way.
+                                for (intermediateCluster = targetCluster; intermediateCluster != null && _cancellationTokenSource.IsCancellationRequested == false && intermediateCluster.GetAsteroids().Count == 0; intermediateCluster = pathFinder.NextCluster(intermediateCluster, GetHomeCluster())) ;
 
-                                ClientConnection.SendChat(ClientConnection.GetShip(), ChatTarget.CHAT_INDIVIDUAL, ship.GetObjectID(), 0, "", (sbyte)command, buoy.GetObjectType(), buoy.GetObjectID(), buoy, true);
+                                if (_cancellationTokenSource.IsCancellationRequested == true)
+                                    break;
+
+                                if (intermediateCluster != null && shipCluster != null && shipCluster.GetObjectID() != intermediateCluster.GetObjectID())
+                                {
+                                    Log($"Found intermediate cluster: {intermediateCluster.GetName()}, sending con there.");
+
+                                    // Send the con to the middle of the cluster, and wait for the way to be found.
+                                    var buoy = ClientConnection.CreateBuoy((sbyte)BuoyType.c_buoyWaypoint, 0, 0, 0, intermediateCluster.GetObjectID(), true);
+                                    var command = ship.GetDefaultOrder(buoy);
+
+                                    ClientConnection.SendChat(ClientConnection.GetShip(), ChatTarget.CHAT_INDIVIDUAL, ship.GetObjectID(), 0, "", (sbyte)command, buoy.GetObjectType(), buoy.GetObjectID(), buoy, true);
+                                }
                             }
+
+                            Thread.Sleep(250);
                         }
 
-                        Thread.Sleep(250);
+                        if (_cancellationTokenSource.IsCancellationRequested == false && targetCluster.GetAsteroids().Count > 0)
+                        {
+                            var targetRock = GetStationBuildRock(stationType, targetCluster);
+                            Log($"Found target rock for con: {ship.GetName()}, sending con to: {targetCluster.GetName()}, {targetRock.GetName()}");
+
+                            ClientConnection.SendChat(ClientConnection.GetShip(), ChatTarget.CHAT_INDIVIDUAL, ship.GetObjectID(), 0, "", (sbyte)CommandID.c_cidBuild, targetRock.GetObjectType(), targetRock.GetObjectID(), targetRock, true);
+                        }
                     }
-
-                    if (targetCluster.GetAsteroids().Count > 0)
+                    catch (Exception ex)
                     {
-                        var targetRock = GetStationBuildRock(stationType, targetCluster);
-                        Log($"Found target rock for con: {ship.GetName()}, sending con to: {targetCluster.GetName()}, {targetRock.GetName()}");
-
-                        ClientConnection.SendChat(ClientConnection.GetShip(), ChatTarget.CHAT_INDIVIDUAL, ship.GetObjectID(), 0, "", (sbyte)CommandID.c_cidBuild, targetRock.GetObjectType(), targetRock.GetObjectID(), targetRock, true);
+                        Log($"Exception in PlaceStation task: {ex.Message}");
+                    }
+                    finally
+                    {
+                        Interlocked.Decrement(ref _runningTasks);
                     }
                 });
             }

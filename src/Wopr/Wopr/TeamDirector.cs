@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -86,23 +86,29 @@ namespace Wopr
         {
             lock (_connectedClientsByPlayerName)
             {
-                
-
                 foreach (var runningStrategy in _currentStrategyByPlayerName.Values)
                 {
-                    runningStrategy.Cancel();
+                    try
+                    {
+                        runningStrategy.Cancel();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error canceling strategy {runningStrategy.StrategyID}: {ex.Message}");
+                    }
                 }
-
-                //foreach (var connection in _connectedClientsByPlayerName.Values)
-                //{
-                //    connection.DisconnectLobby();
-                //    connection.DisconnectServer();
-                //}
 
                 _connectedClientsByPlayerName.Values.AsParallel().ForAll((AllegianceInterop.ClientConnection connection) =>
                 {
-                    connection.DisconnectLobby();
-                    connection.DisconnectServer();
+                    try
+                    {
+                        connection.DisconnectLobby();
+                        connection.DisconnectServer();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error disconnecting client: {ex.Message}");
+                    }
                 });
             }
         }

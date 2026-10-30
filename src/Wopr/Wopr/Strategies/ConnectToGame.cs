@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -280,23 +280,25 @@ namespace Wopr.Strategies
 
                 Task.Run(() =>
                 {
-                    // Wait for the ship to enter the cluster.
-                    while (ship.GetCluster() == null)
-                        Thread.Sleep(100);
+                    try
+                    {
+                        Interlocked.Increment(ref _runningTasks);
 
-                    client.FireDispenser(ship);
+                        // Wait for the ship to enter the cluster.
+                        while (ship.GetCluster() == null && _cancellationTokenSource.IsCancellationRequested == false)
+                            Thread.Sleep(100);
 
-                    //var buoy = client.CreateBuoy((sbyte)BuoyType.c_buoyWaypoint, 3000, 0, 0, ship.GetCluster().GetObjectID(), true);
-
-                    //ship.SetAutopilot(true);
-                    //ship.SetCommand((sbyte)CommandType.c_cmdAccepted, buoy, (sbyte)CommandID.c_cidGoto);
-                    //ship.SetAutopilot(true);
-
-                    //// Drop mines!
-                    //var launcher = AllegianceInterop.IdispenserIGCWrapper.GetDispenserForPart(ship.GetMountedPart((short)EquipmentType.ET_Dispenser, 0));
-
-                    ////var launcher = (AllegianceInterop.IdispenserIGCWrapper) ship.GetMountedPart((short) EquipmentType.ET_Dispenser, 0);
-                    //client.FireExpendable(ship, launcher, (uint)DateTime.Now.Ticks);
+                        if (_cancellationTokenSource.IsCancellationRequested == false)
+                            client.FireDispenser(ship);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log($"Exception in dispenser fire task: {ex.Message}");
+                    }
+                    finally
+                    {
+                        Interlocked.Decrement(ref _runningTasks);
+                    }
                 });
 
 
